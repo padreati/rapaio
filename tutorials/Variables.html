@@ -1,0 +1,1126 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Variables &#8212; Rapaio Book</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pdf_print.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/Variables';</script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Data Handling Overview" href="DataHandlingOverview.html" />
+    <link rel="prev" title="Built-in Data sets" href="BuiltinDataSets.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.png" class="logo__image only-light" alt="Rapaio Book - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="Rapaio Book - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Welcome to Rapaio Book
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../BriefPreview.html">Brief preview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BuiltinDataSets.html">Built-in Data sets</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DataHandlingOverview.html">Data Handling Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CoreStatisticalTools.html">Core statistical tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DataVisualization.html">Data visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ReadingAndWritingData.html">Reading and Writing data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LinearAlgebraOverview.html">Linear Algebra Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NeuralNetworks.html">Tensors and Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../algorithms/KMeans.html">Algorithms: KMeans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/tutorials/Variables.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Variables</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vardouble">VarDouble</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#various-builders">Various builders</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#printing-variables">Printing variables</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#accessing-tensor-operations-through-tensor-and-tensor">Accessing tensor operations through tensor_() and tensor()</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nominal-variables">Nominal variables</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Various builders</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview-of-variable-types">Overview of variable types</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#missing-values">Missing values</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#var-iterators">Var Iterators</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="variables">
+<h1>Variables<a class="headerlink" href="#variables" title="Permalink to this heading">#</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">load</span><span class="w"> </span><span class="p">..</span><span class="o">/</span><span class="p">..</span><span class="o">/</span><span class="n">rapaio</span><span class="o">-</span><span class="n">bootstrap</span><span class="p">.</span><span class="na">ipynb</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Adding dependency <span class=" -Color -Color-Bold -Color-Bold-Green">io.github.padreati:rapaio-lib:7.0.0</span>
+Solving dependencies
+Resolved artifacts count: 4
+Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/io/github/padreati/rapaio-lib/7.0.0/rapaio-lib-7.0.0.jar</span>
+Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/io/github/padreati/rapaio-code-gen/7.0.0/rapaio-code-gen-7.0.0.jar</span>
+Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/org/antlr/ST4/4.3.4/ST4-4.3.4.jar</span>
+Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/org/antlr/antlr-runtime/3.5.3/antlr-runtime-3.5.3.jar</span>
+
+</pre></div>
+</div>
+</div>
+</div>
+<p>Variable represents unidimensional sets of observations which comes from the same random variable (hence the name). Because the values of a variable are supposed to be generated from the same process, they have the same type and semantic. Variables have names and are of some given types. <code class="docutils literal notranslate"><span class="pre">Var</span></code> implementations can be categorized as storage variables and view variables. Storage variables are those variables which directly contains and maintain data. View variables are higher constructs obtained by filtering and/or merging other variables. View variables does not contain data directly, but maintain refferences to storage variables it wrap and allows reading and updating operations in the same way as storage variables.</p>
+<p>Strorage variables implemented have different storage types and representations. We have <code class="docutils literal notranslate"><span class="pre">VarDouble</span></code>, <code class="docutils literal notranslate"><span class="pre">VarInt</span></code>, <code class="docutils literal notranslate"><span class="pre">VarNominal</span></code>, <code class="docutils literal notranslate"><span class="pre">VarBinary</span></code>, <code class="docutils literal notranslate"><span class="pre">VarLong</span></code>, <code class="docutils literal notranslate"><span class="pre">VarString</span></code> and <code class="docutils literal notranslate"><span class="pre">VarInstant</span></code>.</p>
+<section id="vardouble">
+<h2>VarDouble<a class="headerlink" href="#vardouble" title="Permalink to this heading">#</a></h2>
+<p>Numeric double variables are implemented by <code class="docutils literal notranslate"><span class="pre">VarDouble</span></code> and are used to handle discrete or continuous numerical values. Double variables offers value and label representations. All other representations can be used, but with caution since it can alter the content. For example int representation truncates floating point values to the biggest integer values, however the int setter sets a correct value since an integer can be converted to a double with no information loss.</p>
+<section id="various-builders">
+<h3>Various builders<a class="headerlink" href="#various-builders" title="Permalink to this heading">#</a></h3>
+<p>Double variables can be built in various was and there are handy shortcuts for various scenarios.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// builds a variable with no data</span>
+<span class="n">Var</span><span class="w"> </span><span class="n">empty1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">empty</span><span class="p">();</span>
+
+<span class="c1">// builds a variable of a given size which contains only missing data</span>
+<span class="n">Var</span><span class="w"> </span><span class="n">empty2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">empty</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+
+<span class="c1">// a sequence of numbers, starting from 0, ending with 5 with step 1</span>
+<span class="n">Var</span><span class="w"> </span><span class="n">seq1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">seq</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+
+<span class="c1">// a sequence of numbers, starting from 1, ending with 5 with step 1</span>
+<span class="n">Var</span><span class="w"> </span><span class="n">seq2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">seq</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">);</span>
+
+<span class="c1">// a sequence of numbers starting at 0, ending at 1 with step 0.1</span>
+<span class="n">Var</span><span class="w"> </span><span class="n">seq3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">seq</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mf">0.1</span><span class="p">);</span>
+
+<span class="c1">// build a variable of a given size which contains only zeros</span>
+<span class="n">Var</span><span class="w"> </span><span class="n">fill1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">fill</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+
+<span class="c1">// builds a variable of a given size which contains only ones</span>
+<span class="n">Var</span><span class="w"> </span><span class="n">fill2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">fill</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+
+<span class="c1">// numeric variable which contains the values copied from another variable</span>
+<span class="n">Var</span><span class="w"> </span><span class="n">copy1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="n">seq1</span><span class="p">);</span>
+
+<span class="c1">// numeric variable with values copied from a collection</span>
+<span class="n">Normal</span><span class="w"> </span><span class="n">normal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Normal</span><span class="p">.</span><span class="na">std</span><span class="p">();</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">Double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">list1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoubleStream</span><span class="p">.</span><span class="na">generate</span><span class="p">(</span><span class="n">normal</span><span class="p">::</span><span class="n">sampleNext</span><span class="p">).</span><span class="na">limit</span><span class="p">(</span><span class="mi">10</span><span class="p">).</span><span class="na">boxed</span><span class="p">().</span><span class="na">collect</span><span class="p">(</span><span class="n">Collectors</span><span class="p">.</span><span class="na">toList</span><span class="p">());</span>
+<span class="n">Var</span><span class="w"> </span><span class="n">copy2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="n">list1</span><span class="p">);</span>
+
+<span class="c1">// numeric variable with values copied from a double array</span>
+<span class="n">Var</span><span class="w"> </span><span class="n">copy3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mf">4.0</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">);</span>
+
+<span class="c1">// numeric variable with values copied from an int array</span>
+<span class="n">Var</span><span class="w"> </span><span class="n">copy4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">);</span>
+
+<span class="c1">// numeric variables with values generated as the sqrt of the row number</span>
+<span class="n">Var</span><span class="w"> </span><span class="n">from1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="n">Math</span><span class="p">::</span><span class="n">sqrt</span><span class="p">);</span>
+
+<span class="c1">// numeric variable with values generated using a function which receives a row value</span>
+<span class="c1">// as parameter and outputs a double value; in this case we generate values as</span>
+<span class="c1">// a sum of the values of other two variables</span>
+<span class="n">Var</span><span class="w"> </span><span class="n">from2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">copy3</span><span class="p">.</span><span class="na">getDouble</span><span class="p">(</span><span class="n">row</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">copy4</span><span class="p">.</span><span class="na">getDouble</span><span class="p">(</span><span class="n">row</span><span class="p">));</span>
+
+<span class="c1">// numeric variable with values generated from values of another variable using</span>
+<span class="c1">// a transformation provided via a lambda function</span>
+<span class="n">Var</span><span class="w"> </span><span class="n">from3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="n">from1</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>Wrapper around a double array</strong>
+This builder creates a new numeric variable instance as a wrapper around a double array of values. Notice that it is not the same as the copy builder, since in the wrapper case any change in the new numerical variable is reflected also in the original array of numbers. In the case of the copy builder this is not true, since the copy builder (as its name implies) creates an internal copy of the array.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="o">[]</span><span class="w"> </span><span class="n">array</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DoubleArrays</span><span class="p">.</span><span class="na">newFrom</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="p">);</span>
+<span class="n">Var</span><span class="w"> </span><span class="n">wrap1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">wrap</span><span class="p">(</span><span class="n">array</span><span class="p">);</span>
+
+<span class="n">wrap1</span><span class="p">.</span><span class="na">printString</span><span class="p">();</span>
+<span class="n">array</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">17</span><span class="p">;</span>
+<span class="n">wrap1</span><span class="p">.</span><span class="na">printString</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>VarDouble [name:&quot;?&quot;, rowCount:4, values: 1.0, 4.0, 9.0, 16.0]VarDouble [name:&quot;?&quot;, rowCount:4, values: 1.0, 4.0, 17.0, 16.0]
+</pre></div>
+</div>
+</div>
+</div>
+<section id="printing-variables">
+<h4>Printing variables<a class="headerlink" href="#printing-variables" title="Permalink to this heading">#</a></h4>
+<p>Most of the objects which contains information implements the <code class="docutils literal notranslate"><span class="pre">Printable</span></code> interface. This interface allows one to display a summary of the content of the given object. This is the case also with the numerical variables. Additionally, the numerical variables implements also two other methods, one which displays all the values and another one which displays only the first values.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// build a numerical variable with values as the sqrt</span>
+<span class="c1">// of the first 200 integer values</span>
+<span class="n">Var</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span><span class="w"> </span><span class="n">Math</span><span class="p">::</span><span class="n">sqrt</span><span class="p">).</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">);</span>
+
+<span class="c1">// prints the text produced by toString </span>
+<span class="n">x</span><span class="p">.</span><span class="na">printString</span><span class="p">();</span>
+
+<span class="c1">// print a reasonable part of value</span>
+<span class="n">x</span><span class="p">.</span><span class="na">printContent</span><span class="p">();</span>
+
+<span class="c1">// print all values of the variable</span>
+<span class="n">x</span><span class="p">.</span><span class="na">printFullContent</span><span class="p">();</span>
+
+<span class="c1">// print a summary of the content of the variable</span>
+<span class="n">x</span><span class="p">.</span><span class="na">printSummary</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>VarDouble [name:&quot;x&quot;, rowCount:200, values: 0.0, 1.0, 1.4142135623730951, 1.7320508075688772, 2.0, 2.23606797749979, 2.449489742783178, 2.6457513110645907, 2.8284271247461903, 3.0, ..., 14.071247279470288, 14.106735979665885]VarDouble [name:&quot;x&quot;, rowCount:200]
+ row         value         row         value         row         value        
+  [0]  0                   [34]  5.830951894845301   [68]  8.246211251235321  
+  [1]  1                   [35]  5.916079783099616   [69]  8.306623862918075  
+  [2]  1.4142135623730951  [36]  6                   [70]  8.366600265340756  
+  [3]  1.7320508075688772  [37]  6.082762530298219   [71]  8.426149773176359  
+  [4]  2                   [38]  6.164414002968976   [72]  8.48528137423857   
+  [5]  2.23606797749979    [39]  6.244997998398398   [73]  8.54400374531753   
+  [6]  2.449489742783178   [40]  6.324555320336759   [74]  8.602325267042627  
+  [7]  2.6457513110645907  [41]  6.4031242374328485  [75]  8.660254037844387  
+  [8]  2.8284271247461903  [42]  6.48074069840786    [76]  8.717797887081348  
+  [9]  3                   [43]  6.557438524302      [77]  8.774964387392123  
+ [10]  3.1622776601683795  [44]  6.6332495807108     [78]  8.831760866327848  
+ [11]  3.3166247903554     [45]  6.708203932499369   ...          ...         
+ [12]  3.4641016151377544  [46]  6.782329983125268  [180] 13.416407864998739  
+ [13]  3.605551275463989   [47]  6.855654600401044  [181] 13.45362404707371   
+ [14]  3.7416573867739413  [48]  6.928203230275509  [182] 13.490737563232042  
+ [15]  3.872983346207417   [49]  7                  [183] 13.527749258468683  
+ [16]  4                   [50]  7.0710678118654755 [184] 13.564659966250536  
+ [17]  4.123105625617661   [51]  7.14142842854285   [185] 13.601470508735444  
+ [18]  4.242640687119285   [52]  7.211102550927978  [186] 13.638181696985855  
+ [19]  4.358898943540674   [53]  7.280109889280518  [187] 13.674794331177344  
+ [20]  4.47213595499958    [54]  7.3484692283495345 [188] 13.711309200802088  
+ [21]  4.58257569495584    [55]  7.416198487095663  [189] 13.74772708486752   
+ [22]  4.69041575982343    [56]  7.483314773547883  [190] 13.784048752090222  
+ [23]  4.795831523312719   [57]  7.54983443527075   [191] 13.820274961085254  
+ [24]  4.898979485566356   [58]  7.615773105863909  [192] 13.856406460551018  
+ [25]  5                   [59]  7.681145747868608  [193] 13.892443989449804  
+ [26]  5.0990195135927845  [60]  7.745966692414834  [194] 13.92838827718412   
+ [27]  5.196152422706632   [61]  7.810249675906654  [195] 13.96424004376894   
+ [28]  5.291502622129181   [62]  7.874007874011811  [196] 14                  
+ [29]  5.385164807134504   [63]  7.937253933193772  [197] 14.035668847618199  
+ [30]  5.477225575051661   [64]  8                  [198] 14.071247279470288  
+ [31]  5.5677643628300215  [65]  8.06225774829855   [199] 14.106735979665885  
+ [32]  5.656854249492381   [66]  8.12403840463596                             
+ [33]  5.744562646538029   [67]  8.18535277187245   
+VarDouble [name:&quot;x&quot;, rowCount:200]
+ row         value         row         value         row         value        
+  [0]  0                   [67]  8.18535277187245   [134] 11.575836902790225  
+  [1]  1                   [68]  8.246211251235321  [135] 11.61895003862225   
+  [2]  1.4142135623730951  [69]  8.306623862918075  [136] 11.661903789690601  
+  [3]  1.7320508075688772  [70]  8.366600265340756  [137] 11.704699910719626  
+  [4]  2                   [71]  8.426149773176359  [138] 11.74734012447073   
+  [5]  2.23606797749979    [72]  8.48528137423857   [139] 11.789826122551595  
+  [6]  2.449489742783178   [73]  8.54400374531753   [140] 11.832159566199232  
+  [7]  2.6457513110645907  [74]  8.602325267042627  [141] 11.874342087037917  
+  [8]  2.8284271247461903  [75]  8.660254037844387  [142] 11.916375287812984  
+  [9]  3                   [76]  8.717797887081348  [143] 11.958260743101398  
+ [10]  3.1622776601683795  [77]  8.774964387392123  [144] 12                  
+ [11]  3.3166247903554     [78]  8.831760866327848  [145] 12.041594578792296  
+ [12]  3.4641016151377544  [79]  8.888194417315589  [146] 12.083045973594572  
+ [13]  3.605551275463989   [80]  8.94427190999916   [147] 12.12435565298214   
+ [14]  3.7416573867739413  [81]  9                  [148] 12.165525060596439  
+ [15]  3.872983346207417   [82]  9.055385138137417  [149] 12.206555615733702  
+ [16]  4                   [83]  9.1104335791443    [150] 12.24744871391589   
+ [17]  4.123105625617661   [84]  9.16515138991168   [151] 12.288205727444508  
+ [18]  4.242640687119285   [85]  9.219544457292887  [152] 12.328828005937952  
+ [19]  4.358898943540674   [86]  9.273618495495704  [153] 12.36931687685298   
+ [20]  4.47213595499958    [87]  9.327379053088816  [154] 12.409673645990857  
+ [21]  4.58257569495584    [88]  9.38083151964686   [155] 12.449899597988733  
+ [22]  4.69041575982343    [89]  9.433981132056603  [156] 12.489995996796797  
+ [23]  4.795831523312719   [90]  9.486832980505138  [157] 12.529964086141668  
+ [24]  4.898979485566356   [91]  9.539392014169456  [158] 12.569805089976535  
+ [25]  5                   [92]  9.591663046625438  [159] 12.609520212918492  
+ [26]  5.0990195135927845  [93]  9.643650760992955  [160] 12.649110640673518  
+ [27]  5.196152422706632   [94]  9.695359714832659  [161] 12.68857754044952   
+ [28]  5.291502622129181   [95]  9.746794344808963  [162] 12.727922061357855  
+ [29]  5.385164807134504   [96]  9.797958971132712  [163] 12.767145334803704  
+ [30]  5.477225575051661   [97]  9.848857801796104  [164] 12.806248474865697  
+ [31]  5.5677643628300215  [98]  9.899494936611665  [165] 12.84523257866513   
+ [32]  5.656854249492381   [99]  9.9498743710662    [166] 12.884098726725126  
+ [33]  5.744562646538029  [100] 10                  [167] 12.922847983320086  
+ [34]  5.830951894845301  [101] 10.04987562112089   [168] 12.96148139681572   
+ [35]  5.916079783099616  [102] 10.099504938362077  [169] 13                  
+ [36]  6                  [103] 10.14889156509222   [170] 13.038404810405298  
+ [37]  6.082762530298219  [104] 10.198039027185569  [171] 13.076696830622021  
+ [38]  6.164414002968976  [105] 10.246950765959598  [172] 13.114877048604     
+ [39]  6.244997998398398  [106] 10.295630140987     [173] 13.152946437965905  
+ [40]  6.324555320336759  [107] 10.344080432788601  [174] 13.19090595827292   
+ [41]  6.4031242374328485 [108] 10.392304845413264  [175] 13.228756555322953  
+ [42]  6.48074069840786   [109] 10.44030650891055   [176] 13.2664991614216    
+ [43]  6.557438524302     [110] 10.488088481701515  [177] 13.30413469565007   
+ [44]  6.6332495807108    [111] 10.535653752852738  [178] 13.341664064126334  
+ [45]  6.708203932499369  [112] 10.583005244258363  [179] 13.379088160259652  
+ [46]  6.782329983125268  [113] 10.63014581273465   [180] 13.416407864998739  
+ [47]  6.855654600401044  [114] 10.677078252031311  [181] 13.45362404707371   
+ [48]  6.928203230275509  [115] 10.723805294763608  [182] 13.490737563232042  
+ [49]  7                  [116] 10.770329614269007  [183] 13.527749258468683  
+ [50]  7.0710678118654755 [117] 10.816653826391969  [184] 13.564659966250536  
+ [51]  7.14142842854285   [118] 10.862780491200215  [185] 13.601470508735444  
+ [52]  7.211102550927978  [119] 10.908712114635714  [186] 13.638181696985855  
+ [53]  7.280109889280518  [120] 10.954451150103322  [187] 13.674794331177344  
+ [54]  7.3484692283495345 [121] 11                  [188] 13.711309200802088  
+ [55]  7.416198487095663  [122] 11.045361017187261  [189] 13.74772708486752   
+ [56]  7.483314773547883  [123] 11.090536506409418  [190] 13.784048752090222  
+ [57]  7.54983443527075   [124] 11.135528725660043  [191] 13.820274961085254  
+ [58]  7.615773105863909  [125] 11.180339887498949  [192] 13.856406460551018  
+ [59]  7.681145747868608  [126] 11.224972160321824  [193] 13.892443989449804  
+ [60]  7.745966692414834  [127] 11.269427669584644  [194] 13.92838827718412   
+ [61]  7.810249675906654  [128] 11.313708498984761  [195] 13.96424004376894   
+ [62]  7.874007874011811  [129] 11.357816691600547  [196] 14                  
+ [63]  7.937253933193772  [130] 11.40175425099138   [197] 14.035668847618199  
+ [64]  8                  [131] 11.445523142259598  [198] 14.071247279470288  
+ [65]  8.06225774829855   [132] 11.489125293076057  [199] 14.106735979665885  
+ [66]  8.12403840463596   [133] 11.532562594670797  
+&gt; summary(name: x, type: DOUBLE)
+rows: 200, complete: 200, missing: 0
+        x [dbl]      
+   Min. :  0.0000000 
+1st Qu. :  7.0533009 
+ Median :  9.9749372 
+   Mean :  9.3917104 
+2nd Qu. : 12.2167789 
+   Max. : 14.1067360 
+                     
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">points</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="na">size</span><span class="p">(),</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Normal</span><span class="p">.</span><span class="na">std</span><span class="p">().</span><span class="na">sampleNext</span><span class="p">()),</span><span class="w"> </span><span class="n">fill</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="n">pch</span><span class="p">.</span><span class="na">circleFull</span><span class="p">()),</span><span class="w"> </span><span class="mi">600</span><span class="p">,</span><span class="w"> </span><span class="mi">300</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/bf306a898e62543f48130626f4870a76367bf854ca917b648b17ec512a0aae6f.png" src="../_images/bf306a898e62543f48130626f4870a76367bf854ca917b648b17ec512a0aae6f.png" />
+</div>
+</div>
+</section>
+<section id="accessing-tensor-operations-through-tensor-and-tensor">
+<h4>Accessing tensor operations through tensor_() and tensor()<a class="headerlink" href="#accessing-tensor-operations-through-tensor-and-tensor" title="Permalink to this heading">#</a></h4>
+<p>One can leverage the tensor operations to be applied over variables. For that purpose there are two methods: <code class="docutils literal notranslate"><span class="pre">tensor_</span></code> and <code class="docutils literal notranslate"><span class="pre">tensor</span></code>.
+<code class="docutils literal notranslate"><span class="pre">tensor_</span></code> builds a tensor which uses as data storage wrapper directly over the variable.
+In this way one can operate directly on the values of the variable using tensor operations.
+The tensor type is given as parameter, while the method without parameter returns a <code class="docutils literal notranslate"><span class="pre">Tensor&lt;Double&gt;</span></code> instance.</p>
+<p>If a copy tensor is desired, than the methods without underscore should be called instead. The new tensors will contain a copy of the data and no operations on them, including in place, will affect the original <code class="docutils literal notranslate"><span class="pre">Var</span></code> object.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// computes the sum of all values in variable</span>
+<span class="n">x</span><span class="p">.</span><span class="na">darray_</span><span class="p">().</span><span class="na">nanSum</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1878.3420754046183
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// apply a lambda function on a copy of the varialble</span>
+<span class="n">x</span><span class="p">.</span><span class="na">darray</span><span class="p">().</span><span class="na">apply</span><span class="p">(</span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">sqrt</span><span class="p">(</span><span class="n">v</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3.</span><span class="o">/</span><span class="mi">8</span><span class="p">)).</span><span class="na">printContent</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[ 0.6123724356957945 1.1726039399558574 1.337614878196671 1.4515683957598682 1.541103500742244 1.6158799390733798 1.6806218321749773 1.7380308717236845 1.7898120361496597 1.8371173070873836 1.8807651794331954 1.9213601407220355 1.9593625532651568 1.9951318942526053 2.0289547522736777 2.061063644385446 2.091650066335189 2.120873788233911 2.1488696300891044 2.175752500524973 ... ] 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// add a constant to all values of a copy</span>
+<span class="n">x</span><span class="p">.</span><span class="na">darray</span><span class="p">().</span><span class="na">add</span><span class="p">(</span><span class="n">Math</span><span class="p">.</span><span class="na">E</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[200],0,[1]}
+[ 2.718281828459045 3.718281828459045 4.1324953908321405 4.450332636027922 4.718281828459045 4.9543498059588345 5.167771571242223 5.364033139523636 5.546708953205235 5.718281828459045 5.880559488627425 6.0349066188144445 6.1823834435968 6.323833103923034 6.459939215232986 6.591265174666463 6.718281828459045 6.841387454076706 6.96092251557833 7.0771807719997195 ... ] 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Modify the values of a variable through tensor API</span>
+<span class="n">x</span><span class="p">.</span><span class="na">printContent</span><span class="p">();</span>
+<span class="n">x</span><span class="p">.</span><span class="na">darray_</span><span class="p">().</span><span class="na">mul_</span><span class="p">(</span><span class="mf">10.</span><span class="p">);</span>
+<span class="n">x</span><span class="p">.</span><span class="na">printContent</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>VarDouble [name:&quot;x&quot;, rowCount:200]
+ row         value         row         value         row         value        
+  [0]  0                   [34]  5.830951894845301   [68]  8.246211251235321  
+  [1]  1                   [35]  5.916079783099616   [69]  8.306623862918075  
+  [2]  1.4142135623730951  [36]  6                   [70]  8.366600265340756  
+  [3]  1.7320508075688772  [37]  6.082762530298219   [71]  8.426149773176359  
+  [4]  2                   [38]  6.164414002968976   [72]  8.48528137423857   
+  [5]  2.23606797749979    [39]  6.244997998398398   [73]  8.54400374531753   
+  [6]  2.449489742783178   [40]  6.324555320336759   [74]  8.602325267042627  
+  [7]  2.6457513110645907  [41]  6.4031242374328485  [75]  8.660254037844387  
+  [8]  2.8284271247461903  [42]  6.48074069840786    [76]  8.717797887081348  
+  [9]  3                   [43]  6.557438524302      [77]  8.774964387392123  
+ [10]  3.1622776601683795  [44]  6.6332495807108     [78]  8.831760866327848  
+ [11]  3.3166247903554     [45]  6.708203932499369   ...          ...         
+ [12]  3.4641016151377544  [46]  6.782329983125268  [180] 13.416407864998739  
+ [13]  3.605551275463989   [47]  6.855654600401044  [181] 13.45362404707371   
+ [14]  3.7416573867739413  [48]  6.928203230275509  [182] 13.490737563232042  
+ [15]  3.872983346207417   [49]  7                  [183] 13.527749258468683  
+ [16]  4                   [50]  7.0710678118654755 [184] 13.564659966250536  
+ [17]  4.123105625617661   [51]  7.14142842854285   [185] 13.601470508735444  
+ [18]  4.242640687119285   [52]  7.211102550927978  [186] 13.638181696985855  
+ [19]  4.358898943540674   [53]  7.280109889280518  [187] 13.674794331177344  
+ [20]  4.47213595499958    [54]  7.3484692283495345 [188] 13.711309200802088  
+ [21]  4.58257569495584    [55]  7.416198487095663  [189] 13.74772708486752   
+ [22]  4.69041575982343    [56]  7.483314773547883  [190] 13.784048752090222  
+ [23]  4.795831523312719   [57]  7.54983443527075   [191] 13.820274961085254  
+ [24]  4.898979485566356   [58]  7.615773105863909  [192] 13.856406460551018  
+ [25]  5                   [59]  7.681145747868608  [193] 13.892443989449804  
+ [26]  5.0990195135927845  [60]  7.745966692414834  [194] 13.92838827718412   
+ [27]  5.196152422706632   [61]  7.810249675906654  [195] 13.96424004376894   
+ [28]  5.291502622129181   [62]  7.874007874011811  [196] 14                  
+ [29]  5.385164807134504   [63]  7.937253933193772  [197] 14.035668847618199  
+ [30]  5.477225575051661   [64]  8                  [198] 14.071247279470288  
+ [31]  5.5677643628300215  [65]  8.06225774829855   [199] 14.106735979665885  
+ [32]  5.656854249492381   [66]  8.12403840463596                             
+ [33]  5.744562646538029   [67]  8.18535277187245   
+VarDouble [name:&quot;x&quot;, rowCount:200]
+ row         value         row         value         row         value        
+  [0]   0                  [34]  58.309518948453004  [68]  82.46211251235322  
+  [1]  10                  [35]  59.16079783099616   [69]  83.06623862918075  
+  [2]  14.142135623730951  [36]  60                  [70]  83.66600265340756  
+  [3]  17.32050807568877   [37]  60.82762530298219   [71]  84.2614977317636   
+  [4]  20                  [38]  61.64414002968976   [72]  84.85281374238569  
+  [5]  22.360679774997898  [39]  62.44997998398398   [73]  85.44003745317531  
+  [6]  24.49489742783178   [40]  63.24555320336759   [74]  86.02325267042627  
+  [7]  26.457513110645905  [41]  64.03124237432849   [75]  86.60254037844388  
+  [8]  28.284271247461902  [42]  64.8074069840786    [76]  87.17797887081348  
+  [9]  30                  [43]  65.57438524302      [77]  87.74964387392123  
+ [10]  31.622776601683796  [44]  66.33249580710799   [78]  88.31760866327848  
+ [11]  33.166247903553995  [45]  67.0820393249937    ...          ...         
+ [12]  34.64101615137754   [46]  67.82329983125268  [180] 134.1640786499874   
+ [13]  36.05551275463989   [47]  68.55654600401044  [181] 134.53624047073708  
+ [14]  37.416573867739416  [48]  69.28203230275508  [182] 134.90737563232042  
+ [15]  38.72983346207417   [49]  70                 [183] 135.27749258468683  
+ [16]  40                  [50]  70.71067811865476  [184] 135.64659966250537  
+ [17]  41.23105625617661   [51]  71.41428428542851  [185] 136.01470508735443  
+ [18]  42.426406871192846  [52]  72.11102550927978  [186] 136.38181696985856  
+ [19]  43.58898943540674   [53]  72.80109889280519  [187] 136.74794331177344  
+ [20]  44.721359549995796  [54]  73.48469228349535  [188] 137.11309200802089  
+ [21]  45.8257569495584    [55]  74.16198487095663  [189] 137.4772708486752   
+ [22]  46.9041575982343    [56]  74.83314773547883  [190] 137.84048752090223  
+ [23]  47.958315233127195  [57]  75.4983443527075   [191] 138.20274961085255  
+ [24]  48.98979485566356   [58]  76.15773105863909  [192] 138.56406460551017  
+ [25]  50                  [59]  76.81145747868608  [193] 138.92443989449805  
+ [26]  50.99019513592785   [60]  77.45966692414834  [194] 139.2838827718412   
+ [27]  51.96152422706632   [61]  78.10249675906654  [195] 139.64240043768942  
+ [28]  52.91502622129181   [62]  78.74007874011811  [196] 140                 
+ [29]  53.85164807134504   [63]  79.37253933193772  [197] 140.356688476182    
+ [30]  54.772255750516614  [64]  80                 [198] 140.71247279470288  
+ [31]  55.67764362830022   [65]  80.62257748298549  [199] 141.06735979665885  
+ [32]  56.568542494923804  [66]  81.24038404635961                            
+ [33]  57.445626465380286  [67]  81.85352771872451  
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="nominal-variables">
+<h2>Nominal variables<a class="headerlink" href="#nominal-variables" title="Permalink to this heading">#</a></h2>
+<p>Nominal variables are defined by<code class="docutils literal notranslate"><span class="pre">VarNominal</span></code>and contains string valued categories. Nominal variables offers integer and label representations. The label representation describes the categories as labels or texts, while integer representation is an integer indexe on categories. The index representation does not imply an order between categories/labels.</p>
+<section id="id1">
+<h3>Various builders<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
+<p>Nominal variables can be built in various was and are handy shortcuts for various scenarios.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// creates an empty nominal variable with provided levels</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">nom1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarNominal</span><span class="p">.</span><span class="na">empty</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;b&quot;</span><span class="p">);</span>
+<span class="c1">// note the first label which is a placeholder for missing values</span>
+<span class="n">nom1</span><span class="p">.</span><span class="na">levels</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[a, b]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">VarNominal</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s">&quot;even&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s">&quot;odd&quot;</span><span class="p">).</span><span class="na">printString</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>VarNominal [name:&quot;?&quot;, rowCount:10, values: even, odd, even, odd, even, odd, even, odd, even, odd]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">VarNominal</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;b&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;c&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;b&quot;</span><span class="p">).</span><span class="na">printContent</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>VarNominal [name:&quot;?&quot;, rowCount:4]
+row value 
+[0]   a   
+[1]   b   
+[2]   c   
+[3]   b   
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">Unique</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">VarNominal</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">,</span><span class="s">&quot;b&quot;</span><span class="p">,</span><span class="s">&quot;c&quot;</span><span class="p">,</span><span class="s">&quot;b&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>UniqueLabel{count=3, values=[a:1,b:2,c:1]}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="overview-of-variable-types">
+<h2>Overview of variable types<a class="headerlink" href="#overview-of-variable-types" title="Permalink to this heading">#</a></h2>
+<p>All variables implements a common API making easy the manipulation of it’s content in a generic way. However, depending on type, some variables might not implement some operations or rely back on specific implementations which makes sense for that variable type. For example, for a numeric variable it makes sense to set the value at some specific index in order to change it. For nominal variables, the same operation would not make sense. Instead of the meaning ‘change numerical value at some given position’ will have the following semantic ‘change the string value to that category associated with the rounded integer value of the double parameter’. Let’s see an example:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// we create a nominal value with label `a` of first position and label `b` on the second position</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">nom</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarNominal</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;b&quot;</span><span class="p">);</span>
+<span class="n">nom</span><span class="p">.</span><span class="na">printString</span><span class="p">();</span>
+
+<span class="c1">// set the value from the first position to the label which corresponds to indexed label 2, which is `b`</span>
+<span class="n">nom</span><span class="p">.</span><span class="na">setDouble</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.1</span><span class="p">);</span>
+<span class="c1">// let&#39;s see the result</span>
+<span class="n">nom</span><span class="p">.</span><span class="na">printString</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>VarNominal [name:&quot;?&quot;, rowCount:2, values: a, b]VarNominal [name:&quot;?&quot;, rowCount:2, values: b, b]
+</pre></div>
+</div>
+</div>
+</div>
+<section id="missing-values">
+<h3>Missing values<a class="headerlink" href="#missing-values" title="Permalink to this heading">#</a></h3>
+<p>All variables offers API for missing values. A missing value is a special value which is used as placeholder for an unspecified value. We can have missing values for various reasons. There are cases when the data set does not contains some values because the experimenter did not collect it. Sometimes having a value does not make sense, for example a male cannot be pregnant, so measuring any metric related with pregnancy have missing value for male subjects. Also, missing values can appear as an effect of data manipulation operations, like joining two data frames which does not present a one-to-one presence relation.</p>
+<p>Missing values are different for each representation, which makes sense since a double value have a different type than a String.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">WS</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">VarDouble</span><span class="p">.</span><span class="na">MISSING_VALUE</span><span class="p">);</span>
+<span class="n">WS</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">VarNominal</span><span class="p">.</span><span class="na">MISSING_VALUE</span><span class="p">);</span>
+<span class="n">WS</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">VarInt</span><span class="p">.</span><span class="na">MISSING_VALUE</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>NaN
+?
+2.147483647E9
+</pre></div>
+</div>
+</div>
+</div>
+<p>Most of time we do not have to deals directly with the missing value placeholders, since <code class="docutils literal notranslate"><span class="pre">Var</span></code> and <code class="docutils literal notranslate"><span class="pre">Frame</span></code> interfaces offers a way to handle gracefully missing value operations. Below is an illustrative example:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">seq</span><span class="p">(</span><span class="mi">10</span><span class="p">).</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">);</span>
+<span class="n">x</span><span class="p">.</span><span class="na">printString</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>VarDouble [name:&quot;x&quot;, rowCount:11, values: 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// put missing on values from indexes 2,4 and 6</span>
+<span class="n">x</span><span class="p">.</span><span class="na">setMissing</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<span class="n">x</span><span class="p">.</span><span class="na">setMissing</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+<span class="n">x</span><span class="p">.</span><span class="na">setMissing</span><span class="p">(</span><span class="mi">6</span><span class="p">);</span>
+<span class="n">x</span><span class="p">.</span><span class="na">printString</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>VarDouble [name:&quot;x&quot;, rowCount:11, values: 0.0, 1.0, ?, 3.0, ?, 5.0, ?, 7.0, 8.0, 9.0, 10.0]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// count the number of non missing values</span>
+<span class="n">x</span><span class="p">.</span><span class="na">stream</span><span class="p">().</span><span class="na">complete</span><span class="p">().</span><span class="na">count</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>8
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// compute the sum of all non missing values</span>
+<span class="n">x</span><span class="p">.</span><span class="na">darray_</span><span class="p">().</span><span class="na">nanSum</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>43.0
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="var-iterators">
+<h3>Var Iterators<a class="headerlink" href="#var-iterators" title="Permalink to this heading">#</a></h3>
+<p>Each <code class="docutils literal notranslate"><span class="pre">Var</span></code> allows easy data manipulation through iterators. There is a generic construct available for each variable implementation which under the form of <code class="docutils literal notranslate"><span class="pre">VSpot</span></code>. In the terminology used in <code class="docutils literal notranslate"><span class="pre">rapaio</span></code> a spot is a position in a variable which can contain a value. Since that value can have different reporesentation, the <code class="docutils literal notranslate"><span class="pre">VSpot</span></code> interface is used to manipulate what happen in a given position. Additionally there are various iterators which can be used for other data representations. The example below are illustrative:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">seq</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;d&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// iterate through double values, we can do this because we have the specific type VarDouble</span>
+<span class="k">for</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">d</span><span class="p">)</span><span class="w"> </span><span class="n">WS</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.0
+1.0
+2.0
+3.0
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// for each spot print the string representation</span>
+<span class="n">d</span><span class="p">.</span><span class="na">forEachSpot</span><span class="p">(</span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">WS</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="na">getLabel</span><span class="p">()))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.0
+1.0
+2.0
+3.0
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// compute the sum using spot iterator and streaming API</span>
+<span class="n">WS</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">d</span><span class="p">.</span><span class="na">stream</span><span class="p">().</span><span class="na">mapToDouble</span><span class="p">(</span><span class="n">VSpot</span><span class="p">::</span><span class="n">getDouble</span><span class="p">).</span><span class="na">sum</span><span class="p">());</span>
+<span class="n">WS</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">d</span><span class="p">.</span><span class="na">darray_</span><span class="p">().</span><span class="na">nanSum</span><span class="p">());</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>6.0
+6.0
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// display the row indexes of all values which are missing</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">Double</span><span class="p">.</span><span class="na">NaN</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">Double</span><span class="p">.</span><span class="na">NaN</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+<span class="c1">// collect indexes to an int array</span>
+<span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">indexes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">y</span><span class="p">.</span><span class="na">stream</span><span class="p">().</span><span class="na">filter</span><span class="p">(</span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="o">!</span><span class="n">s</span><span class="p">.</span><span class="na">isMissing</span><span class="p">()).</span><span class="na">mapToInt</span><span class="p">(</span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="na">row</span><span class="p">()).</span><span class="na">toArray</span><span class="p">();</span>
+<span class="c1">// create a var int wrapper to see the content</span>
+<span class="n">VarInt</span><span class="p">.</span><span class="na">wrap</span><span class="p">(</span><span class="n">indexes</span><span class="p">).</span><span class="na">printString</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>VarInt [name:&quot;?&quot;, rowCount:3, values: 0, 2, 4]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "rapaio-jupyter-kernel-preview23"
+        },
+        kernelOptions: {
+            name: "rapaio-jupyter-kernel-preview23",
+            path: "./tutorials"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'rapaio-jupyter-kernel-preview23'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="BuiltinDataSets.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Built-in Data sets</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="DataHandlingOverview.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Data Handling Overview</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vardouble">VarDouble</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#various-builders">Various builders</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#printing-variables">Printing variables</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#accessing-tensor-operations-through-tensor-and-tensor">Accessing tensor operations through tensor_() and tensor()</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nominal-variables">Nominal variables</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Various builders</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview-of-variable-types">Overview of variable types</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#missing-values">Missing values</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#var-iterators">Var Iterators</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Aurelian Tutuianu
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

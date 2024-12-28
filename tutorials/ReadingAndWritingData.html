@@ -1,0 +1,628 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Reading and Writing data &#8212; Rapaio Book</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pdf_print.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/ReadingAndWritingData';</script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Linear Algebra Overview" href="LinearAlgebraOverview.html" />
+    <link rel="prev" title="Data visualization" href="DataVisualization.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.png" class="logo__image only-light" alt="Rapaio Book - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="Rapaio Book - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Welcome to Rapaio Book
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../BriefPreview.html">Brief preview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BuiltinDataSets.html">Built-in Data sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Variables.html">Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DataHandlingOverview.html">Data Handling Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CoreStatisticalTools.html">Core statistical tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DataVisualization.html">Data visualization</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Reading and Writing data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LinearAlgebraOverview.html">Linear Algebra Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NeuralNetworks.html">Tensors and Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../algorithms/KMeans.html">Algorithms: KMeans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/tutorials/ReadingAndWritingData.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Reading and Writing data</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#csv-reading-and-writing">CSV - reading and writing</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simple-read-write-data-frames-from-into-csv-files">Simple read/write data frames from/into csv files</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#various-parameters">Various parameters</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#various-read-and-write-methods-for-csv">Various read and write methods for Csv</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="reading-and-writing-data">
+<h1>Reading and Writing data<a class="headerlink" href="#reading-and-writing-data" title="Permalink to this heading">#</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">load</span><span class="w"> </span><span class="p">..</span><span class="o">/</span><span class="p">..</span><span class="o">/</span><span class="n">rapaio</span><span class="o">-</span><span class="n">bootstrap</span><span class="p">.</span><span class="na">ipynb</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Adding dependency <span class=" -Color -Color-Bold -Color-Bold-Green">io.github.padreati:rapaio-lib:7.0.0</span>
+Solving dependencies
+Resolved artifacts count: 4
+Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/io/github/padreati/rapaio-lib/7.0.0/rapaio-lib-7.0.0.jar</span>
+Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/io/github/padreati/rapaio-code-gen/7.0.0/rapaio-code-gen-7.0.0.jar</span>
+Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/org/antlr/ST4/4.3.4/ST4-4.3.4.jar</span>
+Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/org/antlr/antlr-runtime/3.5.3/antlr-runtime-3.5.3.jar</span>
+
+</pre></div>
+</div>
+</div>
+</div>
+<section id="csv-reading-and-writing">
+<h2>CSV - reading and writing<a class="headerlink" href="#csv-reading-and-writing" title="Permalink to this heading">#</a></h2>
+<p>Reading and writing CSV files is an important feature for any system which works with data. The reason for its importance is the simplicity of the file format and its popularity.</p>
+<p>Rapaio library offers support for both reading and writing operations. It has a lot of features and allows flexibility. However we read a file only into a data frame, and we write a csv file only from a data frame. This might look like a constraint in the beginning, but it comes natural since both are tabular data. The only difference is the fact that one operates in the memory of a program and the other one is persisted on disk.</p>
+<section id="simple-read-write-data-frames-from-into-csv-files">
+<h3>Simple read/write data frames from/into csv files<a class="headerlink" href="#simple-read-write-data-frames-from-into-csv-files" title="Permalink to this heading">#</a></h3>
+<p>We can read a file with the default options simply by instantiating a <code class="docutils literal notranslate"><span class="pre">rapaio.io.Csv</span></code> object and calls one of <code class="docutils literal notranslate"><span class="pre">read</span></code> methods.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">Frame</span><span class="w"> </span><span class="n">iris</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Csv</span><span class="p">.</span><span class="na">instance</span><span class="p">().</span><span class="na">read</span><span class="p">(</span><span class="n">Datasets</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;iris-r.csv&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We select few rows and inspect what it is inside:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// use only few rows</span>
+<span class="n">iris</span><span class="p">.</span><span class="na">mapRows</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="mi">51</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">101</span><span class="p">).</span><span class="na">printContent</span><span class="p">(</span><span class="n">textWidth</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">));</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>    sepal-length sepal-width petal-length petal-width   class    
+[0]     5.1          3.5         1.4          0.2         setosa 
+[1]     4.9          3           1.4          0.2         setosa 
+[2]     7            3.2         4.7          1.4     versicolor 
+[3]     6.4          3.2         4.5          1.5     versicolor 
+[4]     6.3          3.3         6            2.5      virginica 
+[5]     5.8          2.7         5.1          1.9      virginica 
+</pre></div>
+</div>
+</div>
+</div>
+<p>Persisting a data frame into csv file format is also simple. We instantiate a <code class="docutils literal notranslate"><span class="pre">rapaio.io.Csv</span></code> object and call one of implementation of <code class="docutils literal notranslate"><span class="pre">write</span></code> methods:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">Csv</span><span class="p">.</span><span class="na">instance</span><span class="p">().</span><span class="na">write</span><span class="p">(</span><span class="n">iris</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;/tmp/iris.csv&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>If we open the <code class="docutils literal notranslate"><span class="pre">/tmp/iris.csv</span></code> file with an editor, we can discover that it will have the following content:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sepal-length,sepal-width,petal-length,petal-width,class
+5.1,3.5,1.4,0.2,setosa
+4.9,3,1.4,0.2,setosa
+7,3.2,4.7,1.4,versicolor
+6.4,3.2,4.5,1.5,versicolor
+6.3,3.3,6,2.5,virginica
+5.8,2.7,5.1,1.9,virginica
+</pre></div>
+</div>
+</section>
+</section>
+<section id="various-parameters">
+<h2>Various parameters<a class="headerlink" href="#various-parameters" title="Permalink to this heading">#</a></h2>
+<p>A lof of customization is possible on reading and wrinting csv files. We describe here some of them:</p>
+<ul>
+<li><p><strong>stripSpaces</strong> - Boolean flag which configures white space trimming for field values. If the white space trimming is enabled, the field values are trimmed at start and end of white char values.</p></li>
+<li><p><strong>header</strong> - Boolean flag which if set it considers the first row of the csv file as containing the variable’s names. Default value is false.</p></li>
+<li><p><strong>quotes</strong> - Boolean flag which specifies if the values are quoted. If eanbled than quote characters are trimmed at read and added at write time. Default values is false.</p></li>
+<li><p><strong>separatorChar</strong> - Character used to separate field values.</p></li>
+<li><p><strong>escapeChar</strong> - Escape character used. If this feature is turned on, the escape chars are discarded ar read time. This is useful if the separator char is used inside string field values, for example.</p></li>
+<li><p><strong>types</strong> - Specific type fields which overrides the automatic type field detection</p></li>
+<li><p><strong>naValues</strong> - Values used to identify a missing value placeholders. Default values includes: “?”, “”, ” “, “na”, “N/A”, “NaN”), “naValues”</p>
+<p>/**</p>
+<ul class="simple">
+<li><p>List of automated field types to be tried in the given order during automatic field type detection
+<em>/
+public final ListParam&lt;VarType, Csv&gt; defaultTypes =
+new ListParam&lt;&gt;(this, List.of(VarType.BINARY, VarType.DOUBLE, VarType.NOMINAL, VarType.STRING), “defaultTypes”,
+(in, out) -&gt; true);
+/</em>*</p></li>
+<li><p>Specifies the first row number to be collected from csv file. By default, this value is 0,</p></li>
+<li><p>which means it will collect starting from the first row. If the value is greater than 0</p></li>
+<li><p>it will skip the first {&#64;code startRow-1} rows.
+*/
+public final ValueParam&lt;Integer, Csv&gt; startRow = new ValueParam&lt;&gt;(this, 0, “startRow”);</p></li>
+</ul>
+<p>/**</p>
+<ul class="simple">
+<li><p>Specifies the last row number to be collected from csv file. By default, this is value</p></li>
+<li><p>is {&#64;code Integer.MAX_VALUE}, which means all rows from file.
+*/
+public final ValueParam&lt;Integer, Csv&gt; endRow = new ValueParam&lt;&gt;(this, Integer.MAX_VALUE, “endRow”);</p></li>
+</ul>
+<p>/**</p>
+<ul class="simple">
+<li><p>Skip rows predicate used to filter rows to be read. All row indexes matched by this predicate will not be read.
+*/
+public final ValueParam&lt;IntRule, Csv&gt; skipRows = new ValueParam&lt;&gt;(this, IntRule.all().negate(), “skipRows”);</p></li>
+</ul>
+<p>/**</p>
+<ul class="simple">
+<li><p>Skip columns predicate used to filter columns to be read. All column indexes matched by this predicate will not be read.
+*/
+public final ValueParam&lt;IntRule, Csv&gt; skipCols = new ValueParam&lt;&gt;(this, row -&gt; false, “skipCols”);</p></li>
+</ul>
+<p>/**</p>
+<ul class="simple">
+<li><p>Optional frame templated used to define variable names and type for reading. This overrides auto detection of field names and</p></li>
+<li><p>field types.
+*/
+public final ValueParam&lt;Frame, Csv&gt; template = new ValueParam&lt;&gt;(this, null, “template”, obj -&gt; true);</p></li>
+</ul>
+</li>
+</ul>
+<section id="various-read-and-write-methods-for-csv">
+<h3>Various read and write methods for Csv<a class="headerlink" href="#various-read-and-write-methods-for-csv" title="Permalink to this heading">#</a></h3>
+<p>Java has a nice abstraction over data named input and output streams.
+This is enough to make any tool to read or write data from anywhere.
+We followed that line of thinking by having</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span><span class="w"> </span><span class="n">Frame</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="n">InputStream</span><span class="w"> </span><span class="n">inputStream</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">IOException</span>
+<span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="n">Frame</span><span class="w"> </span><span class="n">df</span><span class="p">,</span><span class="w"> </span><span class="n">OutputStream</span><span class="w"> </span><span class="n">os</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">IOException</span>
+</pre></div>
+</div>
+<p>Implemented on Csv class. With these two methods we basically can read from anywhere and can write to anywhere.</p>
+<p>To simplify some common tasks there are some specialized forms of read and write:</p>
+<ul class="simple">
+<li><p>Read from a file giving a <code class="docutils literal notranslate"><span class="pre">File</span></code> instance</p></li>
+<li><p>Read from a file giving a <code class="docutils literal notranslate"><span class="pre">String</span></code> for path name</p></li>
+<li><p>Read from a gz archive <code class="docutils literal notranslate"><span class="pre">File</span></code> instance</p></li>
+<li><p>Read from a resource giving <code class="docutils literal notranslate"><span class="pre">Class</span></code> and <code class="docutils literal notranslate"><span class="pre">String</span></code> for class and name of the resource (this is useful when loading data from a loaded jar or for test)</p></li>
+<li><p>Write …</p></li>
+</ul>
+<p><strong>TODO</strong></p>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "rapaio-jupyter-kernel-preview23"
+        },
+        kernelOptions: {
+            name: "rapaio-jupyter-kernel-preview23",
+            path: "./tutorials"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'rapaio-jupyter-kernel-preview23'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="DataVisualization.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Data visualization</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="LinearAlgebraOverview.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Linear Algebra Overview</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#csv-reading-and-writing">CSV - reading and writing</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simple-read-write-data-frames-from-into-csv-files">Simple read/write data frames from/into csv files</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#various-parameters">Various parameters</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#various-read-and-write-methods-for-csv">Various read and write methods for Csv</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Aurelian Tutuianu
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

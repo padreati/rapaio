@@ -1,0 +1,963 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Data visualization &#8212; Rapaio Book</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pdf_print.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/DataVisualization';</script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Reading and Writing data" href="ReadingAndWritingData.html" />
+    <link rel="prev" title="Core statistical tools" href="CoreStatisticalTools.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.png" class="logo__image only-light" alt="Rapaio Book - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="Rapaio Book - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Welcome to Rapaio Book
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../BriefPreview.html">Brief preview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BuiltinDataSets.html">Built-in Data sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Variables.html">Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DataHandlingOverview.html">Data Handling Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CoreStatisticalTools.html">Core statistical tools</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Data visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ReadingAndWritingData.html">Reading and Writing data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LinearAlgebraOverview.html">Linear Algebra Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NeuralNetworks.html">Tensors and Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../algorithms/KMeans.html">Algorithms: KMeans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/tutorials/DataVisualization.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Data visualization</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#workspace-and-printer">Workspace and Printer</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#figure-types">Figure types</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#box-plots">Box plots</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#example-1">Example 1</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#example-2">Example 2</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#xy-scatter-plots">XY Scatter plots</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Example 1</a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Example 2</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#histogram">Histogram</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Example 1</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Example 2</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#density-line">Density line</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Example 1</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Example 2</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#example-3">Example 3</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gridlayer-a-simple-way-to-create-multiple-plots-in-the-same-figure">GridLayer - a simple way to create multiple plots in the same figure</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Example 1</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#other-visual-artists">Other visual artists</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="data-visualization">
+<h1>Data visualization<a class="headerlink" href="#data-visualization" title="Permalink to this heading">#</a></h1>
+<p>We illustrate the core ideas behind the graphic system and to provide enough examples to have a fast and productive start of effective usage.</p>
+<p>The design of the graphical components of this library is influenced by many ideas from existing popular graphical systems. Among the main inspirations there are some which deserves appropriate consideration: <code class="docutils literal notranslate"><span class="pre">R</span></code> standard graphical library, <code class="docutils literal notranslate"><span class="pre">ggplot2</span></code> package and <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> from Python stack.</p>
+<section id="workspace-and-printer">
+<h2>Workspace and Printer<a class="headerlink" href="#workspace-and-printer" title="Permalink to this heading">#</a></h2>
+<p>A printer can be instantiated by itself by a handy way of using it is by the means of the utility class called <code class="docutils literal notranslate"><span class="pre">rapaio.sys.WS</span></code> (which comes from <strong>W</strong>ork <strong>S</strong>pace). This is an utility class which offers static shortcut methods yo allow one to simulate a working session. This class has an instance of a printer implementation (which can be changes by <code class="docutils literal notranslate"><span class="pre">WS.setPrinter</span></code> method) and shortcuts for text output and drawing.</p>
+<blockquote>
+<div><p>Note that it is not necessary to work with a workspace, the solely purpose is to offer shortcuts to various objects which one usually does not bother to manage during an interactive session, for example.</p>
+</div></blockquote>
+<p>Drawing of graphical figures or text output is handled by classes which implements interface <code class="docutils literal notranslate"><span class="pre">rapaio.printer.Printer</span></code>. There are some built-in implementations of this interface. The default one is <code class="docutils literal notranslate"><span class="pre">StandardPrinter</span></code>, which allows printing text at console and drawing graphics in a Swing modal window. There are also some graphical tools which allows one to output the grated graph as a <code class="docutils literal notranslate"><span class="pre">BufferedImage</span></code> which can be desplayed in jupyter notebooks, like this one. Another used implementation is <code class="docutils literal notranslate"><span class="pre">IdeaPrinter</span></code>, which is similar with standard printer for text output, but for graphics drawing implements a TCP/IP protocol with serialization which allows plug-ins like <code class="docutils literal notranslate"><span class="pre">rapaio-studio</span></code> to handle graphics drawing (the rapaio-studio is now deprecated in favor or working with jupyter notebooks).</p>
+<p>We are interested here in methods for drawing, so the workspace contains methods for this purpose. All of those methods works with a <code class="docutils literal notranslate"><span class="pre">rapaio.graphics.Figure</span></code> instance which contains all the indications regarding what kind of graphic should be built. Additionally, there are methods which allows one to obtain an image directly from a figure, or store an image directly on a disk file.</p>
+<p>Here are the shortcut methods implemented in <code class="docutils literal notranslate"><span class="pre">WS</span></code> utility:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">draw(Figure</span> <span class="pre">figure)</span></code> - draws a figure in a printing system; the size of drawing is either adaptive of has the default size of a graphical image contained in the printer implementation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">draw(Figure</span> <span class="pre">figure,</span> <span class="pre">int</span> <span class="pre">width,</span> <span class="pre">int</span> <span class="pre">height)</span></code> - draws a figure with dimensions specified by width and height</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BufferedImage</span> <span class="pre">image(Figure</span> <span class="pre">figure)</span></code> - builds an image from a figure with dimensions specified as default width and default height from printer system</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BufferedImage</span> <span class="pre">image(Figure</span> <span class="pre">figure,</span> <span class="pre">int</span> <span class="pre">width,</span> <span class="pre">int</span> <span class="pre">height)</span></code> - builds an image from a figure with specified dimensions</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">saveImage(Figure</span> <span class="pre">figure,</span> <span class="pre">int</span> <span class="pre">width,</span> <span class="pre">int</span> <span class="pre">height,</span> <span class="pre">String</span> <span class="pre">fileName)</span></code> - builds an image with specified dimensions by width and height from a given figure, and save the image into a <em>png</em> file with the specified file name</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">saveImage(Figure</span> <span class="pre">figure,</span> <span class="pre">int</span> <span class="pre">width,</span> <span class="pre">int</span> <span class="pre">height,</span> <span class="pre">OutputStream</span> <span class="pre">os)</span></code> - builds an image with specified dimensions by width and height, and send the image in <em>png</em> format to the specified output stream (could be a file or could be sent over network)</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">load</span><span class="w"> </span><span class="p">..</span><span class="o">/</span><span class="p">..</span><span class="o">/</span><span class="n">rapaio</span><span class="o">-</span><span class="n">bootstrap</span><span class="p">.</span><span class="na">ipynb</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Adding dependency <span class=" -Color -Color-Bold -Color-Bold-Green">io.github.padreati:rapaio-lib:7.0.0</span>
+Solving dependencies
+Resolved artifacts count: 4
+Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/io/github/padreati/rapaio-lib/7.0.0/rapaio-lib-7.0.0.jar</span>
+Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/io/github/padreati/rapaio-code-gen/7.0.0/rapaio-code-gen-7.0.0.jar</span>
+Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/org/antlr/ST4/4.3.4/ST4-4.3.4.jar</span>
+Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/org/antlr/antlr-runtime/3.5.3/antlr-runtime-3.5.3.jar</span>
+
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now in order to build figures one can instantiate and compose figures directly in a pure Java way. As a general pattern, the libarry offers a shortcut graphical tool to make the life during an interactive analysis as easier as possible. The graphical factory shortcut tool is named <code class="docutils literal notranslate"><span class="pre">rapaio.graphics.Plotter</span></code> and contains a lot of helper methods. Here is an example:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// instantiate a data set from build in collection</span>
+<span class="n">Frame</span><span class="w"> </span><span class="n">iris</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Datasets</span><span class="p">.</span><span class="na">loadIrisDataset</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// draw a some overlapped histograms for some variables in the data set</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">bins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bins</span><span class="p">(</span><span class="mi">30</span><span class="p">);</span>
+<span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">hist</span><span class="p">(</span><span class="n">iris</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;sepal-length&quot;</span><span class="p">),</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="n">bins</span><span class="p">,</span><span class="w"> </span><span class="n">fill</span><span class="p">(</span><span class="n">NColor</span><span class="p">.</span><span class="na">navy</span><span class="p">),</span><span class="w"> </span><span class="n">prob</span><span class="p">(</span><span class="kc">true</span><span class="p">),</span><span class="w"> </span><span class="n">alpha</span><span class="p">(</span><span class="mf">0.5f</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">hist</span><span class="p">(</span><span class="n">iris</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;petal-length&quot;</span><span class="p">),</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="n">bins</span><span class="p">,</span><span class="w"> </span><span class="n">fill</span><span class="p">(</span><span class="n">NColor</span><span class="p">.</span><span class="na">darkorange</span><span class="p">),</span><span class="w"> </span><span class="n">prob</span><span class="p">(</span><span class="kc">true</span><span class="p">),</span><span class="w"> </span><span class="n">alpha</span><span class="p">(</span><span class="mf">0.5f</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">legend</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="n">labels</span><span class="p">(</span><span class="s">&quot;sepal-length&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;petal-length&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">fill</span><span class="p">(</span><span class="n">NColor</span><span class="p">.</span><span class="na">navy</span><span class="p">,</span><span class="w"> </span><span class="n">NColor</span><span class="p">.</span><span class="na">darkorange</span><span class="p">))</span>
+<span class="w">        </span><span class="p">,</span><span class="w"> </span><span class="mi">800</span><span class="p">,</span><span class="w"> </span><span class="mi">600</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/7a0cb3aab718c6458d0bd5b2e94e65dded4e9d78d399d1e86bbfed199f233e4c.png" src="../_images/7a0cb3aab718c6458d0bd5b2e94e65dded4e9d78d399d1e86bbfed199f233e4c.png" />
+</div>
+</div>
+</section>
+<section id="figure-types">
+<h2>Figure types<a class="headerlink" href="#figure-types" title="Permalink to this heading">#</a></h2>
+<section id="box-plots">
+<h3>Box plots<a class="headerlink" href="#box-plots" title="Permalink to this heading">#</a></h3>
+<p>A box plot is a standard way of displaying information about the distribution of a continuous data variable based on five data summary. The five data summary consists of: <em>minimum</em>, <em>first quartile</em>, <em>median</em> (<em>second quartile</em>), <em>third quartile</em> and <em>maximum</em> number summaries.</p>
+<p>Box plots might be constructed in different manners by different authors. The common characteristics for all types of box-plots is <em>the box</em>. Which means that in all cases the bottom margin of the box lies on first quartile, the top margin of the box lies on third quartile and the line inside the box lies on median values.</p>
+<p>The extensions which comes from the box might differ and <code class="docutils literal notranslate"><span class="pre">rapaio</span></code> system implements the version which it’s usually named: <strong>Tuckey’s box plot</strong>. What is specific to this box plot is that the whiskers lies at the datum still within 1.5 IQR (<em>Interquartile range</em>).</p>
+<p>Any other points above or below whiskers are outliers. Outliers are of two different types:</p>
+<ul class="simple">
+<li><p><em>extreme outliers</em> - outliers which are at a distance greater or equal than 3*IQR</p></li>
+<li><p><em>outliers</em> - outliers which are at a distance greater or equal than 1.5*IQR</p></li>
+</ul>
+<section id="example-1">
+<h4>Example 1<a class="headerlink" href="#example-1" title="Permalink to this heading">#</a></h4>
+<p><strong>Goal</strong>: <em>Draw one box plot for each numerical variable from iris data set. We want each box plot to have a different color and we want some de-saturated colors.</em></p>
+<p><strong>Solution</strong>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">boxplot</span><span class="p">(</span><span class="n">iris</span><span class="p">.</span><span class="na">mapVars</span><span class="p">(</span><span class="s">&quot;0~3&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">fill</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">),</span><span class="w"> </span><span class="n">alpha</span><span class="p">(</span><span class="mf">0.5f</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/ac1937dc4f9140d8b6be9ef63781cb2fea90a57a1b3ac8541547261fbb80bf99.png" src="../_images/ac1937dc4f9140d8b6be9ef63781cb2fea90a57a1b3ac8541547261fbb80bf99.png" />
+</div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">iris.mapVars(&quot;0~3&quot;)</span></code> - obtain a data set from <code class="docutils literal notranslate"><span class="pre">iris</span></code> data set, by keeping only the first 4 variables. We do that using the range notation (index of the start variable, concatenation symbol <code class="docutils literal notranslate"><span class="pre">~</span></code>, index of the last variable inclusive). Variable indexes are 0 based.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">color(1,</span> <span class="pre">2,</span> <span class="pre">3,</span> <span class="pre">4)</span></code> - we use colors from the current color palette, indexed with the specified integer values.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">alpha(0.5f)</span></code> - we de-saturate the drawing keeping only 0.3 of the actual color.</p></li>
+</ul>
+</section>
+<section id="example-2">
+<h4>Example 2<a class="headerlink" href="#example-2" title="Permalink to this heading">#</a></h4>
+<p><strong>Goal</strong>: <em>In order to identify the overlap between values of <code class="docutils literal notranslate"><span class="pre">sepal-length</span></code> variable from iris data set, we draw one box plot for each segment of the nominal <code class="docutils literal notranslate"><span class="pre">class</span></code> variable, and add a title</em></p>
+<p><strong>Solution</strong>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">boxplot</span><span class="p">(</span><span class="n">iris</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;sepal-length&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">iris</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;class&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">fill</span><span class="p">(</span><span class="n">NColor</span><span class="p">.</span><span class="na">tab_blue</span><span class="p">))</span>
+<span class="w">         </span><span class="p">.</span><span class="na">title</span><span class="p">(</span><span class="s">&quot;sepal-length separation&quot;</span><span class="p">));</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/e01212ffc0304924d0f9b3a1ad5fcb38dfd230af94218d504d3ac9bd99bffed3.png" src="../_images/e01212ffc0304924d0f9b3a1ad5fcb38dfd230af94218d504d3ac9bd99bffed3.png" />
+</div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">iris.var(&quot;sepal-length&quot;)</span></code> - is the variable named <code class="docutils literal notranslate"><span class="pre">sepal-length</span></code> from</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">iris.var(&quot;class&quot;)</span></code> - specifies the segment discriminator, depending on the levels of this variable, the same number of levels will be created</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.title(&quot;..&quot;)</span></code> - adds a title to the box plot</p></li>
+</ul>
+</section>
+</section>
+<section id="xy-scatter-plots">
+<h3>XY Scatter plots<a class="headerlink" href="#xy-scatter-plots" title="Permalink to this heading">#</a></h3>
+<p>We can study the relation between two numerical variables by drawing one point for each instance.</p>
+<section id="id1">
+<h4>Example 1<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h4>
+<p><strong>Goal</strong>: <em>Study which is the relation between <code class="docutils literal notranslate"><span class="pre">petal-length</span></code> and <code class="docutils literal notranslate"><span class="pre">sepal-length</span></code> from <code class="docutils literal notranslate"><span class="pre">iris</span></code> data set.</em></p>
+<p><strong>Solution</strong>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">points</span><span class="p">(</span><span class="n">iris</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;petal-length&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">iris</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;petal-width&quot;</span><span class="p">)));</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/286d7213494cf4c51407f749f06406946225e22bfdf81d4d9b5a632677a071c8.png" src="../_images/286d7213494cf4c51407f749f06406946225e22bfdf81d4d9b5a632677a071c8.png" />
+</div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">iris.var(&quot;petal-length&quot;)</span></code> - variable used to define horizontal axis</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">iris.var(&quot;petal-width&quot;)</span></code> - variable used to define vertical axis</p></li>
+</ul>
+<section id="id2">
+<h5>Example 2<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h5>
+<p><strong>Goal</strong>: <em>Study which is the relation between <code class="docutils literal notranslate"><span class="pre">petal-length</span></code> and <code class="docutils literal notranslate"><span class="pre">sepal-length</span></code> from <code class="docutils literal notranslate"><span class="pre">iris</span></code> data set. Color each point with a different color corresponding with value from variable <code class="docutils literal notranslate"><span class="pre">class</span></code> and add a legend for colors. The values will have additional noise.</em></p>
+<p><strong>Solution</strong>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// make an altered copy of dataset with jitter noise added</span>
+<span class="n">Frame</span><span class="w"> </span><span class="n">df</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iris</span><span class="p">.</span><span class="na">copy</span><span class="p">().</span><span class="na">fapply</span><span class="p">(</span><span class="n">Jitter</span><span class="p">.</span><span class="na">on</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Random</span><span class="p">(</span><span class="mi">123</span><span class="p">),</span><span class="w"> </span><span class="n">Normal</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.1</span><span class="p">),</span><span class="w"> </span><span class="n">VarRange</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">&quot;0~3&quot;</span><span class="p">)));</span>
+<span class="c1">// draw scatter plot </span>
+<span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">points</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;petal-length&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">df</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;petal-width&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">fill</span><span class="p">(</span><span class="n">iris</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;class&quot;</span><span class="p">)),</span><span class="w"> </span><span class="n">pch</span><span class="p">.</span><span class="na">circleFull</span><span class="p">())</span>
+<span class="w">         </span><span class="p">.</span><span class="na">legend</span><span class="p">(</span><span class="mf">1.5</span><span class="p">,</span><span class="w"> </span><span class="mf">2.2</span><span class="p">,</span><span class="w"> </span><span class="n">labels</span><span class="p">(</span><span class="s">&quot;setosa&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;versicolor&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;virginica&quot;</span><span class="p">)));</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/d23e7b0d08224ea0374c64b68ee17d7216cd345d95588ad1c31c472fb77de3fb.png" src="../_images/d23e7b0d08224ea0374c64b68ee17d7216cd345d95588ad1c31c472fb77de3fb.png" />
+</div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">iris.getVar(&quot;petal-length&quot;)</span></code> - variable used to define horizontal axis</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">iris.getVar(&quot;petal-width&quot;)</span></code> - variable used to define vertical axis</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">color(iris.getVar(&quot;class&quot;))</span></code> - nominal variable which provides indexes to select colors from current palette</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pch(2)</span></code> - select the type of figure used to draw points (in this case is a circle filled with solid color and a black border)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">legend(1.5,</span> <span class="pre">2.2,</span> <span class="pre">labels(&quot;setosa&quot;,</span> <span class="pre">&quot;versicolor&quot;,</span> <span class="pre">&quot;virginica&quot;))</span></code> - adds a legend at the specific position specified in the data range; labels are specified by parameter, colors are taken as default from current palette starting with 1</p></li>
+</ul>
+</section>
+</section>
+</section>
+<section id="histogram">
+<h3>Histogram<a class="headerlink" href="#histogram" title="Permalink to this heading">#</a></h3>
+<p>A histogram is a graphical representation of the distribution of a continuous variable.</p>
+<p>The histogram is only an estimation of the distribution. To construct a histogram you have to <em>bin</em> the range of values from the variable in a sequence of equal length intervals, and later on counting the values from each bin. Histograms can display counts, or can display proportions which are counts divided by the total number of values (use <code class="docutils literal notranslate"><span class="pre">prob(true)</span></code> parameter to have this effect).</p>
+<p>Histograms use bins as input parameter. The bin’s width is computed. To compute the bin’s width we need also the range of values. This is computed automatically from data or it can be specified when the histogram is built.</p>
+<p>We can omit the number of bins, in which case its value is estimated also from data. For estimation is used the Freedman-Diaconis rule. See <a class="reference external" href="https://en.wikipedia.org/wiki/Freedman%E2%80%93Diaconis_rule">Freedman-Diaconis wikipedia page</a> for more details.</p>
+<section id="id3">
+<h4>Example 1<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h4>
+<p><strong>Goal</strong>: <em>Build a histogram with default values to estimate the pdf of <code class="docutils literal notranslate"><span class="pre">sepal-length</span></code> variable from <code class="docutils literal notranslate"><span class="pre">iris</span></code> data set.</em></p>
+<p><strong>Solution</strong>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">hist</span><span class="p">(</span><span class="n">iris</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;sepal-length&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">fill</span><span class="p">(</span><span class="n">NColor</span><span class="p">.</span><span class="na">tab_green</span><span class="p">)));</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/fd4426c9c6f7f11789be778db0f0e7f691bc8f1c0ca922ac21c8e89ae93eba64.png" src="../_images/fd4426c9c6f7f11789be778db0f0e7f691bc8f1c0ca922ac21c8e89ae93eba64.png" />
+</div>
+</div>
+</section>
+<section id="id4">
+<h4>Example 2<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h4>
+<p><strong>Goal</strong>: <em>Build two overlapped histograms with default values to estimate the pdf of <code class="docutils literal notranslate"><span class="pre">sepal-length</span></code> and <code class="docutils literal notranslate"><span class="pre">petal-length</span></code> variables from <code class="docutils literal notranslate"><span class="pre">iris</span></code> data set. We want to get bins in range (0-10) of width 0.25, colored with red, and blue, with a big transparency for visibility</em></p>
+<p><strong>Solution</strong>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha</span><span class="p">(</span><span class="mf">0.7f</span><span class="p">))</span>
+<span class="p">.</span><span class="na">hist</span><span class="p">(</span><span class="n">iris</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;sepal-length&quot;</span><span class="p">),</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="n">bins</span><span class="p">(</span><span class="mi">40</span><span class="p">),</span><span class="w"> </span><span class="n">fill</span><span class="p">(</span><span class="n">NColor</span><span class="p">.</span><span class="na">tab_blue</span><span class="p">),</span><span class="w"> </span><span class="n">alpha</span><span class="p">(</span><span class="mf">0.5f</span><span class="p">))</span>
+<span class="p">.</span><span class="na">hist</span><span class="p">(</span><span class="n">iris</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;petal-length&quot;</span><span class="p">),</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="n">bins</span><span class="p">(</span><span class="mi">40</span><span class="p">),</span><span class="w"> </span><span class="n">fill</span><span class="p">(</span><span class="n">NColor</span><span class="p">.</span><span class="na">tab_red</span><span class="p">),</span><span class="w"> </span><span class="n">alpha</span><span class="p">(</span><span class="mf">0.5f</span><span class="p">))</span>
+<span class="p">.</span><span class="na">legend</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="n">labels</span><span class="p">(</span><span class="s">&quot;sepal-length&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;petal-length&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">fill</span><span class="p">(</span><span class="n">NColor</span><span class="p">.</span><span class="na">tab_blue</span><span class="p">,</span><span class="w"> </span><span class="n">NColor</span><span class="p">.</span><span class="na">tab_red</span><span class="p">))</span>
+<span class="p">.</span><span class="na">xLab</span><span class="p">(</span><span class="s">&quot;variable&quot;</span><span class="p">));</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/a4efc627132d9565be63aea17428da26d8a19bac33008c54d92b32a512399398.png" src="../_images/a4efc627132d9565be63aea17428da26d8a19bac33008c54d92b32a512399398.png" />
+</div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">plot(alpha(0.3f))</span></code> - builds an empty plot; this is used only to pass default values for alpha for all plot components, otherwise the plot construct would not be needed</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hist</span></code> - adds a histogram to the current plot</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">iris.getVar(&quot;sepal-length&quot;)</span></code> - variable used to build histogram</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">0,</span> <span class="pre">10</span></code> - specifies the range used to compute bins</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bins(40)</span></code> - specifies the number of bins for histogram</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fill(1)</span></code> - specifies the color to draw the histogram, which is the color indexed with 1 in color palette (in this case is red)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">legend(7,</span> <span class="pre">20,</span> <span class="pre">...)</span></code> - draws a legend at the specified coordinates, values are in the units specified by data</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">labels(..)</span></code> - specifies labels for legend</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">color(1,</span> <span class="pre">2)</span></code> - specifies color for legend</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xLab</span></code> = specifies label text for horizontal axis</p></li>
+</ul>
+</section>
+</section>
+<section id="density-line">
+<h3>Density line<a class="headerlink" href="#density-line" title="Permalink to this heading">#</a></h3>
+<p>A density line is a graphical representation of the distribution of a continuous variable. The density line is similar with a histogram in purpose but it has a different strategy to build the estimate. The density line plot component implements a <em>kernel density estimator</em> which is basically a non-parametric smoothing method, named also Parzen-Rosenblatt window method.</p>
+<p>There are two main parameters for a density line: bandwidth and base density kernel function.
+The default bandwidth is computed according with Silverman’s rule of thumb (more details on
+<strong><a class="reference external" href="https://en.wikipedia.org/wiki/Kernel_density_estimation">Wikipedia kernel density page</a></strong>).
+The default kernel function is the Gaussian pdf.</p>
+<p>Kernel function estimators can be constructed using various kernel functions like Gaussian, uniform, triangular, Epanechnikov, cosine, tricube, triweight, biweight. All of them are available in <code class="docutils literal notranslate"><span class="pre">rapaio</span></code> library and also some custom can be built.</p>
+<section id="id5">
+<h4>Example 1<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h4>
+<p><strong>Goal</strong>: <em>Illustrate the process of building the KDE estimation</em></p>
+<p><strong>Solution</strong>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// this is our sample</span>
+<span class="n">VarDouble</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">wrap</span><span class="p">(</span><span class="o">-</span><span class="mf">2.1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mf">1.3</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mf">0.4</span><span class="p">,</span><span class="w"> </span><span class="mf">1.9</span><span class="p">,</span><span class="w"> </span><span class="mf">5.1</span><span class="p">,</span><span class="w"> </span><span class="mf">6.2</span><span class="p">);</span>
+
+<span class="c1">// declare a bandwidth for smoothing</span>
+<span class="kt">double</span><span class="w"> </span><span class="n">bw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.25</span><span class="p">;</span>
+
+<span class="c1">// build a plot with a density line artist</span>
+<span class="n">Plot</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">densityLine</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">bw</span><span class="p">);</span>
+
+<span class="c1">// for each point draw a normal distribution</span>
+<span class="n">x</span><span class="p">.</span><span class="na">stream</span><span class="p">().</span><span class="na">forEach</span><span class="p">(</span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="na">funLine</span><span class="p">(</span><span class="n">xi</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Normal</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="na">getDouble</span><span class="p">(),</span><span class="w"> </span><span class="n">bw</span><span class="p">).</span><span class="na">pdf</span><span class="p">(</span><span class="n">xi</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="na">size</span><span class="p">(),</span><span class="w"> </span><span class="n">color</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="n">fill</span><span class="p">(</span><span class="mi">2</span><span class="p">)));</span>
+<span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">p</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/fd1fd330f8ac9d868237798d523da81ff353e14abeb6a8037aeffa131f87c8b6.png" src="../_images/fd1fd330f8ac9d868237798d523da81ff353e14abeb6a8037aeffa131f87c8b6.png" />
+</div>
+</div>
+<p>With red are depicted the kernel functions used to spread probability around sample points. With black is depicted the kernel density estimation which is the sum of all individual kernel functions.</p>
+</section>
+<section id="id6">
+<h4>Example 2<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h4>
+<p><strong>Goal</strong>: <em>Estimate density of iris <code class="docutils literal notranslate"><span class="pre">sepal-length</span></code> variable by histogram and density function</em></p>
+<p><strong>Solution</strong>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">hist</span><span class="p">(</span><span class="n">iris</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;sepal-length&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">bins</span><span class="p">(</span><span class="mi">30</span><span class="p">),</span><span class="w"> </span><span class="n">prob</span><span class="p">(</span><span class="kc">true</span><span class="p">))</span>
+<span class="p">.</span><span class="na">densityLine</span><span class="p">(</span><span class="n">iris</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;sepal-length&quot;</span><span class="p">),</span><span class="w"> </span><span class="mf">0.1</span><span class="p">));</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/d05df34de63a4079e2d561c1498c5931db9e18cbe7ddca688dcc054c9956f2eb.png" src="../_images/d05df34de63a4079e2d561c1498c5931db9e18cbe7ddca688dcc054c9956f2eb.png" />
+</div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">hist(..)</span></code> - builds a histogram</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">iris.getVar(&quot;sepal-length&quot;)</span></code> - variable used to build histogram and also to build the density line</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">prob(true)</span></code> - parameter which specifies to a histogram to use probabilities (approximated by frequency ratios)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">densityLine(..)</span></code> - builds a density line</p></li>
+</ul>
+</section>
+<section id="example-3">
+<h4>Example 3<a class="headerlink" href="#example-3" title="Permalink to this heading">#</a></h4>
+<p><strong>Goal</strong>: <em>Build multiple kernel density estimates for various bandwidth values</em></p>
+<p><strong>Solution</strong>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// make a plot</span>
+<span class="n">Plot</span><span class="w"> </span><span class="n">p2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">plot</span><span class="p">();</span>
+<span class="c1">// generate a stream of values for bandwidths and for each add a density line with given bandwidth to the plot</span>
+<span class="n">DoubleStream</span><span class="p">.</span><span class="na">iterate</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span><span class="w"> </span><span class="n">xi</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">xi</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">0.02</span><span class="p">).</span><span class="na">limit</span><span class="p">(</span><span class="mi">20</span><span class="p">).</span><span class="na">forEach</span><span class="p">(</span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">p2</span><span class="p">.</span><span class="na">densityLine</span><span class="p">(</span><span class="n">iris</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;sepal-length&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">v</span><span class="p">));</span>
+<span class="c1">// draw resulting figure</span>
+<span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">p2</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/6ed0c90e6cc66e0dd95235502e9a652e04b1f45e04bdcca7aba397ad443162f2.png" src="../_images/6ed0c90e6cc66e0dd95235502e9a652e04b1f45e04bdcca7aba397ad443162f2.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="gridlayer-a-simple-way-to-create-multiple-plots-in-the-same-figure">
+<h3>GridLayer - a simple way to create multiple plots in the same figure<a class="headerlink" href="#gridlayer-a-simple-way-to-create-multiple-plots-in-the-same-figure" title="Permalink to this heading">#</a></h3>
+<p>A <code class="docutils literal notranslate"><span class="pre">GridLayer</span></code> splits the drawing surface in a two dimensional array of cells and allows plots to be added on those cels.</p>
+<section id="id7">
+<h4>Example 1<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h4>
+<p><strong>Goal</strong>: <em>Display a scatter plot for two variables and marginal densities as histograms</em></p>
+<p><strong>Solution</strong>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">grid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gridLayer</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">widths</span><span class="p">(</span><span class="mf">0.7</span><span class="p">,</span><span class="w"> </span><span class="mf">0.3</span><span class="p">),</span><span class="w"> </span><span class="n">heights</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">hist</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;petal-length&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">bins</span><span class="p">(</span><span class="mi">30</span><span class="p">),</span><span class="w"> </span><span class="n">horizontal</span><span class="p">(</span><span class="kc">true</span><span class="p">)).</span><span class="na">xLab</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">).</span><span class="na">yLab</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">hist</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;petal-width&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">bins</span><span class="p">(</span><span class="mi">30</span><span class="p">)).</span><span class="na">xLab</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">).</span><span class="na">yLab</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">points</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;petal-width&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">df</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;petal-length&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">pch</span><span class="p">.</span><span class="na">circleFull</span><span class="p">(),</span><span class="w"> </span><span class="n">fill</span><span class="p">(</span><span class="mi">12</span><span class="p">)));</span>
+<span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="mi">500</span><span class="p">,</span><span class="w"> </span><span class="mi">500</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/8d81c2af0169a4ee8de43154b2e8d4db0c2c410648d1609b3fd11ca079bb7928.png" src="../_images/8d81c2af0169a4ee8de43154b2e8d4db0c2c410648d1609b3fd11ca079bb7928.png" />
+</div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gridLayer(2,</span> <span class="pre">2,</span> <span class="pre">...)</span></code> - creates a grid layer with 2 rows and 2 columns</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">widths(0.7,</span> <span class="pre">0.3)</span></code> - specifies widths for cells as <code class="docutils literal notranslate"><span class="pre">70%</span></code> of space for first columns and <code class="docutils literal notranslate"><span class="pre">30%</span></code> for the second one</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">heights(0.3,</span> <span class="pre">0.7)</span></code> - specifies rows heights in percentages (see above)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">add(x,</span> <span class="pre">y,</span> <span class="pre">...)</span></code> - adds a plot to the cell x and columns y, zero index based</p></li>
+</ul>
+<p>Even if the code required to create and populate a composed grid layer is simple, for some often used constructs the plotter tool offers a shortcut. For example we have scatters, which uses behind a grid layer and some high level code, but a shortcut is offered.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">df</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iris</span><span class="p">.</span><span class="na">mapVars</span><span class="p">(</span><span class="n">VarRange</span><span class="p">.</span><span class="na">onlyTypes</span><span class="p">(</span><span class="n">VarType</span><span class="p">.</span><span class="na">DOUBLE</span><span class="p">));</span>
+<span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">scatters</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="w"> </span><span class="n">pch</span><span class="p">.</span><span class="na">circleFull</span><span class="p">(),</span><span class="w"> </span><span class="n">fill</span><span class="p">(</span><span class="mi">3</span><span class="p">)),</span><span class="w"> </span><span class="mi">1200</span><span class="p">,</span><span class="w"> </span><span class="mi">1000</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/091ef32ead5baea8719e0d03536563ee73cffd38e243c28fb20998bbfb061a71.png" src="../_images/091ef32ead5baea8719e0d03536563ee73cffd38e243c28fb20998bbfb061a71.png" />
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="other-visual-artists">
+<h2>Other visual artists<a class="headerlink" href="#other-visual-artists" title="Permalink to this heading">#</a></h2>
+<p>There are other components as well, besides the one presented. To illustrate some of them we will provide here some examples without pretending to exhaust the list.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">Random</span><span class="w"> </span><span class="n">random</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Random</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span>
+<span class="n">DArray</span><span class="o">&lt;</span><span class="n">Double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DArrayManager</span><span class="p">.</span><span class="na">base</span><span class="p">().</span><span class="na">random</span><span class="p">(</span><span class="n">DType</span><span class="p">.</span><span class="na">DOUBLE</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">),</span><span class="w"> </span><span class="n">random</span><span class="p">);</span>
+<span class="n">m</span><span class="p">.</span><span class="na">apply_</span><span class="p">(</span><span class="n">Math</span><span class="p">::</span><span class="n">abs</span><span class="p">);</span>
+<span class="c1">// 0 is yellow (60), max value is 0 (red)</span>
+<span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">matrix</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">palette</span><span class="p">(</span><span class="n">Palette</span><span class="p">.</span><span class="na">hue</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">.</span><span class="na">amax</span><span class="p">()))));</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/3f56f209b189300dcc733cfbb07e6c534c64d32a70a457f6f9857247999ceb93.png" src="../_images/3f56f209b189300dcc733cfbb07e6c534c64d32a70a457f6f9857247999ceb93.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">steps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">256</span><span class="p">;</span>
+<span class="n">Grid2D</span><span class="w"> </span><span class="n">mg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Grid2D</span><span class="p">.</span><span class="na">fromFunction</span><span class="p">((</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">        </span><span class="p">(</span><span class="mf">1.</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">pow</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">*</span>
+<span class="w">                </span><span class="p">(</span><span class="mi">19</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">14</span><span class="o">*</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">3</span><span class="o">*</span><span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">14</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">y</span><span class="p">))</span>
+<span class="w">                </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mi">30</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">pow</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="o">-</span><span class="mi">3</span><span class="o">*</span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">18</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">32</span><span class="o">*</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">12</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">48</span><span class="o">*</span><span class="n">y</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">36</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">27</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">y</span><span class="o">*</span><span class="w"> </span><span class="n">y</span><span class="p">)),</span><span class="w"> </span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">steps</span><span class="p">);</span>
+
+<span class="kt">double</span><span class="o">[]</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mg</span><span class="p">.</span><span class="na">quantiles</span><span class="p">(</span><span class="n">VarDouble</span><span class="p">.</span><span class="na">seq</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mf">0.04</span><span class="p">).</span><span class="na">elements</span><span class="p">());</span>
+<span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">isoCurves</span><span class="p">(</span><span class="n">mg</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">,</span><span class="w"> </span><span class="n">palette</span><span class="p">(</span><span class="n">Palette</span><span class="p">.</span><span class="na">gray</span><span class="p">(</span><span class="cm">/*0, 240,*/</span><span class="w"> </span><span class="n">mg</span><span class="p">.</span><span class="na">minValue</span><span class="p">(),</span><span class="w"> </span><span class="n">mg</span><span class="p">.</span><span class="na">maxValue</span><span class="p">())),</span><span class="w"> </span><span class="n">color</span><span class="p">(</span><span class="n">NColor</span><span class="p">.</span><span class="na">white</span><span class="p">),</span><span class="w"> </span><span class="n">lwd</span><span class="p">(</span><span class="mf">1f</span><span class="p">)).</span><span class="na">title</span><span class="p">(</span><span class="s">&quot;Goldstein iso curves&quot;</span><span class="p">));</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/de1500395dc74cd8947b51c9131b7dccfbe82f63d4ad307a06d00485b811c2f8.png" src="../_images/de1500395dc74cd8947b51c9131b7dccfbe82f63d4ad307a06d00485b811c2f8.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">seq</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mf">0.004</span><span class="p">).</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">);</span>
+
+<span class="kd">var</span><span class="w"> </span><span class="n">green</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Normal</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mf">0.24</span><span class="p">,</span><span class="w"> </span><span class="mf">0.08</span><span class="p">);</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">blue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Normal</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mf">0.37</span><span class="p">,</span><span class="w"> </span><span class="mf">0.15</span><span class="p">);</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">orange</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Normal</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mf">0.59</span><span class="p">,</span><span class="w"> </span><span class="mf">0.13</span><span class="p">);</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">red</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Normal</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mf">0.80</span><span class="p">,</span><span class="w"> </span><span class="mf">0.06</span><span class="p">);</span>
+
+<span class="n">Color</span><span class="w"> </span><span class="n">cgreen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Color</span><span class="p">.</span><span class="na">decode</span><span class="p">(</span><span class="s">&quot;0x2ca02c&quot;</span><span class="p">);</span>
+<span class="n">Color</span><span class="w"> </span><span class="n">cblue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Color</span><span class="p">.</span><span class="na">decode</span><span class="p">(</span><span class="s">&quot;0x1f77b4&quot;</span><span class="p">);</span>
+<span class="n">Color</span><span class="w"> </span><span class="n">corange</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Color</span><span class="p">.</span><span class="na">decode</span><span class="p">(</span><span class="s">&quot;0xff7f0e&quot;</span><span class="p">);</span>
+<span class="n">Color</span><span class="w"> </span><span class="n">cred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Color</span><span class="p">.</span><span class="na">decode</span><span class="p">(</span><span class="s">&quot;0xd62728&quot;</span><span class="p">);</span>
+
+<span class="kd">var</span><span class="w"> </span><span class="n">ygreen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">green</span><span class="p">::</span><span class="n">pdf</span><span class="p">).</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;y&quot;</span><span class="p">);</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">yblue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">blue</span><span class="p">::</span><span class="n">pdf</span><span class="p">).</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;y&quot;</span><span class="p">);</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">yorange</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">orange</span><span class="p">::</span><span class="n">pdf</span><span class="p">).</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;y&quot;</span><span class="p">);</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">yred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">red</span><span class="p">::</span><span class="n">pdf</span><span class="p">).</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;y&quot;</span><span class="p">);</span>
+
+<span class="kt">float</span><span class="w"> </span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.5f</span><span class="p">;</span>
+<span class="kt">float</span><span class="w"> </span><span class="n">lwd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">5f</span><span class="p">;</span>
+
+<span class="n">Plot</span><span class="w"> </span><span class="n">up</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">plot</span><span class="p">();</span>
+
+<span class="n">up</span><span class="p">.</span><span class="na">polyfill</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">yblue</span><span class="p">,</span><span class="w"> </span><span class="n">fill</span><span class="p">(</span><span class="n">cblue</span><span class="p">),</span><span class="w"> </span><span class="n">alpha</span><span class="p">(</span><span class="n">alpha</span><span class="p">));</span>
+<span class="n">up</span><span class="p">.</span><span class="na">polyfill</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">yorange</span><span class="p">,</span><span class="w"> </span><span class="n">fill</span><span class="p">(</span><span class="n">corange</span><span class="p">),</span><span class="w"> </span><span class="n">alpha</span><span class="p">(</span><span class="n">alpha</span><span class="p">));</span>
+<span class="n">up</span><span class="p">.</span><span class="na">polyfill</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">ygreen</span><span class="p">,</span><span class="w"> </span><span class="n">fill</span><span class="p">(</span><span class="n">cgreen</span><span class="p">),</span><span class="w"> </span><span class="n">alpha</span><span class="p">(</span><span class="n">alpha</span><span class="p">));</span>
+<span class="n">up</span><span class="p">.</span><span class="na">polyfill</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">yred</span><span class="p">,</span><span class="w"> </span><span class="n">fill</span><span class="p">(</span><span class="n">cred</span><span class="p">),</span><span class="w"> </span><span class="n">alpha</span><span class="p">(</span><span class="n">alpha</span><span class="p">));</span>
+
+<span class="n">up</span><span class="p">.</span><span class="na">polyline</span><span class="p">(</span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">yblue</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="p">(</span><span class="n">cblue</span><span class="p">),</span><span class="w"> </span><span class="n">lwd</span><span class="p">(</span><span class="n">lwd</span><span class="p">));</span>
+<span class="n">up</span><span class="p">.</span><span class="na">polyline</span><span class="p">(</span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">yorange</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="p">(</span><span class="n">corange</span><span class="p">),</span><span class="w"> </span><span class="n">lwd</span><span class="p">(</span><span class="n">lwd</span><span class="p">));</span>
+<span class="n">up</span><span class="p">.</span><span class="na">polyline</span><span class="p">(</span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">ygreen</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="p">(</span><span class="n">cgreen</span><span class="p">),</span><span class="w"> </span><span class="n">lwd</span><span class="p">(</span><span class="n">lwd</span><span class="p">));</span>
+<span class="n">up</span><span class="p">.</span><span class="na">polyline</span><span class="p">(</span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">yred</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="p">(</span><span class="n">cred</span><span class="p">),</span><span class="w"> </span><span class="n">lwd</span><span class="p">(</span><span class="n">lwd</span><span class="p">));</span>
+
+<span class="n">up</span><span class="p">.</span><span class="na">xLim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="n">up</span><span class="p">.</span><span class="na">leftThick</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+<span class="n">up</span><span class="p">.</span><span class="na">leftMarkers</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+<span class="n">up</span><span class="p">.</span><span class="na">bottomThick</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+<span class="n">up</span><span class="p">.</span><span class="na">bottomMarkers</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+
+<span class="n">Plot</span><span class="w"> </span><span class="n">down</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">plot</span><span class="p">();</span>
+
+<span class="n">down</span><span class="p">.</span><span class="na">leftThick</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+<span class="n">down</span><span class="p">.</span><span class="na">leftMarkers</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+<span class="n">down</span><span class="p">.</span><span class="na">bottomThick</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+<span class="n">down</span><span class="p">.</span><span class="na">bottomMarkers</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+
+<span class="n">down</span><span class="p">.</span><span class="na">text</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="mf">0.6</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;rapaio&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">font</span><span class="p">(</span><span class="s">&quot;DejaVu Sans&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Font</span><span class="p">.</span><span class="na">BOLD</span><span class="p">,</span><span class="w"> </span><span class="mi">110</span><span class="p">),</span>
+<span class="w">        </span><span class="n">halign</span><span class="p">.</span><span class="na">center</span><span class="p">(),</span><span class="w"> </span><span class="n">valign</span><span class="p">.</span><span class="na">center</span><span class="p">(),</span><span class="w"> </span><span class="n">color</span><span class="p">(</span><span class="n">Color</span><span class="p">.</span><span class="na">decode</span><span class="p">(</span><span class="s">&quot;0x096b87&quot;</span><span class="p">)));</span>
+<span class="n">down</span><span class="p">.</span><span class="na">xLim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="n">down</span><span class="p">.</span><span class="na">yLim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+
+<span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">gridLayer</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">heights</span><span class="p">(</span><span class="mf">0.7</span><span class="p">,</span><span class="w"> </span><span class="mf">0.3</span><span class="p">)).</span><span class="na">add</span><span class="p">(</span><span class="n">up</span><span class="p">).</span><span class="na">add</span><span class="p">(</span><span class="n">down</span><span class="p">));</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/45aaffecd4ff30c3e60a3cc553d38cc9b264cc59f4cf8f050e6bc49447272a47.png" src="../_images/45aaffecd4ff30c3e60a3cc553d38cc9b264cc59f4cf8f050e6bc49447272a47.png" />
+</div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "rapaio-jupyter-kernel-preview23"
+        },
+        kernelOptions: {
+            name: "rapaio-jupyter-kernel-preview23",
+            path: "./tutorials"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'rapaio-jupyter-kernel-preview23'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="CoreStatisticalTools.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Core statistical tools</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="ReadingAndWritingData.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Reading and Writing data</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#workspace-and-printer">Workspace and Printer</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#figure-types">Figure types</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#box-plots">Box plots</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#example-1">Example 1</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#example-2">Example 2</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#xy-scatter-plots">XY Scatter plots</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Example 1</a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Example 2</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#histogram">Histogram</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Example 1</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Example 2</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#density-line">Density line</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Example 1</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Example 2</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#example-3">Example 3</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gridlayer-a-simple-way-to-create-multiple-plots-in-the-same-figure">GridLayer - a simple way to create multiple plots in the same figure</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Example 1</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#other-visual-artists">Other visual artists</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Aurelian Tutuianu
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

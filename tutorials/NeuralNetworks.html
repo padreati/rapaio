@@ -1,0 +1,644 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Tensors and Neural Networks &#8212; Rapaio Book</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pdf_print.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/NeuralNetworks';</script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Algorithms: KMeans" href="../algorithms/KMeans.html" />
+    <link rel="prev" title="Linear Algebra Overview" href="LinearAlgebraOverview.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.png" class="logo__image only-light" alt="Rapaio Book - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="Rapaio Book - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Welcome to Rapaio Book
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../BriefPreview.html">Brief preview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BuiltinDataSets.html">Built-in Data sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Variables.html">Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DataHandlingOverview.html">Data Handling Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CoreStatisticalTools.html">Core statistical tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DataVisualization.html">Data visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ReadingAndWritingData.html">Reading and Writing data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LinearAlgebraOverview.html">Linear Algebra Overview</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Tensors and Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../algorithms/KMeans.html">Algorithms: KMeans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/tutorials/NeuralNetworks.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Tensors and Neural Networks</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="tensors-and-neural-networks">
+<h1>Tensors and Neural Networks<a class="headerlink" href="#tensors-and-neural-networks" title="Permalink to this heading">#</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">load</span><span class="w"> </span><span class="p">..</span><span class="o">/</span><span class="n">rapaio</span><span class="o">-</span><span class="n">bootstrap</span><span class="p">.</span><span class="na">ipynb</span>
+<span class="c1">// %classpath /home/ati/work/rapaio/rapaio-core/target/classes/</span>
+<span class="c1">// %classpath /home/ati/work/rapaio/rapaio-experiment/target/classes/</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">TensorManager</span><span class="w"> </span><span class="n">tm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TensorManager</span><span class="p">.</span><span class="na">ofFloat</span><span class="p">();</span>
+<span class="n">tm</span><span class="p">.</span><span class="na">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">Frame</span><span class="w"> </span><span class="n">iris</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Datasets</span><span class="p">.</span><span class="na">loadIrisDataset</span><span class="p">();</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iris</span><span class="p">.</span><span class="na">mapVars</span><span class="p">(</span><span class="n">VarRange</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">&quot;0~3&quot;</span><span class="p">)).</span><span class="na">darray</span><span class="p">().</span><span class="na">cast</span><span class="p">(</span><span class="n">DType</span><span class="p">.</span><span class="na">FLOAT</span><span class="p">);</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iris</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;class&quot;</span><span class="p">).</span><span class="na">darray</span><span class="p">().</span><span class="na">cast</span><span class="p">(</span><span class="n">DType</span><span class="p">.</span><span class="na">FLOAT</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">TabularDataset</span><span class="w"> </span><span class="n">irisDataset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">TabularDataset</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">);</span>
+<span class="n">TabularDataset</span><span class="o">[]</span><span class="w"> </span><span class="n">split</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">irisDataset</span><span class="p">.</span><span class="na">trainTestSplit</span><span class="p">(</span><span class="mf">0.3</span><span class="p">);</span>
+<span class="n">TabularDataset</span><span class="w"> </span><span class="n">train</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">split</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="p">;</span>
+<span class="n">TabularDataset</span><span class="w"> </span><span class="n">test</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">split</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">epochs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1_000</span><span class="p">;</span>
+<span class="kt">double</span><span class="w"> </span><span class="n">lr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1e-3</span><span class="p">;</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">batchSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="p">;</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">Network</span><span class="w"> </span><span class="n">nn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Sequential</span><span class="p">(</span>
+<span class="w">    </span><span class="n">tm</span><span class="p">,</span>
+<span class="w">    </span><span class="k">new</span><span class="w"> </span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">4</span><span class="p">)),</span>
+<span class="w">    </span><span class="k">new</span><span class="w"> </span><span class="n">Linear</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">),</span>
+<span class="w">    </span><span class="k">new</span><span class="w"> </span><span class="n">ELU</span><span class="p">(</span><span class="n">tm</span><span class="p">),</span>
+<span class="w">    </span><span class="k">new</span><span class="w"> </span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">n</span><span class="p">)),</span>
+<span class="w">    </span><span class="k">new</span><span class="w"> </span><span class="n">Linear</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">),</span>
+<span class="w">    </span><span class="k">new</span><span class="w"> </span><span class="n">ELU</span><span class="p">(</span><span class="n">tm</span><span class="p">),</span>
+<span class="w">    </span><span class="k">new</span><span class="w"> </span><span class="n">LogSoftmax</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">Optimizer</span><span class="w"> </span><span class="n">optimizer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Optimizer</span><span class="p">.</span><span class="na">Adam</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="n">nn</span><span class="p">.</span><span class="na">parameters</span><span class="p">()).</span><span class="na">lr</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="n">lr</span><span class="p">);</span>
+<span class="n">Loss</span><span class="w"> </span><span class="n">loss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">NegativeLikelihoodLoss</span><span class="p">(</span><span class="n">tm</span><span class="p">);</span>
+
+<span class="kd">var</span><span class="w"> </span><span class="n">trainLoss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">empty</span><span class="p">().</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;trainLoss&quot;</span><span class="p">);</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">testLoss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">empty</span><span class="p">().</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;trainLoss&quot;</span><span class="p">);</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">accuracy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">empty</span><span class="p">().</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;accuracy&quot;</span><span class="p">);</span>
+
+<span class="kt">boolean</span><span class="w"> </span><span class="n">separateBatches</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">epoch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">epoch</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">epochs</span><span class="p">;</span><span class="w"> </span><span class="n">epoch</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">trainLossValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">separateBatches</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Iterator</span><span class="o">&lt;</span><span class="n">Batch</span><span class="o">&gt;</span><span class="w"> </span><span class="n">batchIterator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">train</span><span class="p">.</span><span class="na">batchIterator</span><span class="p">(</span><span class="n">batchSize</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">);</span>
+<span class="w">        </span><span class="kt">double</span><span class="w"> </span><span class="n">batchCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">batchIterator</span><span class="p">.</span><span class="na">hasNext</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">optimizer</span><span class="p">.</span><span class="na">zeroGrad</span><span class="p">();</span>
+<span class="w">            </span><span class="n">nn</span><span class="p">.</span><span class="na">train</span><span class="p">();</span>
+<span class="w">            </span><span class="n">Batch</span><span class="w"> </span><span class="n">batch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">batchIterator</span><span class="p">.</span><span class="na">next</span><span class="p">();</span>
+<span class="w">            </span><span class="n">Tensor</span><span class="w"> </span><span class="n">pred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nn</span><span class="p">.</span><span class="na">forward11</span><span class="p">(</span><span class="n">batch</span><span class="p">.</span><span class="na">tensor</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
+<span class="w">            </span><span class="n">Loss</span><span class="p">.</span><span class="na">Output</span><span class="w"> </span><span class="n">lossOut</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">loss</span><span class="p">.</span><span class="na">forward</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">batch</span><span class="p">.</span><span class="na">tensor</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+
+<span class="w">            </span><span class="n">trainLossValue</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">lossOut</span><span class="p">.</span><span class="na">lossValue</span><span class="p">();</span>
+<span class="w">            </span><span class="n">Autograd</span><span class="p">.</span><span class="na">backward</span><span class="p">(</span><span class="n">lossOut</span><span class="p">.</span><span class="na">tensor</span><span class="p">());</span>
+<span class="w">            </span><span class="n">optimizer</span><span class="p">.</span><span class="na">step</span><span class="p">();</span>
+<span class="w">            </span><span class="n">batchCount</span><span class="o">++</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="n">trainLossValue</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="n">batchCount</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">        </span><span class="n">optimizer</span><span class="p">.</span><span class="na">zeroGrad</span><span class="p">();</span>
+<span class="w">        </span><span class="n">nn</span><span class="p">.</span><span class="na">train</span><span class="p">();</span>
+
+<span class="w">        </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Batch</span><span class="o">&gt;</span><span class="w"> </span><span class="n">batches</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nn</span><span class="p">.</span><span class="na">batchForward</span><span class="p">(</span><span class="n">batchSize</span><span class="p">,</span><span class="w"> </span><span class="n">tm</span><span class="p">.</span><span class="na">var</span><span class="p">(</span><span class="n">train</span><span class="p">.</span><span class="na">darray</span><span class="p">(</span><span class="mi">0</span><span class="p">)));</span>
+<span class="w">        </span><span class="n">Loss</span><span class="p">.</span><span class="na">Output</span><span class="w"> </span><span class="n">batchLoss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">loss</span><span class="p">.</span><span class="na">batchForward</span><span class="p">(</span><span class="n">batches</span><span class="p">,</span><span class="w"> </span><span class="n">tm</span><span class="p">.</span><span class="na">var</span><span class="p">(</span><span class="n">train</span><span class="p">.</span><span class="na">darray</span><span class="p">(</span><span class="mi">1</span><span class="p">)));</span>
+
+<span class="w">        </span><span class="n">trainLossValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">batchLoss</span><span class="p">.</span><span class="na">lossValue</span><span class="p">();</span>
+<span class="w">        </span><span class="n">Autograd</span><span class="p">.</span><span class="na">backward</span><span class="p">(</span><span class="n">batchLoss</span><span class="p">.</span><span class="na">tensor</span><span class="p">());</span>
+
+<span class="w">        </span><span class="n">optimizer</span><span class="p">.</span><span class="na">step</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">nn</span><span class="p">.</span><span class="na">eval</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="n">lossOut</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">loss</span><span class="p">.</span><span class="na">forward</span><span class="p">(</span><span class="n">nn</span><span class="p">.</span><span class="na">forward11</span><span class="p">(</span><span class="n">tm</span><span class="p">.</span><span class="na">var</span><span class="p">(</span><span class="n">test</span><span class="p">.</span><span class="na">darray</span><span class="p">(</span><span class="mi">0</span><span class="p">))),</span><span class="w"> </span><span class="n">tm</span><span class="p">.</span><span class="na">var</span><span class="p">(</span><span class="n">test</span><span class="p">.</span><span class="na">darray</span><span class="p">(</span><span class="mi">1</span><span class="p">)));</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">testLossValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lossOut</span><span class="p">.</span><span class="na">lossValue</span><span class="p">();</span>
+<span class="w">    </span><span class="n">trainLoss</span><span class="p">.</span><span class="na">addDouble</span><span class="p">(</span><span class="n">trainLossValue</span><span class="p">);</span>
+<span class="w">    </span><span class="n">testLoss</span><span class="p">.</span><span class="na">addDouble</span><span class="p">(</span><span class="n">testLossValue</span><span class="p">);</span>
+
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="n">y_pred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nn</span><span class="p">.</span><span class="na">forward11</span><span class="p">(</span><span class="n">test</span><span class="p">.</span><span class="na">tensor</span><span class="p">(</span><span class="mi">0</span><span class="p">)).</span><span class="na">value</span><span class="p">().</span><span class="na">exp</span><span class="p">().</span><span class="na">argmax1d</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="n">levels</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iris</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;class&quot;</span><span class="p">).</span><span class="na">levels</span><span class="p">();</span>
+
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="n">cm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Confusion</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="n">VarNominal</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="n">levels</span><span class="p">,</span><span class="w"> </span><span class="n">test</span><span class="p">.</span><span class="na">darray</span><span class="p">(</span><span class="mi">1</span><span class="p">)),</span><span class="w"> </span><span class="n">VarNominal</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="n">levels</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">));</span>
+<span class="w">    </span><span class="n">accuracy</span><span class="p">.</span><span class="na">addDouble</span><span class="p">(</span><span class="n">cm</span><span class="p">.</span><span class="na">accuracy</span><span class="p">());</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">epoch</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Epoch: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">epoch</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;, train loss:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">trainLossValue</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;, test loss:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">testLossValue</span><span class="p">);</span>
+<span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;\t error: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Format</span><span class="p">.</span><span class="na">floatShort</span><span class="p">(</span><span class="n">cm</span><span class="p">.</span><span class="na">error</span><span class="p">())</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;, accuracy: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Format</span><span class="p">.</span><span class="na">floatShort</span><span class="p">(</span><span class="n">cm</span><span class="p">.</span><span class="na">accuracy</span><span class="p">()));</span>
+<span class="w">        </span><span class="n">cm</span><span class="p">.</span><span class="na">frequencyMatrix</span><span class="p">().</span><span class="na">printContent</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch: 0, train loss:0.9960502535104752, test loss:1.065822958946228
+	 error: 0.756, accuracy: 0.244
+[[ 1 0 14 ]  
+ [ 0 0 20 ]  
+ [ 0 0 10 ]] 
+Epoch: 100, train loss:0.5289852172136307, test loss:0.5668545961380005
+	 error: 0.444, accuracy: 0.556
+[[ 15 0  0 ]  
+ [  0 0 20 ]  
+ [  0 0 10 ]] 
+Epoch: 200, train loss:0.3874886780977249, test loss:0.3928753435611725
+	 error: 0.067, accuracy: 0.933
+[[ 15  0  0 ]  
+ [  1 17  2 ]  
+ [  0  0 10 ]] 
+Epoch: 300, train loss:0.21072687208652496, test loss:0.14575348794460297
+	 error: 0.022, accuracy: 0.978
+[[ 15  0  0 ]  
+ [  1 19  0 ]  
+ [  0  0 10 ]] 
+Epoch: 400, train loss:0.1460152817890048, test loss:0.09358330816030502
+	 error: 0.022, accuracy: 0.978
+[[ 15  0  0 ]  
+ [  1 19  0 ]  
+ [  0  0 10 ]] 
+Epoch: 500, train loss:0.14570788107812405, test loss:0.07792974263429642
+	 error: 0.022, accuracy: 0.978
+[[ 15  0  0 ]  
+ [  1 19  0 ]  
+ [  0  0 10 ]] 
+Epoch: 600, train loss:0.13024368230253458, test loss:0.06344681233167648
+	 error: 0.022, accuracy: 0.978
+[[ 15  0  0 ]  
+ [  1 19  0 ]  
+ [  0  0 10 ]] 
+Epoch: 700, train loss:0.13339489791542292, test loss:0.060789648443460464
+	 error: 0.022, accuracy: 0.978
+[[ 15  0  0 ]  
+ [  1 19  0 ]  
+ [  0  0 10 ]] 
+Epoch: 800, train loss:0.13901920756325126, test loss:0.054203614592552185
+	 error: 0.022, accuracy: 0.978
+[[ 15  0  0 ]  
+ [  1 19  0 ]  
+ [  0  0 10 ]] 
+Epoch: 900, train loss:0.14198810793459415, test loss:0.0465756319463253
+	 error: 0.000, accuracy: 1.000
+[[ 15  0  0 ]  
+ [  0 20  0 ]  
+ [  0  0 10 ]] 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">display</span><span class="p">(</span><span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">lines</span><span class="p">(</span><span class="n">trainLoss</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="p">(</span><span class="n">Color</span><span class="p">.</span><span class="na">RED</span><span class="p">),</span><span class="w"> </span><span class="n">lwd</span><span class="p">(</span><span class="mi">1</span><span class="p">)).</span><span class="na">lines</span><span class="p">(</span><span class="n">testLoss</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">lwd</span><span class="p">(</span><span class="mi">1</span><span class="p">))));</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/9e474bc8c9cdc90c1673078fdeadee4d6faf00962913511dc8bf32a71fe17611.png" src="../_images/9e474bc8c9cdc90c1673078fdeadee4d6faf00962913511dc8bf32a71fe17611.png" />
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>9b42ea43-eec0-4304-80ea-353241cb424d
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "rapaio-jupyter-kernel-preview23"
+        },
+        kernelOptions: {
+            name: "rapaio-jupyter-kernel-preview23",
+            path: "./tutorials"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'rapaio-jupyter-kernel-preview23'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="LinearAlgebraOverview.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Linear Algebra Overview</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../algorithms/KMeans.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Algorithms: KMeans</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Aurelian Tutuianu
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

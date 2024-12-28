@@ -1,0 +1,796 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Brief preview &#8212; Rapaio Book</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/pdf_print.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'BriefPreview';</script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Built-in Data sets" href="tutorials/BuiltinDataSets.html" />
+    <link rel="prev" title="Welcome to Rapaio Book" href="intro.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo.png" class="logo__image only-light" alt="Rapaio Book - Home"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Rapaio Book - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    Welcome to Rapaio Book
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Brief preview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/BuiltinDataSets.html">Built-in Data sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/Variables.html">Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/DataHandlingOverview.html">Data Handling Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/CoreStatisticalTools.html">Core statistical tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/DataVisualization.html">Data visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/ReadingAndWritingData.html">Reading and Writing data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/LinearAlgebraOverview.html">Linear Algebra Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/NeuralNetworks.html">Tensors and Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="algorithms/KMeans.html">Algorithms: KMeans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/BriefPreview.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Brief preview</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#set-up-things">Set up things</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-a-data-set">Use a data set</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-exploration">Data exploration</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tv-and-radio">TV and radio</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-regression">Linear regression</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="brief-preview">
+<h1>Brief preview<a class="headerlink" href="#brief-preview" title="Permalink to this heading">#</a></h1>
+<p>This notebook is intended to be a starting point for using rapaio library in a jupyter notebook. We use a really simple data set. The analysis is not indended to be an example for how to conduct an inference. The presented line story  exists only to make the exemplification more friendly.</p>
+<section id="set-up-things">
+<h2>Set up things<a class="headerlink" href="#set-up-things" title="Permalink to this heading">#</a></h2>
+<p>First of all we have to import the library. We can do that either through maven magic or, if we have a locally compiled project source code, through jar magic.</p>
+<p>However, I prepared an additional easier option: loading <code class="docutils literal notranslate"><span class="pre">rapaio-bootstrap.ipynb</span></code> notebook. This is useful since this bootstrap notebook can be enriched in order to contain whatever additional configurations tailored for your needs.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">load</span><span class="w"> </span><span class="p">..</span><span class="o">/</span><span class="n">rapaio</span><span class="o">-</span><span class="n">bootstrap</span><span class="p">.</span><span class="na">ipynb</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Adding dependency <span class=" -Color -Color-Bold -Color-Bold-Green">io.github.padreati:rapaio-lib:7.0.0</span>
+Solving dependencies
+Resolved artifacts count: 4
+Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/io/github/padreati/rapaio-lib/7.0.0/rapaio-lib-7.0.0.jar</span>
+Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/io/github/padreati/rapaio-code-gen/7.0.0/rapaio-code-gen-7.0.0.jar</span>
+Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/org/antlr/ST4/4.3.4/ST4-4.3.4.jar</span>
+Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/org/antlr/antlr-runtime/3.5.3/antlr-runtime-3.5.3.jar</span>
+
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="use-a-data-set">
+<h2>Use a data set<a class="headerlink" href="#use-a-data-set" title="Permalink to this heading">#</a></h2>
+<p>We load a well known small data set used in the wonderful book: <em>An Introduction to Statistical Learning with Applications in R, Gareth James, Daniela Witten, Trevor Hastie and Robert Tibshirani</em>. This is the
+<a class="reference external" href="http://faculty.marshall.usc.edu/gareth-james/ISL/index.html">book’s website</a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// skip the first column since it is the row number</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">df</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Csv</span><span class="p">.</span><span class="na">instance</span><span class="p">().</span><span class="na">keepCols</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="n">IntRule</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="na">negate</span><span class="p">()).</span><span class="na">read</span><span class="p">(</span><span class="s">&quot;./../data/Advertising.csv&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Take a look at some of the data frame values.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="p">.</span><span class="na">printContent</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>       TV   radio newspaper sales        TV   radio newspaper sales        TV   radio newspaper sales 
+  [0] 230.1 37.8    69.2    22.1    [6]  57.5 32.8    23.5    11.8  [196]  94.2  4.9     8.1     9.7  
+  [1]  44.5 39.3    45.1    10.4    [7] 120.2 19.6    11.6    13.2  [197] 177    9.3     6.4    12.8  
+  [2]  17.2 45.9    69.3     9.3    [8]   8.6  2.1     1       4.8  [198] 283.6 42      66.2    25.5  
+  [3] 151.5 41.3    58.5    18.5    [9] 199.8  2.6    21.2    10.6  [199] 232.1  8.6     8.7    13.4  
+  [4] 180.8 10.8    58.4    12.9         ...   ...     ...     ...  
+  [5]   8.7 48.9    75       7.2  [195]  38.2  3.7    13.8     7.6  
+</pre></div>
+</div>
+</div>
+</div>
+<p>And see some statistics on the data frame.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="p">.</span><span class="na">printSummary</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Frame Summary
+=============
+* rowCount: 200
+* complete: 200/200
+* varCount: 4
+* varNames: 
+
+0.        TV : dbl | 
+1.     radio : dbl | 
+2. newspaper : dbl | 
+3.     sales : dbl | 
+
+* summary: 
+       TV [dbl]           radio [dbl]       newspaper [dbl]           sales [dbl]      
+   Min. :   0.7000000    Min. :  0.0000000     Min. :   0.3000000    Min. :  1.6000000 
+1st Qu. :  74.3750000 1st Qu. :  9.9750000  1st Qu. :  12.7500000 1st Qu. : 10.3750000 
+ Median : 149.7500000  Median : 22.9000000   Median :  25.7500000  Median : 12.9000000 
+   Mean : 147.0425000    Mean : 23.2640000     Mean :  30.5540000    Mean : 14.0225000 
+2nd Qu. : 218.8250000 2nd Qu. : 36.5250000  2nd Qu. :  45.1000000 2nd Qu. : 17.4000000 
+   Max. : 296.4000000    Max. : 49.6000000     Max. : 114.0000000    Max. : 27.0000000 
+                                                                                       
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="data-exploration">
+<h2>Data exploration<a class="headerlink" href="#data-exploration" title="Permalink to this heading">#</a></h2>
+<p>Let’s see how <em>Sales</em> variable visually looks like.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">hist</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;sales&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">bins</span><span class="p">(</span><span class="mi">40</span><span class="p">),</span><span class="w"> </span><span class="n">fill</span><span class="p">(</span><span class="n">NColor</span><span class="p">.</span><span class="na">tab_green</span><span class="p">)));</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/fcb19d52ce0e4db047dcca8fecfd46c953961b6ba463510fbcb8e60757791171.png" src="_images/fcb19d52ce0e4db047dcca8fecfd46c953961b6ba463510fbcb8e60757791171.png" />
+</div>
+</div>
+<p>Let’s look at the relation between DVs and IV.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">gridLayer</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="w">         </span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">points</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;TV&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">df</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;sales&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">pch</span><span class="p">.</span><span class="na">circleFull</span><span class="p">(),</span><span class="w"> </span><span class="n">fill</span><span class="p">(</span><span class="mi">3</span><span class="p">)))</span>
+<span class="w">         </span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">points</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;radio&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">df</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;sales&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">pch</span><span class="p">.</span><span class="na">circleFull</span><span class="p">(),</span><span class="w"> </span><span class="n">fill</span><span class="p">(</span><span class="mi">3</span><span class="p">)))</span>
+<span class="w">         </span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">points</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;newspaper&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">df</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;sales&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">pch</span><span class="p">.</span><span class="na">circleFull</span><span class="p">(),</span><span class="w"> </span><span class="n">fill</span><span class="p">(</span><span class="mi">3</span><span class="p">))));</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/f72157dfc9a26bc274c4dd7b0010846f66c692bdb0c1bda101f76a4266931a60.png" src="_images/f72157dfc9a26bc274c4dd7b0010846f66c692bdb0c1bda101f76a4266931a60.png" />
+</div>
+</div>
+<p>We have an idea that <em>TV</em> and <em>radio</em> are correlated with <em>sales</em>. First we can check if this is true. We can do that by measuring the correlation between them.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">CorrPearson</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;TV&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">df</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;sales&quot;</span><span class="p">)).</span><span class="na">printContent</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&gt; pearson[TV, sales] - Pearson product-moment correlation coefficient
+0.7822244
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">CorrSpearman</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;TV&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">df</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;sales&quot;</span><span class="p">)).</span><span class="na">printContent</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&gt; spearman[TV, sales] - Spearman&#39;s rank correlation coefficient
+0.8006144
+</pre></div>
+</div>
+</div>
+</div>
+<p>As expected, the correlation is strong and a little bit unlinear. This is probably to be expected.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">CorrPearson</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;radio&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">df</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;sales&quot;</span><span class="p">)).</span><span class="na">printContent</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&gt; pearson[radio, sales] - Pearson product-moment correlation coefficient
+0.5762226
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">CorrSpearman</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;radio&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">df</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;sales&quot;</span><span class="p">)).</span><span class="na">printContent</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&gt; spearman[radio, sales] - Spearman&#39;s rank correlation coefficient
+0.5543037
+</pre></div>
+</div>
+</div>
+</div>
+<p>Correlation is lower, as expected from the visualization. However, it must be higher than the <em>newspaper</em>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">CorrPearson</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;newspaper&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">df</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;sales&quot;</span><span class="p">)).</span><span class="na">printContent</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&gt; pearson[newspaper, sales] - Pearson product-moment correlation coefficient
+0.228299
+</pre></div>
+</div>
+</div>
+</div>
+<section id="tv-and-radio">
+<h3>TV and radio<a class="headerlink" href="#tv-and-radio" title="Permalink to this heading">#</a></h3>
+<p>It seems obvious that <em>TV</em> and <em>radio</em> dependent variables have a strong influence on sales. It becomes interesting to understand if those contributions are strongly correlated or not. If they are correlated, than our predictive power would be probably lower because the two variables would share the same information. If they are relatively independent, than our prediction would be better, since the information space would be spanned into more than one important dimension.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">points</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;TV&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">df</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;radio&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">fill</span><span class="p">(</span><span class="mi">23</span><span class="p">),</span><span class="w"> </span><span class="n">pch</span><span class="p">.</span><span class="na">circleFull</span><span class="p">()))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/3e08a51ed5e58ae9c085ed1eee8a36a26ca686c905aaef32506702785bfcf90f.png" src="_images/3e08a51ed5e58ae9c085ed1eee8a36a26ca686c905aaef32506702785bfcf90f.png" />
+</div>
+</div>
+<p>They look unrelated.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">CorrPearson</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;TV&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">df</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;radio&quot;</span><span class="p">)).</span><span class="na">printContent</span><span class="p">();</span>
+<span class="n">CorrSpearman</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;TV&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">df</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;radio&quot;</span><span class="p">)).</span><span class="na">printContent</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&gt; pearson[TV, radio] - Pearson product-moment correlation coefficient
+0.0548087
+&gt; spearman[TV, radio] - Spearman&#39;s rank correlation coefficient
+0.0561234
+</pre></div>
+</div>
+</div>
+</div>
+<p>We were right, even Spearman’s rho could not get much of it.</p>
+</section>
+</section>
+<section id="linear-regression">
+<h2>Linear regression<a class="headerlink" href="#linear-regression" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">LinearRegressionModel</span><span class="w"> </span><span class="n">lm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">LinearRegressionModel</span><span class="p">.</span><span class="na">newModel</span><span class="p">();</span>
+<span class="n">lm</span><span class="p">.</span><span class="na">fit</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;sales&quot;</span><span class="p">);</span>
+<span class="n">lm</span><span class="p">.</span><span class="na">predict</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">).</span><span class="na">printSummary</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Regression predict summary
+=======================
+Model class: LinearRegression
+Model instance: LinearRegression{}
+&gt; model is trained.
+&gt; input variables: 
+1. (Intercept) dbl 
+2. TV          dbl 
+3. radio       dbl 
+4. newspaper   dbl 
+&gt; target variables: 
+1. sales dbl 
+
+Target &lt;&lt;&lt; sales &gt;&gt;&gt;
+
+&gt; Residuals: 
+       Min         1Q    Median        3Q       Max 
+-8.8276871 -0.8908135 0.2418018 1.1893186 2.8292226 
+
+&gt; Coefficients: 
+       Name   Estimate Std. error    t value   P(&gt;|t|)     
+(Intercept)  2.9388894 0.3119082   9.4222884    &lt;2e-16 *** 
+TV           0.0457646 0.0013949  32.8086244    &lt;2e-16 *** 
+radio        0.1885300 0.0086112  21.8934961    &lt;2e-16 *** 
+newspaper   -0.0010375 0.0058710  -0.1767146 0.8599151     
+--------
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 1.6855104 on 196 degrees of freedom
+Multiple R-squared:  0.8972106, Adjusted R-squared:  0.8956373
+F-statistic: 570.271 on 3 and 196 DF,  p-value: &lt;2e-16
+</pre></div>
+</div>
+</div>
+</div>
+<p>The linear regression tells us that our intuitions are right regarding the importance of <em>TV</em> and <em>radio</em> and aparently less important <em>newspaper</em>. It says also that both of them are important on their own right, being independent.</p>
+<p>Now we can check if a model withot newspaper variable has the same performance as the full model.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">reducedDf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df</span><span class="p">.</span><span class="na">mapVars</span><span class="p">(</span><span class="s">&quot;TV,radio,sales&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">lm2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">LinearRegressionModel</span><span class="p">.</span><span class="na">newModel</span><span class="p">();</span>
+<span class="n">lm2</span><span class="p">.</span><span class="na">fit</span><span class="p">(</span><span class="n">reducedDf</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;sales&quot;</span><span class="p">);</span>
+<span class="n">lm2</span><span class="p">.</span><span class="na">predict</span><span class="p">(</span><span class="n">reducedDf</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">).</span><span class="na">printSummary</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Regression predict summary
+=======================
+Model class: LinearRegression
+Model instance: LinearRegression{}
+&gt; model is trained.
+&gt; input variables: 
+1. (Intercept) dbl 
+2. TV          dbl 
+3. radio       dbl 
+&gt; target variables: 
+1. sales dbl 
+
+Target &lt;&lt;&lt; sales &gt;&gt;&gt;
+
+&gt; Residuals: 
+       Min         1Q    Median        3Q       Max 
+-8.7976997 -0.8751582 0.2421943 1.1707702 2.8328368 
+
+&gt; Coefficients: 
+       Name  Estimate Std. error    t value P(&gt;|t|)     
+(Intercept) 2.9210999 0.2944897   9.9191929  &lt;2e-16 *** 
+TV          0.0457548 0.0013904  32.9087083  &lt;2e-16 *** 
+radio       0.1879942 0.0080400  23.3824460  &lt;2e-16 *** 
+--------
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 1.6813609 on 197 degrees of freedom
+Multiple R-squared:  0.8971943, Adjusted R-squared:  0.8961505
+F-statistic: 859.618 on 2 and 197 DF,  p-value: &lt;2e-16
+</pre></div>
+</div>
+</div>
+</div>
+<p>We have a similar adjusted R2, as we expected.</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "rapaio-jupyter-kernel-preview23"
+        },
+        kernelOptions: {
+            name: "rapaio-jupyter-kernel-preview23",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'rapaio-jupyter-kernel-preview23'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="intro.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Welcome to Rapaio Book</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="tutorials/BuiltinDataSets.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Built-in Data sets</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#set-up-things">Set up things</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-a-data-set">Use a data set</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-exploration">Data exploration</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tv-and-radio">TV and radio</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-regression">Linear regression</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Aurelian Tutuianu
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

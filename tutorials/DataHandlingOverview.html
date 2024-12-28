@@ -1,0 +1,678 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Data Handling Overview &#8212; Rapaio Book</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pdf_print.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/DataHandlingOverview';</script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Core statistical tools" href="CoreStatisticalTools.html" />
+    <link rel="prev" title="Variables" href="Variables.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.png" class="logo__image only-light" alt="Rapaio Book - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="Rapaio Book - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Welcome to Rapaio Book
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../BriefPreview.html">Brief preview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BuiltinDataSets.html">Built-in Data sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Variables.html">Variables</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Data Handling Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CoreStatisticalTools.html">Core statistical tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DataVisualization.html">Data visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ReadingAndWritingData.html">Reading and Writing data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LinearAlgebraOverview.html">Linear Algebra Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NeuralNetworks.html">Tensors and Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../algorithms/KMeans.html">Algorithms: KMeans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/tutorials/DataHandlingOverview.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Data Handling Overview</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-types-arrays-and-collections">Data types, arrays and collections</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#var-and-frame">Var and Frame</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variables">Variables</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vartype-storage-and-representation-of-a-variable">VarType: storage and representation of a variable</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#frames">Frames</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#solid-frames-and-view-frames">Solid frames and view frames</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="data-handling-overview">
+<h1>Data Handling Overview<a class="headerlink" href="#data-handling-overview" title="Permalink to this heading">#</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">load</span><span class="w"> </span><span class="p">..</span><span class="o">/</span><span class="p">..</span><span class="o">/</span><span class="n">rapaio</span><span class="o">-</span><span class="n">bootstrap</span><span class="p">.</span><span class="na">ipynb</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Adding dependency <span class=" -Color -Color-Bold -Color-Bold-Green">io.github.padreati:rapaio-lib:7.0.0</span>
+Solving dependencies
+Resolved artifacts count: 4
+Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/io/github/padreati/rapaio-lib/7.0.0/rapaio-lib-7.0.0.jar</span>
+Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/io/github/padreati/rapaio-code-gen/7.0.0/rapaio-code-gen-7.0.0.jar</span>
+Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/org/antlr/ST4/4.3.4/ST4-4.3.4.jar</span>
+Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/org/antlr/antlr-runtime/3.5.3/antlr-runtime-3.5.3.jar</span>
+
+</pre></div>
+</div>
+</div>
+</div>
+<section id="data-types-arrays-and-collections">
+<h2>Data types, arrays and collections<a class="headerlink" href="#data-types-arrays-and-collections" title="Permalink to this heading">#</a></h2>
+<p>Most programming languages have constructs for data and instructions or commands. This is true for both low and high level languages. If the language does not provide those kind of constructs, commonly used libraries, like system libraries supply them. This is true also for Java language. We start our discussion about data handling from what the language itself provides.</p>
+<p>Java provides value and reference data types. There are few values types like: <code class="docutils literal notranslate"><span class="pre">double</span></code>, <code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">char</span></code> and so on. For each value type there is also a corresponding refference boxing type like <code class="docutils literal notranslate"><span class="pre">Double</span></code>, <code class="docutils literal notranslate"><span class="pre">Integer</span></code>, <code class="docutils literal notranslate"><span class="pre">Character</span></code>. Since Java language is an object oriented language, it should be apparent the reason for existence of the corresponding refference types: abstractization and encapsulation. If we add how the generics were implemented in language on those reasons we understood why we have collections implemented as they are, with their rich offerings in terms of functionality. Still, value types are part of the language together with the construct called array. They seem so dulled and non idiomatic, so one may ask why there are still part of the language. The main reason of their existence is performance: both in terms of memory and computation.</p>
+<p><em>Rapaio</em> uses under the hood value types and arrays to achieve speed and memory efficience, carrying the burden of writting much more non idiomatic code. For example there are many vaue types array features in utilitary classes like <code class="docutils literal notranslate"><span class="pre">rapaio.util.collection.DoubleArrays</span></code> and similar. Those utilitary classes exists in order to offer support for high order constructs with compact and performant implementations.</p>
+<p>Working directly with value type arrays, even having at one’s disposal a rich set of features, claims a lot of effort and attention. The resulting code would be probably very hard to write or read. Thus, <em>Rapaio</em> uses for most of the algorithms implemented higher constructs like <code class="docutils literal notranslate"><span class="pre">rapaio.data.Var</span></code> and <code class="docutils literal notranslate"><span class="pre">rapaio.data.Frame</span></code> to offer a rich and flexible set of features, easy to be used and leveraged further. Those constructs hides the complexity and intricaties implied at implementation times dues to working directly with value types vectors, without performance penalties.</p>
+<p>Because those abstractions works directly with value type arrays, a lot of care was spent to offer many easy ways to transform data from value type array into variables, frames, vectors and matrices and viceversa, sometimes avoiding copying the data entirely. Java collections are also well conected with <em>Rapaio</em> data structures, thus being very easy to transfer data to and from those collections.</p>
+</section>
+<section id="var-and-frame">
+<h2>Var and Frame<a class="headerlink" href="#var-and-frame" title="Permalink to this heading">#</a></h2>
+<p>There are two ubiquous data structures used all over the place in this library: variables and frames. A variable is a list of values of the same type which implements the <code class="docutils literal notranslate"><span class="pre">Var</span></code> interface. You can think of a variable as a higher abstractization of an array because all values have the same type and there is random acces available. In fact, sometimes, the arrays are the only data storage for a <code class="docutils literal notranslate"><span class="pre">Var</span></code> implementation. Another way to look at a variable is like a column of a table.</p>
+<p>A set of variables makes a data frame, described by the interface <code class="docutils literal notranslate"><span class="pre">rapaio.data.Frame</span></code>. A frame is a table having observations as rows and variables as columns.</p>
+<p>Let’s take a simple example. We will load the iris data set, which is provided by the the library.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">Frame</span><span class="w"> </span><span class="n">df</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Datasets</span><span class="p">.</span><span class="na">loadIrisDataset</span><span class="p">();</span>
+<span class="n">df</span><span class="p">.</span><span class="na">printSummary</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Frame Summary
+=============
+* rowCount: 150
+* complete: 150/150
+* varCount: 5
+* varNames: 
+
+0. sepal-length : dbl | 3.  petal-width : dbl | 
+1.  sepal-width : dbl | 4.        class : nom | 
+2. petal-length : dbl | 
+
+* summary: 
+ sepal-length [dbl]      sepal-width [dbl]      petal-length [dbl]      petal-width [dbl]     
+       Min. : 4.3000000       Min. : 2.0000000        Min. : 1.0000000       Min. : 0.1000000 
+    1st Qu. : 5.1000000    1st Qu. : 2.8000000     1st Qu. : 1.6000000    1st Qu. : 0.3000000 
+     Median : 5.8000000     Median : 3.0000000      Median : 4.3500000     Median : 1.3000000 
+       Mean : 5.8433333       Mean : 3.0573333        Mean : 3.7580000       Mean : 1.1993333 
+    2nd Qu. : 6.4000000    2nd Qu. : 3.3000000     2nd Qu. : 5.1000000    2nd Qu. : 1.8000000 
+       Max. : 7.9000000       Max. : 4.4000000        Max. : 6.9000000       Max. : 2.5000000 
+                                                                                              
+
+       class [nom] 
+versicolor :    50 
+    setosa :    50 
+ virginica :    50 
+                   
+                   
+                   
+                   
+</pre></div>
+</div>
+</div>
+</div>
+<p>Frame summary is a simple way to see some general information about a data frame. We see the data frame contains <span class="math notranslate nohighlight">\(150\)</span> observations/rows and <span class="math notranslate nohighlight">\(5\)</span> variables/columns.</p>
+<p>The listing continues with name and type of the variables. Notice that there are four double variables and one nominal variable, named <code class="docutils literal notranslate"><span class="pre">class</span></code>.</p>
+<p>The summary listing ends with a section which describes each variable. For double variables the summary contains the well-known six number summary. We have there the minimum and maximum values, median, first and third quartile and the mean. For nominal values we have an enumeration of the first most frequent levels and the associated counts. For our <code class="docutils literal notranslate"><span class="pre">class</span></code> variable we see that there are three levels, each with <span class="math notranslate nohighlight">\(50\)</span> instances.</p>
+</section>
+<section id="variables">
+<h2>Variables<a class="headerlink" href="#variables" title="Permalink to this heading">#</a></h2>
+<p>In statistics a variable has multiple meanings. A random variable can be thought as a process which produces values according to a distribution. <code class="docutils literal notranslate"><span class="pre">Var</span></code> objects models the concept of values drawn from a unidimensional random variable, in other words a sample of values. As a consequence a <code class="docutils literal notranslate"><span class="pre">Var</span></code> object has a size and uses integer indices to access values from sample.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Var</span></code> interface declares methods useful for various kinds of tasks:</p>
+<ul class="simple">
+<li><p><em>manipulate values</em> from the variable by adding, removing, inserting and updating with different representations</p></li>
+<li><p><em>naming</em> a variable offers an alternate way to identify a variable into a frame and it is also useful as output information</p></li>
+<li><p><em>manipulate sets of values</em> by with concatenation and mapping</p></li>
+<li><p><em>streaming</em> allows traversal of variables by java streams</p></li>
+<li><p><em>numeric computations</em> like mathematical operations or variuos statistical interesting characteristics</p></li>
+<li><p><em>unique value and grouping</em> with a flexible grammar and short syntax</p></li>
+<li><p>other tools like deep copy, deep compare, summary, etc</p></li>
+</ul>
+</section>
+<section id="vartype-storage-and-representation-of-a-variable">
+<h2>VarType: storage and representation of a variable<a class="headerlink" href="#vartype-storage-and-representation-of-a-variable" title="Permalink to this heading">#</a></h2>
+<p>There are two main concepts which have to be understood when working with variables: <strong>storage</strong> and <strong>representation</strong>. All the variables are able to store data internally using a Java data types like  <code class="docutils literal notranslate"><span class="pre">double</span></code>, <code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">String</span></code>, etc. In the same time, the data from variables can be represented in different ways, all of them being available through the <code class="docutils literal notranslate"><span class="pre">Var</span></code> interface for all types of variables.</p>
+<p>However not all the representations are possible for all types of variables, because some of them does not make sense. For example double floating values can be represented as strings, which is fine, however strings in general cannot be represented as double values.</p>
+<p>These are the following data representations all the <code class="docutils literal notranslate"><span class="pre">Var</span></code>-iables can implement:</p>
+<ul class="simple">
+<li><p><strong>double</strong> - double</p></li>
+<li><p><strong>int</strong> - int</p></li>
+<li><p><strong>long</strong> - long</p></li>
+<li><p><strong>instant</strong> - Instant</p></li>
+<li><p><strong>label</strong> - String</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">Var</span></code> interface offers methods to get/update/insert values for all those data representations. Not all data representations are available for all variables. For example the label representation is available for all sort of variables. This is acceptable, since when storing information into a text-like data format, any data type should be transformed into a string and also should be able to be read from a string representation.</p>
+<p>To accomodate all those legal possibilities, the rapaio library has a set of predefined variable types, which can be found in the enum <code class="docutils literal notranslate"><span class="pre">VarType</span></code>.</p>
+<p>The defined variable types:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>VType</p></th>
+<th class="head"><p>Var class</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>BINARY</strong></p></td>
+<td><p>VarBinary</p></td>
+<td><p>Binary variable represented as int values, internally uses bitsets for efficient memory usage</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>INT</strong></p></td>
+<td><p>VarInt</p></td>
+<td><p>Integer variable represented and stored internally as int</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>NOMINAL</strong></p></td>
+<td><p>VarNominal</p></td>
+<td><p>Categorical variable represented as string from a predefined set, with no ordering (for example: <em>male</em>, <em>female</em>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>DOUBLE</strong></p></td>
+<td><p>VarDouble</p></td>
+<td><p>Double  variable represented and stored internally as double precision floating point values</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>LONG</strong></p></td>
+<td><p>VarLong</p></td>
+<td><p>Long variable represented and stored internally as long 8-byte signed integer values</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>INSTANT</strong></p></td>
+<td><p>VarInstant</p></td>
+<td><p>Instant variable represented and stored as datetime instant</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>STRING</strong></p></td>
+<td><p>VarString</p></td>
+<td><p>String variable used for manipulation of text with free form</p></td>
+</tr>
+</tbody>
+</table>
+<p>A data type is important for the following reasons:</p>
+<ul class="simple">
+<li><p>gives a certain useful meaning for variables in such a way that machine learning or statistical algorithms can leverage to maximum potential the meta information about variables</p></li>
+<li><p>encapsulates the stored data type artifacts and hide those details from the user, while allowing the usage of a single unified interface for all variables</p></li>
+</ul>
+</section>
+<section id="frames">
+<h2>Frames<a class="headerlink" href="#frames" title="Permalink to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">rapaio.data.Frame</span></code> is the most common way to handle data. A data frame is a collection of variables organized in rows and columns. One can see the rows of a data frame as instances or observations having various attributes. The columns of a data frame are variables described by <code class="docutils literal notranslate"><span class="pre">rapaio.data.Var</span></code>.</p>
+<p>There is a rich collection of methods offered by a data frame, allowing one to manipulate data in various ways for many purposes. Among those facilities to manipulate data one can have: views by data filtering, frame composition by merging rows or variables or other frames, grouping and group aggregates, streaming and so on.</p>
+<section id="solid-frames-and-view-frames">
+<h3>Solid frames and view frames<a class="headerlink" href="#solid-frames-and-view-frames" title="Permalink to this heading">#</a></h3>
+<p>There are more than one implementation of a data frame for different purposes. The most encountered data frame is a <code class="docutils literal notranslate"><span class="pre">SolidFrame</span></code>. Solid data frames represents data stored in dense solid variables. This allows fast operations since data is stored compact in memory and it is ussually produced when data is loaded from a data storage, by allocating space for new data or by creating a new copy of data from a view frame. A view frame is a type of data frame which does not store itself data, but it is a wrapper on data stored somewhere else, usually in other data frames.</p>
+<p>During data handling operations the library tries to not create copies of data, if possible. This give some freedom to the user to decide when data should be copied. We can illustrate with an example:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// create a solid data frame with one variable</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">solid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SolidFrame</span><span class="p">.</span><span class="na">byVars</span><span class="p">(</span><span class="n">VarDouble</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">).</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">));</span>
+<span class="n">solid</span><span class="p">.</span><span class="na">printString</span><span class="p">();</span>
+
+<span class="c1">// filter some rows based on values and obtain a view filter</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">view</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">solid</span><span class="p">.</span><span class="na">stream</span><span class="p">().</span><span class="na">filter</span><span class="p">(</span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="na">getDouble</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">).</span><span class="na">toMappedFrame</span><span class="p">();</span>
+<span class="n">view</span><span class="p">.</span><span class="na">printString</span><span class="p">();</span>
+
+<span class="c1">// we will bind the rows with old data frame</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">bound</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">solid</span><span class="p">.</span><span class="na">bindRows</span><span class="p">(</span><span class="n">view</span><span class="p">);</span>
+<span class="n">bound</span><span class="p">.</span><span class="na">printString</span><span class="p">();</span>
+
+<span class="c1">// we can create o copy of the data to not alter the original one with updates</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">copy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bound</span><span class="p">.</span><span class="na">copy</span><span class="p">();</span>
+<span class="n">copy</span><span class="p">.</span><span class="na">printString</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>rapaio.data.SolidFrame(rowCount=6, varCount=1)
+VarDouble [name:&quot;x&quot;, rowCount:6, values: 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
+rapaio.data.MappedFrame(rowCount=3, varCount=1)
+MappedVar[type=dbl, name:x, rowCount:3]
+rapaio.data.BoundFrame(rowCount=9, varCount=1)
+BoundVar(type=dbl) [name:&quot;x&quot;, rowCount:9, values: 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 2.0, 4.0, 6.0]
+rapaio.data.SolidFrame(rowCount=9, varCount=1)
+VarDouble [name:&quot;x&quot;, rowCount:9, values: 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 2.0, 4.0, 6.0]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Frames allows manipulation of data sets in a flexible way to infer various knowledge from data. Those abjects are used for most of the machine learning models and for input and output facilities.</p>
+<p>Variables and frames are also used in almost all tools from statistical hypothesis tests to graphical plots. There is also the possibility to work with vectors and matrices, objects used in linear algebra. Transition between those types of data structures can be done easily, even if sometimes data transformation can happen due to linear algebra object constrains (all values from a vector or matrix should have the same type).</p>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "rapaio-jupyter-kernel-preview23"
+        },
+        kernelOptions: {
+            name: "rapaio-jupyter-kernel-preview23",
+            path: "./tutorials"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'rapaio-jupyter-kernel-preview23'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="Variables.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Variables</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="CoreStatisticalTools.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Core statistical tools</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-types-arrays-and-collections">Data types, arrays and collections</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#var-and-frame">Var and Frame</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variables">Variables</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vartype-storage-and-representation-of-a-variable">VarType: storage and representation of a variable</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#frames">Frames</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#solid-frames-and-view-frames">Solid frames and view frames</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Aurelian Tutuianu
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
