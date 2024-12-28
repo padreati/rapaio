@@ -5,7 +5,7 @@ open module rapaio.experiment {
 
     requires jdk.incubator.vector;
 
-    requires rapaio.core;
+    requires rapaio.lib;
 
     requires javafx.base;
     requires javafx.fxml;

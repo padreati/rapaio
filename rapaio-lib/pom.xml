@@ -29,7 +29,7 @@
         <artifactId>rapaio</artifactId>
         <version>7.0.0</version>
     </parent>
-    <artifactId>rapaio-core</artifactId>
+    <artifactId>rapaio-lib</artifactId>
     <version>7.0.0</version>
     <name>rapaio-core</name>
     <url>https://github.com/padreati/rapaio/tree/master/rapaio-core</url>

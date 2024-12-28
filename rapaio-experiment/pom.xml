@@ -40,7 +40,7 @@
     <dependencies>
         <dependency>
             <groupId>io.github.padreati</groupId>
-            <artifactId>rapaio-core</artifactId>
+            <artifactId>rapaio-lib</artifactId>
             <version>7.0.0</version>
         </dependency>
         <dependency>

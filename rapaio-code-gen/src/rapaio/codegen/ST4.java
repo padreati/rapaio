@@ -44,7 +44,7 @@ public class ST4 {
             st.add("op", op);
             String text = st.render();
 
-            String fileName = root + "/rapaio-core/src/rapaio/darray/operator/unary/" + op.name + ".java";
+            String fileName = root + "/rapaio-lib/src/rapaio/darray/operator/unary/" + op.name + ".java";
             try (BufferedWriter w = new BufferedWriter(new FileWriter(fileName))) {
                 w.write(text);
                 w.flush();

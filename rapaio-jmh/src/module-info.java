@@ -6,7 +6,7 @@ open module rapaio.jmh {
     requires jdk.incubator.vector;
     requires jdk.unsupported;
 
-    requires rapaio.core;
+    requires rapaio.lib;
     requires rapaio.experiment;
     requires JSAT;
 }

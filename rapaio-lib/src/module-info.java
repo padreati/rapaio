@@ -1,4 +1,4 @@
-module rapaio.core {
+module rapaio.lib {
 
     requires java.desktop;
     requires java.logging;
@@ -44,17 +44,20 @@ module rapaio.core {
     exports rapaio.math.optimization.scalar;
 
     exports rapaio.math;
+
     exports rapaio.darray;
     exports rapaio.darray.manager;
     exports rapaio.darray.iterators;
     exports rapaio.darray.layout;
     exports rapaio.darray.operator;
     exports rapaio.darray.operator.impl;
+    exports rapaio.darray.operator.unary;
     exports rapaio.darray.matrix;
     exports rapaio.darray.storage;
     exports rapaio.darray.storage.array;
 
     exports rapaio.nn;
+    exports rapaio.nn.data;
     exports rapaio.nn.loss;
     exports rapaio.nn.optimizer;
     exports rapaio.nn.layer;
@@ -98,6 +101,8 @@ module rapaio.core {
 
     exports rapaio.ts;
 
+    exports rapaio.text;
+
     exports rapaio.sys;
 
     exports rapaio.util;
@@ -106,8 +111,4 @@ module rapaio.core {
     exports rapaio.util.hash;
     exports rapaio.util.parralel;
     exports rapaio.util.time;
-
-    exports rapaio.text;
-    exports rapaio.nn.data;
-    exports rapaio.darray.operator.unary;
 }

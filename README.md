@@ -55,7 +55,7 @@ Last published release on maven central is 7.0.0
 
     <dependency>
         <groupId>io.github.padreati</groupId>
-        <artifactId>rapaio-core</artifactId>
+        <artifactId>rapaio-lib</artifactId>
         <version>7.0.0</version>
     </dependency>
 
@@ -64,7 +64,7 @@ to document the ideas you are working on. You have to install `jupyter` / `jupyt
 For more information you can follow the instruction from
 [Rapaio Jupyter Kernel](https://github.com/padreati/rapaio-jupyter-kernel#installation). 
 
-    %dependency /add io.github.padreati:rapaio-core:7.0.0
+    %dependency /add io.github.padreati:rapaio-lib:7.0.0
     %dependency /resolve
 
 ## Acknowledgements
