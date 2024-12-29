@@ -19,33 +19,27 @@
  *
  */
 
-package rapaio.nn.data;
+package rapaio.codegen;
 
-import java.util.Iterator;
+import java.io.IOException;
+import java.nio.file.Path;
 
-import rapaio.darray.DArray;
-import rapaio.nn.Tensor;
-import rapaio.nn.TensorManager;
+import org.junit.Test;
 
-public interface TensorDataset<T extends TensorDataset<T>> {
+public class CodeGenFakeTest {
 
-    TensorManager tm();
+    /**
+     * This test is not intended to test something in codegen.
+     * <p>
+     * The intention is to start source generation process so that the dependent projects does not have to rely on codegen module.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void doChanges() throws IOException {
 
-    int len();
 
-    DArray<?>[] darrays();
-
-    DArray<?> darray(int index);
-
-    Tensor[] tensors();
-
-    Tensor tensor(int index);
-
-    T[] trainTestSplit(double testPercentage);
-
-    default Iterator<Batch> batchIterator(int batchSize) {
-        return batchIterator(batchSize, true, false);
+        Path path = Path.of(".").toAbsolutePath().getParent().getParent().resolve("rapaio-lib").resolve("src");
+        CodeGenApp.main(new String[] {path.toAbsolutePath().toString() + "/"});
     }
-
-    Iterator<Batch> batchIterator(int batchSize, boolean shuffle, boolean skipLast);
 }

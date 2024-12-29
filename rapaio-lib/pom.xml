@@ -27,12 +27,12 @@
     <parent>
         <groupId>io.github.padreati</groupId>
         <artifactId>rapaio</artifactId>
-        <version>7.0.0</version>
+        <version>7.0.1</version>
     </parent>
     <artifactId>rapaio-lib</artifactId>
-    <version>7.0.0</version>
-    <name>rapaio-core</name>
-    <url>https://github.com/padreati/rapaio/tree/master/rapaio-core</url>
+    <version>7.0.1</version>
+    <name>rapaio-lib</name>
+    <url>https://github.com/padreati/rapaio/tree/master/rapaio-lib</url>
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
@@ -41,12 +41,6 @@
     </licenses>
 
     <dependencies>
-        <dependency>
-            <groupId>io.github.padreati</groupId>
-            <artifactId>rapaio-code-gen</artifactId>
-            <version>7.0.0</version>
-            <scope>runtime</scope>
-        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
@@ -93,26 +87,6 @@
             </testResource>
         </testResources>
         <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.4.1</version>
-                <executions>
-                    <execution>
-                        <id>Generate sources</id>
-                        <configuration>
-                            <mainClass>rapaio.codegen.CodeGenApp</mainClass>
-                            <arguments>
-                                <argument>${project.build.sourceDirectory}/</argument>
-                            </arguments>
-                        </configuration>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

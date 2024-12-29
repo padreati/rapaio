@@ -71,7 +71,7 @@ public class SandboxIris {
         double lr = 1e-3;
         int batchSize = 30;
 
-        boolean separateBatches = false;
+        boolean separateBatches = true;
 
         var nn = new Sequential(tm,
                 new LayerNorm(tm, Shape.of(4)),

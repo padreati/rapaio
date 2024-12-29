@@ -26,11 +26,11 @@
     <parent>
         <artifactId>rapaio</artifactId>
         <groupId>io.github.padreati</groupId>
-        <version>7.0.0</version>
+        <version>7.0.1</version>
     </parent>
 
     <artifactId>rapaio-code-gen</artifactId>
-    <version>7.0.0</version>
+    <version>7.0.1</version>
     <name>rapaio-code-gen</name>
 
     <dependencies>
@@ -39,6 +39,12 @@
             <artifactId>ST4</artifactId>
             <version>4.3.4</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

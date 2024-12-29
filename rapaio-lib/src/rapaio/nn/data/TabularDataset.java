@@ -95,6 +95,7 @@ public class TabularDataset implements TensorDataset<TabularDataset> {
         };
     }
 
+    @Override
     public Iterator<Batch> batchIterator(int batchSize, boolean shuffle, boolean skipLast) {
         return new BatchIterator(tm, batchSize, shuffle, skipLast, tm.random(), this);
     }

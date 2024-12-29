@@ -3,12 +3,12 @@
   <parent>
     <artifactId>rapaio</artifactId>
     <groupId>io.github.padreati</groupId>
-    <version>7.0.0</version>
+    <version>7.0.1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>rapaio-jmh</artifactId>
   <name>rapaio-jmh</name>
-  <version>7.0.0</version>
+  <version>7.0.1</version>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <resources>
