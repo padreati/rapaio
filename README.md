@@ -39,9 +39,8 @@ library written in Java.*
 
 [Rapaio](https://padreati.github.io/rapaio/) is a rich collection of data mining, statistics and machine learning tools written completely
 in Java. Documentation for this library is hosted as [github pages](https://padreati.github.io/rapaio/). Most of the documentation is
-written as Jupyter notebooks and hosted at
-[rapaio-notebooks github repository](https://github.com/padreati/rapaio-notebooks). The notebooks repository can also be spin up
-through [binder]().
+written as Jupyter notebooks and can be seen at
+[rapaio-book github repository](https://github.com/padreati/rapaio-book).
 
 The complete list of features is presented [here](https://padreati.github.io/rapaio/complete-library-features/). An incomplete list of
 implemented algorithms and features includes: core statistical tools, common distributions and hypothesis testing, Naive Bayes, Binary
