@@ -512,19 +512,19 @@ versicolor :    50
 <div class="cell_input docutils container">
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// create a solid data frame with one variable</span>
 <span class="kd">var</span><span class="w"> </span><span class="n">solid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SolidFrame</span><span class="p">.</span><span class="na">byVars</span><span class="p">(</span><span class="n">VarDouble</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">).</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">));</span>
-<span class="n">solid</span><span class="p">.</span><span class="na">printString</span><span class="p">();</span>
+<span class="n">print</span><span class="p">(</span><span class="n">solid</span><span class="p">);</span>
 
 <span class="c1">// filter some rows based on values and obtain a view filter</span>
 <span class="kd">var</span><span class="w"> </span><span class="n">view</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">solid</span><span class="p">.</span><span class="na">stream</span><span class="p">().</span><span class="na">filter</span><span class="p">(</span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="na">getDouble</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">).</span><span class="na">toMappedFrame</span><span class="p">();</span>
-<span class="n">view</span><span class="p">.</span><span class="na">printString</span><span class="p">();</span>
+<span class="n">print</span><span class="p">(</span><span class="n">view</span><span class="p">);</span>
 
 <span class="c1">// we will bind the rows with old data frame</span>
 <span class="kd">var</span><span class="w"> </span><span class="n">bound</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">solid</span><span class="p">.</span><span class="na">bindRows</span><span class="p">(</span><span class="n">view</span><span class="p">);</span>
-<span class="n">bound</span><span class="p">.</span><span class="na">printString</span><span class="p">();</span>
+<span class="n">print</span><span class="p">(</span><span class="n">bound</span><span class="p">);</span>
 
 <span class="c1">// we can create o copy of the data to not alter the original one with updates</span>
 <span class="kd">var</span><span class="w"> </span><span class="n">copy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bound</span><span class="p">.</span><span class="na">copy</span><span class="p">();</span>
-<span class="n">copy</span><span class="p">.</span><span class="na">printString</span><span class="p">();</span>
+<span class="n">print</span><span class="p">(</span><span class="n">copy</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>

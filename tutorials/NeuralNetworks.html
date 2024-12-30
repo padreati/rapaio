@@ -336,9 +336,18 @@ document.write(`
 <h1>Tensors and Neural Networks<a class="headerlink" href="#tensors-and-neural-networks" title="Permalink to this heading">#</a></h1>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">load</span><span class="w"> </span><span class="p">..</span><span class="o">/</span><span class="n">rapaio</span><span class="o">-</span><span class="n">bootstrap</span><span class="p">.</span><span class="na">ipynb</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">load</span><span class="w"> </span><span class="p">..</span><span class="o">/</span><span class="p">..</span><span class="o">/</span><span class="n">rapaio</span><span class="o">-</span><span class="n">bootstrap</span><span class="p">.</span><span class="na">ipynb</span>
 <span class="c1">// %classpath /home/ati/work/rapaio/rapaio-core/target/classes/</span>
 <span class="c1">// %classpath /home/ati/work/rapaio/rapaio-experiment/target/classes/</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Adding dependency <span class=" -Color -Color-Bold -Color-Bold-Green">io.github.padreati:rapaio-lib:7.0.1</span>
+Solving dependencies
+Resolved artifacts count: 1
+Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/io/github/padreati/rapaio-lib/7.0.1/rapaio-lib-7.0.1.jar</span>
+
 </pre></div>
 </div>
 </div>
@@ -459,8 +468,8 @@ document.write(`
 
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">epoch</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 
-<span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Epoch: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">epoch</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;, train loss:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">trainLossValue</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;, test loss:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">testLossValue</span><span class="p">);</span>
-<span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;\t error: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Format</span><span class="p">.</span><span class="na">floatShort</span><span class="p">(</span><span class="n">cm</span><span class="p">.</span><span class="na">error</span><span class="p">())</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;, accuracy: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Format</span><span class="p">.</span><span class="na">floatShort</span><span class="p">(</span><span class="n">cm</span><span class="p">.</span><span class="na">accuracy</span><span class="p">()));</span>
+<span class="w">        </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;Epoch: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">epoch</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;, train loss:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">trainLossValue</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;, test loss:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">testLossValue</span><span class="p">);</span>
+<span class="w">        </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;\t error: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Format</span><span class="p">.</span><span class="na">floatShort</span><span class="p">(</span><span class="n">cm</span><span class="p">.</span><span class="na">error</span><span class="p">())</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;, accuracy: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Format</span><span class="p">.</span><span class="na">floatShort</span><span class="p">(</span><span class="n">cm</span><span class="p">.</span><span class="na">accuracy</span><span class="p">()));</span>
 <span class="w">        </span><span class="n">cm</span><span class="p">.</span><span class="na">frequencyMatrix</span><span class="p">().</span><span class="na">printContent</span><span class="p">();</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
@@ -468,56 +477,56 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch: 0, train loss:0.9960502535104752, test loss:1.065822958946228
-	 error: 0.756, accuracy: 0.244
-[[ 1 0 14 ]  
- [ 0 0 20 ]  
- [ 0 0 10 ]] 
-Epoch: 100, train loss:0.5289852172136307, test loss:0.5668545961380005
-	 error: 0.444, accuracy: 0.556
-[[ 15 0  0 ]  
- [  0 0 20 ]  
- [  0 0 10 ]] 
-Epoch: 200, train loss:0.3874886780977249, test loss:0.3928753435611725
-	 error: 0.067, accuracy: 0.933
-[[ 15  0  0 ]  
- [  1 17  2 ]  
- [  0  0 10 ]] 
-Epoch: 300, train loss:0.21072687208652496, test loss:0.14575348794460297
-	 error: 0.022, accuracy: 0.978
-[[ 15  0  0 ]  
- [  1 19  0 ]  
- [  0  0 10 ]] 
-Epoch: 400, train loss:0.1460152817890048, test loss:0.09358330816030502
-	 error: 0.022, accuracy: 0.978
-[[ 15  0  0 ]  
- [  1 19  0 ]  
- [  0  0 10 ]] 
-Epoch: 500, train loss:0.14570788107812405, test loss:0.07792974263429642
-	 error: 0.022, accuracy: 0.978
-[[ 15  0  0 ]  
- [  1 19  0 ]  
- [  0  0 10 ]] 
-Epoch: 600, train loss:0.13024368230253458, test loss:0.06344681233167648
-	 error: 0.022, accuracy: 0.978
-[[ 15  0  0 ]  
- [  1 19  0 ]  
- [  0  0 10 ]] 
-Epoch: 700, train loss:0.13339489791542292, test loss:0.060789648443460464
-	 error: 0.022, accuracy: 0.978
-[[ 15  0  0 ]  
- [  1 19  0 ]  
- [  0  0 10 ]] 
-Epoch: 800, train loss:0.13901920756325126, test loss:0.054203614592552185
-	 error: 0.022, accuracy: 0.978
-[[ 15  0  0 ]  
- [  1 19  0 ]  
- [  0  0 10 ]] 
-Epoch: 900, train loss:0.14198810793459415, test loss:0.0465756319463253
-	 error: 0.000, accuracy: 1.000
-[[ 15  0  0 ]  
- [  0 20  0 ]  
- [  0  0 10 ]] 
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch: 0, train loss:0.045644566183909774, test loss:0.2721867561340332
+	 error: 0.111, accuracy: 0.889
+[[ 8  0  0 ]  
+ [ 0 12  3 ]  
+ [ 0  2 20 ]] 
+Epoch: 100, train loss:0.04438650805968791, test loss:0.26524585485458374
+	 error: 0.133, accuracy: 0.867
+[[ 8  0  0 ]  
+ [ 0 12  3 ]  
+ [ 0  3 19 ]] 
+Epoch: 200, train loss:0.04734240286052227, test loss:0.2632858157157898
+	 error: 0.133, accuracy: 0.867
+[[ 8  0  0 ]  
+ [ 0 12  3 ]  
+ [ 0  3 19 ]] 
+Epoch: 300, train loss:0.07778783235698938, test loss:0.2686111629009247
+	 error: 0.111, accuracy: 0.889
+[[ 8  0  0 ]  
+ [ 0 12  3 ]  
+ [ 0  2 20 ]] 
+Epoch: 400, train loss:0.04781428584828973, test loss:0.25889909267425537
+	 error: 0.111, accuracy: 0.889
+[[ 8  0  0 ]  
+ [ 0 13  2 ]  
+ [ 0  3 19 ]] 
+Epoch: 500, train loss:0.042913374840281904, test loss:0.26636627316474915
+	 error: 0.111, accuracy: 0.889
+[[ 8  0  0 ]  
+ [ 0 12  3 ]  
+ [ 0  2 20 ]] 
+Epoch: 600, train loss:0.04451033310033381, test loss:0.2606799006462097
+	 error: 0.111, accuracy: 0.889
+[[ 8  0  0 ]  
+ [ 0 13  2 ]  
+ [ 0  3 19 ]] 
+Epoch: 700, train loss:0.045322495279833674, test loss:0.26323607563972473
+	 error: 0.111, accuracy: 0.889
+[[ 8  0  0 ]  
+ [ 0 12  3 ]  
+ [ 0  2 20 ]] 
+Epoch: 800, train loss:0.0429951052647084, test loss:0.263791024684906
+	 error: 0.111, accuracy: 0.889
+[[ 8  0  0 ]  
+ [ 0 13  2 ]  
+ [ 0  3 19 ]] 
+Epoch: 900, train loss:0.04508921317756176, test loss:0.26079532504081726
+	 error: 0.111, accuracy: 0.889
+[[ 8  0  0 ]  
+ [ 0 13  2 ]  
+ [ 0  3 19 ]] 
 </pre></div>
 </div>
 </div>
@@ -529,8 +538,8 @@ Epoch: 900, train loss:0.14198810793459415, test loss:0.0465756319463253
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9e474bc8c9cdc90c1673078fdeadee4d6faf00962913511dc8bf32a71fe17611.png" src="../_images/9e474bc8c9cdc90c1673078fdeadee4d6faf00962913511dc8bf32a71fe17611.png" />
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>9b42ea43-eec0-4304-80ea-353241cb424d
+<img alt="../_images/5d9d187172f85bedd4725bfd8f8165d8c846b238bf94d6302af157fcda374924.png" src="../_images/5d9d187172f85bedd4725bfd8f8165d8c846b238bf94d6302af157fcda374924.png" />
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0ef11d52-6b07-4f8f-8c78-d4a97837e4ef
 </pre></div>
 </div>
 </div>

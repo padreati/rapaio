@@ -367,13 +367,10 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Adding dependency <span class=" -Color -Color-Bold -Color-Bold-Green">io.github.padreati:rapaio-lib:7.0.0</span>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Adding dependency <span class=" -Color -Color-Bold -Color-Bold-Green">io.github.padreati:rapaio-lib:7.0.1</span>
 Solving dependencies
-Resolved artifacts count: 4
-Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/io/github/padreati/rapaio-lib/7.0.0/rapaio-lib-7.0.0.jar</span>
-Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/io/github/padreati/rapaio-code-gen/7.0.0/rapaio-code-gen-7.0.0.jar</span>
-Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/org/antlr/ST4/4.3.4/ST4-4.3.4.jar</span>
-Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/org/antlr/antlr-runtime/3.5.3/antlr-runtime-3.5.3.jar</span>
+Resolved artifacts count: 1
+Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/io/github/padreati/rapaio-lib/7.0.1/rapaio-lib-7.0.1.jar</span>
 
 </pre></div>
 </div>
@@ -608,7 +605,7 @@ rows: 200, complete: 200, missing: 0
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/bf306a898e62543f48130626f4870a76367bf854ca917b648b17ec512a0aae6f.png" src="../_images/bf306a898e62543f48130626f4870a76367bf854ca917b648b17ec512a0aae6f.png" />
+<img alt="../_images/585941b838d2a5552afb454a40622d33cc2164c1dbeac2808e8f33b0dcfccfb1.png" src="../_images/585941b838d2a5552afb454a40622d33cc2164c1dbeac2808e8f33b0dcfccfb1.png" />
 </div>
 </div>
 </section>
@@ -840,16 +837,16 @@ row value
 <p>Missing values are different for each representation, which makes sense since a double value have a different type than a String.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">WS</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">VarDouble</span><span class="p">.</span><span class="na">MISSING_VALUE</span><span class="p">);</span>
-<span class="n">WS</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">VarNominal</span><span class="p">.</span><span class="na">MISSING_VALUE</span><span class="p">);</span>
-<span class="n">WS</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">VarInt</span><span class="p">.</span><span class="na">MISSING_VALUE</span><span class="p">);</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">println</span><span class="p">(</span><span class="n">VarDouble</span><span class="p">.</span><span class="na">MISSING_VALUE</span><span class="p">);</span>
+<span class="n">println</span><span class="p">(</span><span class="n">VarNominal</span><span class="p">.</span><span class="na">MISSING_VALUE</span><span class="p">);</span>
+<span class="n">println</span><span class="p">(</span><span class="n">VarInt</span><span class="p">.</span><span class="na">MISSING_VALUE</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>NaN
 ?
-2.147483647E9
+2147483647
 </pre></div>
 </div>
 </div>
@@ -956,8 +953,8 @@ row value
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// compute the sum using spot iterator and streaming API</span>
-<span class="n">WS</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">d</span><span class="p">.</span><span class="na">stream</span><span class="p">().</span><span class="na">mapToDouble</span><span class="p">(</span><span class="n">VSpot</span><span class="p">::</span><span class="n">getDouble</span><span class="p">).</span><span class="na">sum</span><span class="p">());</span>
-<span class="n">WS</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">d</span><span class="p">.</span><span class="na">darray_</span><span class="p">().</span><span class="na">nanSum</span><span class="p">());</span>
+<span class="n">println</span><span class="p">(</span><span class="n">d</span><span class="p">.</span><span class="na">stream</span><span class="p">().</span><span class="na">mapToDouble</span><span class="p">(</span><span class="n">VSpot</span><span class="p">::</span><span class="n">getDouble</span><span class="p">).</span><span class="na">sum</span><span class="p">());</span>
+<span class="n">println</span><span class="p">(</span><span class="n">d</span><span class="p">.</span><span class="na">darray_</span><span class="p">().</span><span class="na">nanSum</span><span class="p">());</span>
 </pre></div>
 </div>
 </div>
