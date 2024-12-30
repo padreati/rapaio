@@ -1,4 +1,4 @@
-# Welcome to Rapaio Book
+# Rapaio Book
 
 Rapaio is a Java library which provides a comprehensive set of tools for 
 data manipulation, linear algebra, statistics and machine learning. 

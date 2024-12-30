@@ -63,6 +63,8 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/LinearAlgebraOverview';</script>
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -166,7 +168,7 @@ const thebe_selector_output = ".output, .cell_output"
         <ul class="nav bd-sidenav bd-sidenav__home-link">
             <li class="toctree-l1">
                 <a class="reference internal" href="../intro.html">
-                    Welcome to Rapaio Book
+                    Rapaio Book
                 </a>
             </li>
         </ul>
@@ -330,7 +332,18 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#darraymanager">DArrayManager</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#shape-of-a-darray">Shape of a DArray</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#darray-creation">DArray creation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stride-arrays">Stride arrays</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-iterators">Data iterators</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#operations-on-shapes">Operations on shapes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#elementwise-operations">Elementwise operations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reduce-operations">Reduce operations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#binary-operations">Binary operations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#broadcasting">Broadcasting</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#matrix-decompositions">Matrix decompositions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#copy-cast-concatenate-split">Copy, cast, concatenate, split</a></li>
 </ul>
             </nav>
         </div>
@@ -351,38 +364,35 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Adding dependency <span class=" -Color -Color-Bold -Color-Bold-Green">io.github.padreati:rapaio-lib:7.0.0</span>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Adding dependency <span class=" -Color -Color-Bold -Color-Bold-Green">io.github.padreati:rapaio-lib:7.0.1</span>
 Solving dependencies
-Resolved artifacts count: 4
-Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/io/github/padreati/rapaio-lib/7.0.0/rapaio-lib-7.0.0.jar</span>
-Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/io/github/padreati/rapaio-code-gen/7.0.0/rapaio-code-gen-7.0.0.jar</span>
-Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/org/antlr/ST4/4.3.4/ST4-4.3.4.jar</span>
-Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/org/antlr/antlr-runtime/3.5.3/antlr-runtime-3.5.3.jar</span>
+Resolved artifacts count: 1
+Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/io/github/padreati/rapaio-lib/7.0.1/rapaio-lib-7.0.1.jar</span>
 
 </pre></div>
 </div>
 </div>
 </div>
+<p><code class="docutils literal notranslate"><span class="pre">DArrays</span></code> are multi-dimensional arrays which stores data elements of the same type indexed by dimensions. Current implementation offers only stride dense vector arrays, but the design allows future implementations like sparse arrays.</p>
+<p>DArrays offers many operations, besides standard manipulation data tools, there are implemented also some non trivial operations and also matrix decompositions and linear solvers. There are implementations for four numerical data types: <code class="docutils literal notranslate"><span class="pre">byte</span></code>, <code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">float</span></code> and <code class="docutils literal notranslate"><span class="pre">double</span></code>.</p>
+<section id="darraymanager">
+<h2>DArrayManager<a class="headerlink" href="#darraymanager" title="Permalink to this heading">#</a></h2>
+<p>Working with darrays starts with having a <code class="docutils literal notranslate"><span class="pre">DArrayManager</span></code>. A DArrayManager handles all the internals which are required for an implementation of DArrays. Even if there is a single implementation of DArrays, which works with standard Java arrays and uses stride algebra and simd vectorization, multiple implementations are possible. One example is to use MemorySegments when simd instructions will be able to work with indexed operations.</p>
+<p>DArray manager describes which storage factory to be used, which implementation of the operations, and other various parameters.</p>
+<p>One can create darrays with this tensor manager using also <code class="docutils literal notranslate"><span class="pre">DArrays</span></code> class. However it is advisable to use a DArrayManager every time since this will maintain code compatbility in the future when new DArray implementations will be available. Switching to other implementations will require a single line of code change, where you choose the DArrayManager implementation.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">WS</span><span class="p">.</span><span class="na">getPrinter</span><span class="p">().</span><span class="na">withOptions</span><span class="p">(</span><span class="n">floatFormat</span><span class="p">(</span><span class="n">Format</span><span class="p">.</span><span class="na">floatFlexShort</span><span class="p">()));</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>rapaio.printer.standard.StandardPrinter@1d0ceafb
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">DArrayManager</span><span class="w"> </span><span class="n">dm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DArrayManager</span><span class="p">.</span><span class="na">base</span><span class="p">();</span>
+<span class="n">DType</span><span class="w"> </span><span class="n">dt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DType</span><span class="p">.</span><span class="na">DOUBLE</span><span class="p">;</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">Rapaio</span></code> library is commited to offer a rich set of tools for manipulating linear algebra objects and structures.
-Since 7.0.0 version, DArrays are available which replaced the older custom implementations. DArrays are n-dimensional arrays which stores data elements of the same type indexed by dimensions.
-Current implementation offers only stride dense vector arrays, but the design allows future implementations like sparse arrays.</p>
-<p>DArrays offers many operations, besides standard manipulation data tools, there are implemented also some non trivial operations and also matrix decompositions and linear solvers. There are implementations for four numerical data types: <code class="docutils literal notranslate"><span class="pre">byte</span></code>, <code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">float</span></code> and <code class="docutils literal notranslate"><span class="pre">double</span></code>.</p>
+</section>
 <section id="shape-of-a-darray">
 <h2>Shape of a DArray<a class="headerlink" href="#shape-of-a-darray" title="Permalink to this heading">#</a></h2>
-<p>DArray elements are indexed by dimensions. You can think of a tensor as a hyper cube of data elements with one element in each position from the hypercube. A darray can have 0, 1, 2 or more dimensions. Each dimension have a dimension size. The dimensions and the size of each dimension is described by a <code class="docutils literal notranslate"><span class="pre">Shape</span></code> object.
-The total number of elements is given by the product of all dimension sizes, or 1 if there is no dimension.</p>
+<p>DArray elements are indexed by dimensions. You can think of a darray as a hypercube of data elements with one element in each position of the hypercube. A darray can have 0, 1, 2 or more dimensions. Each dimension have a dimension size. The dimensions and the size of each dimension is described by a <code class="docutils literal notranslate"><span class="pre">Shape</span></code> object.</p>
+<p>The total number of elements is given by the product of all dimension sizes, or 1 if there is no dimension.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// a shape with no dimensions</span>
@@ -410,22 +420,18 @@ The total number of elements is given by the product of all dimension sizes, or 
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1
 </pre></div>
 </div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>58d7ffd6-41a3-4d6b-a44e-785cb9ce5626
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>fce0e044-c1b6-4c45-937b-ef2f00a20ca8
 </pre></div>
 </div>
 </div>
 </div>
+</section>
+<section id="darray-creation">
+<h2>DArray creation<a class="headerlink" href="#darray-creation" title="Permalink to this heading">#</a></h2>
 <p>A darray with no dimensions is a scalar and can be created with:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">DArrayManager</span><span class="w"> </span><span class="n">am</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DArrayManager</span><span class="p">.</span><span class="na">base</span><span class="p">();</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">scalar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">am</span><span class="p">.</span><span class="na">scalar</span><span class="p">(</span><span class="n">DType</span><span class="p">.</span><span class="na">DOUBLE</span><span class="p">,</span><span class="w"> </span><span class="mf">1.</span><span class="p">);</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">scalar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dm</span><span class="p">.</span><span class="na">scalar</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span><span class="w"> </span><span class="mf">1.</span><span class="p">);</span>
 <span class="n">display</span><span class="p">(</span><span class="n">scalar</span><span class="p">.</span><span class="na">shape</span><span class="p">());</span>
 <span class="n">display</span><span class="p">(</span><span class="n">scalar</span><span class="p">)</span>
 </pre></div>
@@ -439,15 +445,15 @@ The total number of elements is given by the product of all dimension sizes, or 
  1  
 </pre></div>
 </div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0988d4ec-3752-4db7-85ad-dbfe305da14e
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>cde09ed4-402e-4221-9349-040374fe9731
 </pre></div>
 </div>
 </div>
 </div>
-<p>A DArray with a single dimension is a vector, with two dimensions it is called a matrix and in general with more than two dimensions it is called a tensor. Some examples:</p>
+<p>A DArray with a single dimension is a vector, with two dimensions it is called a matrix and in general with more than two dimensions it is called a tensor.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">am</span><span class="p">.</span><span class="na">seq</span><span class="p">(</span><span class="n">DType</span><span class="p">.</span><span class="na">FLOAT</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">100</span><span class="p">)).</span><span class="na">printFullContent</span><span class="p">()</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">dm</span><span class="p">.</span><span class="na">seq</span><span class="p">(</span><span class="n">DType</span><span class="p">.</span><span class="na">FLOAT</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">100</span><span class="p">)).</span><span class="na">printFullContent</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -457,17 +463,15 @@ The total number of elements is given by the product of all dimension sizes, or 
 </div>
 </div>
 </div>
-<p>Tensors can have multiple implemntations. The implementation details of a tensor is governed by a <code class="docutils literal notranslate"><span class="pre">TensorManager</span></code>. Tensor manager describes which storage factory to be used, which implementation of the operations, and various parameters. In order to make things easier, there is a default tensor manager which uses Java arrays and no vectorization. Methods for working with the default tensor manager are exposed by the class <code class="docutils literal notranslate"><span class="pre">Tensors</span></code>, which offers shortcuts. Since the default tensor manager uses Java arrays as data storage, it is possible to wrap an array into a tensor of appropriate type and use tensor operations to change values in the array. For example we will create an array of double values and a wrapper tensor around it. Using tensor methods we can change the values from the array.</p>
+<p>Since the default darray manager uses Java arrays as data storage, it is possible to wrap an array into a darray of appropriate type and use darray operations to change values in the array. For example we will create an array of double values and a wrapper darray around it.
+Using darray methods we can change the values from the array.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="o">[]</span><span class="w"> </span><span class="n">array</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">double</span><span class="o">[]</span><span class="w"> </span><span class="p">{</span><span class="mf">1.</span><span class="p">,</span><span class="w"> </span><span class="mf">2.</span><span class="p">,</span><span class="w"> </span><span class="mf">3.</span><span class="p">};</span>
 <span class="c1">// the default tensor manager wraps a double array if we request a Tensor&lt;Double&gt;</span>
-<span class="kd">var</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">am</span><span class="p">.</span><span class="na">stride</span><span class="p">(</span><span class="n">DType</span><span class="p">.</span><span class="na">DOUBLE</span><span class="p">,</span><span class="w"> </span><span class="n">array</span><span class="p">);</span>
-<span class="n">t</span><span class="p">.</span><span class="na">log1p_</span><span class="p">();</span>
-
-<span class="k">for</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">array</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
-<span class="p">}</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dm</span><span class="p">.</span><span class="na">stride</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span><span class="w"> </span><span class="n">array</span><span class="p">);</span>
+<span class="n">t</span><span class="p">.</span><span class="na">log1p_</span><span class="p">();</span><span class="w"> </span><span class="c1">// call the in-place log1p operation</span>
+<span class="n">Arrays</span><span class="p">.</span><span class="na">stream</span><span class="p">(</span><span class="n">array</span><span class="p">).</span><span class="na">forEach</span><span class="p">(</span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">::</span><span class="n">println</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -479,11 +483,11 @@ The total number of elements is given by the product of all dimension sizes, or 
 </div>
 </div>
 </div>
+<p>The same thing happens for other value types (from the supperted ones which are: <code class="docutils literal notranslate"><span class="pre">double</span></code>,<code class="docutils literal notranslate"><span class="pre">float</span></code>,<code class="docutils literal notranslate"><span class="pre">int</span></code> and <code class="docutils literal notranslate"><span class="pre">byte</span></code>)</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// To change the type we can use the longer methods</span>
-<span class="kt">float</span><span class="o">[]</span><span class="w"> </span><span class="n">floatArray</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">float</span><span class="o">[]</span><span class="w"> </span><span class="p">{</span><span class="mf">1.f</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">};</span>
-<span class="kd">var</span><span class="w"> </span><span class="n">floatTensor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">am</span><span class="p">.</span><span class="na">stride</span><span class="p">(</span><span class="n">DType</span><span class="p">.</span><span class="na">FLOAT</span><span class="p">,</span><span class="w"> </span><span class="n">floatArray</span><span class="p">);</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kt">float</span><span class="o">[]</span><span class="w"> </span><span class="n">floatArray</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">float</span><span class="o">[]</span><span class="w"> </span><span class="p">{</span><span class="mf">1.f</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">};</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">floatTensor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dm</span><span class="p">.</span><span class="na">stride</span><span class="p">(</span><span class="n">DType</span><span class="p">.</span><span class="na">FLOAT</span><span class="p">,</span><span class="w"> </span><span class="n">floatArray</span><span class="p">);</span>
 <span class="n">floatTensor</span><span class="p">.</span><span class="na">sqr_</span><span class="p">();</span>
 <span class="k">for</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">floatArray</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
@@ -500,60 +504,90 @@ The total number of elements is given by the product of all dimension sizes, or 
 </div>
 </div>
 </div>
+<p>Using a different type will not wrap the array, but will copy the data into a new darray.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// using the wrong type will not wrap the array, but will copy the data</span>
-<span class="n">DArray</span><span class="o">&lt;</span><span class="n">Double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">doubleArray</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">am</span><span class="p">.</span><span class="na">stride</span><span class="p">(</span><span class="n">DType</span><span class="p">.</span><span class="na">DOUBLE</span><span class="p">,</span><span class="w"> </span><span class="n">floatArray</span><span class="p">);</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">doubleArray</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dm</span><span class="p">.</span><span class="na">stride</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span><span class="w"> </span><span class="n">floatArray</span><span class="p">);</span>
 <span class="n">doubleArray</span><span class="p">.</span><span class="na">sqrt_</span><span class="p">();</span>
-<span class="k">for</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">floatArray</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
+<span class="k">for</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="n">floatArray</span><span class="p">.</span><span class="na">length</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">printf</span><span class="p">(</span><span class="s">&quot;original value at index[%d]: %f, corresponding darray value: %f%n&quot;</span><span class="p">,</span><span class="w"> </span>
+<span class="w">                      </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">floatArray</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">doubleArray</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">i</span><span class="p">));</span>
 <span class="p">}</span>
 <span class="c1">// we can see that the values remain unchanged</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1.0
-4.0
-9.0
-16.0
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>original value at index[0]: 1.000000, corresponding darray value: 1.000000
+original value at index[1]: 4.000000, corresponding darray value: 2.000000
+original value at index[2]: 9.000000, corresponding darray value: 3.000000
+original value at index[3]: 16.000000, corresponding darray value: 4.000000
 </pre></div>
 </div>
 </div>
 </div>
+<p>The are also other constructors.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">DArray</span><span class="o">&lt;</span><span class="n">Double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">am</span><span class="p">.</span><span class="na">eye</span><span class="p">(</span><span class="n">DType</span><span class="p">.</span><span class="na">DOUBLE</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dm</span><span class="p">.</span><span class="na">eye</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+<span class="n">display</span><span class="p">(</span><span class="s">&quot;m:&quot;</span><span class="p">);</span>
+<span class="n">display</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>
+
 <span class="n">Random</span><span class="w"> </span><span class="n">random</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Random</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span>
-<span class="n">DArray</span><span class="o">&lt;</span><span class="n">Double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">am</span><span class="p">.</span><span class="na">random</span><span class="p">(</span><span class="n">DType</span><span class="p">.</span><span class="na">DOUBLE</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="n">random</span><span class="p">);</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dm</span><span class="p">.</span><span class="na">random</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="n">random</span><span class="p">);</span>
+<span class="n">display</span><span class="p">(</span><span class="s">&quot;u:&quot;</span><span class="p">);</span>
+<span class="n">display</span><span class="p">(</span><span class="n">u</span><span class="p">);</span>
+<span class="n">display</span><span class="p">(</span><span class="s">&quot;vector inner product between u and third row of m, which basically is the third element of u:&quot;</span><span class="p">);</span>
 <span class="n">display</span><span class="p">(</span><span class="n">u</span><span class="p">.</span><span class="na">inner</span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="na">selsq</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)));</span>
-<span class="n">u</span><span class="p">.</span><span class="na">printString</span><span class="p">();</span>
-<span class="n">m</span><span class="p">.</span><span class="na">printContent</span><span class="p">();</span>
+<span class="n">display</span><span class="p">(</span><span class="n">u</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-0.49948335406718436
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>m:
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[3],0,[1]}
-[ 0.605 0.477 -0.499 ] 
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[3, 3],0,[3, 1]}
 [[ 1 0 0 ]  
  [ 0 1 0 ]  
  [ 0 0 1 ]] 
 </pre></div>
 </div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>u:
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[3],0,[1]}
+[ 0.6054611363173034 0.47673188281383294 -0.49948335406718436 ] 
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>vector inner product between u and third row of m, which basically is the third element of u:
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-0.49948335406718436
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-0.49948335406718436
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2f14bf10-8a52-4917-8659-e8e49696ec00
+</pre></div>
 </div>
 </div>
+</div>
+<p>Since <code class="docutils literal notranslate"><span class="pre">m</span></code> is the identity matrix, it’s transpose is also identity,
+matrix multiplication between the two produces also identity and
+the determinant of <code class="docutils literal notranslate"><span class="pre">m</span></code> should be <code class="docutils literal notranslate"><span class="pre">1</span></code>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">DArray</span><span class="o">&lt;</span><span class="n">Double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">mtm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span><span class="p">.</span><span class="na">t_</span><span class="p">().</span><span class="na">mm</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">mtm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span><span class="p">.</span><span class="na">t_</span><span class="p">().</span><span class="na">mm</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>
+<span class="n">display</span><span class="p">(</span><span class="s">&quot;text/markdown&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;$m^T m = I$&quot;</span><span class="p">);</span>
 <span class="n">mtm</span><span class="p">.</span><span class="na">printContent</span><span class="p">();</span>
 <span class="n">mtm</span><span class="p">.</span><span class="na">lu</span><span class="p">().</span><span class="na">det</span><span class="p">();</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
+<p>$m^T m = I$</p>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[ 1 0 0 ]  
  [ 0 1 0 ]  
  [ 0 0 1 ]] 
@@ -564,70 +598,605 @@ The total number of elements is given by the product of all dimension sizes, or 
 </div>
 </div>
 </div>
+</section>
+<section id="stride-arrays">
+<h2>Stride arrays<a class="headerlink" href="#stride-arrays" title="Permalink to this heading">#</a></h2>
+<p>DArray base implementation uses stride array algebra. In short, all the elements of the darrays are stored in a storage which is a contiguous array. A darray is a view over the storage which defines a stride arithmetic. If operations allows to use the same storage (it is possible to perform the transformation manipulating only shape, offset and stride information), than it will create a new view. This allows fast operations if possible.</p>
+<p>Let’s build an array which contains a sequence of numbers.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">mtm</span><span class="p">.</span><span class="na">svd</span><span class="p">().</span><span class="na">singularValues</span><span class="p">().</span><span class="na">prod</span><span class="p">();</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dm</span><span class="p">.</span><span class="na">seq</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">));</span>
+<span class="n">x</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1.0
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[2, 3, 4],0,[12, 4, 1]}
+[[[  0  1  2  3 ]   
+  [  4  5  6  7 ]   
+  [  8  9 10 11 ]]  
+ [[ 12 13 14 15 ]   
+  [ 16 17 18 19 ]   
+  [ 20 21 22 23 ]]] 
 </pre></div>
 </div>
 </div>
 </div>
+<p>Let’s dive a little bit into the description of the darray. <code class="docutils literal notranslate"><span class="pre">BaseStride</span></code> is the class which implements the darray, which means it uses stride arithmetic to index the values from storage. <code class="docutils literal notranslate"><span class="pre">FLOAT</span></code> is the data type of the elements, in this case being <code class="docutils literal notranslate"><span class="pre">float</span></code> value type from Java.</p>
+<p>Next we have some numeric information. <code class="docutils literal notranslate"><span class="pre">[2,3,4]</span></code> is the shape. This is to be expected, since we specified that shape when we created the darray. This means we have a darray with three dimensions, first axis of size <code class="docutils literal notranslate"><span class="pre">2</span></code>, second axis of size <code class="docutils literal notranslate"><span class="pre">3</span></code> and the third axis of size <code class="docutils literal notranslate"><span class="pre">4</span></code>.</p>
+<p>The next information is the number <code class="docutils literal notranslate"><span class="pre">0</span></code>. This is the offset. The offset for a strided array is a position in the contiguous storage where the first element of the darray is stored. Sometimes this offset is not zero, and we will provide and example soon.</p>
+<p>The last numeric information is <code class="docutils literal notranslate"><span class="pre">[12,4,1]</span></code>. These are the strides. We have a stride for each dimension in the darray. The meaning of stride is the following: <em>how many elements have to be skipped to see the next element in the given dimension</em>. The stride and offset gives a way to compute the position of an element in the storage, given an index for that element.</p>
+<div class="math notranslate nohighlight">
+\[ptr[i,j,k] = offset + i*stride[0] + j*stride[1] + k * stride[2]\]</div>
+<p>The above formula is valid for three dimensions, of course. In general for <code class="docutils literal notranslate"><span class="pre">D</span></code> dimensions we have:</p>
+<div class="math notranslate nohighlight">
+\[ptr[i_0,i_1,..,i_{D-1}] = offset + \sum_{j=0}^{D-1} i_j * stride[j]\]</div>
+<p><code class="docutils literal notranslate"><span class="pre">x</span></code> is a 3 dimensional array. The first dimension has size <code class="docutils literal notranslate"><span class="pre">2</span></code>. This allows the interpretation of <code class="docutils literal notranslate"><span class="pre">x</span></code> as being an array of 2 matrices of shape <code class="docutils literal notranslate"><span class="pre">[3,4]</span></code>. We can select an element based on an axis and index using <code class="docutils literal notranslate"><span class="pre">sel</span></code>. Furthermore, <code class="docutils literal notranslate"><span class="pre">selsq</span></code>, which is an abbreviation of <em>select and squeeze</em> removes the given axis from the darray.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">mtm</span><span class="p">.</span><span class="na">qr</span><span class="p">().</span><span class="na">q</span><span class="p">()</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// first matrix</span>
+<span class="n">display</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="na">selsq</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">));</span>
+<span class="n">display</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="na">selsq</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">));</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[3, 3],0,[3, 1]}
-[[ -1  0  0 ]  
- [  0 -1  0 ]  
- [  0  0 -1 ]] 
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[3, 4],0,[4, 1]}
+[[ 0 1  2  3 ]  
+ [ 4 5  6  7 ]  
+ [ 8 9 10 11 ]] 
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[3, 4],12,[4, 1]}
+[[ 12 13 14 15 ]  
+ [ 16 17 18 19 ]  
+ [ 20 21 22 23 ]] 
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>7a8541bc-8dfe-4714-8cff-426c0e09ee72
 </pre></div>
 </div>
 </div>
 </div>
+<p>Notice the offset of the second darray, which is <code class="docutils literal notranslate"><span class="pre">12</span></code>. The two darrays have the same shapes and strides, which means their layout in memory is the same, but their offset is different. This is because <code class="docutils literal notranslate"><span class="pre">x</span></code> is stored in C order (the default order in storage, but that can be changed also), which means it first stores the elements of the first matrix at offset <code class="docutils literal notranslate"><span class="pre">0</span></code> and after that it stores the elements of the second matrix at offset <code class="docutils literal notranslate"><span class="pre">12</span></code>, which is the same value as the number of elements of the first darray.</p>
+<p>Multiple other operations on the layout creates different views on the same storage. General transposition, for example, creates the following darray.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">mtm</span><span class="p">.</span><span class="na">qr</span><span class="p">().</span><span class="na">r</span><span class="p">()</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="p">.</span><span class="na">t_</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[3, 3],0,[3, 1]}
-[[ -1  0  0 ]  
- [  0 -1  0 ]  
- [  0  0 -1 ]] 
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[4, 3, 2],0,[1, 4, 12]}
+[[[  0 12 ]   
+  [  4 16 ]   
+  [  8 20 ]]  
+ [[  1 13 ]   
+  [  5 17 ]   
+  [  9 21 ]]  
+ [[  2 14 ]   
+  [  6 18 ]   
+  [ 10 22 ]]  
+ [[  3 15 ]   
+  [  7 19 ]   
+  [ 11 23 ]]] 
 </pre></div>
 </div>
 </div>
 </div>
+<p>Notice how the shape dimensions are reversed, the same offset, but strides are different, since there are different dimension sizes. To check if two darrays have the same storage one have to compare the storage instances.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">mtm</span><span class="p">.</span><span class="na">qr</span><span class="p">().</span><span class="na">r</span><span class="p">().</span><span class="na">diag</span><span class="p">().</span><span class="na">prod</span><span class="p">()</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">display</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="na">storage</span><span class="p">());</span>
+<span class="n">display</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="na">t_</span><span class="p">().</span><span class="na">storage</span><span class="p">());</span>
+<span class="n">display</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="na">storage</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="na">t_</span><span class="p">().</span><span class="na">storage</span><span class="p">());</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-1.0
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>rapaio.darray.storage.array.DoubleArrayStorage@7d65e2c7
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>rapaio.darray.storage.array.DoubleArrayStorage@7d65e2c7
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>true
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>6abe27d1-e2d7-494e-a8f0-b821c23aa7db
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>Note on syntax:</strong>
+Some methods have two variants, the first one named <code class="docutils literal notranslate"><span class="pre">operation</span></code> and the second one <code class="docutils literal notranslate"><span class="pre">operation_</span></code>, which is the same name ended with underscore. When the method name ends with underscore the operation works on the same storage as the original darray, when there is no ending underscore a new copy is created. Not all operations allows this syntax, since some are not able to work on the same storage and some others works only on the same storage.</p>
+<p>When this syntax is used, both scenarios are implemented. This is valid for the transpose operation also. Notice the storage instance:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">display</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="na">storage</span><span class="p">());</span>
+<span class="n">display</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="na">t_</span><span class="p">().</span><span class="na">storage</span><span class="p">());</span>
+<span class="n">display</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="na">t</span><span class="p">().</span><span class="na">storage</span><span class="p">());</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>rapaio.darray.storage.array.DoubleArrayStorage@7d65e2c7
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>rapaio.darray.storage.array.DoubleArrayStorage@7d65e2c7
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>rapaio.darray.storage.array.DoubleArrayStorage@f1ca99e
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>e1977075-a1a3-4683-b674-e3975d9512b7
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="data-iterators">
+<h2>Data iterators<a class="headerlink" href="#data-iterators" title="Permalink to this heading">#</a></h2>
+<p>The elements of a darray can be accessed in multiple ways. One way is based on indexes. The index of an element is an array of semi-positive integer numbers, each less than its corresponding dimension. Thus the index of an element describes the order of that element in each dimension.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">dt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DType</span><span class="p">.</span><span class="na">FLOAT</span><span class="p">;</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dm</span><span class="p">.</span><span class="na">random</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="w"> </span><span class="n">random</span><span class="p">);</span>
+<span class="n">x</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{FLOAT,[4, 5],0,[5, 1]}
+[[  0.682409405708313   -1.860346794128418   -0.3640243411064148   0.907001256942749   -0.2078128606081009 ]  
+ [  1.9437248706817627   0.5633633732795715  -0.04871172457933426 -0.5485519170761108   1.6434990167617798 ]  
+ [  0.9172410368919373   0.3495040833950043  -0.3341809809207916  -0.35777759552001953 -0.1645195335149765 ]  
+ [ -0.10719511657953262 -0.06851354241371155 -0.07772722095251083  0.9436370730400085  -1.0320192575454712 ]] 
+</pre></div>
+</div>
+</div>
+</div>
+<p>We have a matrix of <code class="docutils literal notranslate"><span class="pre">4</span></code> rows and <code class="docutils literal notranslate"><span class="pre">5</span></code> columns. To access the element from second row and third column we can use <code class="docutils literal notranslate"><span class="pre">get</span></code> methods:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">display</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">));</span>
+<span class="c1">// if we want directly the value type</span>
+<span class="n">display</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="na">getFloat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">));</span>
+<span class="c1">// we can de a cast, also, if it is useful, notice that 0 is the rounded value of the original one</span>
+<span class="n">display</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="na">getInt</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">));</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-0.048711725
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-0.048711725
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>6d62c01f-11d2-4933-aea0-e7d8d8e4f4a4
+</pre></div>
+</div>
+</div>
+</div>
+<p>To iterate on the elements using indexes one can use the following iterator:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="na">iterator</span><span class="p">();</span>
+<span class="k">while</span><span class="p">(</span><span class="n">it</span><span class="p">.</span><span class="na">hasNext</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">print</span><span class="p">(</span><span class="n">it</span><span class="p">.</span><span class="na">next</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;, &quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.6824094, -1.8603468, -0.36402434, 0.90700126, -0.20781286, 1.9437249, 0.5633634, -0.048711725, -0.5485519, 1.643499, 0.91724104, 0.34950408, -0.33418098, -0.3577776, -0.16451953, -0.10719512, -0.06851354, -0.07772722, 0.9436371, -1.0320193, 
+</pre></div>
+</div>
+</div>
+</div>
+<p>The default order is <code class="docutils literal notranslate"><span class="pre">Order.C</span></code> C-style order, which means last dimensions loops faster. In the case of the matrix we iterate first on rows, and after that, in the inner loop, we iterate over columns. So, in C order, columns loops faster than rows.</p>
+<p>One can use also other orders, like <code class="docutils literal notranslate"><span class="pre">Order.F</span></code> Fortran-style order, which means first dimensions loops faster. There is also <code class="docutils literal notranslate"><span class="pre">Order.S</span></code> which is the storage order, the best possible order in which elements can be iterated so that accessing them is cache friendly. Also, <code class="docutils literal notranslate"><span class="pre">Order.A</span></code> means automatic order, which can be determined by an algorithm. We also have <code class="docutils literal notranslate"><span class="pre">Order.defaultOrder()</span></code> which is the configured default order, in our case being C.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="na">iterator</span><span class="p">(</span><span class="n">Order</span><span class="p">.</span><span class="na">F</span><span class="p">);</span>
+<span class="k">while</span><span class="p">(</span><span class="n">it</span><span class="p">.</span><span class="na">hasNext</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">print</span><span class="p">(</span><span class="n">it</span><span class="p">.</span><span class="na">next</span><span class="p">()</span><span class="o">+</span><span class="s">&quot;, &quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.6824094, 1.9437249, 0.91724104, -0.10719512, -1.8603468, 0.5633634, 0.34950408, -0.06851354, -0.36402434, -0.048711725, -0.33418098, -0.07772722, 0.90700126, -0.5485519, -0.3577776, 0.9436371, -0.20781286, 1.643499, -0.16451953, -1.0320193, 
+</pre></div>
+</div>
+</div>
+</div>
+<p>Another kind of iterator is to iterate by pointer. The pointer of an element is basically the position of that element in the underlying storage. The advantage of using pointer elements is that it can be faster since some optimizations are realized if possible. To access elements based on their pointer value you can used <code class="docutils literal notranslate"><span class="pre">ptrGet</span></code> methods.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">pit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="na">ptrIterator</span><span class="p">();</span>
+<span class="k">while</span><span class="p">(</span><span class="n">pit</span><span class="p">.</span><span class="na">hasNext</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">print</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="na">ptrGet</span><span class="p">(</span><span class="n">pit</span><span class="p">.</span><span class="na">next</span><span class="p">())</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;, &quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.6824094, -1.8603468, -0.36402434, 0.90700126, -0.20781286, 1.9437249, 0.5633634, -0.048711725, -0.5485519, 1.643499, 0.91724104, 0.34950408, -0.33418098, -0.3577776, -0.16451953, -0.10719512, -0.06851354, -0.07772722, 0.9436371, -1.0320193, 
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="operations-on-shapes">
+<h2>Operations on shapes<a class="headerlink" href="#operations-on-shapes" title="Permalink to this heading">#</a></h2>
+<p>In general we can consider that a darray is an organized indexed view over some data elements which are lies into a storage. Many operations on those objects changes only this organization of data. Some of the operations are able to create a new view over the same data and for some other this is impossible, and a new storage with copied data is necessary.</p>
+<p>The idea of multidimensional array of elements can be seen in a recursive fashion. For example a darray in three dimensions can be understood as an indexed array of darrays of 2 dimensions, which in turn can be seen as arrays of unidimensional objects, which in a final turn can be seen as an indexed array of individual values, or scalars. As we can see this is a matter of organization, and this kind of operations helps us to give a proper form more usefull for understanding, for computation or for other reasons.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dm</span><span class="p">.</span><span class="na">seq</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">));</span>
+<span class="n">x</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{FLOAT,[2, 3, 2],0,[6, 2, 1]}
+[[[  0  1 ]   
+  [  2  3 ]   
+  [  4  5 ]]  
+ [[  6  7 ]   
+  [  8  9 ]   
+  [ 10 11 ]]] 
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">am</span><span class="p">.</span><span class="na">random</span><span class="p">(</span><span class="n">DType</span><span class="p">.</span><span class="na">DOUBLE</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">),</span><span class="w"> </span><span class="n">random</span><span class="p">)</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// split into pieces of the same size on the first dimension</span>
+<span class="n">x</span><span class="p">.</span><span class="na">chunk</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[BaseStride{FLOAT,[3, 2],0,[2, 1]}
+[[ 0 1 ]  
+ [ 2 3 ]  
+ [ 4 5 ]] 
+, BaseStride{FLOAT,[3, 2],6,[2, 1]}
+[[  6  7 ]  
+ [  8  9 ]  
+ [ 10 11 ]] 
+]
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">am</span><span class="p">.</span><span class="na">random</span><span class="p">(</span><span class="n">DType</span><span class="p">.</span><span class="na">DOUBLE</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span><span class="w"> </span><span class="n">random</span><span class="p">)</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// split into pieces of the same size on first and last dimension</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">DArray</span><span class="o">&lt;</span><span class="n">Float</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="na">chunkAll</span><span class="p">(</span><span class="kc">false</span><span class="p">,</span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">});</span>
+<span class="n">list</span><span class="p">.</span><span class="na">forEach</span><span class="p">(</span><span class="n">da</span><span class="o">-&gt;</span><span class="n">display</span><span class="p">(</span><span class="n">da</span><span class="p">.</span><span class="na">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)));</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{FLOAT,[3],0,[2]}
+[ 0 2 4 ] 
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{FLOAT,[3],1,[2]}
+[ 1 3 5 ] 
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{FLOAT,[3],6,[2]}
+[ 6 8 10 ] 
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{FLOAT,[3],7,[2]}
+[ 7 9 11 ] 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// define some vectors</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dm</span><span class="p">.</span><span class="na">random</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="n">random</span><span class="p">);</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dm</span><span class="p">.</span><span class="na">random</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="n">random</span><span class="p">);</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dm</span><span class="p">.</span><span class="na">random</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="n">random</span><span class="p">);</span>
+<span class="n">display</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
+<span class="n">display</span><span class="p">(</span><span class="n">b</span><span class="p">);</span>
+<span class="n">display</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{FLOAT,[3],0,[1]}
+[ -0.32171013951301575 -0.17304112017154694 -0.4335041344165802 ] 
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{FLOAT,[3],0,[1]}
+[ -0.48131176829338074 -0.144036203622818 -1.3020426034927368 ] 
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{FLOAT,[3],0,[1]}
+[ 0.6593151688575745 -0.950773298740387 0.8610353469848633 ] 
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>cc5a5b5c-8e6a-4f18-a5c5-1b14ae077790
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// stack all of them as rows in a matrix. </span>
+<span class="n">dm</span><span class="p">.</span><span class="na">stack</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">List</span><span class="p">.</span><span class="o">&lt;</span><span class="n">DArray</span><span class="o">&lt;</span><span class="n">Float</span><span class="o">&gt;&gt;</span><span class="n">of</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{FLOAT,[3, 3],0,[3, 1]}
+[[ -0.32171013951301575 -0.17304112017154694 -0.4335041344165802 ]  
+ [ -0.48131176829338074 -0.144036203622818   -1.3020426034927368 ]  
+ [  0.6593151688575745  -0.950773298740387    0.8610353469848633 ]] 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// stack all of them as columns in a matrix</span>
+<span class="n">dm</span><span class="p">.</span><span class="na">stack</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">List</span><span class="p">.</span><span class="o">&lt;</span><span class="n">DArray</span><span class="o">&lt;</span><span class="n">Float</span><span class="o">&gt;&gt;</span><span class="n">of</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{FLOAT,[3, 3],0,[3, 1]}
+[[ -0.32171013951301575 -0.48131176829338074  0.6593151688575745 ]  
+ [ -0.17304112017154694 -0.144036203622818   -0.950773298740387  ]  
+ [ -0.4335041344165802  -1.3020426034927368   0.8610353469848633 ]] 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// concatenate all elements along the single available dimension of the elements</span>
+<span class="n">dm</span><span class="p">.</span><span class="na">cat</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">List</span><span class="p">.</span><span class="o">&lt;</span><span class="n">DArray</span><span class="o">&lt;</span><span class="n">Float</span><span class="o">&gt;&gt;</span><span class="n">of</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{FLOAT,[9],0,[1]}
+[ -0.32171013951301575 -0.17304112017154694 -0.4335041344165802 -0.48131176829338074 -0.144036203622818 -1.3020426034927368 0.6593151688575745 -0.950773298740387 0.8610353469848633 ] 
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="elementwise-operations">
+<h2>Elementwise operations<a class="headerlink" href="#elementwise-operations" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="reduce-operations">
+<h2>Reduce operations<a class="headerlink" href="#reduce-operations" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="binary-operations">
+<h2>Binary operations<a class="headerlink" href="#binary-operations" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="broadcasting">
+<h2>Broadcasting<a class="headerlink" href="#broadcasting" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="matrix-decompositions">
+<h2>Matrix decompositions<a class="headerlink" href="#matrix-decompositions" title="Permalink to this heading">#</a></h2>
+<p>Some fundamental matrix decompositions are available. Usually those can be found as operations with an abbreviated name. Some examples includes singluar value decomposition (<code class="docutils literal notranslate"><span class="pre">svd</span></code>), eigenvalue decomposition (<code class="docutils literal notranslate"><span class="pre">eig</span></code>), or QR decomposition <code class="docutils literal notranslate"><span class="pre">qr</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dm</span><span class="p">.</span><span class="na">random</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">random</span><span class="p">);</span>
+<span class="n">display</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{FLOAT,[4, 2],0,[2, 1]}
+[[  0.9695566296577454  -0.09966190159320831 ]  
+ [ -0.5811431407928467  -0.8561254143714905  ]  
+ [ -0.9181374907493591   1.1062313318252563  ]  
+ [ -0.03361855819821358 -0.19940824806690216 ]] 
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>e349cf03-69e0-4062-be5d-f30bcd1dfc89
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// singular value decomposition</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="na">svd</span><span class="p">().</span><span class="na">u</span><span class="p">();</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="na">svd</span><span class="p">().</span><span class="na">s</span><span class="p">();</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="na">svd</span><span class="p">().</span><span class="na">v</span><span class="p">();</span>
+
+<span class="n">display</span><span class="p">(</span><span class="n">u</span><span class="p">);</span>
+<span class="n">display</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+<span class="n">display</span><span class="p">(</span><span class="n">v</span><span class="p">);</span>
+
+<span class="c1">// reconstruction of x</span>
+<span class="n">display</span><span class="p">(</span><span class="n">u</span><span class="p">.</span><span class="na">mm</span><span class="p">(</span><span class="n">s</span><span class="p">).</span><span class="na">mm</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="na">t</span><span class="p">()));</span>
+
+<span class="n">display</span><span class="p">(</span><span class="s">&quot;rank of x:&quot;</span><span class="p">);</span>
+<span class="n">display</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="na">svd</span><span class="p">().</span><span class="na">rank</span><span class="p">());</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{FLOAT,[4, 2],0,[2, 1]}
+[[  0.4795474410057068  -0.4799862802028656  ]  
+ [  0.08935008198022842  0.8497121930122375  ]  
+ [ -0.8703932762145996  -0.16638758778572083 ]  
+ [  0.06683049350976944  0.14112931489944458 ]] 
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{FLOAT,[2, 2],0,[2, 1]}
+[[ 1.635522723197937 0                 ]  
+ [ 0                 1.205543041229248 ]] 
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{FLOAT,[2, 2],0,[2, 1]}
+[[  0.7397739887237549 -0.6728554368019104 ]  
+ [ -0.6728554368019104 -0.7397739887237549 ]] 
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{FLOAT,[4, 2],0,[2, 1]}
+[[  0.9695565700531006  -0.0996619164943695  ]  
+ [ -0.5811430811882019  -0.8561253547668457  ]  
+ [ -0.9181374907493591   1.1062313318252563  ]  
+ [ -0.03361855447292328 -0.19940824806690216 ]] 
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>rank of x:
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>fad95e59-5b59-4df9-a563-b59f9e465d1d
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// QR decomposition</span>
+<span class="n">x</span><span class="p">.</span><span class="na">qr</span><span class="p">().</span><span class="na">q</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{FLOAT,[4, 2],0,[2, 1]}
+[[ -0.665600061416626     0.1316402405500412  ]  
+ [  0.39895445108413696  -0.7555326819419861  ]  
+ [  0.6303008794784546    0.6228885054588318  ]  
+ [  0.023079121485352516 -0.15443818271160126 ]] 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// q is orthogonal</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="na">qr</span><span class="p">().</span><span class="na">q</span><span class="p">();</span>
+<span class="n">display</span><span class="p">(</span><span class="s">&quot;norm of the first vector column:&quot;</span><span class="p">);</span>
+<span class="n">display</span><span class="p">(</span><span class="n">q</span><span class="p">.</span><span class="na">selsq</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">).</span><span class="na">inner</span><span class="p">(</span><span class="n">q</span><span class="p">.</span><span class="na">selsq</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)));</span>
+<span class="n">display</span><span class="p">(</span><span class="s">&quot;inner product of the two column vectors:&quot;</span><span class="p">);</span>
+<span class="n">display</span><span class="p">(</span><span class="n">q</span><span class="p">.</span><span class="na">selsq</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">).</span><span class="na">inner</span><span class="p">(</span><span class="n">q</span><span class="p">.</span><span class="na">selsq</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)));</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>norm of the first vector column:
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.99999994
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>inner product of the two column vectors:
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4.656613E-10
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1fcb2e52-84a3-4b8d-991f-fa0dfc7194ed
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="na">qr</span><span class="p">().</span><span class="na">r</span><span class="p">();</span>
+<span class="c1">// basic reconstruction</span>
+<span class="n">display</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+<span class="n">display</span><span class="p">(</span><span class="n">q</span><span class="p">.</span><span class="na">mm</span><span class="p">(</span><span class="n">r</span><span class="p">));</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{FLOAT,[4, 2],0,[2, 1]}
+[[  0.9695566296577454  -0.09966190159320831 ]  
+ [ -0.5811431407928467  -0.8561254143714905  ]  
+ [ -0.9181374907493591   1.1062313318252563  ]  
+ [ -0.03361855819821358 -0.19940824806690216 ]] 
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{FLOAT,[4, 2],0,[2, 1]}
+[[  0.9695565700531006  -0.09966188669204712 ]  
+ [ -0.5811431407928467  -0.8561254739761353  ]  
+ [ -0.9181374907493591   1.106231451034546   ]  
+ [ -0.03361855819821358 -0.19940824806690216 ]] 
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>89ea25d3-15ea-4b73-a76a-5c4924531fce
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// compute inverse of a matrix using QR decomposition</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">xinv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="na">qr</span><span class="p">().</span><span class="na">inv</span><span class="p">();</span>
+<span class="n">display</span><span class="p">(</span><span class="n">xinv</span><span class="p">);</span>
+<span class="n">display</span><span class="p">(</span><span class="n">xinv</span><span class="p">.</span><span class="na">mm</span><span class="p">(</span><span class="n">x</span><span class="p">));</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{FLOAT,[2, 4],0,[4, 1]}
+[[ 0.48480424284935    -0.433839350938797  -0.3008265793323517 -0.0485406331717968 ]  
+ [ 0.09725435823202133 -0.5581792593002319  0.4601832330226898 -0.1140972450375557 ]] 
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{FLOAT,[2, 2],0,[2, 1]}
+[[  1                        -0.0000000046566128730773926 ]  
+ [ -0.0000000421423465013504  0.9999998807907104          ]] 
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>a5c06ce4-1671-4f2d-924d-8838274cf57d
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dm</span><span class="p">.</span><span class="na">random</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">),</span><span class="w"> </span><span class="n">random</span><span class="p">);</span>
+<span class="n">x</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{FLOAT,[4, 4],0,[4, 1]}
+[[  0.10020556300878525  0.3454208970069885 -1.1442604064941406  -0.006700537167489529 ]  
+ [ -1.9218206405639648  -1.7930243015289307 -0.04050852730870247  0.398999959230423    ]  
+ [ -0.2643210291862488   1.5562230348587036 -0.2933931052684784   0.3751673102378845   ]  
+ [  0.7403811812400818   1.2483185529708862  0.25033804774284363  1.9779791831970215   ]] 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dm</span><span class="p">.</span><span class="na">random</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span><span class="w"> </span><span class="n">random</span><span class="p">);</span>
+<span class="n">y</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{FLOAT,[4],0,[1]}
+[ -1.424954891204834 0.7558175325393677 -0.5863436460494995 1.2770365476608276 ] 
 </pre></div>
 </div>
 </div>
@@ -639,11 +1208,11 @@ The total number of elements is given by the product of all dimension sizes, or 
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[4, 4],0,[4, 1]}
-[[ -0.131  0.29   0.233 -0.068 ]  
- [ -0.132 -0.062  0.14   0.283 ]  
- [ -0.035  0.457 -0.052 -0.187 ]  
- [  0.053 -0.548  0.168 -0.191 ]] 
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{FLOAT,[4, 4],0,[4, 1]}
+[[ -0.14278841018676758  0.2610751688480377  0.6709297895431519   -0.008556830696761608 ]  
+ [  2.7385077476501465  -1.3551992177963257  0.023751918226480484  0.5095375180244446   ]  
+ [  0.3766455352306366   1.1762206554412842  0.17202918231487274   0.47910237312316895  ]  
+ [ -1.0550098419189453   0.9435010552406311 -0.14678412675857544   2.525951623916626    ]] 
 </pre></div>
 </div>
 </div>
@@ -655,11 +1224,11 @@ The total number of elements is given by the product of all dimension sizes, or 
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[4, 4],0,[4, 1]}
-[[ -0.131  0.094  0.287 -0.074 ]  
- [ -0.404 -0.062  0.531  0.95  ]  
- [ -0.029  0.121 -0.052 -0.166 ]  
- [  0.048 -0.163  0.19  -0.191 ]] 
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{FLOAT,[4, 4],0,[4, 1]}
+[[ -0.14278841018676758 -0.49220919609069824  1.6305195093154907   0.009547962807118893 ]  
+ [ -1.4525457620620728  -1.3551992177963257  -0.03061705455183983  0.30157116055488586  ]  
+ [  0.15498295426368713 -0.9124814867973328   0.17202918231487274 -0.21997696161270142  ]  
+ [  0.9454938173294067   1.5941483974456787   0.3196908235549927   2.525951623916626    ]] 
 </pre></div>
 </div>
 </div>
@@ -671,126 +1240,18 @@ The total number of elements is given by the product of all dimension sizes, or 
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[4, 4],0,[4, 1]}
-[[ -0.131  0.29   0.233 -0.068 ]  
- [ -0.132 -0.062  0.14   0.283 ]  
- [ -0.035  0.457 -0.052 -0.187 ]  
- [  0.053 -0.548  0.168 -0.191 ]] 
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{FLOAT,[4, 4],0,[4, 1]}
+[[ -0.14278841018676758  0.2610751688480377  0.6709297895431519   -0.008556830696761608 ]  
+ [  2.7385077476501465  -1.3551992177963257  0.023751918226480484  0.5095375180244446   ]  
+ [  0.3766455352306366   1.1762206554412842  0.17202918231487274   0.47910237312316895  ]  
+ [ -1.0550098419189453   0.9435010552406311 -0.14678412675857544   2.525951623916626    ]] 
 </pre></div>
 </div>
 </div>
 </div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// load first 4 numeric features of iris dataset into a matrix</span>
-<span class="kd">var</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Datasets</span><span class="p">.</span><span class="na">loadIrisDataset</span><span class="p">().</span><span class="na">mapVars</span><span class="p">(</span><span class="n">VarRange</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">&quot;0~3&quot;</span><span class="p">)).</span><span class="na">darray</span><span class="p">();</span>
-<span class="c1">// compute mean on row axis</span>
-<span class="kd">var</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="na">mean1d</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
-<span class="c1">// compute sd on row axis</span>
-<span class="kd">var</span><span class="w"> </span><span class="n">std</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="na">std1d</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
-<span class="c1">// create a matrix which is the standardized version of m</span>
-<span class="kd">var</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="na">sub</span><span class="p">(</span><span class="n">m</span><span class="p">).</span><span class="na">div</span><span class="p">(</span><span class="n">std</span><span class="p">);</span>
-<span class="c1">// print first 10 rows of standardized values</span>
-<span class="n">s</span><span class="p">.</span><span class="na">sel</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">IntArrays</span><span class="p">.</span><span class="na">newSeq</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[10, 4],0,[4, 1]}
-[[ -0.901  1.019 -1.34  -1.315 ]  
- [ -1.143 -0.132 -1.34  -1.315 ]  
- [ -1.385  0.328 -1.397 -1.315 ]  
- [ -1.507  0.098 -1.283 -1.315 ]  
- [ -1.022  1.249 -1.34  -1.315 ]  
- [ -0.537  1.94  -1.17  -1.052 ]  
- [ -1.507  0.789 -1.34  -1.184 ]  
- [ -1.022  0.789 -1.283 -1.315 ]  
- [ -1.749 -0.362 -1.34  -1.315 ]  
- [ -1.143  0.098 -1.283 -1.447 ]] 
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="p">.</span><span class="na">mean1d</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[4],0,[1]}
-[ -0 0 -0 -0 ] 
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">std</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="na">std1d</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
-<span class="n">std</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[4],0,[1]}
-[ 0.828 0.436 1.765 0.762 ] 
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="p">.</span><span class="na">sub</span><span class="p">(</span><span class="n">m</span><span class="p">).</span><span class="na">div</span><span class="p">(</span><span class="n">std</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[150, 4],0,[4, 1]}
-[[  -0.898  1.016 -1.336 -1.311 ]   
- [  -1.139 -0.132 -1.336 -1.311 ]   
- [  -1.381  0.327 -1.392 -1.311 ]   
- [  -1.501  0.098 -1.279 -1.311 ]   
- [  -1.018  1.245 -1.336 -1.311 ]   
- [  -0.535  1.933 -1.166 -1.049 ]   
- [  -1.501  0.786 -1.336 -1.18  ]   
- [  -1.018  0.786 -1.279 -1.311 ]   
- [  -1.743 -0.361 -1.336 -1.311 ]   
- [  -1.139  0.098 -1.279 -1.442 ]   
- [  -0.535  1.474 -1.279 -1.311 ]   
- [  -1.26   0.786 -1.222 -1.311 ]   
- [  -1.26  -0.132 -1.336 -1.442 ]   
- [  -1.864 -0.132 -1.506 -1.442 ]   
- [  -0.052  2.163 -1.449 -1.311 ]   
- [  -0.173  3.08  -1.279 -1.049 ]   
- [  -0.535  1.933 -1.392 -1.049 ]   
- [  -0.898  1.016 -1.336 -1.18  ]   
- [  -0.173  1.704 -1.166 -1.18  ]   
- [  -0.898  1.704 -1.279 -1.18  ]   
- [  -0.535  0.786 -1.166 -1.311 ]   
- [  -0.898  1.474 -1.279 -1.049 ]   
- [  -1.501  1.245 -1.562 -1.311 ]   
- [  -0.898  0.557 -1.166 -0.917 ]   
- [  -1.26   0.786 -1.053 -1.311 ]   
- [  -1.018 -0.132 -1.222 -1.311 ]   
- [  -1.018  0.786 -1.222 -1.049 ]   
- [  -0.777  1.016 -1.279 -1.311 ]   
- [  -0.777  0.786 -1.336 -1.311 ]   
- [  -1.381  0.327 -1.222 -1.311 ]   
- [  -1.26   0.098 -1.222 -1.311 ]   
- [  -0.535  0.786 -1.279 -1.049 ]   
- [  -0.777  2.392 -1.279 -1.442 ]   
- [  -0.415  2.622 -1.336 -1.311 ]   
- [  -1.139  0.098 -1.279 -1.311 ]   
- [  -1.018  0.327 -1.449 -1.311 ]   
- [  -0.415  1.016 -1.392 -1.311 ]   
- [  -1.139  1.245 -1.336 -1.442 ]   
- [  -1.743 -0.132 -1.392 -1.311 ]   
- [  -0.898  0.786 -1.279 -1.311 ]   
-...  ...    ...    ...    ...   ... 
-</pre></div>
-</div>
-</div>
-</div>
+</section>
+<section id="copy-cast-concatenate-split">
+<h2>Copy, cast, concatenate, split<a class="headerlink" href="#copy-cast-concatenate-split" title="Permalink to this heading">#</a></h2>
 </section>
 </section>
 
@@ -857,7 +1318,18 @@ The total number of elements is given by the product of all dimension sizes, or 
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#darraymanager">DArrayManager</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#shape-of-a-darray">Shape of a DArray</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#darray-creation">DArray creation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stride-arrays">Stride arrays</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-iterators">Data iterators</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#operations-on-shapes">Operations on shapes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#elementwise-operations">Elementwise operations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reduce-operations">Reduce operations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#binary-operations">Binary operations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#broadcasting">Broadcasting</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#matrix-decompositions">Matrix decompositions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#copy-cast-concatenate-split">Copy, cast, concatenate, split</a></li>
 </ul>
   </nav></div>
 

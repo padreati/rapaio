@@ -1,0 +1,1465 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Important Note: &#8212; Rapaio Book</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pdf_print.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/rapaio-tensors';</script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.png" class="logo__image only-light" alt="Rapaio Book - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="Rapaio Book - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Rapaio Book
+                </a>
+            </li>
+        </ul>
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../BriefPreview.html">Brief preview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BuiltinDataSets.html">Built-in Data sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Variables.html">Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DataHandlingOverview.html">Data Handling Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CoreStatisticalTools.html">Core statistical tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DataVisualization.html">Data visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ReadingAndWritingData.html">Reading and Writing data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LinearAlgebraOverview.html">Linear Algebra Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NeuralNetworks.html">Tensors and Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../algorithms/KMeans.html">Algorithms: KMeans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/tutorials/rapaio-tensors.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Important Note:</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Important Note:</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#rapaio-darrays-and-some-applications">Rapaio darrays and some applications</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#brief-introduction-to-darrays">Brief introduction to darrays</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#darray-creation">DArray creation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#all-tensors-are-views">All tensors are views</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#in-place-operations-vs-copy-on-new-operations">In place operations vs copy on new operations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#applications-of-linear-algebra">Applications of linear algebra</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-a-system-of-equations">Solving a system of equations</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#least-squares">Least squares</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#image-compression-with-pca">Image compression with PCA</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#other-operations-with-darrays">Other operations with darrays</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#what-else">What else?</a></li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="important-note">
+<h1>Important Note:<a class="headerlink" href="#important-note" title="Permalink to this heading">#</a></h1>
+<p>This notebook requiers Java 23 with preview features because <code class="docutils literal notranslate"><span class="pre">rapaio-lib:7.0.1</span></code> is compiled with this version. To make that happen you need default java to be jdk 23 and the <code class="docutils literal notranslate"><span class="pre">kernel.json</span></code> to be updated in the following way:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
+  &quot;argv&quot;: [
+    &quot;java&quot;,
+    &quot;--enable-preview&quot;,
+    &quot;--add-modules&quot;,
+    &quot;java.base,jdk.incubator.vector&quot;,
+    &quot;-jar&quot;,
+    &quot;/home/ANT.AMAZON.COM/tutuianu/.local/share/jupyter/kernels/rapaio-jupyter-kernel/rapaio-jupyter-kernel-2.2.0.jar&quot;,
+    &quot;{connection_file}&quot;
+  ],
+  &quot;display_name&quot;: &quot;Java (rjk 2.2.0)&quot;,
+  &quot;language&quot;: &quot;java&quot;,
+  &quot;interrupt_mode&quot;: &quot;message&quot;,
+  &quot;env&quot;: {
+    &quot;RJK_COMPILER_OPTIONS&quot;: &quot;--enable-preview --release 23 --add-modules java.base,jdk.incubator.vector&quot;,
+    &quot;RJK_INIT_SCRIPT&quot;: &quot;&quot;,
+    &quot;RJK_TIMEOUT_MILLIS&quot;: &quot;-1&quot;
+  }
+}
+</pre></div>
+</div>
+<p>The previous content is a sample from my local machine. Yours should be similar. What is added is <code class="docutils literal notranslate"><span class="pre">argv</span></code> lines from enable-preview till jdk.incubator.vector. Also the values for <code class="docutils literal notranslate"><span class="pre">RJK_COMPILER_OPTIONS</span></code>. Once you changed the kernel you can run this notebook with no issues.</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="rapaio-darrays-and-some-applications">
+<h1>Rapaio darrays and some applications<a class="headerlink" href="#rapaio-darrays-and-some-applications" title="Permalink to this heading">#</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">load</span><span class="w"> </span><span class="p">..</span><span class="o">/</span><span class="p">..</span><span class="o">/</span><span class="n">rapaio</span><span class="o">-</span><span class="n">bootstrap</span><span class="p">.</span><span class="na">ipynb</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Adding dependency <span class=" -Color -Color-Bold -Color-Bold-Green">io.github.padreati:rapaio-lib:7.0.1</span>
+Solving dependencies
+Resolved artifacts count: 1
+Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/io/github/padreati/rapaio-lib/7.0.1/rapaio-lib-7.0.1.jar</span>
+
+</pre></div>
+</div>
+</div>
+</div>
+<section id="brief-introduction-to-darrays">
+<h2>Brief introduction to darrays<a class="headerlink" href="#brief-introduction-to-darrays" title="Permalink to this heading">#</a></h2>
+<section id="darray-creation">
+<h3>DArray creation<a class="headerlink" href="#darray-creation" title="Permalink to this heading">#</a></h3>
+<p>DArray is an in-memory implementation of multi-dimensional arrays. A DArray contains indexed elements of the same numerical type. Creation and other inner details regarding darray computations are giverned by DArrayManager. In order to create a darray we need to obtain an instance of a darray manager.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">dm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DArrayManager</span><span class="p">.</span><span class="na">base</span><span class="p">();</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">dt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DType</span><span class="p">.</span><span class="na">DOUBLE</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let’s create a 3 dimensional darray which contains double values given in sequence.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dm</span><span class="p">.</span><span class="na">seq</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">a</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[2, 3, 4],0,[12, 4, 1]}
+[[[  0  1  2  3 ]   
+  [  4  5  6  7 ]   
+  [  8  9 10 11 ]]  
+ [[ 12 13 14 15 ]   
+  [ 16 17 18 19 ]   
+  [ 20 21 22 23 ]]] 
+</pre></div>
+</div>
+</div>
+</div>
+<p>Some comments about what information is presented in the output:</p>
+<ul class="simple">
+<li><p>The darray is a strided darray (stride arrays) which is managed by the base tensor factory. The default array implementation which uses Java flat arrays for storage and uses standard access array operations for data manipulation</p></li>
+<li><p>The values contained in that darray are of type double (64-bit floating point)</p></li>
+<li><p>the darray has a three dimensional shape, with dimension sizes given by <code class="docutils literal notranslate"><span class="pre">[2,3,4]</span></code></p></li>
+<li><p>Values are stored at offset <code class="docutils literal notranslate"><span class="pre">0</span></code> and the strides have values <code class="docutils literal notranslate"><span class="pre">[12,4,1]</span></code>. This means that to find the next element in the first dimension, the tensor moves 12 positions relative to the current element. This also means that the last dimension moves fastest, and since the stride is unitary dense we can say it is stored in <code class="docutils literal notranslate"><span class="pre">C-order</span></code>.</p></li>
+</ul>
+<p>The storage order can be specified at creation time. By default, the storage order is C-order.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dm</span><span class="p">.</span><span class="na">seq</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span><span class="w"> </span><span class="n">Order</span><span class="p">.</span><span class="na">F</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>They look the same, but flattening them in the storage order displays also how they are stored in reality.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">b</span><span class="p">.</span><span class="na">ravel</span><span class="p">(</span><span class="n">Order</span><span class="p">.</span><span class="na">S</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[24],0,[1]}
+[ 0 12 4 16 8 20 1 13 5 17 9 21 2 14 6 18 10 22 3 15 ... ] 
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="all-tensors-are-views">
+<h3>All tensors are views<a class="headerlink" href="#all-tensors-are-views" title="Permalink to this heading">#</a></h3>
+<p>The storage contains data elements from a tensor. Tensors are just objects which knows how to logically organize data based on data layout and how to perfom computations. But all tensors are views over a storage. One can check if the same storage lied beneath two tensors by comparing the storage objects.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">b</span><span class="p">.</span><span class="na">storage</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="na">ravel</span><span class="p">(</span><span class="n">Order</span><span class="p">.</span><span class="na">S</span><span class="p">).</span><span class="na">storage</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>true
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">b</span><span class="p">.</span><span class="na">storage</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="na">ravel</span><span class="p">(</span><span class="n">Order</span><span class="p">.</span><span class="na">C</span><span class="p">).</span><span class="na">storage</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>false
+</pre></div>
+</div>
+</div>
+</div>
+<p>Some operations can be performed without the need to copy data. Some other operations needs to create a new storage for data, either as a copy or as a new shaped storage. Read the documentation for each operation on how it works. We will take as an example the <code class="docutils literal notranslate"><span class="pre">sel</span></code> operation which selects a subset of a darray along a given dimension.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dm</span><span class="p">.</span><span class="na">seq</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">));</span>
+<span class="n">a</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[3, 4],0,[4, 1]}
+[[ 0 1  2  3 ]  
+ [ 4 5  6  7 ]  
+ [ 8 9 10 11 ]] 
+</pre></div>
+</div>
+</div>
+</div>
+<p>We will take out the values from column with index 2 and remove (squeeze) the that dimension:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="na">selsq</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">);</span>
+<span class="n">b</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[3],2,[4]}
+[ 2 6 10 ] 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="p">.</span><span class="na">storage</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="na">storage</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>true
+</pre></div>
+</div>
+</div>
+</div>
+<p>Notice how they have the same storage object. This is possible because using stride arithmetics we can create a view of the second column over the same storage, as such there is no need to copy the data.</p>
+<p>If we take some columns is scrumble order, the stride arithmetics would be impossible to derive, and a copy of the data will be created.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="na">sel</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+<span class="n">b</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[3, 3],0,[3, 1]}
+[[  3 1  2 ]  
+ [  7 5  6 ]  
+ [ 11 9 10 ]] 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="p">.</span><span class="na">storage</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="na">storage</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>false
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="in-place-operations-vs-copy-on-new-operations">
+<h3>In place operations vs copy on new operations<a class="headerlink" href="#in-place-operations-vs-copy-on-new-operations" title="Permalink to this heading">#</a></h3>
+<p>When possible, if it is possible, an in place operation can be performed. The convention is that those methods ends their name with <code class="docutils literal notranslate"><span class="pre">_</span></code> character. Take for example <code class="docutils literal notranslate"><span class="pre">log1p</span></code></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dm</span><span class="p">.</span><span class="na">seq</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">));</span>
+<span class="n">a</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[4, 4],0,[4, 1]}
+[[  0  1  2  3 ]  
+ [  4  5  6  7 ]  
+ [  8  9 10 11 ]  
+ [ 12 13 14 15 ]] 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="p">.</span><span class="na">log1p</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[4, 4],0,[4, 1]}
+[[ 0                  0.6931471805599453 1.0986122886681096 1.3862943611198906 ]  
+ [ 1.6094379124341003 1.791759469228055  1.9459101490553132 2.0794415416798357 ]  
+ [ 2.1972245773362196 2.302585092994046  2.3978952727983707 2.4849066497880004 ]  
+ [ 2.5649493574615367 2.639057329615259  2.70805020110221   2.772588722239781  ]] 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="p">.</span><span class="na">log1p</span><span class="p">().</span><span class="na">storage</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="na">storage</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>false
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// in-place operation; the operation will affect the underlying tensor</span>
+<span class="n">a</span><span class="p">.</span><span class="na">log1p_</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[4, 4],0,[4, 1]}
+[[ 0                  0.6931471805599453 1.0986122886681096 1.3862943611198906 ]  
+ [ 1.6094379124341003 1.791759469228055  1.9459101490553132 2.0794415416798357 ]  
+ [ 2.1972245773362196 2.302585092994046  2.3978952727983707 2.4849066497880004 ]  
+ [ 2.5649493574615367 2.639057329615259  2.70805020110221   2.772588722239781  ]] 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">a</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[4, 4],0,[4, 1]}
+[[ 0                  0.6931471805599453 1.0986122886681096 1.3862943611198906 ]  
+ [ 1.6094379124341003 1.791759469228055  1.9459101490553132 2.0794415416798357 ]  
+ [ 2.1972245773362196 2.302585092994046  2.3978952727983707 2.4849066497880004 ]  
+ [ 2.5649493574615367 2.639057329615259  2.70805020110221   2.772588722239781  ]] 
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="applications-of-linear-algebra">
+<h1>Applications of linear algebra<a class="headerlink" href="#applications-of-linear-algebra" title="Permalink to this heading">#</a></h1>
+<p>The darray component of rapaio library is not yet complete. The plan is to introduce new operations and new types of underlying implementations over them. But what it is it allowed to almost all the linear algebra operations used in various ML algorithms already implemented, like support vector machines, relevant vector machines, linear models, logistic regression, principal components and also in other places where linear algebra was found useful. This demonstrates that the implemented features for darrays should be enough to play with it and to show why linear algebra is an interesting topic.</p>
+<p>Because of that, this demo will contain some things which can be done with linear algebra in practical situations.</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="solving-a-system-of-equations">
+<h1>Solving a system of equations<a class="headerlink" href="#solving-a-system-of-equations" title="Permalink to this heading">#</a></h1>
+<p>Solving a system of equations is one of the oldest types of mathematical problems. To exemplify will will acually use one of those proposed problems.</p>
+<p>The Rhind Papyrus is the source of most of our information about ancient Egyptian mathematics.
+This 5-meter-long papyrus contains 84 short mathematical problems, together with their solutions, and
+dates from about 1650 B.C. Problem 40 in this papyrus is the following:</p>
+<blockquote>
+<div><p>Divide 100 hekats of barley among five men in arithmetic progression so that the sum of the two smallest is one-seventh the sum of the three largest.</p>
+</div></blockquote>
+<p>Let <span class="math notranslate nohighlight">\(a\)</span> be the least amount that any man obtains, and let d be the term in the arithmetic progression.
+Then the quatities for the five men are:</p>
+<p><span class="math notranslate nohighlight">\(a\)</span>, <span class="math notranslate nohighlight">\(a + d\)</span>, <span class="math notranslate nohighlight">\(a + 2d\)</span>, <span class="math notranslate nohighlight">\(a + 3d\)</span>, and <span class="math notranslate nohighlight">\(a + 4d\)</span></p>
+<p>The two conditions of the problem require that
+$<span class="math notranslate nohighlight">\(a + (a + d) + (a + 2d) + (a + 3d) + (a + 4d) = 100\)</span><span class="math notranslate nohighlight">\(
+\)</span><span class="math notranslate nohighlight">\(\frac{1}{7} [(a + 2d) + (a + 3d) + (a + 4d)] = a + (a + d)\)</span><span class="math notranslate nohighlight">\(
+These equations reduce to the following system of two equations in two unknowns:
+\)</span><span class="math notranslate nohighlight">\(5a + 10d = 100\)</span><span class="math notranslate nohighlight">\(
+\)</span><span class="math notranslate nohighlight">\(11a − 2d = 0\)</span>$</p>
+<p>Their solution was based on an initial guess and later one by adjusting the solutions. They found the solutions as:
+$<span class="math notranslate nohighlight">\(a = 5/3\)</span><span class="math notranslate nohighlight">\(
+\)</span><span class="math notranslate nohighlight">\(d = 55/6\)</span>$</p>
+<p>But this is a perfect case for linear algebra. We will solve it using LU decomposition as this:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dm</span><span class="p">.</span><span class="na">stride</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">Order</span><span class="p">.</span><span class="na">C</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">11</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">2</span><span class="p">);</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dm</span><span class="p">.</span><span class="na">stride</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">Order</span><span class="p">.</span><span class="na">C</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="p">.</span><span class="na">lu</span><span class="p">().</span><span class="na">solve</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[2],0,[1]}
+[ 1.666666666666667 9.166666666666668 ] 
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let’s check:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="mf">5.</span><span class="o">/</span><span class="mi">3</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1.6666666666666667
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="mf">55.</span><span class="o">/</span><span class="mi">6</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>9.166666666666666
+</pre></div>
+</div>
+</div>
+</div>
+<p>LU decomposition is the usual workhorse for solving linear system. Also, it helps to determine if the system has solutions or not by computing the determinat.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dm</span><span class="p">.</span><span class="na">stride</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">Order</span><span class="p">.</span><span class="na">C</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dm</span><span class="p">.</span><span class="na">stride</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">Order</span><span class="p">.</span><span class="na">C</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="p">.</span><span class="na">lu</span><span class="p">().</span><span class="na">solve</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="n">java</span><span class="o">.</span><span class="n">lang</span><span class="o">.</span><span class="n">IllegalArgumentException</span><span class="p">:</span> <span class="n">Matrix</span> <span class="ow">is</span> <span class="n">singular</span><span class="o">.</span>
+
+   <span class="n">at</span> <span class="n">rapaio</span><span class="o">.</span><span class="n">darray</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">LUDecomposition</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">LUDecomposition</span><span class="o">.</span><span class="n">java</span><span class="p">:</span><span class="mi">246</span><span class="p">)</span>
+   <span class="n">at</span> <span class="o">.</span><span class="p">(</span><span class="c1">#82:1)</span>
+<span class="o">|--&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">lu</span><span class="p">()</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>If you want to avoid the exception, you can check with if the system has a solution with the following:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="p">.</span><span class="na">lu</span><span class="p">().</span><span class="na">isNonSingular</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>false
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="p">.</span><span class="na">lu</span><span class="p">().</span><span class="na">det</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-0.0
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="least-squares">
+<h1>Least squares<a class="headerlink" href="#least-squares" title="Permalink to this heading">#</a></h1>
+<p>When we want to find a line which pass through multiple points, if there are more than two points we will probably have a problem. That is the system is overdetermined and no line can be found if not all the points are colinear.</p>
+<p>The method was invented by Legendre and Gauss, independently. Later on it was employed in statistics, mainly with the support of Gauss-Markov theorem.</p>
+<p>For illustration, we will use the data set created by Pearson, which contains height measurements of fathers and sons. It was used to see if there is a correlation between those heights.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">df</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Datasets</span><span class="p">.</span><span class="na">loadPearsonHeightDataset</span><span class="p">();</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df</span><span class="p">.</span><span class="na">darray</span><span class="p">();</span>
+<span class="c1">// print only the first rows</span>
+<span class="n">t</span><span class="p">.</span><span class="na">narrow</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[10, 2],0,[2, 1]}
+[[ 65   59.8 ]  
+ [ 63.3 63.2 ]  
+ [ 65   63.3 ]  
+ [ 65.8 62.8 ]  
+ [ 61.1 64.3 ]  
+ [ 63   64.2 ]  
+ [ 65.4 64.1 ]  
+ [ 64.7 64   ]  
+ [ 66.1 64.6 ]  
+ [ 67   64   ]] 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">points</span><span class="p">(</span><span class="n">t</span><span class="p">.</span><span class="na">selsq</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">).</span><span class="na">dv</span><span class="p">(),</span><span class="w"> </span><span class="n">t</span><span class="p">.</span><span class="na">selsq</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">).</span><span class="na">dv</span><span class="p">(),</span><span class="w"> </span><span class="n">color</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span><span class="w"> </span><span class="n">fill</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="n">pch</span><span class="p">.</span><span class="na">circleFull</span><span class="p">()).</span><span class="na">xLab</span><span class="p">(</span><span class="s">&quot;Father&#39;s&quot;</span><span class="p">).</span><span class="na">yLab</span><span class="p">(</span><span class="s">&quot;Son&#39;s&quot;</span><span class="p">),</span><span class="w"> </span><span class="mi">800</span><span class="p">,</span><span class="w"> </span><span class="mi">600</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/e81d8170144a861cbabb3246307234d57b51e56b0de5d84aef9e3bad265d7456.png" src="../_images/e81d8170144a861cbabb3246307234d57b51e56b0de5d84aef9e3bad265d7456.png" />
+</div>
+</div>
+<p>The solution consists in optimizing the sum of squares of the distances between the line and the data points. <span class="math notranslate nohighlight">\(Loss(\hat{y}, y) = (X^T\beta - y)^2\)</span>. Using the fact that the loss function is convex, the minimum is achieved when the derivative equals <span class="math notranslate nohighlight">\(0\)</span>. This leads to the well-known formulas called <em>normal equations</em>:
+$<span class="math notranslate nohighlight">\(X^TX\beta = X^Ty\)</span><span class="math notranslate nohighlight">\(
+where \)</span>\beta$ is our coefficients of the line that we want to find.</p>
+<p>What we do is that we want to regress father’s height over son’s heights. We also want to allow for the line to be required to cross origin. To do that we ammend the input with a column full of ones.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">len</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">t</span><span class="p">.</span><span class="na">dim</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="n">len</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1078
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dm</span><span class="p">.</span><span class="na">stack</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">dm</span><span class="p">.</span><span class="na">full</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">len</span><span class="p">),</span><span class="w"> </span><span class="mf">1.</span><span class="p">),</span><span class="w"> </span><span class="n">t</span><span class="p">.</span><span class="na">selsq</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)));</span>
+<span class="n">X</span><span class="p">.</span><span class="na">narrow</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[10, 2],0,[2, 1]}
+[[ 1 65   ]  
+ [ 1 63.3 ]  
+ [ 1 65   ]  
+ [ 1 65.8 ]  
+ [ 1 61.1 ]  
+ [ 1 63   ]  
+ [ 1 65.4 ]  
+ [ 1 64.7 ]  
+ [ 1 66.1 ]  
+ [ 1 67   ]] 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">t</span><span class="p">.</span><span class="na">selsq</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
+<span class="n">y</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[1078],1,[2]}
+[ 59.8 63.2 63.3 62.8 64.3 64.2 64.1 64 64.6 64 65.2 65.4 65.7 65.4 65.3 64.8 65 65.5 65.1 65.5 ... ] 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// left side</span>
+<span class="n">X</span><span class="p">.</span><span class="na">t_</span><span class="p">().</span><span class="na">mm</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[2, 2],0,[2, 1]}
+[[  1,078      72,966.4          ]  
+ [ 72,966.4 4,946,984.2399999965 ]] 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// right side</span>
+<span class="n">X</span><span class="p">.</span><span class="na">t_</span><span class="p">().</span><span class="na">mv</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[2],0,[1]}
+[ 74,041.59999999999 5,015,814.79 ] 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// solve</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">sol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">X</span><span class="p">.</span><span class="na">t_</span><span class="p">().</span><span class="na">mm</span><span class="p">(</span><span class="n">X</span><span class="p">).</span><span class="na">qr</span><span class="p">().</span><span class="na">solve</span><span class="p">(</span><span class="n">X</span><span class="p">.</span><span class="na">t_</span><span class="p">().</span><span class="na">mv</span><span class="p">(</span><span class="n">y</span><span class="p">));</span>
+<span class="n">sol</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[2],0,[1]}
+[ 33.89280054101943 0.5140059125403162 ] 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span>
+<span class="w">    </span><span class="n">points</span><span class="p">(</span><span class="n">t</span><span class="p">.</span><span class="na">selsq</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">).</span><span class="na">dv</span><span class="p">(),</span><span class="w"> </span><span class="n">t</span><span class="p">.</span><span class="na">selsq</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">).</span><span class="na">dv</span><span class="p">(),</span><span class="w"> </span><span class="n">color</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span><span class="w"> </span><span class="n">fill</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="n">pch</span><span class="p">.</span><span class="na">circleFull</span><span class="p">())</span>
+<span class="w">    </span><span class="p">.</span><span class="na">funLine</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">sol</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">x</span><span class="o">*</span><span class="n">sol</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">xLab</span><span class="p">(</span><span class="s">&quot;Father&#39;s&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">yLab</span><span class="p">(</span><span class="s">&quot;Son&#39;s&quot;</span><span class="p">),</span><span class="w"> </span><span class="mi">800</span><span class="p">,</span><span class="w"> </span><span class="mi">600</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/0c92b655f3147f4d5df3b468768f8040b2e948abd55b618eadcdb0fb84beba45.png" src="../_images/0c92b655f3147f4d5df3b468768f8040b2e948abd55b618eadcdb0fb84beba45.png" />
+</div>
+</div>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="image-compression-with-pca">
+<h1>Image compression with PCA<a class="headerlink" href="#image-compression-with-pca" title="Permalink to this heading">#</a></h1>
+<p>While principal components were not built for image compression, they can also used for that purpose using some linear algebra tricks. In the following we will offer some intuition on principal components and how they can be used to data compression.</p>
+<p>For that purpose we will use a random image.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">bi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImageTools</span><span class="p">.</span><span class="na">readImage</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">URI</span><span class="p">(</span>
+<span class="w">    </span><span class="s">&quot;https://img.freepik.com/free-photo/two-chicks-beach-ai-generated_268835-6148.jpg?w=1060&amp;t=st=1706892885~exp=1706893485~hmac=1aa2364fe0170b12ec0004772ecb802c7eb596ff4a9b2cd780d151aaf8ab8eaf&quot;</span><span class="p">).</span><span class="na">toURL</span><span class="p">());</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let’s see the image first.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">image</span><span class="p">(</span><span class="n">bi</span><span class="p">),</span><span class="w"> </span><span class="mi">800</span><span class="p">,</span><span class="w"> </span><span class="mi">400</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/900c1557d9e227c60fb7643781f49531d5a76340417a4c8075ecec982a4ed834.png" src="../_images/900c1557d9e227c60fb7643781f49531d5a76340417a4c8075ecec982a4ed834.png" />
+</div>
+</div>
+<p>Cool friends. We collect data from image in a tensor with 3 planes, one for each color.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bi</span><span class="p">.</span><span class="na">getWidth</span><span class="p">();</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bi</span><span class="p">.</span><span class="na">getHeight</span><span class="p">();</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">img</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dm</span><span class="p">.</span><span class="na">zeros</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">));</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">m</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">clr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bi</span><span class="p">.</span><span class="na">getRGB</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">);</span>
+<span class="w">        </span><span class="n">img</span><span class="p">.</span><span class="na">setDouble</span><span class="p">((</span><span class="n">clr</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0x00ff0000</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="w">        </span><span class="n">img</span><span class="p">.</span><span class="na">setDouble</span><span class="p">((</span><span class="n">clr</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0x0000ff00</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="w">        </span><span class="n">img</span><span class="p">.</span><span class="na">setDouble</span><span class="p">(</span><span class="n">clr</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0x000000ff</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+<span class="n">img</span><span class="p">.</span><span class="na">shape</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Shape: [415,1060,3]
+</pre></div>
+</div>
+</div>
+</div>
+<p>The procedure could be applied for each color plane. We will avoid that for simplification, as such we will use a single data plane. We transform the image into a black-white one simply by averaging along color planes. This is easy to do and leave use with a matrix.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">bw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">img</span><span class="p">.</span><span class="na">mean1d</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<span class="n">display</span><span class="p">(</span><span class="n">bw</span><span class="p">.</span><span class="na">shape</span><span class="p">());</span>
+<span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">matrix</span><span class="p">(</span><span class="n">bw</span><span class="p">,</span><span class="w"> </span><span class="n">palette</span><span class="p">.</span><span class="na">bw</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">255</span><span class="p">)),</span><span class="w"> </span><span class="mi">800</span><span class="p">,</span><span class="w"> </span><span class="mi">400</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Shape: [415,1060]
+</pre></div>
+</div>
+<img alt="../_images/094a79232786d4085791537581047b5c9ad233199db3700e0cef8b0d4772463c.png" src="../_images/094a79232786d4085791537581047b5c9ad233199db3700e0cef8b0d4772463c.png" />
+</div>
+</div>
+<p>PCA (principal component analysis) is a technique which basically consists in a series of rotations. The purpose of those rotations is than after they are applied over data, the variance of data over the first axis is the highest, followed by the variance on the second axis and so on. Additionally, those components are orthogonal, and more than that, it can be shown that they corresponds to eigenvectors of covariance matrix.</p>
+<p>Those rotations have the application point in origin. Because of this, we need to centralize data before finding components. To give a fair evaluation of their importance (contribution to variance), an usual thing is to scale them so they have the same standard deviation.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// compute the mean and standard deviation along columns</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">mean</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bw</span><span class="p">.</span><span class="na">mean1d</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="na">stretch</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">std</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bw</span><span class="p">.</span><span class="na">std1d</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">).</span><span class="na">stretch</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// create a standardized version of data using broadcast operations</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bw</span><span class="p">.</span><span class="na">sub</span><span class="p">(</span><span class="n">mean</span><span class="p">).</span><span class="na">div</span><span class="p">(</span><span class="n">std</span><span class="p">);</span>
+<span class="n">c</span><span class="p">.</span><span class="na">shape</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Shape: [415,1060]
+</pre></div>
+</div>
+</div>
+</div>
+<p>We compute the covariance matrix <span class="math notranslate nohighlight">\(X^TX\)</span> on the standardized data. Then we compute the eigen value decomposition. Note that to compute eigen values one can use also svd decomposition directly on standardized matrix. This avoid some computation. We follow the classic path for illustrative porposes.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">cov</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">c</span><span class="p">.</span><span class="na">t_</span><span class="p">().</span><span class="na">mm</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+<span class="n">cov</span><span class="p">.</span><span class="na">shape</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Shape: [1060,1060]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">eig</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cov</span><span class="p">.</span><span class="na">eig</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Each decomposition available in library returns an object which contains various artifacts of the specific decomposition. In our case we can collect eigen values  with real and imaginary part (if it’s the case), eigen vectors, and also a diagonal matrix with eigen values.</p>
+<p>We don’t have complex values on eigen values because we compute them over the covariance matrix. Covariance matrix is a symmetric positive semi-definite matrix, and those kind of matrices does not produce complex eigen values. For illustartive purposes we display them below.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">eig</span><span class="p">.</span><span class="na">real</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[1060],0,[1]}
+[ 189,398.80305584273 101,548.2645775437 51,171.3046202222 23,100.816827320774 16,703.655652595222 10,433.68534300146 8,006.545542029998 4,301.788079126666 3,770.644628740355 3,206.623381772559 2,770.036794947505 2,057.8313084768547 1,819.730987878407 1,529.7546040640152 1,354.1608402214638 1,120.1266052953083 1,063.6755448662739 914.2570954249896 879.5797357193267 864.599956164157 ... ] 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">eig</span><span class="p">.</span><span class="na">imag</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[1060],0,[1]}
+[ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 ... ] 
+</pre></div>
+</div>
+</div>
+</div>
+<p>We worked to organize the original data onto orthogonal directions with decreasing prejected variance. Why all that? The point is that we can split the whole information contained into the original matrix into pieces which correspond to those components.</p>
+<p>Using those pieces, we can reduce the original dimensionality of the data using only some of the whole pieces, in the hope that those components retain enough information. This is is dimensionality reduction and can be acheved by using instead of our matrix <span class="math notranslate nohighlight">\(X\)</span>, a reduced matrix <span class="math notranslate nohighlight">\(XV\)</span>, where <span class="math notranslate nohighlight">\(V\)</span> contains only the eigen vectors corresponding with the largest covered variance. Thus, instead of working with a design matrix of size <span class="math notranslate nohighlight">\(n x m\)</span>, where <span class="math notranslate nohighlight">\(m\)</span> is the number of features we work with a design matrix of dimension <span class="math notranslate nohighlight">\(n x p\)</span>, where <span class="math notranslate nohighlight">\(p &lt; m\)</span> is the number of selected eigen vectors.</p>
+<p>If, on the other hand, we want to return in the original space of the matrix, we continue to multiply with <span class="math notranslate nohighlight">\(V^T\)</span>, thus obtaining a shape of the original matrix <span class="math notranslate nohighlight">\(m x n\)</span>. The meaning of <span class="math notranslate nohighlight">\(XVV^T\)</span> is a matrix of the same shape as <span class="math notranslate nohighlight">\(X\)</span>, but which contains only the information corresponding to the selected components.</p>
+<p>The whole process consists in the following steps:</p>
+<ul class="simple">
+<li><p>centralize and scale the input matrix <span class="math notranslate nohighlight">\(X\)</span> -&gt; <span class="math notranslate nohighlight">\(C\)</span></p></li>
+<li><p>cumpute decreasing eigen vectors of covariance</p></li>
+<li><p>select a number of eigen vectors</p></li>
+<li><p>retain only information corresponding with selected eigen vectors using:</p>
+<ul>
+<li><p>subtract mean, divide by std</p></li>
+<li><p>multiply with <span class="math notranslate nohighlight">\(V\)</span> and <span class="math notranslate nohighlight">\(V^T\)</span></p></li>
+<li><p>multiply with std and add mean</p></li>
+</ul>
+</li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">eig</span><span class="p">.</span><span class="na">v</span><span class="p">();</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">reduced</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bw</span><span class="p">.</span><span class="na">sub</span><span class="p">(</span><span class="n">mean</span><span class="p">).</span><span class="na">div</span><span class="p">(</span><span class="n">std</span><span class="p">).</span><span class="na">mm</span><span class="p">(</span><span class="n">v</span><span class="p">).</span><span class="na">mm</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="na">t_</span><span class="p">()).</span><span class="na">mul</span><span class="p">(</span><span class="n">std</span><span class="p">).</span><span class="na">add</span><span class="p">(</span><span class="n">mean</span><span class="p">);</span>
+<span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">gridLayer</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">).</span><span class="na">add</span><span class="p">(</span><span class="n">matrix</span><span class="p">(</span><span class="n">reduced</span><span class="p">,</span><span class="w"> </span><span class="n">palette</span><span class="p">.</span><span class="na">bw</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">256</span><span class="p">))).</span><span class="na">add</span><span class="p">(</span><span class="n">matrix</span><span class="p">(</span><span class="n">bw</span><span class="p">,</span><span class="w"> </span><span class="n">palette</span><span class="p">.</span><span class="na">bw</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">255</span><span class="p">))),</span><span class="w"> </span><span class="mi">1600</span><span class="p">,</span><span class="w"> </span><span class="mi">400</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/f64e61a4c4f5074b9d1279133fccf38d195ed37613570c898f6efc0545cf1ea4.png" src="../_images/f64e61a4c4f5074b9d1279133fccf38d195ed37613570c898f6efc0545cf1ea4.png" />
+</div>
+</div>
+<p>In the left side we have the recovered image which uses all eigen vectors and in the right side we have the original image. There is no difference. There is no numerical difference, they not only look similar, they are identical up to some numerical computing errors.</p>
+<p>What happens if we decide to use only a limited number of eigen vectors? The original number of eigen vectors is 1060.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">Function</span><span class="o">&lt;</span><span class="n">Integer</span><span class="p">,</span><span class="w"> </span><span class="n">DArray</span><span class="o">&lt;</span><span class="n">Double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">fun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">bw</span><span class="p">.</span><span class="na">sub</span><span class="p">(</span><span class="n">mean</span><span class="p">).</span><span class="na">div</span><span class="p">(</span><span class="n">std</span><span class="p">).</span><span class="na">mm</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="na">narrow</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">)).</span><span class="na">mm</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="na">narrow</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">).</span><span class="na">t_</span><span class="p">()).</span><span class="na">mul</span><span class="p">(</span><span class="n">std</span><span class="p">).</span><span class="na">add</span><span class="p">(</span><span class="n">mean</span><span class="p">);</span>
+<span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">gridLayer</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">         </span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">matrix</span><span class="p">(</span><span class="n">fun</span><span class="p">.</span><span class="na">apply</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="n">palette</span><span class="p">.</span><span class="na">bw</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">256</span><span class="p">)).</span><span class="na">title</span><span class="p">(</span><span class="s">&quot;1 PC&quot;</span><span class="p">))</span>
+<span class="w">         </span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">matrix</span><span class="p">(</span><span class="n">fun</span><span class="p">.</span><span class="na">apply</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span><span class="w"> </span><span class="n">palette</span><span class="p">.</span><span class="na">bw</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">256</span><span class="p">)).</span><span class="na">title</span><span class="p">(</span><span class="s">&quot;5 PC&quot;</span><span class="p">))</span>
+<span class="w">         </span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">matrix</span><span class="p">(</span><span class="n">fun</span><span class="p">.</span><span class="na">apply</span><span class="p">(</span><span class="mi">20</span><span class="p">),</span><span class="w"> </span><span class="n">palette</span><span class="p">.</span><span class="na">bw</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">256</span><span class="p">)).</span><span class="na">title</span><span class="p">(</span><span class="s">&quot;20 PC&quot;</span><span class="p">))</span>
+<span class="w">         </span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">matrix</span><span class="p">(</span><span class="n">fun</span><span class="p">.</span><span class="na">apply</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span><span class="w"> </span><span class="n">palette</span><span class="p">.</span><span class="na">bw</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">256</span><span class="p">)).</span><span class="na">title</span><span class="p">(</span><span class="s">&quot;50 PC&quot;</span><span class="p">))</span>
+<span class="w">         </span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">matrix</span><span class="p">(</span><span class="n">fun</span><span class="p">.</span><span class="na">apply</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span><span class="w"> </span><span class="n">palette</span><span class="p">.</span><span class="na">bw</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">256</span><span class="p">)).</span><span class="na">title</span><span class="p">(</span><span class="s">&quot;100 PC&quot;</span><span class="p">))</span>
+<span class="w">         </span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">matrix</span><span class="p">(</span><span class="n">fun</span><span class="p">.</span><span class="na">apply</span><span class="p">(</span><span class="mi">200</span><span class="p">),</span><span class="w"> </span><span class="n">palette</span><span class="p">.</span><span class="na">bw</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">256</span><span class="p">)).</span><span class="na">title</span><span class="p">(</span><span class="s">&quot;200 PC&quot;</span><span class="p">))</span>
+<span class="w">         </span><span class="p">,</span><span class="w"> </span><span class="mi">1600</span><span class="p">,</span><span class="w"> </span><span class="mi">1200</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/6e386a8e1e8ae42d567b5fd383b58ee50d5b76bec953621a9f8e9cfe95f377a6.png" src="../_images/6e386a8e1e8ae42d567b5fd383b58ee50d5b76bec953621a9f8e9cfe95f377a6.png" />
+</div>
+</div>
+<p>The progression is amazing. With one component we have just some light bluring. With 5 components we understand we have two characters. 20 components gives us the understanding of the characters, but in poor quality. 50 components is a refinement, acceptable quality. 100 components we have almost everything, other than some detail artifacts. 200 components is totally acceptable as quality. 200 of over 1000 components, 20% of the whole data.</p>
+<p>A question might arise, still, how can we save information. To get the image we have to save original <span class="math notranslate nohighlight">\(X\)</span>, a part of eigen vectors called <span class="math notranslate nohighlight">\(V_p\)</span>, the <span class="math notranslate nohighlight">\(mean\)</span> and <span class="math notranslate nohighlight">\(std\)</span>. Where is the catch, since there is much more data than initially. The point is that don’t need to store them is that form. Actually we know that we will multiply them. We use the following trick:</p>
+<p>Instead of <span class="math notranslate nohighlight">\(X\)</span> and <span class="math notranslate nohighlight">\(V_p\)</span> to compute <span class="math notranslate nohighlight">\(XV_pV^T_p\)</span>, we store <span class="math notranslate nohighlight">\(XV_p\)</span> and <span class="math notranslate nohighlight">\(V_p\)</span>. <span class="math notranslate nohighlight">\(XV_p\)</span> after multiplication will have size <span class="math notranslate nohighlight">\(n x p\)</span>, less than <span class="math notranslate nohighlight">\(n x m\)</span>. If <span class="math notranslate nohighlight">\(p\)</span> is much lessar than <span class="math notranslate nohighlight">\(m\)</span> we can save plenty. For illustration, in our case instead of saving <span class="math notranslate nohighlight">\(X = 415*1060 = 440960\)</span> we store <span class="math notranslate nohighlight">\(XV_p = 415 * 200 = 83200\)</span> adding to that <span class="math notranslate nohighlight">\(V_p = 1060 * 200 = 212000\)</span> is still much less than half of the original data.</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="other-operations-with-darrays">
+<h1>Other operations with darrays<a class="headerlink" href="#other-operations-with-darrays" title="Permalink to this heading">#</a></h1>
+<p>The are many methods implemented already. Still, much more are probably not. I will implement them when there will be a need. You can also ask for something which is missing. Until then, we will present some things which you could find interesting.</p>
+<p>A first aspect is related with the fact that all tensors are views over data storage. This might look strange at the first sight, especially when one compares with numpy which distincts between arrays and views. I see no reason to separate those. As a consequence, when you are workig with data layout manipulation operations, if stride arithmetics applies, no new copies of the data will be created.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">Random</span><span class="w"> </span><span class="n">random</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Random</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dm</span><span class="p">.</span><span class="na">random</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">),</span><span class="w"> </span><span class="n">random</span><span class="p">);</span>
+<span class="n">a</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[20, 5],0,[5, 1]}
+[[  0.6054611363173034    0.47673188281383294 -0.49948335406718436 -0.5915425111590309   0.42765530257204803 ]  
+ [  1.3010087179670164   -0.3350785583251401  -0.5955196938503862  -0.09123338065574725  0.7820308518899145  ]  
+ [  1.400564194820624    -0.15987194503778307  0.6741945446522577  -0.28827825790751316 -0.9254017750976883  ]  
+ [  0.2387490522334931   -0.8072279983731828   0.9383428291093232  -0.9454368915500337   0.22093218517194996 ]  
+ [  0.6785245136052881    0.17902343157217976  0.20195714004769655  0.6824094169904458  -1.8603467900546857  ]  
+ [ -0.3640243331383754    0.9070012459953166  -0.20781285678089798  1.9437248772714735   0.5633633559555993  ]  
+ [ -0.04871172331592452  -0.5485519117080085   1.643499006763654    0.9172410254747001   0.349504085373619   ]  
+ [ -0.3341809901539511   -0.3577776057925789  -0.16451953409234601 -0.10719511736576721 -0.0685135403645662  ]  
+ [ -0.07772721992835083   0.9436370508097213  -1.0320192300816764   0.96955665138924    -0.09966190499890398 ]  
+ [ -0.5811431434994926   -0.8561254101627737  -0.9181375052182392   1.1062313258059315  -0.03361855779440348 ]  
+ [ -0.19940824264650267   0.3394637281444628   0.5239940045886521  -0.4808024622381947   0.18050084772155725 ]  
+ [ -0.32917346344484205   1.135010764731621    0.8622715316732382   0.295551483102627   -0.32032930267467846 ]  
+ [  0.5165038632024493    1.3322719542251784  -0.8554643292889054   0.8746757350332696   0.32638451857295453 ]  
+ [ -0.09187350537981684  -0.5084207394085699   0.10020556064469907  0.34542089466377    -1.1442604343149465  ]  
+ [ -0.006700537039870284 -1.9218206218596519  -1.7930243327862754  -0.04050852593549706  0.39899995451422293 ]  
+ [ -0.2643210253452166    1.5562230224800353  -0.2933931145093284   0.3751673073136748   0.740381197550476   ]  
+ [  1.2483185916349693    0.2503380599085345   1.9779791683701187  -1.4249549431782167   0.7558175246705047  ]  
+ [ -0.5863436478398663    1.2770365589979307  -0.3217101506550075  -0.17304111461681013 -0.43350414318466146 ]  
+ [ -0.4813117564170963   -0.1440362000426429  -1.3020425753781046   0.6593151939713588  -0.9507732870948371  ]  
+ [  0.8610353749743883   -1.0812651372305313  -1.3228248420801145  -1.9263576324867564   0.12145504927669352 ]] 
+</pre></div>
+</div>
+</div>
+</div>
+<p>There are various functions which aggregates data. For illustration purposes we can consider a matrix. Aggregating data along a dimension in a matrix produces a vector which contains one value for each row or column in the matrix. If we aggregate along columns, it means each column from the matrix is transformed into a single value, thus in the end we will obtain a vector of values. If we aggregate along rows, than we will get a vector with one value for each column.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// compute minimum value along rows</span>
+<span class="n">a</span><span class="p">.</span><span class="na">amin1d</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[5],0,[1]}
+[ -0.5863436478398663 -1.9218206218596519 -1.7930243327862754 -1.9263576324867564 -1.8603467900546857 ] 
+</pre></div>
+</div>
+</div>
+</div>
+<p>Those operations can be used to transform data for various purposes. Let’s do the following. Transform all columns into scaled versions of the form:
+$<span class="math notranslate nohighlight">\(a[i,j] = \frac{a[i,j] + min_j}{max_j - min_j}\)</span>$
+where j is the column index, and i is the row index. This scales linearly all the values to be into unit interval. The following command does that:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="na">sub</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="na">amin1d</span><span class="p">(</span><span class="mi">0</span><span class="p">)).</span><span class="na">div</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="na">amax1d</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="na">sub</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="na">amin1d</span><span class="p">(</span><span class="mi">0</span><span class="p">)));</span>
+<span class="n">s</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[20, 5],0,[5, 1]}
+[[ 0.5998289193731958   0.6896269138476709  0.34302301186472545 0.3449061145239287  0.8658876219308791  ]  
+ [ 0.9498942654933096   0.4562168350350755  0.31755596052050056 0.4741822034036303  1                   ]  
+ [ 1                    0.5065918823903597  0.6542605639803702  0.4232672999732961  0.3538271744794756  ]  
+ [ 0.41526470546744215  0.32046539303795213 0.7243077767119585  0.2534624878057192  0.7876538698287515  ]  
+ [ 0.6366013230646284   0.6040303884198903  0.5290319863723814  0.6740856410423601  0                   ]  
+ [ 0.11189211191788492  0.8133370817409697  0.4203686036142013  1                   0.9172459331841032  ]  
+ [ 0.27058724767226594  0.39483941277923806 0.9113020813945426  0.7347643495433126  0.8363115250256254  ]  
+ [ 0.12691210546950518  0.44969045130082297 0.4318491876749893  0.4700578115670808  0.6781139914472857  ]  
+ [ 0.25598390473433974  0.8238705334628961  0.2018044009959772  0.748282310925952   0.6663259850170561  ]  
+ [ 0.002617385783434293 0.30640650913947987 0.23200371659685504 0.7835980113204715  0.6913198943493714  ]  
+ [ 0.19474250233732684  0.650159854573482   0.6144301740012716  0.373520504176245   0.7723527498038946  ]  
+ [ 0.12943236665202884  0.8788939125493975  0.7041350833127723  0.574124481839068   0.5828150613046608  ]  
+ [ 0.5550572036424153   0.9356100465791096  0.24862347733431256 0.723765800976427   0.8275619933789491  ]  
+ [ 0.24886415557047112  0.4063778454164334  0.5020493597660165  0.5870103599658003  0.27100076248478666 ]  
+ [ 0.2917312511202572   0                   0                   0.487289121561667   0.8550430902473848  ]  
+ [ 0.16207224893906402  1                   0.3976743107814879  0.5946966076297456  0.9842378115533904  ]  
+ [ 0.9233756091164267   0.6245346246023243  1                   0.12955865618995888 0.9900796438770505  ]  
+ [ 0                    0.9197288786365679  0.39016515940122654 0.4530437047398968  0.5399843777893801  ]  
+ [ 0.052861984420037915 0.5111449434253792  0.1301992313869794  0.6681182687806948  0.3442254008365238  ]  
+ [ 0.7284580551437148   0.2416747949661516  0.12468816074076097 0                   0.7500070420944507  ]] 
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let’s sort the values along columns:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// sorting in-place along rows</span>
+<span class="n">s</span><span class="p">.</span><span class="na">sort_</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[20, 5],0,[5, 1]}
+[[ 0                    0                   0                   0                   0                   ]  
+ [ 0.002617385783434293 0.2416747949661516  0.12468816074076097 0.12955865618995888 0.27100076248478666 ]  
+ [ 0.052861984420037915 0.30640650913947987 0.1301992313869794  0.2534624878057192  0.3442254008365238  ]  
+ [ 0.11189211191788492  0.32046539303795213 0.2018044009959772  0.3449061145239287  0.3538271744794756  ]  
+ [ 0.12691210546950518  0.39483941277923806 0.23200371659685504 0.373520504176245   0.5399843777893801  ]  
+ [ 0.12943236665202884  0.4063778454164334  0.24862347733431256 0.4232672999732961  0.5828150613046608  ]  
+ [ 0.16207224893906402  0.44969045130082297 0.31755596052050056 0.4530437047398968  0.6663259850170561  ]  
+ [ 0.19474250233732684  0.4562168350350755  0.34302301186472545 0.4700578115670808  0.6781139914472857  ]  
+ [ 0.24886415557047112  0.5065918823903597  0.39016515940122654 0.4741822034036303  0.6913198943493714  ]  
+ [ 0.25598390473433974  0.5111449434253792  0.3976743107814879  0.487289121561667   0.7500070420944507  ]  
+ [ 0.27058724767226594  0.6040303884198903  0.4203686036142013  0.574124481839068   0.7723527498038946  ]  
+ [ 0.2917312511202572   0.6245346246023243  0.4318491876749893  0.5870103599658003  0.7876538698287515  ]  
+ [ 0.41526470546744215  0.650159854573482   0.5020493597660165  0.5946966076297456  0.8275619933789491  ]  
+ [ 0.5550572036424153   0.6896269138476709  0.5290319863723814  0.6681182687806948  0.8363115250256254  ]  
+ [ 0.5998289193731958   0.8133370817409697  0.6144301740012716  0.6740856410423601  0.8550430902473848  ]  
+ [ 0.6366013230646284   0.8238705334628961  0.6542605639803702  0.723765800976427   0.8658876219308791  ]  
+ [ 0.7284580551437148   0.8788939125493975  0.7041350833127723  0.7347643495433126  0.9172459331841032  ]  
+ [ 0.9233756091164267   0.9197288786365679  0.7243077767119585  0.748282310925952   0.9842378115533904  ]  
+ [ 0.9498942654933096   0.9356100465791096  0.9113020813945426  0.7835980113204715  0.9900796438770505  ]  
+ [ 1                    1                   1                   1                   1                   ]] 
+</pre></div>
+</div>
+</div>
+</div>
+<p>Too many numbers, we should plot them to have some idea</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">plot</span><span class="p">();</span>
+<span class="k">for</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="n">s</span><span class="p">.</span><span class="na">dim</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="w">    </span><span class="n">p</span><span class="p">.</span><span class="na">lines</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="na">selsq</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">i</span><span class="p">).</span><span class="na">dv</span><span class="p">(),</span><span class="w"> </span><span class="n">color</span><span class="p">(</span><span class="n">i</span><span class="p">));</span>
+<span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="mi">800</span><span class="p">,</span><span class="w"> </span><span class="mi">400</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/acf1bbf16953809268b51001a7f50b49bdd846c2c67536269173c981decafd5d.png" src="../_images/acf1bbf16953809268b51001a7f50b49bdd846c2c67536269173c981decafd5d.png" />
+</div>
+</div>
+<p>Aggregation works not only for matrices, but for general darrays. It would be more difficult to visualise them, but we can illustrate with an example.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dm</span><span class="p">.</span><span class="na">seq</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">));</span>
+<span class="n">t</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[4, 4, 4],0,[16, 4, 1]}
+[[[  0  1  2  3 ]   
+  [  4  5  6  7 ]   
+  [  8  9 10 11 ]   
+  [ 12 13 14 15 ]]  
+ [[ 16 17 18 19 ]   
+  [ 20 21 22 23 ]   
+  [ 24 25 26 27 ]   
+  [ 28 29 30 31 ]]  
+ [[ 32 33 34 35 ]   
+  [ 36 37 38 39 ]   
+  [ 40 41 42 43 ]   
+  [ 44 45 46 47 ]]  
+ [[ 48 49 50 51 ]   
+  [ 52 53 54 55 ]   
+  [ 56 57 58 59 ]   
+  [ 60 61 62 63 ]]] 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">t</span><span class="p">.</span><span class="na">sum1d</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[4, 4],0,[4, 1]}
+[[  96 100 104 108 ]  
+ [ 112 116 120 124 ]  
+ [ 128 132 136 140 ]  
+ [ 144 148 152 156 ]] 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">t</span><span class="p">.</span><span class="na">sum1d</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[4, 4],0,[4, 1]}
+[[  24  28  32  36 ]  
+ [  88  92  96 100 ]  
+ [ 152 156 160 164 ]  
+ [ 216 220 224 228 ]] 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">t</span><span class="p">.</span><span class="na">sum1d</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BaseStride{DOUBLE,[4, 4],0,[4, 1]}
+[[   6  22  38  54 ]  
+ [  70  86 102 118 ]  
+ [ 134 150 166 182 ]  
+ [ 198 214 230 246 ]] 
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="what-else">
+<h1>What else?<a class="headerlink" href="#what-else" title="Permalink to this heading">#</a></h1>
+<p>There are many other applications of linear algebra and it is impossible to cover them, even in slightest. Linear algebra emerges in many places, as soon as one wants to work with multiple dimensions. This is not in any case an apology for linear algebra, it would be a useless try for an already won fight. I tried to cover some of them in order to test and stress a little the implementation I made for that library.</p>
+<p>There are many things which can be added and I hope it will happen as soon as possible. Still, I think it passed a live smoke test and I feel content that useful things can be done with them. Hope you enjoyed too, I really did. And if you have ideas and you have no fear to get your hands dirty you are welcome to contribute!</p>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "rapaio-jupyter-kernel-preview23"
+        },
+        kernelOptions: {
+            name: "rapaio-jupyter-kernel-preview23",
+            path: "./tutorials"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'rapaio-jupyter-kernel-preview23'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Important Note:</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#rapaio-darrays-and-some-applications">Rapaio darrays and some applications</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#brief-introduction-to-darrays">Brief introduction to darrays</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#darray-creation">DArray creation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#all-tensors-are-views">All tensors are views</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#in-place-operations-vs-copy-on-new-operations">In place operations vs copy on new operations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#applications-of-linear-algebra">Applications of linear algebra</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-a-system-of-equations">Solving a system of equations</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#least-squares">Least squares</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#image-compression-with-pca">Image compression with PCA</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#other-operations-with-darrays">Other operations with darrays</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#what-else">What else?</a></li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Aurelian Tutuianu
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
