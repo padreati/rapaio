@@ -307,7 +307,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
 </div></div>
       
     </div>
@@ -323,6 +325,28 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-tensor">What is a Tensor</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tensormanager">TensorManager</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tensors-and-computational-graphs">Tensors and computational graphs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#anatomy-of-training-a-neural-network">Anatomy of training a neural network</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#network">Network</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tabulardataset">TabularDataset</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#loss-function">Loss function</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autograd">Autograd</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optimizer">Optimizer</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hands-on-example-iris-classifier">Hands on example: Iris classifier</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#closing-notes">Closing notes</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -334,11 +358,10 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="tensors-and-neural-networks">
 <h1>Tensors and Neural Networks<a class="headerlink" href="#tensors-and-neural-networks" title="Permalink to this heading">#</a></h1>
+<p>This tutorial is an introduction to the concept of tensors and neural networks as were implemented in <code class="docutils literal notranslate"><span class="pre">rapaio-lib.7.0.1</span></code>. It is not a comprehensive detailed presentation, but it should be enough to give you a glimpse about how neural networks works in this library. If you have knowledge about Pytorch, many concepts should be similar since many ideas were used as a source of inspiration.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">load</span><span class="w"> </span><span class="p">..</span><span class="o">/</span><span class="p">..</span><span class="o">/</span><span class="n">rapaio</span><span class="o">-</span><span class="n">bootstrap</span><span class="p">.</span><span class="na">ipynb</span>
-<span class="c1">// %classpath /home/ati/work/rapaio/rapaio-core/target/classes/</span>
-<span class="c1">// %classpath /home/ati/work/rapaio/rapaio-experiment/target/classes/</span>
 </pre></div>
 </div>
 </div>
@@ -352,6 +375,17 @@ Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyt
 </div>
 </div>
 </div>
+<section id="what-is-a-tensor">
+<h2>What is a Tensor<a class="headerlink" href="#what-is-a-tensor" title="Permalink to this heading">#</a></h2>
+<p>A tensor is an object which handles multidimensional array values and has gradients attached to them. Both tensor values and gradients are darrays (multidimensional arrays implemented by <code class="docutils literal notranslate"><span class="pre">DArray&lt;?</span> <span class="pre">extends</span> <span class="pre">Number&gt;</span></code>). This is different from other similar tensor libraries like Pytorch, where tensor objects are multidimensional arrays.</p>
+<p>This is a design decision aimed to separate tensor logic (connected with computatinal nodes, gradients, autodifferentiation, and in the end with neural networks) from linear algebra implementation (which resides in darrays). The benefit of this separation is that instead of working with one big problem, we work with two separate smaller problems.</p>
+<p>Thus, the two main properties of a tensor are its value and its gradient. If the tensor is not created from scratch (like variables), its values its computed at the creation time. For tensor variables their value can be assigned later, but it must be available before the tensor is used in any operation. Building tensors and performing operations with them (which produces also tensors) creates a computational graph. In this computational graph tensor variables are leaves, and tensors created as a result of an operation creates intermediate nodes. During operations no gradient is created.</p>
+<p>Tensors are used mostly in neural networks, but they can be used for other purposes, also. There is not any dependence of tensors to neural networks (the reverse is not true). In neural networks there are usual two main processes: inference and training. During inference no gradient is computed, only the tensor values are created in the computational graph. Training a neural network performs the inference part, but later it uses the errors to backpropagate them to tensors in the form of gradients. Later, those gradients are used to update network parameters to adjust their values.</p>
+<p><code class="docutils literal notranslate"><span class="pre">rapaio-lib-7.0.1</span></code> implements an algorithm for autodifferentiation in reverse mode. This is contained in the class <code class="docutils literal notranslate"><span class="pre">Autograd</span></code>. There are many tutorial explaining what autodifferentiation in reverse mode is, this tutorial will not contain those details. We will describe brefly the process and other separate pages needs to be created to present them in detail.</p>
+<section id="tensormanager">
+<h3>TensorManager<a class="headerlink" href="#tensormanager" title="Permalink to this heading">#</a></h3>
+<p>A <code class="docutils literal notranslate"><span class="pre">TensorManager</span></code> is responsible for handling internal computation and tracking details when someone is working with tensors. It also the object responsible with the creation tensor variable. A tensor manager needs to be created before starting to work with tensors. Tensor manager implements <code class="docutils literal notranslate"><span class="pre">AutoClosable</span></code>, thus a good practice would be to close the tensor manager after we finished the work with it. Use a <code class="docutils literal notranslate"><span class="pre">try</span></code> block or close it explicitly.</p>
+<p>The current implementation does not deallocate tensors and their underlying darrays, but in the future it is very possible if implementations of darrays will be provided which would work with foreign memory. A tensor manager instance should work like a context manager in python, but since Java does not provide such language facility, we need to pass the instance of tensor manager to most of the involved objects. Also, a tensor manager has a default type. This type is the data type used to create intermediate tensors and affects also computation. Thus, if one wants to switch between double and float, the easiest way would be to create a tensor manager instance with appropriate type and the rest of the code could remain the same.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">TensorManager</span><span class="w"> </span><span class="n">tm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TensorManager</span><span class="p">.</span><span class="na">ofFloat</span><span class="p">();</span>
@@ -360,15 +394,294 @@ Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyt
 </div>
 </div>
 </div>
+<p>The previous lines of code creates a tensor manager with float as default value type and fixes a seed for randomization. If no parallelism is used, the randomization should produce reproducible results.</p>
+</section>
+</section>
+<section id="tensors-and-computational-graphs">
+<h2>Tensors and computational graphs<a class="headerlink" href="#tensors-and-computational-graphs" title="Permalink to this heading">#</a></h2>
+<p>One can simply create tensor variables using the available methods from tensor manager.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">Frame</span><span class="w"> </span><span class="n">iris</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Datasets</span><span class="p">.</span><span class="na">loadIrisDataset</span><span class="p">();</span>
-<span class="kd">var</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iris</span><span class="p">.</span><span class="na">mapVars</span><span class="p">(</span><span class="n">VarRange</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">&quot;0~3&quot;</span><span class="p">)).</span><span class="na">darray</span><span class="p">().</span><span class="na">cast</span><span class="p">(</span><span class="n">DType</span><span class="p">.</span><span class="na">FLOAT</span><span class="p">);</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tm</span><span class="p">.</span><span class="na">var</span><span class="p">().</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">).</span><span class="na">requiresGrad</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+<span class="n">print</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>name:(x)
+val:
+grad:null
+</pre></div>
+</div>
+</div>
+</div>
+<p>We created a new tensor variable with no value, the gradient is null since it is not computed and its name is <code class="docutils literal notranslate"><span class="pre">x</span></code>. We can assign a value to the tensor. This can also be done at creation time. Notice that we explicitly requested the gradient computation. By default any avriable does not request to compute any gradient. If you want to change that, this must be requeste explicitly.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="p">.</span><span class="na">setValue</span><span class="p">(</span><span class="n">tm</span><span class="p">.</span><span class="na">randomArray</span><span class="p">(</span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span><span class="w"> </span><span class="n">tm</span><span class="p">.</span><span class="na">random</span><span class="p">()));</span>
+<span class="n">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>name:(x)
+val:BaseStride{FLOAT,[3, 4],0,[4, 1]}
+[[ 0.5165038704872131  1.332271933555603   -0.8554643392562866    0.8746757507324219  ]  
+ [ 0.3263845145702362 -0.09187350422143936 -0.5084207653999329    0.10020556300878525 ]  
+ [ 0.3454208970069885 -1.1442604064941406  -0.006700537167489529 -1.9218206405639648  ]] 
+grad:null
+</pre></div>
+</div>
+</div>
+</div>
+<p>Notice that now the tensor has a value, the gradient still missing. Let’s compute some other things.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">sqr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="na">sqr</span><span class="p">();</span>
+<span class="n">print</span><span class="p">(</span><span class="n">sqr</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>name:(Sqr)
+val:BaseStride{FLOAT,[3, 4],0,[4, 1]}
+[[ 0.2667762339115143  1.7749484777450562   0.731819212436676      0.7650576829910278  ]  
+ [ 0.10652685165405273 0.008440740406513214 0.2584916651248932     0.01004115492105484 ]  
+ [ 0.11931559443473816 1.3093318939208984   0.00004489719867706299 3.693394660949707   ]] 
+grad:null
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sqr</span><span class="p">.</span><span class="na">sum</span><span class="p">();</span>
+<span class="n">print</span><span class="p">(</span><span class="n">sum</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>name:(Sum)
+val:BaseStride{FLOAT,[],0,[]}
+ 9.044189453125  
+grad:null
+</pre></div>
+</div>
+</div>
+</div>
+<p>Notice that the sum is a scalar, since we called a reduce operation on the whole range. If we have a scalar node as a result of the computation, we can set its gradient to <code class="docutils literal notranslate"><span class="pre">1</span></code>, and we can call autodiff engine to compute derivatives.</p>
+<p><strong>Note:</strong> it is important to call autodiff engine on a tensor with a scalar values. This is needed in order to be able to compute gradients.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">sum</span><span class="p">.</span><span class="na">setGrad</span><span class="p">(</span><span class="n">tm</span><span class="p">.</span><span class="na">scalarArray</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+<span class="n">print</span><span class="p">(</span><span class="n">sum</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>name:(Sum)
+val:BaseStride{FLOAT,[],0,[]}
+ 9.044189453125  
+grad:BaseStride{FLOAT,[],0,[]}
+ 1  
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">cgraph</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Autograd</span><span class="p">.</span><span class="na">backward</span><span class="p">(</span><span class="n">sum</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The previous line of code calls the autodifferentiation engine which will trace back the tensors which needs to have a computed gradient and performs gradient computations. We can see now the gradients of our created tensors.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">print</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">sqr</span><span class="p">,</span><span class="w"> </span><span class="n">sum</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>name:(x)
+val:BaseStride{FLOAT,[3, 4],0,[4, 1]}
+[[ 0.5165038704872131  1.332271933555603   -0.8554643392562866    0.8746757507324219  ]  
+ [ 0.3263845145702362 -0.09187350422143936 -0.5084207653999329    0.10020556300878525 ]  
+ [ 0.3454208970069885 -1.1442604064941406  -0.006700537167489529 -1.9218206405639648  ]] 
+grad:BaseStride{FLOAT,[3, 4],0,[4, 1]}
+[[ 1.0330077409744263  2.664543867111206   -1.7109286785125732    1.7493515014648438 ]  
+ [ 0.6527690291404724 -0.18374700844287872 -1.0168415307998657    0.2004111260175705 ]  
+ [ 0.690841794013977  -2.2885208129882812  -0.013401074334979057 -3.8436412811279297 ]] 
+name:(Sqr)
+val:BaseStride{FLOAT,[3, 4],0,[4, 1]}
+[[ 0.2667762339115143  1.7749484777450562   0.731819212436676      0.7650576829910278  ]  
+ [ 0.10652685165405273 0.008440740406513214 0.2584916651248932     0.01004115492105484 ]  
+ [ 0.11931559443473816 1.3093318939208984   0.00004489719867706299 3.693394660949707   ]] 
+grad:BaseStride{FLOAT,[3, 4],0,[0, 0]}
+[[ 1 1 1 1 ]  
+ [ 1 1 1 1 ]  
+ [ 1 1 1 1 ]] 
+name:(Sum)
+val:BaseStride{FLOAT,[],0,[]}
+ 9.044189453125  
+grad:BaseStride{FLOAT,[],0,[]}
+ 1  
+</pre></div>
+</div>
+</div>
+</div>
+<p>We displayed manually the objects from the computed graph. This is not needed since we can use the result of <code class="docutils literal notranslate"><span class="pre">Autograd.backward</span></code> call which is an object which helps us to navigate through what happened behind the scenes. One useful method is to print all the tensors involved in gradient computing.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">cgraph</span><span class="p">.</span><span class="na">printTensors</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>name:(Sum)
+val:BaseStride{FLOAT,[],0,[]}
+ 9.044189453125  
+grad:BaseStride{FLOAT,[],0,[]}
+ 1  
+
+name:(Sqr)
+val:BaseStride{FLOAT,[3, 4],0,[4, 1]}
+[[ 0.2667762339115143  1.7749484777450562   0.731819212436676      0.7650576829910278  ]  
+ [ 0.10652685165405273 0.008440740406513214 0.2584916651248932     0.01004115492105484 ]  
+ [ 0.11931559443473816 1.3093318939208984   0.00004489719867706299 3.693394660949707   ]] 
+grad:BaseStride{FLOAT,[3, 4],0,[0, 0]}
+[[ 1 1 1 1 ]  
+ [ 1 1 1 1 ]  
+ [ 1 1 1 1 ]] 
+
+name:(x)
+val:BaseStride{FLOAT,[3, 4],0,[4, 1]}
+[[ 0.5165038704872131  1.332271933555603   -0.8554643392562866    0.8746757507324219  ]  
+ [ 0.3263845145702362 -0.09187350422143936 -0.5084207653999329    0.10020556300878525 ]  
+ [ 0.3454208970069885 -1.1442604064941406  -0.006700537167489529 -1.9218206405639648  ]] 
+grad:BaseStride{FLOAT,[3, 4],0,[4, 1]}
+[[ 1.0330077409744263  2.664543867111206   -1.7109286785125732    1.7493515014648438 ]  
+ [ 0.6527690291404724 -0.18374700844287872 -1.0168415307998657    0.2004111260175705 ]  
+ [ 0.690841794013977  -2.2885208129882812  -0.013401074334979057 -3.8436412811279297 ]] 
+</pre></div>
+</div>
+</div>
+</div>
+<p>Another useful method available in the computing graph helper is <code class="docutils literal notranslate"><span class="pre">resetGrad</span></code> which sets to null all the gradients of the involved variables. This is useful if we want to clean up the mess. After calling this method we can see no other tensor have gradients.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">cgraph</span><span class="p">.</span><span class="na">resetGrad</span><span class="p">();</span>
+<span class="n">cgraph</span><span class="p">.</span><span class="na">printTensors</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>name:(Sum)
+val:BaseStride{FLOAT,[],0,[]}
+ 9.044189453125  
+grad:null
+name:(Sqr)
+val:BaseStride{FLOAT,[3, 4],0,[4, 1]}
+[[ 0.2667762339115143  1.7749484777450562   0.731819212436676      0.7650576829910278  ]  
+ [ 0.10652685165405273 0.008440740406513214 0.2584916651248932     0.01004115492105484 ]  
+ [ 0.11931559443473816 1.3093318939208984   0.00004489719867706299 3.693394660949707   ]] 
+grad:null
+name:(x)
+val:BaseStride{FLOAT,[3, 4],0,[4, 1]}
+[[ 0.5165038704872131  1.332271933555603   -0.8554643392562866    0.8746757507324219  ]  
+ [ 0.3263845145702362 -0.09187350422143936 -0.5084207653999329    0.10020556300878525 ]  
+ [ 0.3454208970069885 -1.1442604064941406  -0.006700537167489529 -1.9218206405639648  ]] 
+grad:null
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="anatomy-of-training-a-neural-network">
+<h2>Anatomy of training a neural network<a class="headerlink" href="#anatomy-of-training-a-neural-network" title="Permalink to this heading">#</a></h2>
+<p>For those familiar with Pytorch, the components involved in training a neural network are very similar. Anyway, we will try to presents all the components briefly and explain what they do and why they are needed.</p>
+<p>So we want to train a neural network. How to start?</p>
+<section id="network">
+<h3>Network<a class="headerlink" href="#network" title="Permalink to this heading">#</a></h3>
+<p>The first step would be to create a neural network in the first place. We need to have something to train. The details and some examples will be provided below, but for now we can consider that somehow we create a network. A network in an object which implements <code class="docutils literal notranslate"><span class="pre">Network</span></code>. This is our model. We use this model to do inferences and we use this model to improve it using training.</p>
+<p>Another critical ingredient is data, precisely labeled data. In most cases learning in machine learning means extracting knowledge from past experiences and use that knowledge to do predictions for new situations. Labeled data represents that knowledge quantified in numbers (most of the time). This labeled data should come in the form of … tensors (yeah, it was not hard to guess it).</p>
+</section>
+<section id="tabulardataset">
+<h3>TabularDataset<a class="headerlink" href="#tabulardataset" title="Permalink to this heading">#</a></h3>
+<p>When we train a network, we can use directly tensors as inputs, or we can use some helper classes to make this process easier. One of those classes is <code class="docutils literal notranslate"><span class="pre">TabularDataset</span></code>. A <code class="docutils literal notranslate"><span class="pre">TabulatDataset</span></code> helps us to manage labeled data, to create iterator in that data or batch iterators. As it was said, using a dataset helper is not critical, but can simplify our training process.</p>
+</section>
+<section id="loss-function">
+<h3>Loss function<a class="headerlink" href="#loss-function" title="Permalink to this heading">#</a></h3>
+<p>The process of training a neural network implies passing labeled data to the model to compute predictions, we compare those predictions with the expected values (the labels) and compute an error in some form. We may choose how to measure errors and what, actually, errors are. We do that using a loss function. A <code class="docutils literal notranslate"><span class="pre">Loss</span></code> function is a function which computes an error given some predictions and some expected values, and it has an analytical form.</p>
+</section>
+<section id="autograd">
+<h3>Autograd<a class="headerlink" href="#autograd" title="Permalink to this heading">#</a></h3>
+<p>We take this error information and pass it back in a recursive fashion in the network, so it propagates. This is called backpropagation. After the backpropagated errors are cristalized in form of gradients. One per each intersting tensor from the network. The component which does this is called <code class="docutils literal notranslate"><span class="pre">Autograd</span></code>.</p>
+</section>
+<section id="optimizer">
+<h3>Optimizer<a class="headerlink" href="#optimizer" title="Permalink to this heading">#</a></h3>
+<p>After those gradients are computed we use a strategy to transfer information from gradients to their corresponding tensor values. This is the output of the learning, changing the parameter values from a network as a result of measuring errors in the hope that the model now adjusted will predict better in the future. The strategy to transfer information from gradients to its tensor values is called optimization. In rapaio this is a object which implements an <code class="docutils literal notranslate"><span class="pre">Optimizer</span></code>.</p>
+<p>These are the required ingredients to train a neural network. For those who have seen similar, much better and famous libraries, those components should look familiar to you.</p>
+<p>Additionally, to describe the main components of training, we should say that when the whole training data is passed to the model we name that an <em>epoch</em>. For various reasons we do not pass all the training data at once, but in small slices. We name those slices <em>batches</em> or <em>mini-batches</em>. There could be multiple reasons for that, but two of them are often encoutered: the training data simply does not fit the available resources (memory, disk) or training in batches produces better results. After an epoch pass we do it again, and again, until we are content with the results. Rinse and repeat.</p>
+<p>We can be content if we measure properly how model performs. For this purpose many strategies can be emplyed, but a fundamental one is to split data in training, validation, and test, or simply in training and test. For that purpose tabular dataset helper can make your life easier.</p>
+</section>
+</section>
+<section id="hands-on-example-iris-classifier">
+<h2>Hands on example: Iris classifier<a class="headerlink" href="#hands-on-example-iris-classifier" title="Permalink to this heading">#</a></h2>
+<p>For illustration forposes we will train a neural network to classify Iris data set. Iris dataset a as simple as possible, and this was chosen on purpose, since I want you to focus on how training a network happens. It is like a “Hello world” program for classification.</p>
+<p>First we need to get a dataset. The iris dataset is already incorporated in the library and we can load it.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">TensorManager</span><span class="w"> </span><span class="n">tm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TensorManager</span><span class="p">.</span><span class="na">ofFloat</span><span class="p">();</span>
+<span class="n">Frame</span><span class="w"> </span><span class="n">iris</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Datasets</span><span class="p">.</span><span class="na">loadIrisDataset</span><span class="p">();</span>
+<span class="n">iris</span><span class="p">.</span><span class="na">printSummary</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Frame Summary
+=============
+* rowCount: 150
+* complete: 150/150
+* varCount: 5
+* varNames: 
+
+0. sepal-length : dbl | 3.  petal-width : dbl | 
+1.  sepal-width : dbl | 4.        class : nom | 
+2. petal-length : dbl | 
+
+* summary: 
+ sepal-length [dbl]      sepal-width [dbl]      petal-length [dbl]      petal-width [dbl]     
+       Min. : 4.3000000       Min. : 2.0000000        Min. : 1.0000000       Min. : 0.1000000 
+    1st Qu. : 5.1000000    1st Qu. : 2.8000000     1st Qu. : 1.6000000    1st Qu. : 0.3000000 
+     Median : 5.8000000     Median : 3.0000000      Median : 4.3500000     Median : 1.3000000 
+       Mean : 5.8433333       Mean : 3.0573333        Mean : 3.7580000       Mean : 1.1993333 
+    2nd Qu. : 6.4000000    2nd Qu. : 3.3000000     2nd Qu. : 5.1000000    2nd Qu. : 1.8000000 
+       Max. : 7.9000000       Max. : 4.4000000        Max. : 6.9000000       Max. : 2.5000000 
+                                                                                              
+
+       class [nom] 
+versicolor :    50 
+    setosa :    50 
+ virginica :    50 
+                   
+                   
+                   
+                   
+</pre></div>
+</div>
+</div>
+</div>
+<p>This is a <code class="docutils literal notranslate"><span class="pre">Frame</span></code> object, which is the default tabular dataset in the library. We need to create tensors from this tabular data. We create two tensors, one for the input features, which are 4 numerical features, and another tensor for labels, which is the last column named <code class="docutils literal notranslate"><span class="pre">class</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iris</span><span class="p">.</span><span class="na">mapVars</span><span class="p">(</span><span class="n">VarRange</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">&quot;0~3&quot;</span><span class="p">)).</span><span class="na">darray</span><span class="p">().</span><span class="na">cast</span><span class="p">(</span><span class="n">DType</span><span class="p">.</span><span class="na">FLOAT</span><span class="p">);</span>
 <span class="kd">var</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iris</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;class&quot;</span><span class="p">).</span><span class="na">darray</span><span class="p">().</span><span class="na">cast</span><span class="p">(</span><span class="n">DType</span><span class="p">.</span><span class="na">FLOAT</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 </div>
+<p>In order to make our life easier, we create a <code class="docutils literal notranslate"><span class="pre">TabularDataset</span></code>. We then split this dataset in two parts, one for training and another one for testing. We use the training data to train the model and the testing data to evaluate its performance.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">TabularDataset</span><span class="w"> </span><span class="n">irisDataset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">TabularDataset</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">);</span>
@@ -379,25 +692,28 @@ Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyt
 </div>
 </div>
 </div>
+<p>We establish some parameters. See the inline comments below.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">epochs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1_000</span><span class="p">;</span>
-<span class="kt">double</span><span class="w"> </span><span class="n">lr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1e-3</span><span class="p">;</span>
-<span class="kt">int</span><span class="w"> </span><span class="n">batchSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="p">;</span>
-<span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">epochs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1_000</span><span class="p">;</span><span class="w"> </span><span class="c1">// number of epochs</span>
+<span class="kt">double</span><span class="w"> </span><span class="n">lr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1e-3</span><span class="p">;</span><span class="w"> </span><span class="c1">// learning rate</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">batchSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="p">;</span><span class="w"> </span><span class="c1">// number of instances in a batch</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">hidden</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="c1">// number of neurons in the hidden layer</span>
 </pre></div>
 </div>
 </div>
 </div>
+<p>Than we create the model, the nework object. This model is a simple dense neural network with some layers ordered in sequence. For that purpose we create a Sequence network container (which is also a network; all layers are network in themself).</p>
+<p>Then we introduce a layer normalization to handle a little bit better the input value range, a dense layer, an ELU activation, another layer normalization, another dense with ELU and finally a logsoftmax to prepare output for classification.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">Network</span><span class="w"> </span><span class="n">nn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Sequential</span><span class="p">(</span>
 <span class="w">    </span><span class="n">tm</span><span class="p">,</span>
 <span class="w">    </span><span class="k">new</span><span class="w"> </span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">4</span><span class="p">)),</span>
-<span class="w">    </span><span class="k">new</span><span class="w"> </span><span class="n">Linear</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">),</span>
+<span class="w">    </span><span class="k">new</span><span class="w"> </span><span class="n">Linear</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="n">hidden</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">),</span>
 <span class="w">    </span><span class="k">new</span><span class="w"> </span><span class="n">ELU</span><span class="p">(</span><span class="n">tm</span><span class="p">),</span>
-<span class="w">    </span><span class="k">new</span><span class="w"> </span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">n</span><span class="p">)),</span>
-<span class="w">    </span><span class="k">new</span><span class="w"> </span><span class="n">Linear</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">),</span>
+<span class="w">    </span><span class="k">new</span><span class="w"> </span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">hidden</span><span class="p">)),</span>
+<span class="w">    </span><span class="k">new</span><span class="w"> </span><span class="n">Linear</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="n">hidden</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">),</span>
 <span class="w">    </span><span class="k">new</span><span class="w"> </span><span class="n">ELU</span><span class="p">(</span><span class="n">tm</span><span class="p">),</span>
 <span class="w">    </span><span class="k">new</span><span class="w"> </span><span class="n">LogSoftmax</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
 <span class="p">);</span>
@@ -405,69 +721,97 @@ Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyt
 </div>
 </div>
 </div>
+<p>After the model creation we instantiate <code class="docutils literal notranslate"><span class="pre">Adam</span></code> optimizer. This optimizer receives as parameters the tensors which need to be updated in the learning process. Each network describes the tensors which needs to be optimized by implementing <code class="docutils literal notranslate"><span class="pre">parameters()</span></code> method.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">Optimizer</span><span class="w"> </span><span class="n">optimizer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Optimizer</span><span class="p">.</span><span class="na">Adam</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="n">nn</span><span class="p">.</span><span class="na">parameters</span><span class="p">()).</span><span class="na">lr</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="n">lr</span><span class="p">);</span>
-<span class="n">Loss</span><span class="w"> </span><span class="n">loss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">NegativeLikelihoodLoss</span><span class="p">(</span><span class="n">tm</span><span class="p">);</span>
-
-<span class="kd">var</span><span class="w"> </span><span class="n">trainLoss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">empty</span><span class="p">().</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;trainLoss&quot;</span><span class="p">);</span>
-<span class="kd">var</span><span class="w"> </span><span class="n">testLoss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">empty</span><span class="p">().</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;trainLoss&quot;</span><span class="p">);</span>
-<span class="kd">var</span><span class="w"> </span><span class="n">accuracy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">empty</span><span class="p">().</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;accuracy&quot;</span><span class="p">);</span>
-
-<span class="kt">boolean</span><span class="w"> </span><span class="n">separateBatches</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
 </pre></div>
 </div>
 </div>
 </div>
+<p>In order to optimize the network we need to have a loss function. <code class="docutils literal notranslate"><span class="pre">NegativeLikelihoodLoss</span></code> is a loss function which works well for classification if the last layer is <code class="docutils literal notranslate"><span class="pre">LogSoftmax</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">Loss</span><span class="w"> </span><span class="n">loss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">NegativeLikelihoodLoss</span><span class="p">(</span><span class="n">tm</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Next we create some variables which will collect some statistics during learning for later displaying on a graph.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">trainLoss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">empty</span><span class="p">().</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;trainLoss&quot;</span><span class="p">);</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">testLoss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">empty</span><span class="p">().</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;trainLoss&quot;</span><span class="p">);</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">accuracy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">empty</span><span class="p">().</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;accuracy&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Next we have the learning loop, one iteration for each epochs.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">epoch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">epoch</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">epochs</span><span class="p">;</span><span class="w"> </span><span class="n">epoch</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 
+<span class="w">    </span><span class="c1">// configure network in train mode</span>
+<span class="w">    </span><span class="n">nn</span><span class="p">.</span><span class="na">train</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// collect train loss for from each batch</span>
 <span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">trainLossValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">separateBatches</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="n">Iterator</span><span class="o">&lt;</span><span class="n">Batch</span><span class="o">&gt;</span><span class="w"> </span><span class="n">batchIterator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">train</span><span class="p">.</span><span class="na">batchIterator</span><span class="p">(</span><span class="n">batchSize</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">);</span>
-<span class="w">        </span><span class="kt">double</span><span class="w"> </span><span class="n">batchCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">batchIterator</span><span class="p">.</span><span class="na">hasNext</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="n">optimizer</span><span class="p">.</span><span class="na">zeroGrad</span><span class="p">();</span>
-<span class="w">            </span><span class="n">nn</span><span class="p">.</span><span class="na">train</span><span class="p">();</span>
-<span class="w">            </span><span class="n">Batch</span><span class="w"> </span><span class="n">batch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">batchIterator</span><span class="p">.</span><span class="na">next</span><span class="p">();</span>
-<span class="w">            </span><span class="n">Tensor</span><span class="w"> </span><span class="n">pred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nn</span><span class="p">.</span><span class="na">forward11</span><span class="p">(</span><span class="n">batch</span><span class="p">.</span><span class="na">tensor</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
-<span class="w">            </span><span class="n">Loss</span><span class="p">.</span><span class="na">Output</span><span class="w"> </span><span class="n">lossOut</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">loss</span><span class="p">.</span><span class="na">forward</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">batch</span><span class="p">.</span><span class="na">tensor</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
 
-<span class="w">            </span><span class="n">trainLossValue</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">lossOut</span><span class="p">.</span><span class="na">lossValue</span><span class="p">();</span>
-<span class="w">            </span><span class="n">Autograd</span><span class="p">.</span><span class="na">backward</span><span class="p">(</span><span class="n">lossOut</span><span class="p">.</span><span class="na">tensor</span><span class="p">());</span>
-<span class="w">            </span><span class="n">optimizer</span><span class="p">.</span><span class="na">step</span><span class="p">();</span>
-<span class="w">            </span><span class="n">batchCount</span><span class="o">++</span><span class="p">;</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">        </span><span class="n">trainLossValue</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="n">batchCount</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// creates an iterator for batches</span>
+<span class="w">    </span><span class="n">Iterator</span><span class="o">&lt;</span><span class="n">Batch</span><span class="o">&gt;</span><span class="w"> </span><span class="n">batchIterator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">train</span><span class="p">.</span><span class="na">batchIterator</span><span class="p">(</span><span class="n">batchSize</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">);</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">batchCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 
+<span class="w">    </span><span class="c1">// iterate through batches</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">batchIterator</span><span class="p">.</span><span class="na">hasNext</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">        </span><span class="c1">// IMPORTANT: clear all previously computed gradients</span>
 <span class="w">        </span><span class="n">optimizer</span><span class="p">.</span><span class="na">zeroGrad</span><span class="p">();</span>
-<span class="w">        </span><span class="n">nn</span><span class="p">.</span><span class="na">train</span><span class="p">();</span>
 
-<span class="w">        </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Batch</span><span class="o">&gt;</span><span class="w"> </span><span class="n">batches</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nn</span><span class="p">.</span><span class="na">batchForward</span><span class="p">(</span><span class="n">batchSize</span><span class="p">,</span><span class="w"> </span><span class="n">tm</span><span class="p">.</span><span class="na">var</span><span class="p">(</span><span class="n">train</span><span class="p">.</span><span class="na">darray</span><span class="p">(</span><span class="mi">0</span><span class="p">)));</span>
-<span class="w">        </span><span class="n">Loss</span><span class="p">.</span><span class="na">Output</span><span class="w"> </span><span class="n">batchLoss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">loss</span><span class="p">.</span><span class="na">batchForward</span><span class="p">(</span><span class="n">batches</span><span class="p">,</span><span class="w"> </span><span class="n">tm</span><span class="p">.</span><span class="na">var</span><span class="p">(</span><span class="n">train</span><span class="p">.</span><span class="na">darray</span><span class="p">(</span><span class="mi">1</span><span class="p">)));</span>
+<span class="w">        </span><span class="c1">// get next batch</span>
+<span class="w">        </span><span class="n">Batch</span><span class="w"> </span><span class="n">batch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">batchIterator</span><span class="p">.</span><span class="na">next</span><span class="p">();</span>
 
-<span class="w">        </span><span class="n">trainLossValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">batchLoss</span><span class="p">.</span><span class="na">lossValue</span><span class="p">();</span>
-<span class="w">        </span><span class="n">Autograd</span><span class="p">.</span><span class="na">backward</span><span class="p">(</span><span class="n">batchLoss</span><span class="p">.</span><span class="na">tensor</span><span class="p">());</span>
+<span class="w">        </span><span class="c1">// do the forward operation</span>
+<span class="w">        </span><span class="n">Tensor</span><span class="w"> </span><span class="n">pred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nn</span><span class="p">.</span><span class="na">forward11</span><span class="p">(</span><span class="n">batch</span><span class="p">.</span><span class="na">tensor</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
 
+<span class="w">        </span><span class="c1">// take network prediction and compute error loss</span>
+<span class="w">        </span><span class="n">Loss</span><span class="p">.</span><span class="na">Output</span><span class="w"> </span><span class="n">lossOut</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">loss</span><span class="p">.</span><span class="na">forward</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">batch</span><span class="p">.</span><span class="na">tensor</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+
+<span class="w">        </span><span class="c1">// add loss of the batch</span>
+<span class="w">        </span><span class="n">trainLossValue</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">lossOut</span><span class="p">.</span><span class="na">lossValue</span><span class="p">();</span>
+
+<span class="w">        </span><span class="c1">// do autograd reverse mode which computes all the gradients</span>
+<span class="w">        </span><span class="n">Autograd</span><span class="p">.</span><span class="na">backward</span><span class="p">(</span><span class="n">lossOut</span><span class="p">.</span><span class="na">tensor</span><span class="p">());</span>
+
+<span class="w">        </span><span class="c1">// performs the optimization step: parameter values are updated with infor from gradients</span>
 <span class="w">        </span><span class="n">optimizer</span><span class="p">.</span><span class="na">step</span><span class="p">();</span>
-<span class="w">    </span><span class="p">}</span>
 
+<span class="w">        </span><span class="c1">// count batches</span>
+<span class="w">        </span><span class="n">batchCount</span><span class="o">++</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="c1">// normalize the train loss with number of batches to have a loss error which does not depend on batches</span>
+<span class="w">    </span><span class="n">trainLossValue</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="n">batchCount</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// put model in evaluation mode: this is done to deactivate gradient computation</span>
 <span class="w">    </span><span class="n">nn</span><span class="p">.</span><span class="na">eval</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// do model prediction and pass it through loss function to compute test loss</span>
 <span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="n">lossOut</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">loss</span><span class="p">.</span><span class="na">forward</span><span class="p">(</span><span class="n">nn</span><span class="p">.</span><span class="na">forward11</span><span class="p">(</span><span class="n">tm</span><span class="p">.</span><span class="na">var</span><span class="p">(</span><span class="n">test</span><span class="p">.</span><span class="na">darray</span><span class="p">(</span><span class="mi">0</span><span class="p">))),</span><span class="w"> </span><span class="n">tm</span><span class="p">.</span><span class="na">var</span><span class="p">(</span><span class="n">test</span><span class="p">.</span><span class="na">darray</span><span class="p">(</span><span class="mi">1</span><span class="p">)));</span>
+
+<span class="w">    </span><span class="c1">// collect performance data</span>
 <span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">testLossValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lossOut</span><span class="p">.</span><span class="na">lossValue</span><span class="p">();</span>
 <span class="w">    </span><span class="n">trainLoss</span><span class="p">.</span><span class="na">addDouble</span><span class="p">(</span><span class="n">trainLossValue</span><span class="p">);</span>
 <span class="w">    </span><span class="n">testLoss</span><span class="p">.</span><span class="na">addDouble</span><span class="p">(</span><span class="n">testLossValue</span><span class="p">);</span>
 
+<span class="w">    </span><span class="c1">// do a prediction on test set to compute a confusion matrix and test accuracy</span>
 <span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="n">y_pred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nn</span><span class="p">.</span><span class="na">forward11</span><span class="p">(</span><span class="n">test</span><span class="p">.</span><span class="na">tensor</span><span class="p">(</span><span class="mi">0</span><span class="p">)).</span><span class="na">value</span><span class="p">().</span><span class="na">exp</span><span class="p">().</span><span class="na">argmax1d</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">);</span>
 <span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="n">levels</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iris</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;class&quot;</span><span class="p">).</span><span class="na">levels</span><span class="p">();</span>
-
 <span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="n">cm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Confusion</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="n">VarNominal</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="n">levels</span><span class="p">,</span><span class="w"> </span><span class="n">test</span><span class="p">.</span><span class="na">darray</span><span class="p">(</span><span class="mi">1</span><span class="p">)),</span><span class="w"> </span><span class="n">VarNominal</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="n">levels</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">));</span>
 <span class="w">    </span><span class="n">accuracy</span><span class="p">.</span><span class="na">addDouble</span><span class="p">(</span><span class="n">cm</span><span class="p">.</span><span class="na">accuracy</span><span class="p">());</span>
 
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">epoch</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 
+<span class="w">        </span><span class="c1">// print progress data</span>
 <span class="w">        </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;Epoch: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">epoch</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;, train loss:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">trainLossValue</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;, test loss:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">testLossValue</span><span class="p">);</span>
 <span class="w">        </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;\t error: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Format</span><span class="p">.</span><span class="na">floatShort</span><span class="p">(</span><span class="n">cm</span><span class="p">.</span><span class="na">error</span><span class="p">())</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;, accuracy: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Format</span><span class="p">.</span><span class="na">floatShort</span><span class="p">(</span><span class="n">cm</span><span class="p">.</span><span class="na">accuracy</span><span class="p">()));</span>
 <span class="w">        </span><span class="n">cm</span><span class="p">.</span><span class="na">frequencyMatrix</span><span class="p">().</span><span class="na">printContent</span><span class="p">();</span>
@@ -477,60 +821,61 @@ Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyt
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch: 0, train loss:0.045644566183909774, test loss:0.2721867561340332
-	 error: 0.111, accuracy: 0.889
-[[ 8  0  0 ]  
- [ 0 12  3 ]  
- [ 0  2 20 ]] 
-Epoch: 100, train loss:0.04438650805968791, test loss:0.26524585485458374
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch: 0, train loss:1.0960949063301086, test loss:1.1588517427444458
+	 error: 0.756, accuracy: 0.244
+[[ 0 0 15 ]  
+ [ 0 0 19 ]  
+ [ 0 0 11 ]] 
+Epoch: 100, train loss:0.4798036739230156, test loss:0.5300635695457458
+	 error: 0.156, accuracy: 0.844
+[[ 15  0  0 ]  
+ [  0 12  7 ]  
+ [  0  0 11 ]] 
+Epoch: 200, train loss:0.21231568232178688, test loss:0.30144450068473816
 	 error: 0.133, accuracy: 0.867
-[[ 8  0  0 ]  
- [ 0 12  3 ]  
- [ 0  3 19 ]] 
-Epoch: 200, train loss:0.04734240286052227, test loss:0.2632858157157898
-	 error: 0.133, accuracy: 0.867
-[[ 8  0  0 ]  
- [ 0 12  3 ]  
- [ 0  3 19 ]] 
-Epoch: 300, train loss:0.07778783235698938, test loss:0.2686111629009247
-	 error: 0.111, accuracy: 0.889
-[[ 8  0  0 ]  
- [ 0 12  3 ]  
- [ 0  2 20 ]] 
-Epoch: 400, train loss:0.04781428584828973, test loss:0.25889909267425537
-	 error: 0.111, accuracy: 0.889
-[[ 8  0  0 ]  
- [ 0 13  2 ]  
- [ 0  3 19 ]] 
-Epoch: 500, train loss:0.042913374840281904, test loss:0.26636627316474915
-	 error: 0.111, accuracy: 0.889
-[[ 8  0  0 ]  
- [ 0 12  3 ]  
- [ 0  2 20 ]] 
-Epoch: 600, train loss:0.04451033310033381, test loss:0.2606799006462097
-	 error: 0.111, accuracy: 0.889
-[[ 8  0  0 ]  
- [ 0 13  2 ]  
- [ 0  3 19 ]] 
-Epoch: 700, train loss:0.045322495279833674, test loss:0.26323607563972473
-	 error: 0.111, accuracy: 0.889
-[[ 8  0  0 ]  
- [ 0 12  3 ]  
- [ 0  2 20 ]] 
-Epoch: 800, train loss:0.0429951052647084, test loss:0.263791024684906
-	 error: 0.111, accuracy: 0.889
-[[ 8  0  0 ]  
- [ 0 13  2 ]  
- [ 0  3 19 ]] 
-Epoch: 900, train loss:0.04508921317756176, test loss:0.26079532504081726
-	 error: 0.111, accuracy: 0.889
-[[ 8  0  0 ]  
- [ 0 13  2 ]  
- [ 0  3 19 ]] 
+[[ 15  0  0 ]  
+ [  0 14  5 ]  
+ [  0  1 10 ]] 
+Epoch: 300, train loss:0.15421265922486782, test loss:0.16003870964050293
+	 error: 0.067, accuracy: 0.933
+[[ 15  0  0 ]  
+ [  0 17  2 ]  
+ [  0  1 10 ]] 
+Epoch: 400, train loss:0.1663175132125616, test loss:0.16192184388637543
+	 error: 0.067, accuracy: 0.933
+[[ 15  0  0 ]  
+ [  0 17  2 ]  
+ [  0  1 10 ]] 
+Epoch: 500, train loss:0.12418942805379629, test loss:0.12255069613456726
+	 error: 0.067, accuracy: 0.933
+[[ 15  0  0 ]  
+ [  0 17  2 ]  
+ [  0  1 10 ]] 
+Epoch: 600, train loss:0.1114567406475544, test loss:0.13389801979064941
+	 error: 0.067, accuracy: 0.933
+[[ 15  0  0 ]  
+ [  0 17  2 ]  
+ [  0  1 10 ]] 
+Epoch: 700, train loss:0.11203782260417938, test loss:0.1294497698545456
+	 error: 0.067, accuracy: 0.933
+[[ 15  0  0 ]  
+ [  0 17  2 ]  
+ [  0  1 10 ]] 
+Epoch: 800, train loss:0.11209792830049992, test loss:0.12509234249591827
+	 error: 0.067, accuracy: 0.933
+[[ 15  0  0 ]  
+ [  0 17  2 ]  
+ [  0  1 10 ]] 
+Epoch: 900, train loss:0.1057411152869463, test loss:0.13516828417778015
+	 error: 0.067, accuracy: 0.933
+[[ 15  0  0 ]  
+ [  0 17  2 ]  
+ [  0  1 10 ]] 
 </pre></div>
 </div>
 </div>
 </div>
+<p>In the ouput you can see the progress. It does not looks bad at all. Below is also a graph.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">display</span><span class="p">(</span><span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">lines</span><span class="p">(</span><span class="n">trainLoss</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="p">(</span><span class="n">Color</span><span class="p">.</span><span class="na">RED</span><span class="p">),</span><span class="w"> </span><span class="n">lwd</span><span class="p">(</span><span class="mi">1</span><span class="p">)).</span><span class="na">lines</span><span class="p">(</span><span class="n">testLoss</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">lwd</span><span class="p">(</span><span class="mi">1</span><span class="p">))));</span>
@@ -538,12 +883,20 @@ Epoch: 900, train loss:0.04508921317756176, test loss:0.26079532504081726
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/5d9d187172f85bedd4725bfd8f8165d8c846b238bf94d6302af157fcda374924.png" src="../_images/5d9d187172f85bedd4725bfd8f8165d8c846b238bf94d6302af157fcda374924.png" />
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0ef11d52-6b07-4f8f-8c78-d4a97837e4ef
+<img alt="../_images/14ebb8cf1d3c3292e3b74024a38d9f1d8c495ecd399f11e178da6766024e03bf.png" src="../_images/14ebb8cf1d3c3292e3b74024a38d9f1d8c495ecd399f11e178da6766024e03bf.png" />
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>c1b53417-8578-4072-befa-554670d8c478
 </pre></div>
 </div>
 </div>
 </div>
+<p>As you can see, the pipeline for training is very similar with what you would expect in Pytorch. This is on purpose. Pytorch API is an inspiration (although we are talking about API only, I did not dig deep into inner workings). The reason why I think this kind of API is a good inspiration is because it is very logic and perhaps it arrived in that form after many years of experience. And I totally aggree.</p>
+<p>Another thing which you can notice is that the model is very simple. Small layers with tiny number of parameters. This is because the problem is simple, and creating huge models with overparametrization does not help anybody.</p>
+</section>
+<section id="closing-notes">
+<h2>Closing notes<a class="headerlink" href="#closing-notes" title="Permalink to this heading">#</a></h2>
+<p>While the functionality implemented for darrays is extensive, the tensor and neural network layers is not. This is because darrays benefited from many months of work, while the tensor couterpart did not. Still, all the required components are there and the frame was settled. This is a big milestone, to have all the compoenents in place and verified. Future revisions will enrich a lot the available components going probably towards convolutions, reccurent layers, embeddings and probably attention, transformers and what not.</p>
+<p>Hope it was a fun journey and stay tuned.</p>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -600,6 +953,34 @@ Epoch: 900, train loss:0.04508921317756176, test loss:0.26079532504081726
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-tensor">What is a Tensor</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tensormanager">TensorManager</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tensors-and-computational-graphs">Tensors and computational graphs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#anatomy-of-training-a-neural-network">Anatomy of training a neural network</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#network">Network</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tabulardataset">TabularDataset</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#loss-function">Loss function</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autograd">Autograd</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optimizer">Optimizer</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hands-on-example-iris-classifier">Hands on example: Iris classifier</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#closing-notes">Closing notes</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
