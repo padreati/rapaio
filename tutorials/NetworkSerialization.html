@@ -1,0 +1,741 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Network Serialization</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pdf_print.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/NetworkSerialization';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Algorithms: KMeans" href="../algorithms/KMeans.html" />
+    <link rel="prev" title="Custom networks" href="CustomNetwork.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.png" class="logo__image only-light" alt=" - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt=" - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Rapaio Book
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../about/BriefOverview.html">Brief preview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about/about-me.html">About me</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Core Library</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="BuiltinDataSets.html">Built-in Data sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Variables.html">Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DataHandlingOverview.html">Data Handling Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CoreStatisticalTools.html">Core statistical tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DataVisualization.html">Data visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ReadingAndWritingData.html">Reading and Writing data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">DArrays, Tensors and Neural Networks</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="LinearAlgebraOverview.html">Linear Algebra Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TensorsAndNeuralNetworks.html">Tensors and Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CustomNetwork.html">Custom networks</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Network Serialization</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../algorithms/KMeans.html">Algorithms: KMeans</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/tutorials/NetworkSerialization.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Network Serialization</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-of-custom-network">Example of custom network</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#save-network-state">Save network state</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-save-state-works">How save state works?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-new-instance-of-the-network">Creating a new instance of the network</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-load-network-state-works">How load network state works</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tensting-the-new-network-instance">Tensting the new network instance</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#other-aspects-of-network-serialization">Other aspects of network serialization</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="network-serialization">
+<h1>Network Serialization<a class="headerlink" href="#network-serialization" title="Permalink to this heading">#</a></h1>
+<p>In this short tutorial we explain how network serialization works and how to create custom networks with proper serialization.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">load</span><span class="w"> </span><span class="p">..</span><span class="o">/</span><span class="p">..</span><span class="o">/</span><span class="n">rapaio</span><span class="o">-</span><span class="n">bootstrap</span><span class="p">.</span><span class="na">ipynb</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Adding dependency <span class=" -Color -Color-Bold -Color-Bold-Green">io.github.padreati:rapaio-lib:7.0.1</span>
+Solving dependencies
+Resolved artifacts count: 1
+Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/io/github/padreati/rapaio-lib/7.0.1/rapaio-lib-7.0.1.jar</span>
+
+</pre></div>
+</div>
+</div>
+</div>
+<p>Serialization is the process of saving an object to an external medium and loading it for later usage. Thus, for neural networks as it is the case for most of the machine learning models, this feature is critical. This allows one to separate the process of learning and inference, since both of them might have different requirements, and also allow one to use a model at a later time and/or on a different machine.</p>
+<p>Usually in <code class="docutils literal notranslate"><span class="pre">rapaio</span></code> library the model instance is persisted. For neural networks this is different, however, what is saved and load is the model state. The <em>network state</em> consists in all the tensors which are involved in computation, either for inference or training, and defines the computational behavior of the neural network.</p>
+<p>The reason why a neural network model instance is not saved directly, but his state, it is a design decision. Creating custom neural networks should be considered first when you want to build a model and we don’t want to interfere with the instance construction phase of a neural network (the code called in constructor). Saving and instantiating the model directly would create a parallel way to construct networks, a prone to errors process and hard to maintain. Since neural networks takes tensors as inputs, do computations which involves other tensors, and compute some outputs in the form of tensors, the involved tensors is the only critical part which needs to pe stored in a persistent way.</p>
+<p>Persisting and loading neural networks offline involves two stages. The first stage is always object creation, which basically means usinga constructor to create a new instance of the model. The second stage is to load its state from a persistent storage, state which will override the behavior of the newly created instance into the behavior of the persisted network.</p>
+<section id="example-of-custom-network">
+<h2>Example of custom network<a class="headerlink" href="#example-of-custom-network" title="Permalink to this heading">#</a></h2>
+<p>For illustration purposes we will use a custom network model, bring some data and train it. We define a function which takes a 4 dimensional input. We generate a random data set and split into test and train.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="nf">fun4d</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">x1</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">x3</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">x4</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">sin</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">cos</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">x3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">x4</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">x4</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">sqrt</span><span class="p">(</span><span class="n">Math</span><span class="p">.</span><span class="na">abs</span><span class="p">(</span><span class="n">x1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">x3</span><span class="p">));</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">TensorManager</span><span class="w"> </span><span class="n">tm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TensorManager</span><span class="p">.</span><span class="na">ofFloat</span><span class="p">();</span>
+<span class="n">tm</span><span class="p">.</span><span class="na">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1_000</span><span class="p">;</span>
+<span class="n">Tensor</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tm</span><span class="p">.</span><span class="na">randomTensor</span><span class="p">(</span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">),</span><span class="w"> </span><span class="n">tm</span><span class="p">.</span><span class="na">random</span><span class="p">());</span>
+<span class="n">Tensor</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tm</span><span class="p">.</span><span class="na">zerosTensor</span><span class="p">(</span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">N</span><span class="p">));</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">DArray</span><span class="o">&lt;?&gt;</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="na">value</span><span class="p">().</span><span class="na">selsq</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">);</span>
+<span class="w">    </span><span class="n">y</span><span class="p">.</span><span class="na">value</span><span class="p">().</span><span class="na">setDouble</span><span class="p">(</span><span class="n">tm</span><span class="p">.</span><span class="na">random</span><span class="p">().</span><span class="na">nextDouble</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">fun4d</span><span class="p">(</span><span class="n">row</span><span class="p">.</span><span class="na">getDouble</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="w"> </span>
+<span class="w">        </span><span class="n">row</span><span class="p">.</span><span class="na">getDouble</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="n">row</span><span class="p">.</span><span class="na">getDouble</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">row</span><span class="p">.</span><span class="na">getDouble</span><span class="p">(</span><span class="mi">3</span><span class="p">)),</span><span class="w"> </span><span class="n">i</span><span class="p">);</span>
+<span class="p">}</span>
+
+
+<span class="n">TabularDataset</span><span class="o">[]</span><span class="w"> </span><span class="n">split</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">TabularDataset</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">).</span><span class="na">trainTestSplit</span><span class="p">(</span><span class="mf">0.2</span><span class="p">);</span>
+<span class="n">TabularDataset</span><span class="w"> </span><span class="n">train</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">split</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="p">;</span>
+<span class="n">TabularDataset</span><span class="w"> </span><span class="n">test</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">split</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We then define a neural network to handle the regression problem.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">static</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Fun4dNetwork</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">AbstractNetwork</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">BatchNorm1D</span><span class="w"> </span><span class="n">norm1</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">Linear</span><span class="w"> </span><span class="n">linear1</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">ReLU</span><span class="w"> </span><span class="n">relu1</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">BatchNorm1D</span><span class="w"> </span><span class="n">norm2</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">Linear</span><span class="w"> </span><span class="n">linear2</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">Fun4dNetwork</span><span class="p">(</span><span class="n">TensorManager</span><span class="w"> </span><span class="n">tm</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">super</span><span class="p">(</span><span class="n">tm</span><span class="p">);</span>
+<span class="w">        </span><span class="n">norm1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">BatchNorm1D</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">);</span>
+<span class="w">        </span><span class="n">linear1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Linear</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">1_000</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span>
+<span class="w">        </span><span class="n">relu1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ReLU</span><span class="p">(</span><span class="n">tm</span><span class="p">);</span>
+<span class="w">        </span><span class="n">norm2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">BatchNorm1D</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="mi">1_000</span><span class="p">);</span>
+<span class="w">        </span><span class="n">linear2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Linear</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="mi">1_000</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Tensor</span><span class="w"> </span><span class="nf">forward11</span><span class="p">(</span><span class="n">Tensor</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">norm1</span><span class="p">.</span><span class="na">forward11</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+<span class="w">        </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">linear1</span><span class="p">.</span><span class="na">forward11</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+<span class="w">        </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">relu1</span><span class="p">.</span><span class="na">forward11</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+<span class="w">        </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">norm2</span><span class="p">.</span><span class="na">forward11</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+<span class="w">        </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">linear2</span><span class="p">.</span><span class="na">forward11</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>In order to see that the network is viable we fit it on train data and test it.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">Network</span><span class="w"> </span><span class="n">nn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Fun4dNetwork</span><span class="p">(</span><span class="n">tm</span><span class="p">);</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="n">EPOCHS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">400</span><span class="p">;</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">BATCH_SIZE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">;</span>
+
+<span class="n">Optimizer</span><span class="w"> </span><span class="n">optimizer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Optimizer</span><span class="p">.</span><span class="na">Adam</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="n">nn</span><span class="p">.</span><span class="na">parameters</span><span class="p">()).</span><span class="na">lr</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="mf">1e-3</span><span class="p">);</span>
+
+<span class="n">VarDouble</span><span class="w"> </span><span class="n">trainLoss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">empty</span><span class="p">().</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;trainLoss&quot;</span><span class="p">);</span>
+<span class="n">VarDouble</span><span class="w"> </span><span class="n">testLoss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">empty</span><span class="p">().</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;testLoss&quot;</span><span class="p">);</span>
+
+<span class="n">Loss</span><span class="w"> </span><span class="n">loss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">MSELoss</span><span class="p">(</span><span class="n">tm</span><span class="p">);</span>
+
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">epoch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="n">epoch</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">EPOCHS</span><span class="p">;</span><span class="w"> </span><span class="n">epoch</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="n">nn</span><span class="p">.</span><span class="na">train</span><span class="p">();</span>
+<span class="w">    </span><span class="n">optimizer</span><span class="p">.</span><span class="na">zeroGrad</span><span class="p">();</span>
+
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="n">batchOut</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nn</span><span class="p">.</span><span class="na">batchForward</span><span class="p">(</span><span class="n">BATCH_SIZE</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="n">train</span><span class="p">.</span><span class="na">tensor</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="n">lossOut</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">loss</span><span class="p">.</span><span class="na">batchForward</span><span class="p">(</span><span class="n">batchOut</span><span class="p">,</span><span class="w"> </span><span class="n">train</span><span class="p">.</span><span class="na">tensor</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">trainLossValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lossOut</span><span class="p">.</span><span class="na">lossValue</span><span class="p">();</span>
+<span class="w">    </span><span class="n">trainLoss</span><span class="p">.</span><span class="na">addDouble</span><span class="p">(</span><span class="n">trainLossValue</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">Autograd</span><span class="p">.</span><span class="na">backward</span><span class="p">(</span><span class="n">lossOut</span><span class="p">.</span><span class="na">tensor</span><span class="p">());</span>
+<span class="w">    </span><span class="n">optimizer</span><span class="p">.</span><span class="na">step</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">nn</span><span class="p">.</span><span class="na">eval</span><span class="p">();</span>
+<span class="w">    </span><span class="n">Tensor</span><span class="w"> </span><span class="n">outputs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nn</span><span class="p">.</span><span class="na">forward11</span><span class="p">(</span><span class="n">tm</span><span class="p">.</span><span class="na">var</span><span class="p">(</span><span class="n">test</span><span class="p">.</span><span class="na">darray</span><span class="p">(</span><span class="mi">0</span><span class="p">)));</span>
+<span class="w">    </span><span class="n">lossOut</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">loss</span><span class="p">.</span><span class="na">forward</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span><span class="w"> </span><span class="n">tm</span><span class="p">.</span><span class="na">var</span><span class="p">(</span><span class="n">test</span><span class="p">.</span><span class="na">darray</span><span class="p">(</span><span class="mi">1</span><span class="p">)));</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">teLoss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lossOut</span><span class="p">.</span><span class="na">lossValue</span><span class="p">();</span>
+<span class="w">    </span><span class="n">testLoss</span><span class="p">.</span><span class="na">addDouble</span><span class="p">(</span><span class="n">teLoss</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">epoch</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">epoch</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">25</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">printf</span><span class="p">(</span><span class="s">&quot;Epoch: %d, Train loss: %.6f, test loss: %.6f\n&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">epoch</span><span class="p">,</span><span class="w"> </span><span class="n">trainLossValue</span><span class="p">,</span><span class="w"> </span><span class="n">teLoss</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch: 1, Train loss: 6.463082, test loss: 6.558301
+Epoch: 25, Train loss: 1.342792, test loss: 1.395550
+Epoch: 50, Train loss: 0.612419, test loss: 0.622492
+Epoch: 75, Train loss: 0.263298, test loss: 0.259663
+Epoch: 100, Train loss: 0.204112, test loss: 0.194072
+Epoch: 125, Train loss: 0.181188, test loss: 0.172728
+Epoch: 150, Train loss: 0.158991, test loss: 0.155328
+Epoch: 175, Train loss: 0.137773, test loss: 0.137477
+Epoch: 200, Train loss: 0.117931, test loss: 0.120677
+Epoch: 225, Train loss: 0.100027, test loss: 0.105606
+Epoch: 250, Train loss: 0.084605, test loss: 0.092792
+Epoch: 275, Train loss: 0.071990, test loss: 0.082608
+Epoch: 300, Train loss: 0.061805, test loss: 0.074530
+Epoch: 325, Train loss: 0.053378, test loss: 0.068135
+Epoch: 350, Train loss: 0.046240, test loss: 0.062288
+Epoch: 375, Train loss: 0.040201, test loss: 0.057271
+Epoch: 400, Train loss: 0.035062, test loss: 0.052875
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">lines</span><span class="p">(</span><span class="n">trainLoss</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="n">lwd</span><span class="p">(</span><span class="mi">1</span><span class="p">)).</span><span class="na">lines</span><span class="p">(</span><span class="n">testLoss</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">lwd</span><span class="p">(</span><span class="mi">1</span><span class="p">)),</span><span class="w"> </span><span class="mi">800</span><span class="p">,</span><span class="w"> </span><span class="mi">300</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/d21fd39d4f9c77c4d00cae5fffdecf14a44c22bea00c14364634e9c8664222f3.png" src="../_images/d21fd39d4f9c77c4d00cae5fffdecf14a44c22bea00c14364634e9c8664222f3.png" />
+</div>
+</div>
+<p>As you can see the network do it’s job. But the performance of the network is not important now. The point is that we have a network which is not in the initial state, its state changed after some hundred epochs on training data.</p>
+</section>
+<section id="save-network-state">
+<h2>Save network state<a class="headerlink" href="#save-network-state" title="Permalink to this heading">#</a></h2>
+<p>We want to use the network later, loaded from a persistent storage, which in our case is a file on disk. In order to save the network state we have to call one of the method named <code class="docutils literal notranslate"><span class="pre">saveState</span></code>. Let’s save it to a file.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">nn</span><span class="p">.</span><span class="na">saveState</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">&quot;./fun4d-network.bin&quot;</span><span class="p">));</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The name of the file is not important, neither its extension. We used <code class="docutils literal notranslate"><span class="pre">.bin</span></code> for that purpose, but it can be actually anything, as long as we remember it.</p>
+<section id="how-save-state-works">
+<h3>How save state works?<a class="headerlink" href="#how-save-state-works" title="Permalink to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">Network</span></code> models exposes its state through method <code class="docutils literal notranslate"><span class="pre">state()</span></code>. This method returns in a list all the tensors which are involved in neural network computations. Tensors have two main important properties: its value and its gradient. The gradient is a volatile information, since it can be changed after any kind of <code class="docutils literal notranslate"><span class="pre">Autograd.backward</span></code> call. Anyhow, the gradient values are relevant only to the optimizer and they are not involved in inferences. Thus, gradients are not relevant for serialization.</p>
+<p>But tensors’ values are important for serialization. The values of the tensors together with the code of forward methods determines completely the results of the inferences. Those values will be persisted. It is also relevant that network state maintains the order of those tensors, information which will be relevant when the state will be loaded from a persistent storage.</p>
+<p><strong>Important note</strong></p>
+<p>When you need to implement the method <code class="docutils literal notranslate"><span class="pre">state()</span></code> for a custom network it is very important to expose through network state the actual tensor instances, not a copy of those tensors. Tensors acts like containers for tensor values, in other words acts like references to those values. The same tensors will be used at loading the network state. If you expose a copy of the actual tensors, then that copy will be updated with the new value and your network will not receive its state.</p>
+</section>
+</section>
+<section id="creating-a-new-instance-of-the-network">
+<h2>Creating a new instance of the network<a class="headerlink" href="#creating-a-new-instance-of-the-network" title="Permalink to this heading">#</a></h2>
+<p>Imagine now that we closed our main program. Thus we do not have a network object. We must create it. We should create a new instance of the network in a normal way. If we have different ways to create a network, with different parameters, it would be a good idea to create the new instance in the same way that we created the network instance who’s state we persisted.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">TensorManager</span><span class="w"> </span><span class="n">tm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TensorManager</span><span class="p">.</span><span class="na">ofFloat</span><span class="p">();</span>
+<span class="n">Network</span><span class="w"> </span><span class="n">nn2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Fun4dNetwork</span><span class="p">(</span><span class="n">tm</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>After we have a network instance of the same type and created in the same way as the network who’s state we persisted before, we can load from the persistent storage the serialized network state into the new network instance. We do that by calling on of the methods named <code class="docutils literal notranslate"><span class="pre">loadState</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">nn2</span><span class="p">.</span><span class="na">loadState</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">&quot;./fun4d-network.bin&quot;</span><span class="p">));</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>That is all, actually.</p>
+<section id="how-load-network-state-works">
+<h3>How load network state works<a class="headerlink" href="#how-load-network-state-works" title="Permalink to this heading">#</a></h3>
+<p>Loading the network state into a new network object works in the following way. Using the same <code class="docutils literal notranslate"><span class="pre">state()</span></code> method, the deserialization code have access to the tensors which will receive the new values. The deserialization code reads each value (which is an darray, actually) from the persistent storage, and sets that value to the corresponding tensor object from the network state. In human plain words, it overrides the values of the involved tensors with the values from the persistent storage. This is why it is important to expose the actual tensors through state method, and not some copy of them.</p>
+</section>
+</section>
+<section id="tensting-the-new-network-instance">
+<h2>Tensting the new network instance<a class="headerlink" href="#tensting-the-new-network-instance" title="Permalink to this heading">#</a></h2>
+<p>We now have to networks, the original one and another one which was loaded from disk. They should behave in the same way. You can trust me or you can do a test. I urge you to chose the second way.</p>
+<p>To test the fact that those networks produces the same results we will predict the same input features with both networks. After that we see if there is any difference between them.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="n">prediction1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nn</span><span class="p">.</span><span class="na">forward11</span><span class="p">(</span><span class="n">train</span><span class="p">.</span><span class="na">tensor</span><span class="p">(</span><span class="mi">0</span><span class="p">)).</span><span class="na">value</span><span class="p">();</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">prediction2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nn2</span><span class="p">.</span><span class="na">forward11</span><span class="p">(</span><span class="n">train</span><span class="p">.</span><span class="na">tensor</span><span class="p">(</span><span class="mi">0</span><span class="p">)).</span><span class="na">value</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// compute the sum of absolute differences</span>
+<span class="n">prediction1</span><span class="p">.</span><span class="na">sub</span><span class="p">(</span><span class="n">prediction2</span><span class="p">).</span><span class="na">abs</span><span class="p">().</span><span class="na">sum</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.0
+</pre></div>
+</div>
+</div>
+</div>
+<p>As you can see there is no difference. Thus we can conclude that, at least for inference purposes, the networks are the same.</p>
+</section>
+<section id="other-aspects-of-network-serialization">
+<h2>Other aspects of network serialization<a class="headerlink" href="#other-aspects-of-network-serialization" title="Permalink to this heading">#</a></h2>
+<p>The network serialization uses a binary protocol which was implemented in the library to store those values. There is also a text protocol which was written for debugging purpose. That protocol can be used to see the actual stored content in a textual format. If you want to play with it you can use some code like: <code class="docutils literal notranslate"><span class="pre">nn.saveState(TextAtomProtocol.outputToStream(System.out))</span></code>.</p>
+<p>You can serialize a network state in other type of storages. For that purpose use the universal <code class="docutils literal notranslate"><span class="pre">OutputStream</span></code> interface, since there are <code class="docutils literal notranslate"><span class="pre">saveState</span></code> and <code class="docutils literal notranslate"><span class="pre">loadState</span></code> state methods which handles those interfaces.</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "rapaio-jupyter-kernel-preview23"
+        },
+        kernelOptions: {
+            name: "rapaio-jupyter-kernel-preview23",
+            path: "./tutorials"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'rapaio-jupyter-kernel-preview23'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="CustomNetwork.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Custom networks</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../algorithms/KMeans.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Algorithms: KMeans</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-of-custom-network">Example of custom network</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#save-network-state">Save network state</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-save-state-works">How save state works?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-new-instance-of-the-network">Creating a new instance of the network</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-load-network-state-works">How load network state works</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tensting-the-new-network-instance">Tensting the new network instance</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#other-aspects-of-network-serialization">Other aspects of network serialization</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Aurelian Tutuianu
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
