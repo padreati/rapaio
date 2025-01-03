@@ -1,0 +1,806 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Custom networks</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pdf_print.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/CustomNetwork';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Algorithms: KMeans" href="../algorithms/KMeans.html" />
+    <link rel="prev" title="Tensors and Neural Networks" href="TensorsAndNeuralNetworks.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.png" class="logo__image only-light" alt=" - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt=" - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Rapaio Book
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../about/BriefOverview.html">Brief preview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about/about-me.html">About me</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Core Library</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="BuiltinDataSets.html">Built-in Data sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Variables.html">Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DataHandlingOverview.html">Data Handling Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CoreStatisticalTools.html">Core statistical tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DataVisualization.html">Data visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ReadingAndWritingData.html">Reading and Writing data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">DArrays, Tensors and Neural Networks</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="LinearAlgebraOverview.html">Linear Algebra Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TensorsAndNeuralNetworks.html">Tensors and Neural Networks</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Custom networks</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../algorithms/KMeans.html">Algorithms: KMeans</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/tutorials/CustomNetwork.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Custom networks</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-network-components">Custom network components</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#network-parameters">Network parameters</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#network-state">Network state</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#network-forward-method">Network forward method</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-a-custom-network">Why a custom network?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-out-custom-network">Running out custom network</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion">Conclusion</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="custom-networks">
+<h1>Custom networks<a class="headerlink" href="#custom-networks" title="Permalink to this heading">#</a></h1>
+<p>A simple dense neural network can be written using a container network like <code class="docutils literal notranslate"><span class="pre">Sequence</span></code>. This is valid, concise and useful. Still, this does not allow a lot of customization, other than changing various parameters for different layers. Even if it involves a little bit more work, there is another way to create custom networks which brings more floxibility. This is the purpose of this tutorial.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">load</span><span class="w"> </span><span class="p">..</span><span class="o">/</span><span class="p">..</span><span class="o">/</span><span class="n">rapaio</span><span class="o">-</span><span class="n">bootstrap</span><span class="p">.</span><span class="na">ipynb</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Adding dependency <span class=" -Color -Color-Bold -Color-Bold-Green">io.github.padreati:rapaio-lib:7.0.1</span>
+Solving dependencies
+Resolved artifacts count: 1
+Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/io/github/padreati/rapaio-lib/7.0.1/rapaio-lib-7.0.1.jar</span>
+
+</pre></div>
+</div>
+</div>
+</div>
+<p>In order to setup the thigs we need a problem. A simple problem to let us concentrate our attention on the central topic. For that we will use the well-known advertising dataset, from ISLR book.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// first step is to create a tensor manager</span>
+<span class="n">TensorManager</span><span class="w"> </span><span class="n">tm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TensorManager</span><span class="p">.</span><span class="na">ofFloat</span><span class="p">();</span>
+<span class="n">tm</span><span class="p">.</span><span class="na">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// and get the dataset</span>
+<span class="n">Frame</span><span class="w"> </span><span class="n">df</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Datasets</span><span class="p">.</span><span class="na">loadISLAdvertising</span><span class="p">();</span>
+<span class="n">df</span><span class="p">.</span><span class="na">printSummary</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Frame Summary
+=============
+* rowCount: 200
+* complete: 200/200
+* varCount: 4
+* varNames: 
+
+0.        TV : dbl | 
+1.     Radio : dbl | 
+2. Newspaper : dbl | 
+3.     Sales : dbl | 
+
+* summary: 
+       TV [dbl]           Radio [dbl]       Newspaper [dbl]           Sales [dbl]      
+   Min. :   0.7000000    Min. :  0.0000000     Min. :   0.3000000    Min. :  1.6000000 
+1st Qu. :  74.3750000 1st Qu. :  9.9750000  1st Qu. :  12.7500000 1st Qu. : 10.3750000 
+ Median : 149.7500000  Median : 22.9000000   Median :  25.7500000  Median : 12.9000000 
+   Mean : 147.0425000    Mean : 23.2640000     Mean :  30.5540000    Mean : 14.0225000 
+2nd Qu. : 218.8250000 2nd Qu. : 36.5250000  2nd Qu. :  45.1000000 2nd Qu. : 17.4000000 
+   Max. : 296.4000000    Max. : 49.6000000     Max. : 114.0000000    Max. : 27.0000000 
+                                                                                       
+</pre></div>
+</div>
+</div>
+</div>
+<p>As can be seen is a very simple regression problem, three input features, nothing fancy. We get also a tensor dataset for training and testing.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">DArray</span><span class="o">&lt;?&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df</span><span class="p">.</span><span class="na">mapVars</span><span class="p">(</span><span class="s">&quot;TV&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Radio&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Newspaper&quot;</span><span class="p">).</span><span class="na">darray</span><span class="p">().</span><span class="na">cast</span><span class="p">(</span><span class="n">tm</span><span class="p">.</span><span class="na">dt</span><span class="p">());</span>
+<span class="n">DArray</span><span class="o">&lt;?&gt;</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df</span><span class="p">.</span><span class="na">mapVars</span><span class="p">(</span><span class="s">&quot;Sales&quot;</span><span class="p">).</span><span class="na">darray</span><span class="p">().</span><span class="na">cast</span><span class="p">(</span><span class="n">tm</span><span class="p">.</span><span class="na">dt</span><span class="p">());</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">TabularDataset</span><span class="w"> </span><span class="n">ds</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">TabularDataset</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">);</span>
+<span class="n">TabularDataset</span><span class="o">[]</span><span class="w"> </span><span class="n">split</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ds</span><span class="p">.</span><span class="na">trainTestSplit</span><span class="p">(</span><span class="mf">0.2</span><span class="p">);</span>
+<span class="n">TabularDataset</span><span class="w"> </span><span class="n">train</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">split</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="p">;</span>
+<span class="n">TabularDataset</span><span class="w"> </span><span class="n">test</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">split</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">VarDouble</span><span class="w"> </span><span class="n">trainLoss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">empty</span><span class="p">().</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;trainLoss&quot;</span><span class="p">);</span>
+<span class="n">VarDouble</span><span class="w"> </span><span class="n">testLoss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VarDouble</span><span class="p">.</span><span class="na">empty</span><span class="p">().</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;testLoss&quot;</span><span class="p">);</span>
+<span class="c1">// mean squared error for a regression problem</span>
+<span class="n">Loss</span><span class="w"> </span><span class="n">loss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">MSELoss</span><span class="p">(</span><span class="n">tm</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can continue continue with a <code class="docutils literal notranslate"><span class="pre">Sequence</span></code> which can have some standard dense neural network layers, which would be fine. But we can also create the <code class="docutils literal notranslate"><span class="pre">Network</span></code> by itself. In <code class="docutils literal notranslate"><span class="pre">rapaio</span></code> the network, which has to implement <code class="docutils literal notranslate"><span class="pre">Network</span></code> interface is a recursive component. Networks can act by themself and can be used in another networks, which also can be used in another networks as layers, and so on.</p>
+<p>In order to create a network, the most direct way is to derive from <code class="docutils literal notranslate"><span class="pre">AbstractNetwork</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span> <span class="nc">AdvertisingNetwork</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">AbstractNetwork</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">LayerNorm</span><span class="w"> </span><span class="n">norm1</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">Linear</span><span class="w"> </span><span class="n">linear1</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">ELU</span><span class="w"> </span><span class="n">act1</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">Linear</span><span class="w"> </span><span class="n">linear2</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">ELU</span><span class="w"> </span><span class="n">act2</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">hidden</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">12</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">AdvertisingNetwork</span><span class="p">(</span><span class="n">TensorManager</span><span class="w"> </span><span class="n">tm</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">super</span><span class="p">(</span><span class="n">tm</span><span class="p">);</span>
+<span class="w">        </span><span class="n">norm1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">3</span><span class="p">));</span>
+<span class="w">        </span><span class="n">linear1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Linear</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">hidden</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span>
+<span class="w">        </span><span class="n">act1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ELU</span><span class="p">(</span><span class="n">tm</span><span class="p">);</span>
+<span class="w">        </span><span class="n">linear2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Linear</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="n">hidden</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span>
+<span class="w">        </span><span class="n">act2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ELU</span><span class="p">(</span><span class="n">tm</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// This does not need to be implemented in this case</span>
+<span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">parameters</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&gt;</span><span class="w"> </span><span class="n">params</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+<span class="w">        </span><span class="n">params</span><span class="p">.</span><span class="na">addAll</span><span class="p">(</span><span class="n">norm1</span><span class="p">.</span><span class="na">parameters</span><span class="p">());</span>
+<span class="w">        </span><span class="n">params</span><span class="p">.</span><span class="na">addAll</span><span class="p">(</span><span class="n">linear1</span><span class="p">.</span><span class="na">parameters</span><span class="p">());</span>
+<span class="w">        </span><span class="n">params</span><span class="p">.</span><span class="na">addAll</span><span class="p">(</span><span class="n">act1</span><span class="p">.</span><span class="na">parameters</span><span class="p">());</span>
+<span class="w">        </span><span class="n">params</span><span class="p">.</span><span class="na">addAll</span><span class="p">(</span><span class="n">linear2</span><span class="p">.</span><span class="na">parameters</span><span class="p">());</span>
+<span class="w">        </span><span class="n">params</span><span class="p">.</span><span class="na">addAll</span><span class="p">(</span><span class="n">act2</span><span class="p">.</span><span class="na">parameters</span><span class="p">());</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">params</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// This does not need to be implemented in this case</span>
+<span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">NetworkState</span><span class="w"> </span><span class="nf">state</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">NetworkState</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">NetworkState</span><span class="p">();</span>
+<span class="w">        </span><span class="n">state</span><span class="p">.</span><span class="na">merge</span><span class="p">(</span><span class="n">norm1</span><span class="p">.</span><span class="na">state</span><span class="p">());</span>
+<span class="w">        </span><span class="n">state</span><span class="p">.</span><span class="na">merge</span><span class="p">(</span><span class="n">linear1</span><span class="p">.</span><span class="na">state</span><span class="p">());</span>
+<span class="w">        </span><span class="n">state</span><span class="p">.</span><span class="na">merge</span><span class="p">(</span><span class="n">act1</span><span class="p">.</span><span class="na">state</span><span class="p">());</span>
+<span class="w">        </span><span class="n">state</span><span class="p">.</span><span class="na">merge</span><span class="p">(</span><span class="n">linear2</span><span class="p">.</span><span class="na">state</span><span class="p">());</span>
+<span class="w">        </span><span class="n">state</span><span class="p">.</span><span class="na">merge</span><span class="p">(</span><span class="n">act2</span><span class="p">.</span><span class="na">state</span><span class="p">());</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">state</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Tensor</span><span class="w"> </span><span class="nf">forward11</span><span class="p">(</span><span class="n">Tensor</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="na">log</span><span class="p">();</span>
+<span class="w">        </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">norm1</span><span class="p">.</span><span class="na">forward11</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+<span class="w">        </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">linear1</span><span class="p">.</span><span class="na">forward11</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+<span class="w">        </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">act1</span><span class="p">.</span><span class="na">forward11</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+<span class="w">        </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">linear2</span><span class="p">.</span><span class="na">forward11</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+<span class="w">        </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">act2</span><span class="p">.</span><span class="na">forward11</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The previous code needs a larger explanation. There are three main components which needs you attention when you implement your own network: parameters, network state and forward method. Those three components deals with three behaviors a network must provide.</p>
+<section id="custom-network-components">
+<h2>Custom network components<a class="headerlink" href="#custom-network-components" title="Permalink to this heading">#</a></h2>
+<section id="network-parameters">
+<h3>Network parameters<a class="headerlink" href="#network-parameters" title="Permalink to this heading">#</a></h3>
+<p>A network parameter is a tensor which is optimized during learning. In other words it is the part of the network which changes during learning. Actually those are the things the network <em>learns</em> during training.</p>
+<p>Since the optimization part is delegated to some strategy which implements <code class="docutils literal notranslate"><span class="pre">Optimizer</span></code>, any network which is in process of training, needs to tell to that strategy which tensors to optimize. The standard terminology is to call those tensors parameters, so we follow that closely.</p>
+<p>There is a comment in before the method implementation which let us know that we don’t need to implement that method in this case. This is true, but we implemented here for illustrative purposes. The reason why in this case the implementation of parameters is not required is given by the default implementation of this method. The default implementation uses reflection and searches for all members of out custom model which implements <code class="docutils literal notranslate"><span class="pre">Network</span></code> interface and collects recursively all their parameters. Basically what our implementation does, but using reflection. Since all our layers, which are also networks, are declared as field members of our custom class, the generic implementation should perform well and we do not need to implement that behaviour now.</p>
+</section>
+<section id="network-state">
+<h3>Network state<a class="headerlink" href="#network-state" title="Permalink to this heading">#</a></h3>
+<p>A network can be serialized on a persistent storage and later loaded from a persistent storage and use it for inference or even further training. In <code class="docutils literal notranslate"><span class="pre">rapaio</span></code> we do not save the network class in itself. This is because we want to be consistent with all the custom constructors and custom code when a network is created. For that reason storing and loading from a persistent storage is not done on the class code, but on all the values of the variables which determines the behavior of the network. We call this <em>network state</em>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">NetworkState</span></code> is a container which contains all those variables which determines the behavior of a network. Thus when we recreate an instance of a network using its normal constructor code and load its state from a persistent storage, that new instance will behave precisely like the opriginal instance.</p>
+<p>This method needs to capture recursively the network state from all their components. In a similar fashion as with the parameters, we notice a comment which let us know that for this case the implementation is not needed. This is also true here because of its default implementation, which uses reflection to collect and merge all network states from all the members of the class which implements <code class="docutils literal notranslate"><span class="pre">Network</span></code>. If there are additional things which are not covered by the default scenario, we need a custom implementation to handle this case.</p>
+</section>
+<section id="network-forward-method">
+<h3>Network forward method<a class="headerlink" href="#network-forward-method" title="Permalink to this heading">#</a></h3>
+<p>Network forward method contains the code which the network performs to do the forward step from backpropagation algorithm. It is the same step which is performed by a network to do inference. Thus, forward method describes in code the way how the network process input tensors to obtain output tensors.</p>
+<p>There are two forward methods described in the <code class="docutils literal notranslate"><span class="pre">Network</span></code> interface. The generic one called <code class="docutils literal notranslate"><span class="pre">Tensor[]</span> <span class="pre">forward(Tensor...</span> <span class="pre">inputs)</span></code>, receives an array of tensors which are the inputs and produces another array of tensors which are the inference results or outputs. This method allows one to consider any number of inputs and any number of outputs.</p>
+<p>The default implementation of <code class="docutils literal notranslate"><span class="pre">forward</span></code>, delegates its behavior to <code class="docutils literal notranslate"><span class="pre">Tensor</span> <span class="pre">forward11(Tensor</span> <span class="pre">x)</span></code>. This method is a special case of the previous method and takes a single input tensor and produces a single output tensor. Since this is the most encountered scenario for inference it was decribed as a separate method.</p>
+<p>For brevity, we removed the custom implementations of parameters and network state to see better the custom code.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span> <span class="nc">AdvertisingNetwork</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">AbstractNetwork</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">LayerNorm</span><span class="w"> </span><span class="n">norm1</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">Linear</span><span class="w"> </span><span class="n">linear1</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">ELU</span><span class="w"> </span><span class="n">act1</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">Linear</span><span class="w"> </span><span class="n">linear2</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">ELU</span><span class="w"> </span><span class="n">act2</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">hidden</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">12</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">AdvertisingNetwork</span><span class="p">(</span><span class="n">TensorManager</span><span class="w"> </span><span class="n">tm</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">super</span><span class="p">(</span><span class="n">tm</span><span class="p">);</span>
+<span class="w">        </span><span class="n">norm1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">3</span><span class="p">));</span>
+<span class="w">        </span><span class="n">linear1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Linear</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">hidden</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span>
+<span class="w">        </span><span class="n">act1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ELU</span><span class="p">(</span><span class="n">tm</span><span class="p">);</span>
+<span class="w">        </span><span class="n">linear2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Linear</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="n">hidden</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span>
+<span class="w">        </span><span class="n">act2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ELU</span><span class="p">(</span><span class="n">tm</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Tensor</span><span class="w"> </span><span class="nf">forward11</span><span class="p">(</span><span class="n">Tensor</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="na">log</span><span class="p">();</span>
+<span class="w">        </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">norm1</span><span class="p">.</span><span class="na">forward11</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+<span class="w">        </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">linear1</span><span class="p">.</span><span class="na">forward11</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+<span class="w">        </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">act1</span><span class="p">.</span><span class="na">forward11</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+<span class="w">        </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">linear2</span><span class="p">.</span><span class="na">forward11</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+<span class="w">        </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">act2</span><span class="p">.</span><span class="na">forward11</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="why-a-custom-network">
+<h2>Why a custom network?<a class="headerlink" href="#why-a-custom-network" title="Permalink to this heading">#</a></h2>
+<p>A natural question can arise, which is why the hell to write a custom network code, since the default behavior is enough. The answer is that the default behavior you get by using containers and layers is not always enough.</p>
+<p>If you look closely at <code class="docutils literal notranslate"><span class="pre">forward11</span></code> method implementation you will see the first line which is <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">=</span> <span class="pre">x.add(1).log()</span></code>. This line adds <code class="docutils literal notranslate"><span class="pre">1</span></code> to inputs and applies logarithm on those. This is not something which can’t be done with layers. Or at least you need a custom layer to implement that operation, which takes the same effort as the displayed implementation. Other things can also be done, which is basically almost any Java code. The only constraint is that if any calculus impacts the learning computation chain and it needs derivative computation, it must be done through tensor operations.</p>
+<p>Anything else is handled well. For illustrative purposes we can think of some scenarios which can be implemented using custom networks:</p>
+<ul class="simple">
+<li><p>suppose one has a variable length input, it can handle that through code in forward method</p></li>
+<li><p>collecting some statistics regarding values in the computed tensors, statistics which does not affect learning, but allows one to get a better insight on the learning process</p></li>
+<li><p>changing some parameter dinamically (like learning rate of the optimizer, for example)</p></li>
+</ul>
+<p>Many other scenarios are possible, only the imagination is the limit. Things will work well as long as computing is done through tensors.</p>
+</section>
+<section id="running-out-custom-network">
+<h2>Running out custom network<a class="headerlink" href="#running-out-custom-network" title="Permalink to this heading">#</a></h2>
+<p>Below we use our custom created network, we do training and testing as usual.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">epochs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">200</span><span class="p">;</span>
+<span class="kt">double</span><span class="w"> </span><span class="n">lr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1e-3</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">Network</span><span class="w"> </span><span class="n">nn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AdvertisingNetwork</span><span class="p">(</span><span class="n">tm</span><span class="p">);</span>
+<span class="n">Optimizer</span><span class="w"> </span><span class="n">optimizer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Optimizer</span><span class="p">.</span><span class="na">Adam</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span><span class="w"> </span><span class="n">nn</span><span class="p">.</span><span class="na">parameters</span><span class="p">()).</span><span class="na">lr</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="n">lr</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">epochs</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="n">optimizer</span><span class="p">.</span><span class="na">zeroGrad</span><span class="p">();</span>
+<span class="w">    </span><span class="n">nn</span><span class="p">.</span><span class="na">train</span><span class="p">();</span>
+
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">batchCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">trainLossValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="n">Iterator</span><span class="o">&lt;</span><span class="n">Batch</span><span class="o">&gt;</span><span class="w"> </span><span class="n">batchIterator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">train</span><span class="p">.</span><span class="na">batchIterator</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">);</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">batchIterator</span><span class="p">.</span><span class="na">hasNext</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Batch</span><span class="w"> </span><span class="n">batch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">batchIterator</span><span class="p">.</span><span class="na">next</span><span class="p">();</span>
+<span class="w">        </span><span class="n">Tensor</span><span class="w"> </span><span class="n">pred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nn</span><span class="p">.</span><span class="na">forward11</span><span class="p">(</span><span class="n">batch</span><span class="p">.</span><span class="na">tensor</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
+<span class="w">        </span><span class="n">Loss</span><span class="p">.</span><span class="na">Output</span><span class="w"> </span><span class="n">lossOut</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">loss</span><span class="p">.</span><span class="na">forward</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">batch</span><span class="p">.</span><span class="na">tensor</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+
+<span class="w">        </span><span class="n">trainLossValue</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">lossOut</span><span class="p">.</span><span class="na">lossValue</span><span class="p">();</span>
+<span class="w">        </span><span class="n">batchCount</span><span class="o">++</span><span class="p">;</span>
+
+<span class="w">        </span><span class="n">Autograd</span><span class="p">.</span><span class="na">backward</span><span class="p">(</span><span class="n">lossOut</span><span class="p">.</span><span class="na">tensor</span><span class="p">());</span>
+<span class="w">        </span><span class="n">optimizer</span><span class="p">.</span><span class="na">step</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">trainLossValue</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="n">batchCount</span><span class="p">;</span>
+<span class="w">    </span><span class="n">trainLoss</span><span class="p">.</span><span class="na">addDouble</span><span class="p">(</span><span class="n">trainLossValue</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">nn</span><span class="p">.</span><span class="na">eval</span><span class="p">();</span>
+<span class="w">    </span><span class="n">Tensor</span><span class="w"> </span><span class="n">pred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nn</span><span class="p">.</span><span class="na">forward11</span><span class="p">(</span><span class="n">test</span><span class="p">.</span><span class="na">tensor</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
+<span class="w">    </span><span class="n">Loss</span><span class="p">.</span><span class="na">Output</span><span class="w"> </span><span class="n">lossOut</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">loss</span><span class="p">.</span><span class="na">forward</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">test</span><span class="p">.</span><span class="na">tensor</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">testLossValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lossOut</span><span class="p">.</span><span class="na">lossValue</span><span class="p">();</span>
+<span class="w">    </span><span class="n">testLoss</span><span class="p">.</span><span class="na">addDouble</span><span class="p">(</span><span class="n">testLossValue</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;epoch %d, train loss: %.3f, test loss: %.3f%n&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">trainLossValue</span><span class="p">,</span><span class="w"> </span><span class="n">testLossValue</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>epoch 0, train loss: 2163.835, test loss: 10302.107
+epoch 10, train loss: 1729.624, test loss: 8233.459
+epoch 20, train loss: 1022.213, test loss: 4899.007
+epoch 30, train loss: 517.155, test loss: 2457.991
+epoch 40, train loss: 452.038, test loss: 2124.178
+epoch 50, train loss: 419.682, test loss: 2160.812
+epoch 60, train loss: 427.569, test loss: 2151.771
+epoch 70, train loss: 408.787, test loss: 2105.669
+epoch 80, train loss: 385.598, test loss: 1985.541
+epoch 90, train loss: 333.357, test loss: 1781.508
+epoch 100, train loss: 305.792, test loss: 1614.575
+epoch 110, train loss: 287.768, test loss: 1488.391
+epoch 120, train loss: 270.393, test loss: 1468.078
+epoch 130, train loss: 266.784, test loss: 1393.898
+epoch 140, train loss: 266.476, test loss: 1410.740
+epoch 150, train loss: 262.315, test loss: 1377.406
+epoch 160, train loss: 259.111, test loss: 1351.840
+epoch 170, train loss: 258.878, test loss: 1327.265
+epoch 180, train loss: 258.344, test loss: 1340.381
+epoch 190, train loss: 258.744, test loss: 1363.121
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">Plotter</span><span class="p">.</span><span class="na">lines</span><span class="p">(</span><span class="n">trainLoss</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="p">(</span><span class="mi">1</span><span class="p">)).</span><span class="na">lines</span><span class="p">(</span><span class="n">testLoss</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="p">(</span><span class="mi">2</span><span class="p">)).</span><span class="na">legend</span><span class="p">(</span><span class="n">Legend</span><span class="p">.</span><span class="na">UP_LEFT</span><span class="p">,</span><span class="w"> </span><span class="n">labels</span><span class="p">(</span><span class="s">&quot;train&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;test&quot;</span><span class="p">)),</span><span class="w"> </span><span class="mi">800</span><span class="p">,</span><span class="w"> </span><span class="mi">400</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/a0de5a786b8d2a321a116c4b3054b5a1219d6537adea9be065c08589c88ccd80.png" src="../_images/a0de5a786b8d2a321a116c4b3054b5a1219d6537adea9be065c08589c88ccd80.png" />
+</div>
+</div>
+</section>
+<section id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this heading">#</a></h2>
+<p>Wrting custom networks is not complicated and pays the price in flexibility you gain while experimenting, training, and for other purposes. Take care about the three components of a network, which needs to be implemented. If you follow a standard architecture where you declare as field members all the layers you use in inference, you need only to write custom code for forward method. This flexibility is a main driver in fast iteration and experimentation which is omni</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "rapaio-jupyter-kernel-preview23"
+        },
+        kernelOptions: {
+            name: "rapaio-jupyter-kernel-preview23",
+            path: "./tutorials"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'rapaio-jupyter-kernel-preview23'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="TensorsAndNeuralNetworks.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Tensors and Neural Networks</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../algorithms/KMeans.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Algorithms: KMeans</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-network-components">Custom network components</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#network-parameters">Network parameters</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#network-state">Network state</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#network-forward-method">Network forward method</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-a-custom-network">Why a custom network?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-out-custom-network">Running out custom network</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion">Conclusion</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Aurelian Tutuianu
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

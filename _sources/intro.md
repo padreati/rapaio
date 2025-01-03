@@ -1,7 +1,19 @@
 # Rapaio Book
 
+This collection of pages talks about Rapaio library. It serves as a documentation, 
+collection of articles and, perhaps in time, a book.
+
 Rapaio is a Java library which provides a comprehensive set of tools for 
 data manipulation, linear algebra, statistics and machine learning. 
+The project started in 2012 as a place to collect simple implementations 
+of various machine learning algorithms.
+
+It evolved in time, it was rewritten perhaps a dozen of times. Now it is stable, 
+and it has consistent concepts and its own flavours. Still, some fundamental 
+principles resisted unchanged. Those principles are: pure Java with no external 
+dependency, expressive and consistent API, comprehensive set of ML algorithms
+implemented as close as possible to the authors ideas, comprehensive set of statistics, 
+mathematics, linear algebra and other computational tools in numeric fields.
 
 ## Pure Java, No Dependencies
 

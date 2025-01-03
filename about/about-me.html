@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Algorithms: KMeans</title>
+    <title>About me</title>
   
   
   
@@ -63,10 +63,11 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'algorithms/KMeans';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'about/about-me';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="Custom networks" href="../tutorials/CustomNetwork.html" />
+    <link rel="next" title="Built-in Data sets" href="../tutorials/BuiltinDataSets.html" />
+    <link rel="prev" title="Brief preview" href="BriefOverview.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -169,9 +170,9 @@ const thebe_selector_output = ".output, .cell_output"
             </li>
         </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">About</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../about/BriefOverview.html">Brief preview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../about/about-me.html">About me</a></li>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="BriefOverview.html">Brief preview</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">About me</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Core Library</span></p>
 <ul class="nav bd-sidenav">
@@ -189,8 +190,8 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/CustomNetwork.html">Custom networks</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
-<ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Algorithms: KMeans</a></li>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../algorithms/KMeans.html">Algorithms: KMeans</a></li>
 </ul>
 
     </div>
@@ -245,7 +246,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="../_sources/algorithms/KMeans.ipynb" target="_blank"
+      <li><a href="../_sources/about/about-me.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -255,7 +256,7 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="btn__icon-container">
   <i class="fas fa-file"></i>
   </span>
-<span class="btn__text-container">.ipynb</span>
+<span class="btn__text-container">.md</span>
 </a>
 </li>
       
@@ -316,7 +317,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
 </div></div>
       
     </div>
@@ -327,11 +330,20 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Algorithms: KMeans</h1>
+    <h1>About me</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#short-story">Short story</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#some-things-about-me">Some things about me</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -341,105 +353,47 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="algorithms-kmeans">
-<h1>Algorithms: KMeans<a class="headerlink" href="#algorithms-kmeans" title="Permalink to this heading">#</a></h1>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">load</span><span class="w"> </span><span class="p">..</span><span class="o">/</span><span class="p">..</span><span class="o">/</span><span class="n">rapaio</span><span class="o">-</span><span class="n">bootstrap</span><span class="p">.</span><span class="na">ipynb</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Adding dependency <span class=" -Color -Color-Bold -Color-Bold-Green">io.github.padreati:rapaio-lib:7.0.1</span>
-Solving dependencies
-Resolved artifacts count: 1
-Add to classpath: <span class=" -Color -Color-Green">/home/ati/work/rapaio-jupyter-kernel/target/mima_cache/io/github/padreati/rapaio-lib/7.0.1/rapaio-lib-7.0.1.jar</span>
-
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// old faithful</span>
-<span class="n">Frame</span><span class="w"> </span><span class="n">old</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Datasets</span><span class="p">.</span><span class="na">loadOldFaithful</span><span class="p">();</span>
-<span class="n">old</span><span class="p">.</span><span class="na">printSummary</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Frame Summary
-=============
-* rowCount: 272
-* complete: 272/272
-* varCount: 2
-* varNames: 
-
-0. eruptions : dbl | 
-1.   waiting : int | 
-
-* summary: 
- eruptions [dbl]       waiting [int]          Mean : 3.4877831    Mean : 70.8970588 
-    Min. : 1.6000000    Min. : 43.0000000  2nd Qu. : 4.4542500 2nd Qu. : 82.0000000 
- 1st Qu. : 2.1627500 1st Qu. : 58.0000000     Max. : 5.1000000    Max. : 96.0000000 
-  Median : 4.0000000  Median : 76.0000000                                           
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">points</span><span class="p">(</span><span class="n">old</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;eruptions&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">old</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;waiting&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">pch</span><span class="p">.</span><span class="na">circleFull</span><span class="p">(),</span><span class="w"> </span><span class="n">fill</span><span class="p">(</span><span class="mi">3</span><span class="p">)))</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<img alt="../_images/8ae9b0056ce4e9b5368f49b8065c8ad32a7deb9e0edc704086d94d50b86465e4.png" src="../_images/8ae9b0056ce4e9b5368f49b8065c8ad32a7deb9e0edc704086d94d50b86465e4.png" />
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">KMCluster</span><span class="w"> </span><span class="n">model1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">KMCluster</span><span class="p">.</span><span class="na">newKMeans</span><span class="p">().</span><span class="na">k</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
-<span class="kd">var</span><span class="w"> </span><span class="n">res1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">model1</span><span class="p">.</span><span class="na">fit</span><span class="p">(</span><span class="n">old</span><span class="p">).</span><span class="na">predict</span><span class="p">(</span><span class="n">old</span><span class="p">);</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">res1</span><span class="p">.</span><span class="na">printSummary</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Overall errors: 
-&gt; count: 272
-&gt; mean: 32.7270909
-&gt; var: 1,622.7494621
-&gt; sd: 40.2833646
-&gt; inertia/error:8,901.7687209
-&gt; iterations:6
-
-Per cluster: 
-    ID count    mean         var      var/total     sd     
-[0]  2   172 31.6604119 1,763.2348144 1.0865724 41.9908897 
-[1]  1   100 34.5617787 1,391.1074822 0.8572534 37.2975533 
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span>
-<span class="w">    </span><span class="n">points</span><span class="p">(</span><span class="n">old</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;eruptions&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">old</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;waiting&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">pch</span><span class="p">.</span><span class="na">circleFull</span><span class="p">(),</span><span class="w"> </span><span class="n">fill</span><span class="p">(</span><span class="n">res1</span><span class="p">.</span><span class="na">assignment</span><span class="p">().</span><span class="na">darray_</span><span class="p">().</span><span class="na">add</span><span class="p">(</span><span class="mf">3.0</span><span class="p">).</span><span class="na">dv</span><span class="p">()),</span><span class="w"> </span><span class="n">color</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
-<span class="w">        </span><span class="p">.</span><span class="na">points</span><span class="p">(</span><span class="n">model1</span><span class="p">.</span><span class="na">getCentroids</span><span class="p">().</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;eruptions&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">model1</span><span class="p">.</span><span class="na">getCentroids</span><span class="p">().</span><span class="na">rvar</span><span class="p">(</span><span class="s">&quot;waiting&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">pch</span><span class="p">.</span><span class="na">circleFull</span><span class="p">(),</span><span class="w"> </span><span class="n">sz</span><span class="p">(</span><span class="mi">7</span><span class="p">),</span><span class="w"> </span><span class="n">fill</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">)))</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<img alt="../_images/91748d828ae1f67d37d3deba52fce2bace275b02aa6150e5bc29db6c30afd357.png" src="../_images/91748d828ae1f67d37d3deba52fce2bace275b02aa6150e5bc29db6c30afd357.png" />
-</div>
-</div>
+  <section class="tex2jax_ignore mathjax_ignore" id="about-me">
+<h1>About me<a class="headerlink" href="#about-me" title="Permalink to this heading">#</a></h1>
+<section id="short-story">
+<h2>Short story<a class="headerlink" href="#short-story" title="Permalink to this heading">#</a></h2>
+<p>Back in time. It’s 2012. I’m a software engineer participating at a contest
+about cold start problem in movie recommender systems. Zero knowledge about
+probabilities, statistics or machine learning. Solving the problem with bare
+hands without reading nothing on the topic was an unstoppable trap. The contest
+held a year, quarterly prizes. I won enough money to buy books to learn
+about those topics. Soon, I discovered that many of my imaginations and systems
+lied there in those books, analyzed by admirable people. Many other admirable
+people buried their years in libraries and systems which tackles data adventures.</p>
+<p>Many books and libraries after, I started to collect my own implementations
+into what is now named rapaio. Write and rewrite many times, to find better
+tools, useful into those great data quests out there. Into these quests I would
+like to invite you too. Some of you already have done timid steps.
+I am thankful for that. Still, it’s plenty of space. You are welcomed.</p>
+<p>There are no rules because we are still few in number. We can talk
+to each other. If we feel the need for rules, we will create them.
+Until then, you can follow your feelings, common sense and respect each
+of us deserves.</p>
+</section>
+<section id="some-things-about-me">
+<h2>Some things about me<a class="headerlink" href="#some-things-about-me" title="Permalink to this heading">#</a></h2>
+<p>I spent many years doing what I love: learning and solving problems.
+I am among the few lucky ones who have a native curiosity to learn how
+things works and have a job which requires mainly that.
+The process of understanding gives me a hard to define feeling
+of joy, to which I have to confess I am an addict. I do not say I am
+a brilliant whatever extraordinary, I am a normal being with some luck.</p>
+<p>Someone once told me: “In this world there are composers who create worlds,
+there are virtuoso interprets who gave life to those worlds, and then
+there’s us, the ones who are good at listening. We play a role, since
+without us their music values nothing.”</p>
+<p>I strive to be a good listener and I do that for a selfish purpose:
+to live upon myself the wonders many brilliant mind created for us.
+The main purpose of this project is to learn and experiment. If it is
+useful for anybody else would also be great, since I can learn more.
+I enjoy to share those small things that I learned and I enjoy more,
+without a drop of shame, the things I can learn from you.</p>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -451,16 +405,16 @@ Per cluster:
         },
         codeMirrorConfig: {
             theme: "abcdef",
-            mode: "rapaio-jupyter-kernel-preview23"
+            mode: "python"
         },
         kernelOptions: {
-            name: "rapaio-jupyter-kernel-preview23",
-            path: "./algorithms"
+            name: "python3",
+            path: "./about"
         },
         predefinedOutput: true
     }
     </script>
-    <script>kernelName = 'rapaio-jupyter-kernel-preview23'</script>
+    <script>kernelName = 'python3'</script>
 
                 </article>
               
@@ -473,13 +427,22 @@ Per cluster:
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../tutorials/CustomNetwork.html"
+       href="BriefOverview.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Custom networks</p>
+        <p class="prev-next-title">Brief preview</p>
       </div>
+    </a>
+    <a class="right-next"
+       href="../tutorials/BuiltinDataSets.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Built-in Data sets</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>
@@ -487,6 +450,21 @@ Per cluster:
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#short-story">Short story</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#some-things-about-me">Some things about me</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

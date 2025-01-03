@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Rapaio Book &#8212; Rapaio Book</title>
+    <title>Rapaio Book</title>
   
   
   
@@ -64,10 +64,9 @@ const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="_static/sphinx-thebe.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'intro';</script>
-    <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Brief preview" href="BriefPreview.html" />
+    <link rel="next" title="Brief preview" href="about/BriefOverview.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -154,8 +153,8 @@ const thebe_selector_output = ".output, .cell_output"
       
     
     
-    <img src="_static/logo.png" class="logo__image only-light" alt="Rapaio Book - Home"/>
-    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Rapaio Book - Home"/>`);</script>
+    <img src="_static/logo.png" class="logo__image only-light" alt=" - Home"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt=" - Home"/>`);</script>
   
   
 </a></div>
@@ -169,18 +168,29 @@ const thebe_selector_output = ".output, .cell_output"
                 </a>
             </li>
         </ul>
-        <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="BriefPreview.html">Brief preview</a></li>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="about/BriefOverview.html">Brief preview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about/about-me.html">About me</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Core Library</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="tutorials/BuiltinDataSets.html">Built-in Data sets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials/Variables.html">Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials/DataHandlingOverview.html">Data Handling Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials/CoreStatisticalTools.html">Core statistical tools</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials/DataVisualization.html">Data visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials/ReadingAndWritingData.html">Reading and Writing data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">DArrays, Tensors and Neural Networks</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="tutorials/LinearAlgebraOverview.html">Linear Algebra Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/NeuralNetworks.html">Tensors and Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/TensorsAndNeuralNetworks.html">Tensors and Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/CustomNetwork.html">Custom networks</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="algorithms/KMeans.html">Algorithms: KMeans</a></li>
-<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
 </ul>
 
     </div>
@@ -334,7 +344,9 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#comprehensive-set-of-ml-algorithms-and-statistical-tools">Comprehensive set of ML algorithms and statistical tools</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-visualization">Data Visualization</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-algebra">Linear Algebra</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tensors-and-neural-networks">Tensors and Neural Networks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tensors-and-neural-networks">Tensors and Neural Networks</a><ul class="nav section-nav flex-column">
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -348,8 +360,18 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="rapaio-book">
 <h1>Rapaio Book<a class="headerlink" href="#rapaio-book" title="Permalink to this heading">#</a></h1>
+<p>This collection of pages talks about Rapaio library. It serves as a documentation,
+collection of articles and, perhaps in time, a book.</p>
 <p>Rapaio is a Java library which provides a comprehensive set of tools for
-data manipulation, linear algebra, statistics and machine learning.</p>
+data manipulation, linear algebra, statistics and machine learning.
+The project started in 2012 as a place to collect simple implementations
+of various machine learning algorithms.</p>
+<p>It evolved in time, it was rewritten perhaps a dozen of times. Now it is stable,
+and it has consistent concepts and its own flavours. Still, some fundamental
+principles resisted unchanged. Those principles are: pure Java with no external
+dependency, expressive and consistent API, comprehensive set of ML algorithms
+implemented as close as possible to the authors ideas, comprehensive set of statistics,
+mathematics, linear algebra and other computational tools in numeric fields.</p>
 <section id="pure-java-no-dependencies">
 <h2>Pure Java, No Dependencies<a class="headerlink" href="#pure-java-no-dependencies" title="Permalink to this heading">#</a></h2>
 <p>The library is self-contained <em>100% pure Java</em>. No machine dependence,
@@ -461,18 +483,35 @@ backpropagation. Currently only auto differentiation in reverse mode is availabl
 </pre></div>
 </div>
 <div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">About</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="BriefPreview.html">Brief preview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about/BriefOverview.html">Brief preview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about/about-me.html">About me</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Core Library</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="tutorials/BuiltinDataSets.html">Built-in Data sets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials/Variables.html">Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials/DataHandlingOverview.html">Data Handling Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials/CoreStatisticalTools.html">Core statistical tools</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials/DataVisualization.html">Data visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials/ReadingAndWritingData.html">Reading and Writing data</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">DArrays, Tensors and Neural Networks</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="tutorials/LinearAlgebraOverview.html">Linear Algebra Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/NeuralNetworks.html">Tensors and Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/TensorsAndNeuralNetworks.html">Tensors and Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/CustomNetwork.html">Custom networks</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="algorithms/KMeans.html">Algorithms: KMeans</a></li>
-<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
 </ul>
 </div>
 </section>
@@ -509,7 +548,7 @@ backpropagation. Currently only auto differentiation in reverse mode is availabl
                   
 <div class="prev-next-area">
     <a class="right-next"
-       href="BriefPreview.html"
+       href="about/BriefOverview.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
@@ -537,7 +576,9 @@ backpropagation. Currently only auto differentiation in reverse mode is availabl
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#comprehensive-set-of-ml-algorithms-and-statistical-tools">Comprehensive set of ML algorithms and statistical tools</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-visualization">Data Visualization</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-algebra">Linear Algebra</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tensors-and-neural-networks">Tensors and Neural Networks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tensors-and-neural-networks">Tensors and Neural Networks</a><ul class="nav section-nav flex-column">
+</ul>
+</li>
 </ul>
   </nav></div>
 
