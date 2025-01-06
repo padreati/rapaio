@@ -24,9 +24,10 @@ package rapaio.experiment.nn;
 import static rapaio.graphics.opt.GOpts.color;
 import static rapaio.graphics.opt.GOpts.labels;
 
-import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import rapaio.darray.DArray;
 import rapaio.darray.Shape;
@@ -38,11 +39,12 @@ import rapaio.graphics.plot.artist.Legend;
 import rapaio.nn.Autograd;
 import rapaio.nn.Loss;
 import rapaio.nn.Network;
+import rapaio.nn.NetworkState;
 import rapaio.nn.Optimizer;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
-import rapaio.nn.data.Batch;
-import rapaio.nn.data.TabularDataset;
+import rapaio.datasets.Batch;
+import rapaio.datasets.TabularDataset;
 import rapaio.nn.layer.AbstractNetwork;
 import rapaio.nn.layer.ELU;
 import rapaio.nn.layer.LayerNorm;
@@ -66,8 +68,8 @@ public class AdvertisingCustomNetwork {
         TabularDataset train = split[0];
         TabularDataset test = split[1];
 
-        int epochs = 1_000;
-        double lr = 2e-4;
+        int epochs = 500;
+        double lr = 1e-3;
 
         Network nn = new AdvertisingNetwork(tm);
 
@@ -116,16 +118,16 @@ public class AdvertisingCustomNetwork {
 
         WS.draw(Plotter.lines(trainLoss, color(1)).lines(testLoss, color(2)).legend(Legend.UP_LEFT, labels("train", "test")));
 
-        String fileName = "/home/ati/work/rapaio/rapaio-experiment/src/rapaio/experiment/nn/advertising_net.rbin";
-        nn.saveState(new File(fileName));
-
-        Network nn2 = new AdvertisingNetwork(tm);
-        nn2.loadState(new File(fileName));
-
-        DArray<?> pred1 = nn.forward11(test.tensor(0)).value();
-        DArray<?> pred2 = nn2.forward11(test.tensor(0)).value();
-
-        System.out.println(pred1.sub(pred2).sum());
+//        String fileName = "/home/ati/work/rapaio/rapaio-experiment/src/rapaio/experiment/nn/advertising_net.rbin";
+//        nn.saveState(new File(fileName));
+//
+//        Network nn2 = new AdvertisingNetwork(tm);
+//        nn2.loadState(new File(fileName));
+//
+//        DArray<?> pred1 = nn.forward11(test.tensor(0)).value();
+//        DArray<?> pred2 = nn2.forward11(test.tensor(0)).value();
+//
+//        System.out.println(pred1.sub(pred2).sum());
     }
 
     static class AdvertisingNetwork extends AbstractNetwork {
@@ -133,30 +135,52 @@ public class AdvertisingCustomNetwork {
         final LayerNorm norm1;
         final Linear linear1;
         final ELU act1;
-        final LayerNorm norm2;
         final Linear linear2;
-
-        private static final int hidden = 24;
+        final ELU act2;
+        static final int hidden = 12;
 
         public AdvertisingNetwork(TensorManager tm) {
             super(tm);
             norm1 = new LayerNorm(tm, Shape.of(3));
             linear1 = new Linear(tm, 3, hidden, true);
             act1 = new ELU(tm);
-
-            norm2 = new LayerNorm(tm, Shape.of(hidden));
             linear2 = new Linear(tm, hidden, 1, true);
+            act2 = new ELU(tm);
+        }
+
+        // This does not need to be implemented in this case
+        @Override
+        public List<Tensor> parameters() {
+            List<Tensor> params = new ArrayList<>();
+            params.addAll(norm1.parameters());
+            params.addAll(linear1.parameters());
+            params.addAll(act1.parameters());
+            params.addAll(linear2.parameters());
+            params.addAll(act2.parameters());
+            return params;
+        }
+
+        // This does not need to be implemented in this case
+        @Override
+        public NetworkState state() {
+            NetworkState state = new NetworkState();
+            state.merge(norm1.state());
+            state.merge(linear1.state());
+            state.merge(act1.state());
+            state.merge(linear2.state());
+            state.merge(act2.state());
+            return state;
         }
 
         @Override
         public Tensor forward11(Tensor x) {
+            x = x.add(1).log();
             x = norm1.forward11(x);
             x = linear1.forward11(x);
             x = act1.forward11(x);
-            x = norm2.forward11(x);
             x = linear2.forward11(x);
+            x = act2.forward11(x);
             return x;
         }
     }
-
 }

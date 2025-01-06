@@ -182,30 +182,32 @@ public class CsvTest {
         allVarNames.add("class");
 
         // test no skip
-        Frame full = Csv.instance().read(Datasets.class, "iris-r.csv");
+        Frame full = Csv.instance().read(Datasets.resourceAsStream("iris-r.csv"));
         assertEquals(5, full.varCount());
         assertArrayEquals(allVarNames.toArray(), full.varNames());
 
         // test skip first 10 rows
 
-        Frame r1 = Csv.instance().keepRows.set(IntRule.from(0, 1, 2, 3, 4, 5, 6, 7, 8, 9).negate()).read(Datasets.class, "iris-r.csv");
-        Frame r2 = Csv.instance().keepRows.set(row -> row >= 10).read(Datasets.class, "iris-r.csv");
-        Frame r3 = Csv.instance().keepRows.set(IntRule.range(10, 150)).read(Datasets.class, "iris-r.csv");
+        Frame r1 = Csv.instance().keepRows.set(IntRule.from(0, 1, 2, 3, 4, 5, 6, 7, 8, 9).negate())
+                .read(Datasets.resourceAsStream("iris-r.csv"));
+        Frame r2 = Csv.instance().keepRows.set(row -> row >= 10).read(Datasets.resourceAsStream("iris-r.csv"));
+        Frame r3 = Csv.instance().keepRows.set(IntRule.range(10, 150)).read(Datasets.resourceAsStream("iris-r.csv"));
 
         assertTrue(r1.deepEquals(r2));
         assertTrue(r1.deepEquals(r3));
 
         // test skip row % 2 == 0 and between 50 and 100
 
-        Frame r5 = Csv.instance().startRow.set(50).endRow.set(100).keepRows.set(row -> row % 2 != 0).read(Datasets.class, "iris-r.csv");
+        Frame r5 = Csv.instance().startRow.set(50).endRow.set(100).keepRows.set(row -> row % 2 != 0)
+                .read(Datasets.resourceAsStream("iris-r.csv"));
         assertEquals(25, r5.rowCount());
         assertEquals("virginica", r5.rvar("class").levels().get(0));
 
         // test skip vars 0 and 2
 
-        Frame v1 = Csv.instance().keepCols.set(IntRule.from(0, 2).negate()).read(Datasets.class, "iris-r.csv");
-        Frame v2 = Csv.instance().keepCols.set(i -> i != 0 && i != 2).read(Datasets.class, "iris-r.csv");
-        Frame v3 = Csv.instance().keepCols.set(IntRule.from(1, 3, 4)).read(Datasets.class, "iris-r.csv");
+        Frame v1 = Csv.instance().keepCols.set(IntRule.from(0, 2).negate()).read(Datasets.resourceAsStream("iris-r.csv"));
+        Frame v2 = Csv.instance().keepCols.set(i -> i != 0 && i != 2).read(Datasets.resourceAsStream("iris-r.csv"));
+        Frame v3 = Csv.instance().keepCols.set(IntRule.from(1, 3, 4)).read(Datasets.resourceAsStream("iris-r.csv"));
 
         assertEquals(3, v1.varCount());
         assertTrue(v1.deepEquals(v2));
@@ -216,7 +218,7 @@ public class CsvTest {
         Frame m1 = Csv.instance()
                 .keepRows.set(IntRule.range(20, 30))
                 .keepCols.set(IntRule.geq(2))
-                .read(Datasets.class, "iris-r.csv");
+                .read(Datasets.resourceAsStream("iris-r.csv"));
         assertEquals(10, m1.rowCount());
         assertEquals(3, m1.varCount());
     }
@@ -226,31 +228,32 @@ public class CsvTest {
         Frame t1 = Csv.instance()
                 .varTypes.add(VarType.DOUBLE, "sepal-length")
                 .varTypes.add(VarType.NOMINAL, "petal-width", "sepal-length")
-                .read(Datasets.class, "iris-r.csv");
+                .read(Datasets.resourceAsStream("iris-r.csv"));
 
         VarType[] types = new VarType[] {VarType.NOMINAL, VarType.DOUBLE, VarType.DOUBLE, VarType.NOMINAL, VarType.NOMINAL};
         assertArrayEquals(types, t1.varStream().map(Var::type).toArray());
 
-        Frame t2 = Csv.instance().template.set(t1).read(Datasets.class, "iris-r.csv");
+        Frame t2 = Csv.instance().template.set(t1).read(Datasets.resourceAsStream("iris-r.csv"));
         assertTrue(t1.deepEquals(t2));
     }
 
     @Test
     void testNAValues() throws IOException {
         // no NA values
-        Frame na1 = Csv.instance().read(Datasets.class, "iris-r.csv");
+        Frame na1 = Csv.instance().read(Datasets.resourceAsStream("iris-r.csv"));
         assertEquals(150, na1.stream().complete().count());
 
         // non existent NA values
-        Frame na2 = Csv.instance().naValues.set("", "xxxx").read(Datasets.class, "iris-r.csv");
+        Frame na2 = Csv.instance().naValues.set("", "xxxx").read(Datasets.resourceAsStream("iris-r.csv"));
         assertEquals(150, na2.stream().complete().count());
 
         Frame na3 =
-                Csv.instance().naValues.set("virginica").varTypes.add(VarType.NOMINAL, "sepal-length").read(Datasets.class, "iris-r.csv");
+                Csv.instance().naValues.set("virginica").varTypes.add(VarType.NOMINAL, "sepal-length")
+                        .read(Datasets.resourceAsStream("iris-r.csv"));
         assertEquals(100, na3.stream().complete().count());
 
         Frame na4 = Csv.instance().naValues.set("virginica", "5").varTypes.add(VarType.NOMINAL, "sepal-length")
-                .read(Datasets.class, "iris-r.csv");
+                .read(Datasets.resourceAsStream("iris-r.csv"));
         assertEquals(89, na4.stream().complete().count());
     }
 

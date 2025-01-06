@@ -27,7 +27,7 @@ import rapaio.core.param.ParamSet;
 import rapaio.nn.Loss;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
-import rapaio.nn.data.Batch;
+import rapaio.datasets.Batch;
 
 public abstract class AbstractLoss<L extends AbstractLoss<L>> extends ParamSet<L> implements Loss {
 

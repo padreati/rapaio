@@ -30,7 +30,7 @@ import java.util.List;
 
 import rapaio.io.atom.AtomInputStream;
 import rapaio.io.atom.AtomOutputStream;
-import rapaio.nn.data.Batch;
+import rapaio.datasets.Batch;
 import rapaio.util.NotImplementedException;
 
 /**

@@ -24,6 +24,7 @@ package rapaio.nn;
 import java.util.Collection;
 
 import rapaio.nn.optimizer.Adam;
+import rapaio.nn.optimizer.NoGrad;
 import rapaio.nn.optimizer.SGD;
 
 /**
@@ -36,6 +37,16 @@ import rapaio.nn.optimizer.SGD;
  * This is useful for scenarios when somebody wants to freeze some parts of the networks and update only other parts.
  */
 public interface Optimizer {
+
+    /**
+     * Creates a new instance of No Gradient optimizer. This optimizer does not perform optimization, and it is used in
+     * order to provide context for making inference faster.
+     *
+     * @return new optimizer instance
+     */
+    static NoGrad noGrad() {
+        return new NoGrad();
+    }
 
     /**
      * Creates a new instance of Stochastic Gradient Descent optimizer. Further customization can be done on the returned instance.

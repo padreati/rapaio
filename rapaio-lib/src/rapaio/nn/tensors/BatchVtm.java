@@ -21,6 +21,7 @@
 
 package rapaio.nn.tensors;
 
+import rapaio.darray.Order;
 import rapaio.nn.Tensor;
 
 public final class BatchVtm extends Tensor {
@@ -28,11 +29,11 @@ public final class BatchVtm extends Tensor {
     public BatchVtm(Tensor bv, Tensor bm) {
         super(bv.tm(), BatchVtm.class.getSimpleName());
 
-        this.setValue(bv.value().bvtm(bm.value()));
+        this.setValue(bv.value().reorder(Order.C).bvtm(bm.value().reorder(Order.F)));
         backEdge(bv, () -> {
             var g = this.grad().bvtm(bm.value().t());
             return (bv.rank() == 1) ? g.mean1d(0) : g;
         });
-        backEdge(bm, () -> bv.value().t().mm(this.grad()));
+        backEdge(bm, () -> bv.value().t().reorder(Order.C).mm(this.grad().reorder(Order.F)));
     }
 }

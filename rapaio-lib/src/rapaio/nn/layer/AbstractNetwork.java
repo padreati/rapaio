@@ -46,8 +46,8 @@ import rapaio.nn.Network;
 import rapaio.nn.NetworkState;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
-import rapaio.nn.data.Batch;
-import rapaio.nn.data.TabularDataset;
+import rapaio.datasets.Batch;
+import rapaio.datasets.TabularDataset;
 
 public abstract class AbstractNetwork implements Network {
 

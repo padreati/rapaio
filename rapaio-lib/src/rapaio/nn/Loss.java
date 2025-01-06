@@ -24,7 +24,7 @@ package rapaio.nn;
 
 import java.util.List;
 
-import rapaio.nn.data.Batch;
+import rapaio.datasets.Batch;
 
 /**
  * Loss function used to optimize a network during backpropagation

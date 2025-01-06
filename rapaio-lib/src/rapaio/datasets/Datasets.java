@@ -22,6 +22,7 @@
 package rapaio.datasets;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -46,12 +47,18 @@ public class Datasets {
     private Datasets() {
     }
 
+    public static InputStream resourceAsStream(String resource) {
+        String prefix = "rapaio/provider/datasets/";
+        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        return classLoader.getResourceAsStream(prefix + resource);
+    }
+
     public static Frame loadIrisDataset() {
         try {
             return Csv.instance()
                     .defaultTypes.set(VarType.DOUBLE)
                     .varTypes.add(VarType.NOMINAL, "class")
-                    .read(Datasets.class, "iris-r.csv");
+                    .read(resourceAsStream("iris-r.csv"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -60,14 +67,14 @@ public class Datasets {
     public static Frame loadPearsonHeightDataset() throws IOException {
         return Csv.instance()
                 .defaultTypes.set(VarType.DOUBLE)
-                .read(Datasets.class, "pearsonheight.csv");
+                .read(resourceAsStream("pearsonheight.csv"));
     }
 
     public static Frame loadOldFaithful() {
         try {
             return Csv.instance()
                     .separatorChar.set('\t')
-                    .read(Datasets.class, "old_faithful.tsv");
+                    .read(resourceAsStream("old_faithful.tsv"));
         } catch (IOException e) {
             throw new RuntimeException("Error loading old_faithful.tsv datasets.", e);
         }
@@ -76,7 +83,7 @@ public class Datasets {
     public static Frame loadSpamBase() throws IOException {
         return Csv.instance().defaultTypes.set(VarType.DOUBLE)
                 .varTypes.add(VarType.NOMINAL, "spam")
-                .read(Datasets.class, "spam-base.csv");
+                .read(resourceAsStream("spam-base.csv"));
     }
 
     public static Frame loadMushrooms() {
@@ -85,7 +92,7 @@ public class Datasets {
                     .separatorChar.set(',')
                     .header.set(true)
                     .quotes.set(false)
-                    .read(Datasets.class, "mushrooms.csv");
+                    .read(resourceAsStream("mushrooms.csv"));
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());
         }
@@ -99,7 +106,7 @@ public class Datasets {
                     .quotes.set(false)
                     .varTypes.add(VarType.DOUBLE, "temp", "humidity")
                     .varTypes.add(VarType.NOMINAL, "windy")
-                    .read(Datasets.class, "play.csv");
+                    .read(resourceAsStream("play.csv"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -109,7 +116,7 @@ public class Datasets {
         return Csv.instance()
                 .separatorChar.set(',')
                 .defaultTypes.set(VarType.DOUBLE)
-                .read(Datasets.class, "housing.csv");
+                .read(resourceAsStream("housing.csv"));
     }
 
     public static Frame loadLifeScience() throws IOException {
@@ -117,7 +124,7 @@ public class Datasets {
                 .separatorChar.set(',')
                 .defaultTypes.set(VarType.DOUBLE)
                 .varTypes.add(VarType.NOMINAL, "class")
-                .read(Datasets.class.getResourceAsStream("life_science.csv"));
+                .read(resourceAsStream("life_science.csv"));
     }
 
     public static Frame loadISLAdvertising() {
@@ -126,7 +133,7 @@ public class Datasets {
                     .quotes.set(true)
                     .defaultTypes.set(VarType.DOUBLE)
                     .varTypes.add(VarType.NOMINAL, "ID")
-                    .read(Datasets.class.getResourceAsStream("advertising.csv"))
+                    .read(resourceAsStream("advertising.csv"))
                     .removeVars("ID")
                     .copy();
         } catch (IOException e) {
@@ -148,27 +155,16 @@ public class Datasets {
     }
 
     public static Frame loadSonar() throws IOException {
-        return new ArffPersistence().read(Datasets.class.getResourceAsStream("sonar.arff"));
+        return new ArffPersistence().read(resourceAsStream("sonar.arff"));
     }
 
     public static Frame loasSAheart() {
         try {
             return Csv.instance()
                     .varTypes.add(VarType.NOMINAL, "famhist", "chd")
-                    .read(Datasets.class.getResourceAsStream("SAheart.csv"));
+                    .read(resourceAsStream("SAheart.csv"));
         } catch (IOException ex) {
             throw new RuntimeException(ex.getMessage());
-        }
-    }
-
-    public static Frame loadMyWeights() {
-        try {
-            return Csv.instance()
-                    .varTypes.add(VarType.INSTANT, "time")
-                    .varTypes.add(VarType.DOUBLE, "weight")
-                    .read(Datasets.class.getResourceAsStream("myweight.csv"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 }

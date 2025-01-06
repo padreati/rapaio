@@ -40,12 +40,14 @@ import java.util.function.Function;
 import java.util.stream.StreamSupport;
 
 import jdk.incubator.vector.ByteVector;
+import jdk.incubator.vector.VectorOperators;
 import rapaio.darray.DArray;
 import rapaio.darray.DArrayManager;
 import rapaio.darray.DType;
 import rapaio.darray.Layout;
 import rapaio.darray.Order;
 import rapaio.darray.Shape;
+import rapaio.darray.Simd;
 import rapaio.darray.Storage;
 import rapaio.darray.iterators.IndexIterator;
 import rapaio.darray.iterators.PointerIterator;
@@ -840,6 +842,10 @@ public final class BaseByteDArrayStride extends AbstractStrideDArray<Byte> {
                     "Operands are not valid for vector dot product (v = %s, v = %s)."
                             .formatted(shape().toString(), other.shape().toString()));
         }
+        return innerUnchecked(other, start, end);
+    }
+
+    private Byte innerUnchecked(DArray<?> other, int start, int end) {
         if (start >= end || start < 0 || end > other.shape().dim(0)) {
             throw new IllegalArgumentException("Start and end indexes are invalid (start: %d, end: %s).".formatted(start, end));
         }
@@ -850,9 +856,33 @@ public final class BaseByteDArrayStride extends AbstractStrideDArray<Byte> {
         int step1 = layout.stride(0);
         int step2 = dts.layout.stride(0);
 
+        int i = 0;
+        int p1 = offset1 + start * step1;
+        int p2 = offset2 + start * step2;
         byte sum = 0;
-        for (int i = start; i < end; i++) {
-            sum += (byte) (storage.getByte(offset1 + i * step1) * dts.storage.getByte(offset2 + i * step2));
+
+        if (storage.supportSimd() && dts.storage.supportSimd()) {
+            int simdBound = Simd.vsb.loopBound(end - start);
+            if (simdBound > 0) {
+                ByteVector vsum = Simd.zeroByte();
+                for (; i < simdBound; i += loop.simdLen) {
+                    ByteVector v1 = (step1 == 1) ?
+                            storage.getByteVector(p1) :
+                            storage.getByteVector(p1, loop.simdOffsets(), 0);
+                    ByteVector v2 = (step2 == 1) ?
+                            dts.storage.getByteVector(p2) :
+                            dts.storage.getByteVector(p2, dts.loop.simdOffsets(), 0);
+                    vsum = vsum.add(v1.mul(v2));
+                    p1 += step1 * loop.simdLen;
+                    p2 += step2 * loop.simdLen;
+                }
+                sum += vsum.reduceLanes(VectorOperators.ADD);
+            }
+        }
+        for (; i < end - start; i++) {
+            sum += (byte) (storage.getByte(p1) * dts.storage.getByte(p2));
+            p1 += step1;
+            p2 += step2;
         }
         return sum;
     }
@@ -975,45 +1005,6 @@ public final class BaseByteDArrayStride extends AbstractStrideDArray<Byte> {
         return mmInternalParallel(other, ret);
     }
 
-    private DArray<Byte> mmInternal(DArray<?> other, DArray<Byte> to) {
-        int m = shape().dim(0);
-        int n = shape().dim(1);
-        int p = other.shape().dim(1);
-
-        List<DArray<Byte>> rows = unbind(0, false);
-        List<DArray<Byte>> cols = other.cast(dt()).unbind(1, false);
-
-        int chunk = (int) Math.floor(Math.sqrt(L2_CACHE_SIZE / 2. / CORES / dt().byteCount()));
-        chunk = chunk >= 8 ? chunk - chunk % 8 : chunk;
-
-        int vectorChunk = chunk > 64 ? chunk * 4 : chunk;
-        int innerChunk = chunk > 64 ? (int) Math.ceil(Math.sqrt(chunk / 4.)) : (int) Math.ceil(Math.sqrt(chunk));
-
-        int off = ((StrideLayout) to.layout()).offset();
-        int iStride = ((StrideLayout) to.layout()).stride(0);
-        int jStride = ((StrideLayout) to.layout()).stride(1);
-
-        for (int r = 0; r < m; r += innerChunk) {
-            int re = Math.min(m, r + innerChunk);
-
-            for (int c = 0; c < p; c += innerChunk) {
-                int ce = Math.min(p, c + innerChunk);
-
-                for (int k = 0; k < n; k += vectorChunk) {
-                    int end = Math.min(n, k + vectorChunk);
-                    for (int i = r; i < re; i++) {
-                        var krow = (BaseByteDArrayStride) rows.get(i);
-                        for (int j = c; j < ce; j++) {
-                            byte value = to.ptrGetByte(off + i * iStride + j * jStride);
-                            to.ptrSetByte(off + i * iStride + j * jStride, (byte) (value + krow.inner(cols.get(j), k, end)));
-                        }
-                    }
-                }
-            }
-        }
-        return to;
-    }
-
     private DArray<Byte> mmInternalParallel(DArray<?> other, DArray<Byte> to) {
         int m = shape().dim(0);
         int n = shape().dim(1);
@@ -1032,38 +1023,38 @@ public final class BaseByteDArrayStride extends AbstractStrideDArray<Byte> {
         int iStride = ((StrideLayout) to.layout()).stride(0);
         int jStride = ((StrideLayout) to.layout()).stride(1);
 
-        List<Future<?>> futures = new ArrayList<>();
-        try (ExecutorService service = Executors.newFixedThreadPool(manager.cpuThreads())) {
+        CountDownLatch latch = new CountDownLatch(Math.ceilDiv(m, innerChunk) * Math.ceilDiv(p, innerChunk));
+        try (ExecutorService service = Executors.newVirtualThreadPerTaskExecutor()) {
+
             for (int r = 0; r < m; r += innerChunk) {
                 int rs = r;
                 int re = Math.min(m, r + innerChunk);
 
-                futures.add(service.submit(() -> {
-                    for (int c = 0; c < p; c += innerChunk) {
-                        int ce = Math.min(p, c + innerChunk);
+                for (int c = 0; c < p; c += innerChunk) {
+                    int cs = c;
+                    int ce = Math.min(p, c + innerChunk);
 
+                    service.submit(() -> {
                         for (int k = 0; k < n; k += vectorChunk) {
                             int end = Math.min(n, k + vectorChunk);
                             for (int i = rs; i < re; i++) {
                                 var krow = (BaseByteDArrayStride) rows.get(i);
-                                for (int j = c; j < ce; j++) {
-                                    byte value = to.ptrGetByte(off + i * iStride + j * jStride);
-                                    to.ptrSetByte(off + i * iStride + j * jStride, (byte) (value + krow.inner(cols.get(j), k, end)));
+                                int offset = off + i * iStride;
+                                for (int j = cs; j < ce; j++) {
+                                    to.ptrIncByte(offset + j * jStride, (byte) (krow.innerUnchecked(cols.get(j), k, end)));
                                 }
                             }
                         }
-                    }
-                    return null;
-                }));
+                        latch.countDown();
+                    });
+                }
             }
 
             try {
-                for (var future : futures) {
-                    future.get();
-                }
+                latch.await();
                 service.shutdown();
                 service.shutdownNow();
-            } catch (InterruptedException | ExecutionException e) {
+            } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -1091,7 +1082,7 @@ public final class BaseByteDArrayStride extends AbstractStrideDArray<Byte> {
     private DArray<Byte> bmmInternal(DArray<?> other, Order askOrder) {
         DArray<Byte> res = manager.zeros(dt, Shape.of(dim(0), dim(1), other.dim(2)), askOrder);
         for (int b = 0; b < dim(0); b++) {
-            ((BaseByteDArrayStride) selsq(0, b)).mmInternal(other.selsq(0, b), res.selsq(0, b));
+            ((BaseByteDArrayStride) selsq(0, b)).mmInternalParallel(other.selsq(0, b), res.selsq(0, b));
         }
         return res;
     }

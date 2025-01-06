@@ -28,7 +28,6 @@ module rapaio.lib {
 
     exports rapaio.datasets;
 
-
     exports rapaio.graphics;
     exports rapaio.graphics.base;
     exports rapaio.graphics.opt;
@@ -57,7 +56,6 @@ module rapaio.lib {
     exports rapaio.darray.storage.array;
 
     exports rapaio.nn;
-    exports rapaio.nn.data;
     exports rapaio.nn.loss;
     exports rapaio.nn.optimizer;
     exports rapaio.nn.layer;

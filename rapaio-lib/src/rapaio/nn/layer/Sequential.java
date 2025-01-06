@@ -77,13 +77,9 @@ public class Sequential extends AbstractNetwork {
         if (networks == null || networks.isEmpty()) {
             return null;
         }
-        Tensor[] outputs = null;
+        Tensor[] outputs = inputs;
         for (Network network : networks) {
-            if (outputs == null) {
-                outputs = network.forward(inputs);
-            } else {
-                outputs = network.forward(outputs);
-            }
+            outputs = network.forward(outputs);
         }
         return outputs;
     }

@@ -38,7 +38,7 @@ import rapaio.nn.Network;
 import rapaio.nn.Optimizer;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
-import rapaio.nn.data.TabularDataset;
+import rapaio.datasets.TabularDataset;
 import rapaio.nn.layer.LayerNorm;
 import rapaio.nn.layer.Linear;
 import rapaio.nn.layer.ReLU;

@@ -33,7 +33,11 @@ import rapaio.data.Frame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.data.VarRange;
+import rapaio.datasets.Batch;
 import rapaio.datasets.Datasets;
+import rapaio.datasets.TabularDataset;
+import rapaio.graphics.Plotter;
+import rapaio.graphics.opt.GOpts;
 import rapaio.ml.eval.metric.Confusion;
 import rapaio.nn.Autograd;
 import rapaio.nn.Loss;
@@ -41,8 +45,6 @@ import rapaio.nn.Network;
 import rapaio.nn.Optimizer;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
-import rapaio.nn.data.Batch;
-import rapaio.nn.data.TabularDataset;
 import rapaio.nn.layer.ELU;
 import rapaio.nn.layer.LayerNorm;
 import rapaio.nn.layer.Linear;
@@ -50,6 +52,7 @@ import rapaio.nn.layer.LogSoftmax;
 import rapaio.nn.layer.Sequential;
 import rapaio.nn.loss.NegativeLikelihoodLoss;
 import rapaio.printer.Format;
+import rapaio.sys.WS;
 
 public class SandboxIris {
     public static void main() throws IOException {
@@ -62,14 +65,14 @@ public class SandboxIris {
         var y = iris.rvar("class").darray().cast(DType.FLOAT);
 
         TabularDataset irisDataset = new TabularDataset(tm, x, y);
-        TabularDataset[] split = irisDataset.trainTestSplit(0.2);
+        TabularDataset[] split = irisDataset.trainTestSplit(0.25);
         TabularDataset train = split[0];
         TabularDataset test = split[1];
 
-        int n = 3;
-        int epochs = 1_000;
+        int n = 12;
+        int epochs = 2_000;
         double lr = 1e-3;
-        int batchSize = 30;
+        int batchSize = 40;
 
         boolean separateBatches = true;
 
@@ -145,11 +148,11 @@ public class SandboxIris {
             }
         }
 
-//        WS.draw(Plotter
-//                .lines(trainLoss, color(1))
-//                .lines(testLoss, color(2))
-//                .lines(accuracy, color(3))
-//        );
+        WS.draw(Plotter
+                .lines(trainLoss, GOpts.color(1))
+                .lines(testLoss, GOpts.color(2))
+                .lines(accuracy, GOpts.color(3))
+        );
 
         final String path = "/home/ati/work/rapaio/rapaio-experiment/src/rapaio/experiment/nn/net.rbin";
         nn.saveState(new File(path));
@@ -161,7 +164,7 @@ public class SandboxIris {
                 new LayerNorm(tm, Shape.of(n)),
                 new Linear(tm, n, 3, true),
                 new ELU(tm),
-                new LogSoftmax(tm, 1)
+                new LogSoftmax(tm, 0)
         );
 
         nn2.loadState(new File(path));

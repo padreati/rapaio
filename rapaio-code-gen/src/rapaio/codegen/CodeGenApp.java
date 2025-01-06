@@ -34,12 +34,15 @@ public class CodeGenApp {
         templates = new ArrayList<>();
 
         Replace[] floatReplaces = new Replace[] {
+                Replace.of("Simd.vsd", "Simd.vsf"),
                 Replace.of("double", "float"),
                 Replace.of("Double", "Float"),
                 Replace.of("DOUBLE", "FLOAT")
         };
 
         Replace[] intReplaces = new Replace[] {
+                Replace.of("Simd.vsd", "Simd.vsi"),
+                Replace.of("Simd.zeroDouble", "Simd.zeroInt"),
                 Replace.of("BaseDoubleDArrayStride", "BaseIntDArrayStride"),
                 Replace.of("reduceDouble", "reduceInt"),
                 Replace.of("DoubleVector", "IntVector"),
@@ -55,6 +58,7 @@ public class CodeGenApp {
                 Replace.of("DoubleArrayStorage", "IntArrayStorage"),
                 Replace.of("incDouble", "incInt"),
                 Replace.of("ptrGetDouble", "ptrGetInt"),
+                Replace.of("ptrIncDouble", "ptrIncInt"),
                 Replace.of("ptrSetDouble", "ptrSetInt"),
                 Replace.of("fillDouble", "fillInt"),
                 Replace.of("aggDouble","aggInt"),
@@ -69,6 +73,7 @@ public class CodeGenApp {
         };
 
         Replace[] byteReplaces = new Replace[] {
+                Replace.of("Simd.vsd", "Simd.vsb"),
                 Replace.of("double", "byte"),
                 Replace.of("Double", "Byte"),
                 Replace.of("DOUBLE", "BYTE")

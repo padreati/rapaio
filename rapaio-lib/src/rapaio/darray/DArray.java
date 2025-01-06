@@ -768,6 +768,22 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
         storage.setDouble(ptr, value);
     }
 
+    public final void ptrIncByte(int ptr, byte value) {
+        storage.incByte(ptr, value);
+    }
+
+    public final void ptrIncInt(int ptr, int value) {
+        storage.incInt(ptr, value);
+    }
+
+    public final void ptrIncFloat(int ptr, float value) {
+        storage.incFloat(ptr, value);
+    }
+
+    public final void ptrIncDouble(int ptr, double value) {
+        storage.incDouble(ptr, value);
+    }
+
     /**
      * Produces an iterator over the values from this NArray in the
      * storage order.
@@ -2384,6 +2400,14 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     public abstract DArray<N> copy(Order askOrder);
 
     public abstract DArray<N> copyTo(DArray<N> dst);
+
+    public final DArray<N> reorder(Order askOrder) {
+        askOrder = Order.autoFC(askOrder);
+        if (layout().storageFastOrder() == askOrder) {
+            return this;
+        }
+        return copy(askOrder);
+    }
 
     public abstract VarDouble dv();
 

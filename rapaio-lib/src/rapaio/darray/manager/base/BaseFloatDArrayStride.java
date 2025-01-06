@@ -40,12 +40,14 @@ import java.util.function.Function;
 import java.util.stream.StreamSupport;
 
 import jdk.incubator.vector.FloatVector;
+import jdk.incubator.vector.VectorOperators;
 import rapaio.darray.DArray;
 import rapaio.darray.DArrayManager;
 import rapaio.darray.DType;
 import rapaio.darray.Layout;
 import rapaio.darray.Order;
 import rapaio.darray.Shape;
+import rapaio.darray.Simd;
 import rapaio.darray.Storage;
 import rapaio.darray.iterators.IndexIterator;
 import rapaio.darray.iterators.PointerIterator;
@@ -840,6 +842,10 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
                     "Operands are not valid for vector dot product (v = %s, v = %s)."
                             .formatted(shape().toString(), other.shape().toString()));
         }
+        return innerUnchecked(other, start, end);
+    }
+
+    private Float innerUnchecked(DArray<?> other, int start, int end) {
         if (start >= end || start < 0 || end > other.shape().dim(0)) {
             throw new IllegalArgumentException("Start and end indexes are invalid (start: %d, end: %s).".formatted(start, end));
         }
@@ -850,9 +856,33 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
         int step1 = layout.stride(0);
         int step2 = dts.layout.stride(0);
 
+        int i = 0;
+        int p1 = offset1 + start * step1;
+        int p2 = offset2 + start * step2;
         float sum = 0;
-        for (int i = start; i < end; i++) {
-            sum += (float) (storage.getFloat(offset1 + i * step1) * dts.storage.getFloat(offset2 + i * step2));
+
+        if (storage.supportSimd() && dts.storage.supportSimd()) {
+            int simdBound = Simd.vsf.loopBound(end - start);
+            if (simdBound > 0) {
+                FloatVector vsum = Simd.zeroFloat();
+                for (; i < simdBound; i += loop.simdLen) {
+                    FloatVector v1 = (step1 == 1) ?
+                            storage.getFloatVector(p1) :
+                            storage.getFloatVector(p1, loop.simdOffsets(), 0);
+                    FloatVector v2 = (step2 == 1) ?
+                            dts.storage.getFloatVector(p2) :
+                            dts.storage.getFloatVector(p2, dts.loop.simdOffsets(), 0);
+                    vsum = vsum.add(v1.mul(v2));
+                    p1 += step1 * loop.simdLen;
+                    p2 += step2 * loop.simdLen;
+                }
+                sum += vsum.reduceLanes(VectorOperators.ADD);
+            }
+        }
+        for (; i < end - start; i++) {
+            sum += (float) (storage.getFloat(p1) * dts.storage.getFloat(p2));
+            p1 += step1;
+            p2 += step2;
         }
         return sum;
     }
@@ -975,45 +1005,6 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
         return mmInternalParallel(other, ret);
     }
 
-    private DArray<Float> mmInternal(DArray<?> other, DArray<Float> to) {
-        int m = shape().dim(0);
-        int n = shape().dim(1);
-        int p = other.shape().dim(1);
-
-        List<DArray<Float>> rows = unbind(0, false);
-        List<DArray<Float>> cols = other.cast(dt()).unbind(1, false);
-
-        int chunk = (int) Math.floor(Math.sqrt(L2_CACHE_SIZE / 2. / CORES / dt().byteCount()));
-        chunk = chunk >= 8 ? chunk - chunk % 8 : chunk;
-
-        int vectorChunk = chunk > 64 ? chunk * 4 : chunk;
-        int innerChunk = chunk > 64 ? (int) Math.ceil(Math.sqrt(chunk / 4.)) : (int) Math.ceil(Math.sqrt(chunk));
-
-        int off = ((StrideLayout) to.layout()).offset();
-        int iStride = ((StrideLayout) to.layout()).stride(0);
-        int jStride = ((StrideLayout) to.layout()).stride(1);
-
-        for (int r = 0; r < m; r += innerChunk) {
-            int re = Math.min(m, r + innerChunk);
-
-            for (int c = 0; c < p; c += innerChunk) {
-                int ce = Math.min(p, c + innerChunk);
-
-                for (int k = 0; k < n; k += vectorChunk) {
-                    int end = Math.min(n, k + vectorChunk);
-                    for (int i = r; i < re; i++) {
-                        var krow = (BaseFloatDArrayStride) rows.get(i);
-                        for (int j = c; j < ce; j++) {
-                            float value = to.ptrGetFloat(off + i * iStride + j * jStride);
-                            to.ptrSetFloat(off + i * iStride + j * jStride, (float) (value + krow.inner(cols.get(j), k, end)));
-                        }
-                    }
-                }
-            }
-        }
-        return to;
-    }
-
     private DArray<Float> mmInternalParallel(DArray<?> other, DArray<Float> to) {
         int m = shape().dim(0);
         int n = shape().dim(1);
@@ -1032,38 +1023,38 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
         int iStride = ((StrideLayout) to.layout()).stride(0);
         int jStride = ((StrideLayout) to.layout()).stride(1);
 
-        List<Future<?>> futures = new ArrayList<>();
-        try (ExecutorService service = Executors.newFixedThreadPool(manager.cpuThreads())) {
+        CountDownLatch latch = new CountDownLatch(Math.ceilDiv(m, innerChunk) * Math.ceilDiv(p, innerChunk));
+        try (ExecutorService service = Executors.newVirtualThreadPerTaskExecutor()) {
+
             for (int r = 0; r < m; r += innerChunk) {
                 int rs = r;
                 int re = Math.min(m, r + innerChunk);
 
-                futures.add(service.submit(() -> {
-                    for (int c = 0; c < p; c += innerChunk) {
-                        int ce = Math.min(p, c + innerChunk);
+                for (int c = 0; c < p; c += innerChunk) {
+                    int cs = c;
+                    int ce = Math.min(p, c + innerChunk);
 
+                    service.submit(() -> {
                         for (int k = 0; k < n; k += vectorChunk) {
                             int end = Math.min(n, k + vectorChunk);
                             for (int i = rs; i < re; i++) {
                                 var krow = (BaseFloatDArrayStride) rows.get(i);
-                                for (int j = c; j < ce; j++) {
-                                    float value = to.ptrGetFloat(off + i * iStride + j * jStride);
-                                    to.ptrSetFloat(off + i * iStride + j * jStride, (float) (value + krow.inner(cols.get(j), k, end)));
+                                int offset = off + i * iStride;
+                                for (int j = cs; j < ce; j++) {
+                                    to.ptrIncFloat(offset + j * jStride, (float) (krow.innerUnchecked(cols.get(j), k, end)));
                                 }
                             }
                         }
-                    }
-                    return null;
-                }));
+                        latch.countDown();
+                    });
+                }
             }
 
             try {
-                for (var future : futures) {
-                    future.get();
-                }
+                latch.await();
                 service.shutdown();
                 service.shutdownNow();
-            } catch (InterruptedException | ExecutionException e) {
+            } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -1091,7 +1082,7 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
     private DArray<Float> bmmInternal(DArray<?> other, Order askOrder) {
         DArray<Float> res = manager.zeros(dt, Shape.of(dim(0), dim(1), other.dim(2)), askOrder);
         for (int b = 0; b < dim(0); b++) {
-            ((BaseFloatDArrayStride) selsq(0, b)).mmInternal(other.selsq(0, b), res.selsq(0, b));
+            ((BaseFloatDArrayStride) selsq(0, b)).mmInternalParallel(other.selsq(0, b), res.selsq(0, b));
         }
         return res;
     }
