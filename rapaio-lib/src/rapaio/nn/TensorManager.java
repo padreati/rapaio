@@ -33,6 +33,7 @@ import rapaio.darray.DType;
 import rapaio.darray.Order;
 import rapaio.darray.Shape;
 import rapaio.nn.tensors.Variable;
+import rapaio.nn.tensors.shape.Cat;
 
 /**
  * Context manager for tensor computations. This class allows one to create tensors and DArrays which
@@ -82,6 +83,10 @@ public final class TensorManager implements AutoCloseable {
 
     public DType<?> dt() {
         return dt;
+    }
+
+    public DArrayManager arrayManager() {
+        return arrayManager;
     }
 
     public ExecutorService outerExecutor() {
@@ -217,5 +222,9 @@ public final class TensorManager implements AutoCloseable {
 
     public DArray<?> strideArray(Shape shape, float... values) {
         return arrayManager.stride(dt, shape, Order.defaultOrder(), values);
+    }
+
+    public Tensor cat(int axis, Tensor... tensors) {
+        return new Cat(this, axis, tensors);
     }
 }

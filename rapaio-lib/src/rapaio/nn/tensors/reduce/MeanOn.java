@@ -19,35 +19,16 @@
  *
  */
 
-package rapaio.nn.layer;
+package rapaio.nn.tensors.reduce;
 
-import java.util.List;
-
-import rapaio.nn.NetworkState;
+import rapaio.darray.Shape;
 import rapaio.nn.Tensor;
-import rapaio.nn.TensorManager;
 
-public class Softmax extends AbstractNetwork {
+public class MeanOn extends Tensor {
 
-    private final int axis;
-
-    public Softmax(TensorManager tm, int axis) {
-        super(tm);
-        this.axis = axis;
-    }
-
-    @Override
-    public List<Tensor> parameters() {
-        return List.of();
-    }
-
-    @Override
-    public NetworkState state() {
-        return new NetworkState();
-    }
-
-    @Override
-    public Tensor forward11(Tensor x) {
-        return x.softmax(axis);
+    public MeanOn(Tensor x, Shape shape) {
+        super(x.tm(), MeanOn.class.getSimpleName());
+        this.value = x.value().meanOn(shape, true);
+        backEdge(x, () -> this.grad().div(shape.size()));
     }
 }

@@ -1401,7 +1401,7 @@ public class DArrayTest {
         assertEquals(Shape.of(1, 4, 4), split1.get(1).shape());
         assertEquals(Shape.of(2, 4, 4), split1.get(2).shape());
 
-        var t2 = g.engine().cat(0, split1);
+        var t2 = g.engine().cat(g.dt(), 0, split1);
         assertEquals(t1.shape(), t2.shape());
         assertTrue(t1.deepEquals(t2));
 
@@ -1428,15 +1428,15 @@ public class DArrayTest {
             assertEquals(expectedShapes.get(i), split3.get(i).shape());
         }
 
-        var p1 = g.engine().cat(2, split3.subList(0, 2));
-        var p2 = g.engine().cat(2, split3.subList(2, 4));
-        var p3 = g.engine().cat(2, split3.subList(4, 6));
-        var p4 = g.engine().cat(2, split3.subList(6, 8));
+        var p1 = g.engine().cat(g.dt(), 2, split3.subList(0, 2));
+        var p2 = g.engine().cat(g.dt(), 2, split3.subList(2, 4));
+        var p3 = g.engine().cat(g.dt(), 2, split3.subList(4, 6));
+        var p4 = g.engine().cat(g.dt(), 2, split3.subList(6, 8));
 
-        var p5 = g.engine().cat(1, List.of(p1, p2));
-        var p6 = g.engine().cat(1, List.of(p3, p4));
+        var p5 = g.engine().cat(g.dt(), 1, List.of(p1, p2));
+        var p6 = g.engine().cat(g.dt(), 1, List.of(p3, p4));
 
-        var p7 = g.engine().cat(0, List.of(p5, p6));
+        var p7 = g.engine().cat(g.dt(), 0, List.of(p5, p6));
 
         assertTrue(t1.deepEquals(p7));
     }
@@ -1452,7 +1452,7 @@ public class DArrayTest {
         assertEquals(Shape.of(4, 13, 19, 17), chunk1.get(1).shape());
         assertEquals(Shape.of(4, 13, 19, 17), chunk1.get(2).shape());
         assertEquals(Shape.of(1, 13, 19, 17), chunk1.get(3).shape());
-        assertTrue(t1.deepEquals(g.engine().cat(0, chunk1)));
+        assertTrue(t1.deepEquals(g.engine().cat(g.dt(), 0, chunk1)));
 
         var chunk2 = t1.chunk(0, false, 4);
         assertEquals(4, chunk2.size());
@@ -1487,24 +1487,24 @@ public class DArrayTest {
         assertEquals(Shape.of(3, 3, 9, 10), chunk4.get(14).shape());
         assertEquals(Shape.of(3, 3, 9, 7), chunk4.get(15).shape());
 
-        var c1 = g.engine().cat(3, chunk4.subList(0, 2));
-        var c2 = g.engine().cat(3, chunk4.subList(2, 4));
-        var c3 = g.engine().cat(3, chunk4.subList(4, 6));
-        var c4 = g.engine().cat(3, chunk4.subList(6, 8));
-        var c5 = g.engine().cat(3, chunk4.subList(8, 10));
-        var c6 = g.engine().cat(3, chunk4.subList(10, 12));
-        var c7 = g.engine().cat(3, chunk4.subList(12, 14));
-        var c8 = g.engine().cat(3, chunk4.subList(14, 16));
+        var c1 = g.engine().cat(g.dt(), 3, chunk4.subList(0, 2));
+        var c2 = g.engine().cat(g.dt(), 3, chunk4.subList(2, 4));
+        var c3 = g.engine().cat(g.dt(), 3, chunk4.subList(4, 6));
+        var c4 = g.engine().cat(g.dt(), 3, chunk4.subList(6, 8));
+        var c5 = g.engine().cat(g.dt(), 3, chunk4.subList(8, 10));
+        var c6 = g.engine().cat(g.dt(), 3, chunk4.subList(10, 12));
+        var c7 = g.engine().cat(g.dt(), 3, chunk4.subList(12, 14));
+        var c8 = g.engine().cat(g.dt(), 3, chunk4.subList(14, 16));
 
-        var c9 = g.engine().cat(2, List.of(c1, c2));
-        var c10 = g.engine().cat(2, List.of(c3, c4));
-        var c11 = g.engine().cat(2, List.of(c5, c6));
-        var c12 = g.engine().cat(2, List.of(c7, c8));
+        var c9 = g.engine().cat(g.dt(), 2, List.of(c1, c2));
+        var c10 = g.engine().cat(g.dt(), 2, List.of(c3, c4));
+        var c11 = g.engine().cat(g.dt(), 2, List.of(c5, c6));
+        var c12 = g.engine().cat(g.dt(), 2, List.of(c7, c8));
 
-        var c13 = g.engine().cat(1, List.of(c9, c10));
-        var c14 = g.engine().cat(1, List.of(c11, c12));
+        var c13 = g.engine().cat(g.dt(), 1, List.of(c9, c10));
+        var c14 = g.engine().cat(g.dt(), 1, List.of(c11, c12));
 
-        var c15 = g.engine().cat(0, List.of(c13, c14));
+        var c15 = g.engine().cat(g.dt(), 0, List.of(c13, c14));
 
         assertTrue(t1.deepEquals(c15));
     }
@@ -1522,7 +1522,7 @@ public class DArrayTest {
         for (int i = 0; i < 10; i++) {
             list1.add(t1.stretch(0));
         }
-        assertTrue(t2.deepEquals(g.engine().cat(0, list1)));
+        assertTrue(t2.deepEquals(g.engine().cat(g.dt(), 0, list1)));
 
         var t3 = t1.repeat(0, 10, false);
         assertEquals(Shape.of(10 * 10), t3.shape());
@@ -1530,7 +1530,7 @@ public class DArrayTest {
         for (int i = 0; i < 10; i++) {
             list2.add(t1);
         }
-        assertTrue(t3.deepEquals(g.engine().cat(0, list2)));
+        assertTrue(t3.deepEquals(g.engine().cat(g.dt(), 0, list2)));
     }
 
     @ParameterizedTest
@@ -1780,8 +1780,8 @@ public class DArrayTest {
                 for (int axis = 0; axis < t1.rank(); axis++) {
                     DArray<Integer> indexMax = t1.argmax1d(axis, true);
 
-                    DArray<Integer> index = g.engine().cat(axis, List.of(indexMax));
-                    DArray<N> margins = g.engine().stack(axis, List.of(t1.amax1d(axis)));
+                    DArray<Integer> index = g.engine().cat(DType.INTEGER, axis, List.of(indexMax));
+                    DArray<N> margins = g.engine().stack(g.dt(), axis, List.of(t1.amax1d(axis)));
 
                     DArray<N> gather = t1.gather(axis, index);
                     assertTensorEqualValues(margins, gather);
@@ -1802,8 +1802,8 @@ public class DArrayTest {
                 DArray<Integer> indexMax = t1.argmax1d(axis, true);
                 DArray<Integer> indexMin = t1.argmin1d(axis, true);
 
-                DArray<Integer> index = g.engine().cat(axis, List.of(indexMax, indexMin));
-                DArray<N> margins = g.engine().stack(axis, List.of(t1.amax1d(axis), t1.amin1d(axis)));
+                DArray<Integer> index = g.engine().cat(DType.INTEGER, axis, List.of(indexMax, indexMin));
+                DArray<N> margins = g.engine().stack(g.dt(), axis, List.of(t1.amax1d(axis), t1.amin1d(axis)));
 
                 DArray<N> gather = t1.gather(axis, index);
                 assertTensorEqualValues(margins, gather);

@@ -19,35 +19,17 @@
  *
  */
 
-package rapaio.nn.layer;
+package rapaio.nn.tensors.shape;
 
-import java.util.List;
-
-import rapaio.nn.NetworkState;
+import rapaio.darray.Order;
+import rapaio.darray.Shape;
 import rapaio.nn.Tensor;
-import rapaio.nn.TensorManager;
 
-public class Softmax extends AbstractNetwork {
+public class Reshape extends Tensor {
 
-    private final int axis;
-
-    public Softmax(TensorManager tm, int axis) {
-        super(tm);
-        this.axis = axis;
-    }
-
-    @Override
-    public List<Tensor> parameters() {
-        return List.of();
-    }
-
-    @Override
-    public NetworkState state() {
-        return new NetworkState();
-    }
-
-    @Override
-    public Tensor forward11(Tensor x) {
-        return x.softmax(axis);
+    public Reshape(Tensor x, Shape shape, Order askOrder) {
+        super(x.tm(), Reshape.class.getSimpleName());
+        this.setValue(x.value().reshape(shape, askOrder));
+        backEdge(x, () -> this.grad.reshape(x.shape()));
     }
 }

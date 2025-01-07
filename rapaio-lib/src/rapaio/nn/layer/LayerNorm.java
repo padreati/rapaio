@@ -45,8 +45,8 @@ public class LayerNorm extends AbstractNetwork {
         this.shape = shape;
         this.eps = eps;
 
-        this.gamma = tm.scalarTensor(1).requiresGrad(true);
-        this.beta = tm.scalarTensor(0).requiresGrad(true);
+        this.gamma = tm.scalarTensor(1).requiresGrad(true).name("LayerNorm.gamma");
+        this.beta = tm.scalarTensor(0).requiresGrad(true).name("LayerNorm.beta");
     }
 
     @Override

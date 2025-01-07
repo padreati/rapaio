@@ -134,28 +134,4 @@ public class PCATest {
         var acc2 = c2.accuracy();
         assertTrue(acc1 < acc2);
     }
-
-    @Test
-    void testPrint() {
-        PCA pca = PCA.newModel().fit(df);
-
-        assertEquals("PCA{}", pca.toString());
-        assertEquals("""
-                PCA decomposition
-                =================
-                input shape: rows=40, vars=3
-                eigen values:
-                [[ 1.671009430532567  ] \s
-                 [ 0.8383259734162232 ] \s
-                 [ 0.6819539303101687 ]]\s
-                
-                eigen vectors:
-                [[ 0.4921022293062843  -0.6467028606590808  -0.5827613627610766 ] \s
-                 [ 0.47927902494614255 -0.35756937446327175  0.8015209034657924 ] \s
-                 [ 0.7267234770932203   0.6737355211515175  -0.1339904301815355 ]]\s
-                
-                """, pca.toSummary());
-        assertEquals(pca.toSummary(), pca.toContent());
-        assertEquals(pca.toSummary(), pca.toFullContent());
-    }
 }

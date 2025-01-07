@@ -224,7 +224,7 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
         for (int index : indices) {
             slices.add(narrow(axis, true, index, index + 1));
         }
-        return manager.cat(order, axis, slices);
+        return manager.cat(dt(), order, axis, slices);
     }
 
     @Override

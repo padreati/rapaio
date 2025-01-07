@@ -96,20 +96,20 @@ public final class DArrays {
         return tm.stride(dt, shape, order, storage);
     }
 
-    public static <N extends Number> DArray<N> stack(int axis, Collection<? extends DArray<N>> nArrays) {
-        return tm.stack(axis, nArrays);
+    public static DArray<Double> stack(int axis, Collection<? extends DArray<?>> nArrays) {
+        return tm.stack(DType.DOUBLE, axis, nArrays);
     }
 
-    public static <N extends Number> DArray<N> stack(Order order, int axis, Collection<? extends DArray<N>> nArrays) {
-        return tm.stack(order, axis, nArrays);
+    public static DArray<Double> stack(Order order, int axis, Collection<? extends DArray<?>> nArrays) {
+        return tm.stack(DType.DOUBLE, order, axis, nArrays);
     }
 
-    public static <N extends Number> DArray<N> concat(int axis, Collection<? extends DArray<N>> nArrays) {
-        return tm.cat(Order.defaultOrder(), axis, nArrays);
+    public static DArray<Double> concat(int axis, Collection<? extends DArray<?>> nArrays) {
+        return tm.cat(DType.DOUBLE, Order.defaultOrder(), axis, nArrays);
     }
 
-    public static <N extends Number> DArray<N> concat(Order order, int axis, Collection<? extends DArray<N>> nArrays) {
-        return tm.cat(order, axis, nArrays);
+    public static DArray<Double> concat(Order order, int axis, Collection<? extends DArray<?>> nArrays) {
+        return tm.cat(DType.DOUBLE, order, axis, nArrays);
     }
 
 }

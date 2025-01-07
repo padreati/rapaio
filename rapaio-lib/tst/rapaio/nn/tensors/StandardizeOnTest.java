@@ -65,21 +65,12 @@ public class StandardizeOnTest {
         DArray<?> meanOn = m.value().copy();
         DArray<?> stdOn = std.value().copy();
 
-        System.out.println(x);
-        System.out.println(m);
-        System.out.println(std);
-        System.out.println(s);
-
         graph.resetGrad();
 
         StandardizeOn standardizeOn = x.standardizeOn(shape, 0, 1e-3);
         sum = standardizeOn.sub(0.5).sqr().sum().name("sum");
         sum.setGrad(x.tm().scalarArray(1));
         Autograd.backward(sum);
-
-        System.out.println(xGrad);
-        System.out.println(x.grad());
-        System.out.println(xGrad.div(x.grad()));
 
         assertTrue(xGrad.deepEquals(x.grad(), TOL));
         assertTrue(meanOn.deepEquals(m.value(), TOL));

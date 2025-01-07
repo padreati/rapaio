@@ -491,9 +491,9 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
             copies.add(this);
         }
         if (stack) {
-            return manager.stack(order, axis, copies);
+            return manager.stack(dt(), order, axis, copies);
         } else {
-            return manager.cat(order, axis, copies);
+            return manager.cat(dt(), order, axis, copies);
         }
     }
 

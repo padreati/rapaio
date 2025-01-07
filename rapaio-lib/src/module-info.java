@@ -60,6 +60,11 @@ module rapaio.lib {
     exports rapaio.nn.optimizer;
     exports rapaio.nn.layer;
     exports rapaio.nn.tensors;
+    exports rapaio.nn.tensors.shape;
+    exports rapaio.nn.tensors.binary;
+    exports rapaio.nn.tensors.unary;
+    exports rapaio.nn.tensors.reduce;
+
 
     exports rapaio.ml.common;
     exports rapaio.ml.common.distance;

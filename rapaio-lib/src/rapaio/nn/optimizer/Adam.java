@@ -25,9 +25,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import rapaio.core.param.Param;
 import rapaio.core.param.ParamSet;
@@ -70,16 +71,18 @@ public class Adam extends ParamSet<Adam> implements Optimizer {
 
     @Override
     public void step() {
-        CountDownLatch latch = new CountDownLatch(parameters.size());
+        List<Future<?>> futures = new ArrayList<>();
         try (ExecutorService executor = Executors.newFixedThreadPool(DArrayManager.base().cpuThreads())) {
             for (var parameter : parameters) {
-                executor.submit(() -> {
-                    step(parameter);
-                    latch.countDown();
-                });
+                futures.add(executor.submit(() -> step(parameter)));
             }
-            latch.await();
-        } catch (InterruptedException e) {
+        }
+        try {
+            while (!futures.isEmpty()) {
+                Future<?> future = futures.removeFirst();
+                future.get();
+            }
+        } catch (ExecutionException | InterruptedException e) {
             throw new RuntimeException(e);
         }
         t++;
@@ -87,6 +90,9 @@ public class Adam extends ParamSet<Adam> implements Optimizer {
 
     private void step(Tensor param) {
         var gt = param.grad();
+        if(gt==null) {
+            throw new RuntimeException("Gradient is null for param: " + param);
+        }
         if (maximize.get()) {
             gt = gt.mul(-1);
         }

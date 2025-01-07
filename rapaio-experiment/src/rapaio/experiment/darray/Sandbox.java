@@ -21,11 +21,10 @@
 
 package rapaio.experiment.darray;
 
-import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
+import rapaio.darray.DArray;
 import rapaio.darray.DArrayManager;
 import rapaio.darray.DType;
 import rapaio.darray.Shape;
@@ -33,15 +32,19 @@ import rapaio.darray.Shape;
 public class Sandbox {
 
     public static void main(String[] args) {
-        DArrayManager dm = DArrayManager.base();
+        DArrayManager am = DArrayManager.base();
+        DType<?> dt = DType.FLOAT;
         Random random = new Random(42);
-        var x = dm.random(DType.DOUBLE, Shape.of(4, 5), random);
-        Iterator<Double> it = x.iterator();
-        Iterable<Double> iterable = () -> it;
+        DArray<?> x = am.random(dt, Shape.of(5, 5), random);
+        x.printString();
 
-        System.out.println(
-                StreamSupport.stream(iterable.spliterator(), false)
-                        .map(String::valueOf)
-                        .collect(Collectors.joining(",")));
+        int axis = 1;
+
+        List<? extends DArray<?>> splits = x.split(axis, true, 0, 1, 2);
+        for(var split : splits) {
+            split.printString();
+        }
+
+        am.cat(dt, axis, splits).printString();
     }
 }

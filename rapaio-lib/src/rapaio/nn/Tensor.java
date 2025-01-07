@@ -28,36 +28,39 @@ import java.util.function.Supplier;
 
 import rapaio.darray.Compare;
 import rapaio.darray.DArray;
+import rapaio.darray.Order;
 import rapaio.darray.Shape;
-import rapaio.nn.tensors.Add;
 import rapaio.nn.tensors.BatchVtm;
 import rapaio.nn.tensors.CompareFalse;
 import rapaio.nn.tensors.CompareTrue;
-import rapaio.nn.tensors.Div;
 import rapaio.nn.tensors.Dropout;
-import rapaio.nn.tensors.Exp;
 import rapaio.nn.tensors.Gather;
 import rapaio.nn.tensors.Identity;
-import rapaio.nn.tensors.Log;
 import rapaio.nn.tensors.LogSoftmax;
-import rapaio.nn.tensors.Max;
-import rapaio.nn.tensors.Mean1d;
-import rapaio.nn.tensors.MeanOn;
-import rapaio.nn.tensors.Mul;
-import rapaio.nn.tensors.Neg;
-import rapaio.nn.tensors.Sigmoid;
 import rapaio.nn.tensors.Softmax;
-import rapaio.nn.tensors.Sqr;
-import rapaio.nn.tensors.Sqrt;
 import rapaio.nn.tensors.Standardize1d;
 import rapaio.nn.tensors.StandardizeOn;
 import rapaio.nn.tensors.Std1d;
 import rapaio.nn.tensors.StdOn;
 import rapaio.nn.tensors.Stretch;
-import rapaio.nn.tensors.Sub;
-import rapaio.nn.tensors.Sum;
-import rapaio.nn.tensors.Sum1d;
-import rapaio.nn.tensors.Tanh;
+import rapaio.nn.tensors.binary.Add;
+import rapaio.nn.tensors.binary.Div;
+import rapaio.nn.tensors.binary.Mul;
+import rapaio.nn.tensors.binary.Sub;
+import rapaio.nn.tensors.reduce.Max;
+import rapaio.nn.tensors.reduce.Mean1d;
+import rapaio.nn.tensors.reduce.MeanOn;
+import rapaio.nn.tensors.reduce.Sum;
+import rapaio.nn.tensors.reduce.Sum1d;
+import rapaio.nn.tensors.shape.Narrow;
+import rapaio.nn.tensors.shape.Reshape;
+import rapaio.nn.tensors.unary.Exp;
+import rapaio.nn.tensors.unary.Log;
+import rapaio.nn.tensors.unary.Neg;
+import rapaio.nn.tensors.unary.Sigmoid;
+import rapaio.nn.tensors.unary.Sqr;
+import rapaio.nn.tensors.unary.Sqrt;
+import rapaio.nn.tensors.unary.Tanh;
 
 /**
  * Defines a tensor which is an multidimensional array with gradient computation.
@@ -149,6 +152,7 @@ public abstract class Tensor {
 
     /**
      * Size of the dimension indexed by {@code axis}
+     *
      * @param axis the index of the dimension
      * @return size of the given dimension
      */
@@ -169,6 +173,7 @@ public abstract class Tensor {
 
     /**
      * Sets the value of a tensor
+     *
      * @param value the new value of the tensor
      */
     public final void setValue(DArray<?> value) {
@@ -187,6 +192,7 @@ public abstract class Tensor {
 
     /**
      * Sets the computer gradient of the tensor.
+     *
      * @param grad new value of the gradient
      */
     public final void setGrad(DArray<?> grad) {
@@ -260,6 +266,26 @@ public abstract class Tensor {
      */
     public final Identity identity() {
         return new Identity(this);
+    }
+
+    public final Reshape reshape(Shape shape) {
+        return new Reshape(this, shape, Order.defaultOrder());
+    }
+
+    public final Reshape reshape(Shape shape, Order askOrder) {
+        return new Reshape(this, shape, askOrder);
+    }
+
+    public final Narrow narrow(int axis, int start, int end) {
+        return new Narrow(this, axis, start, end);
+    }
+
+    public final List<Tensor> split(int axis, int... indices) {
+        List<Tensor> tensors = new ArrayList<>();
+        for (int i = 0; i < indices.length; i++) {
+            tensors.add(this.narrow(axis, indices[i], i == indices.length - 1 ? this.dim(axis) : indices[i + 1]));
+        }
+        return tensors;
     }
 
     /**

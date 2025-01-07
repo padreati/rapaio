@@ -19,35 +19,27 @@
  *
  */
 
-package rapaio.nn.layer;
+package rapaio.nn.tensors.reduce;
 
-import java.util.List;
-
-import rapaio.nn.NetworkState;
+import rapaio.darray.DArray;
 import rapaio.nn.Tensor;
-import rapaio.nn.TensorManager;
 
-public class Softmax extends AbstractNetwork {
+public class Sum extends Tensor {
 
-    private final int axis;
 
-    public Softmax(TensorManager tm, int axis) {
-        super(tm);
-        this.axis = axis;
-    }
+    public Sum(Tensor x) {
+        super(x.tm(), Sum.class.getSimpleName());
 
-    @Override
-    public List<Tensor> parameters() {
-        return List.of();
-    }
-
-    @Override
-    public NetworkState state() {
-        return new NetworkState();
-    }
-
-    @Override
-    public Tensor forward11(Tensor x) {
-        return x.softmax(axis);
+        this.setValue(tm.scalarArray(x.value().sum().doubleValue()));
+        backEdge(x, () -> {
+            DArray<?> grad = this.grad();
+            // gradient is a scalar, we expand by child shape
+            if (!x.value().isScalar()) {
+                for (int i = 0; i < x.value().rank(); i++) {
+                    grad = grad.strexp(i, x.value().dim(i));
+                }
+            }
+            return grad;
+        });
     }
 }

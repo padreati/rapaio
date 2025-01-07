@@ -19,35 +19,23 @@
  *
  */
 
-package rapaio.nn.layer;
+package rapaio.nn.tensors.binary;
 
 import java.util.List;
 
-import rapaio.nn.NetworkState;
+import rapaio.darray.operator.Broadcast;
 import rapaio.nn.Tensor;
-import rapaio.nn.TensorManager;
 
-public class Softmax extends AbstractNetwork {
+public final class Div extends Tensor {
 
-    private final int axis;
+    public Div(Tensor left, Tensor right) {
+        super(left.tm(), Div.class.getSimpleName());
 
-    public Softmax(TensorManager tm, int axis) {
-        super(tm);
-        this.axis = axis;
-    }
-
-    @Override
-    public List<Tensor> parameters() {
-        return List.of();
-    }
-
-    @Override
-    public NetworkState state() {
-        return new NetworkState();
-    }
-
-    @Override
-    public Tensor forward11(Tensor x) {
-        return x.softmax(axis);
+        if (!Broadcast.elementWise(List.of(left.value().shape(), right.value().shape())).valid()) {
+            throw new IllegalArgumentException("Nodes are not valid for elementwise broadcast.");
+        }
+        this.setValue(left.value().div(right.value()));
+        backEdge(left, () -> this.grad().div(right.value()).sumTo(left.value().shape(), false));
+        backEdge(right, () -> this.grad().mul(left.value().neg().div(right.value().sqr())).sumTo(right.value().shape(), false));
     }
 }

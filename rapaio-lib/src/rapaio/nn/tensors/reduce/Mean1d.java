@@ -19,35 +19,19 @@
  *
  */
 
-package rapaio.nn.layer;
+package rapaio.nn.tensors.reduce;
 
-import java.util.List;
-
-import rapaio.nn.NetworkState;
 import rapaio.nn.Tensor;
-import rapaio.nn.TensorManager;
 
-public class Softmax extends AbstractNetwork {
+public final class Mean1d extends Tensor {
 
-    private final int axis;
+    public Mean1d(Tensor x, int axis) {
+        super(x.tm(), Mean1d.class.getSimpleName());
 
-    public Softmax(TensorManager tm, int axis) {
-        super(tm);
-        this.axis = axis;
-    }
-
-    @Override
-    public List<Tensor> parameters() {
-        return List.of();
-    }
-
-    @Override
-    public NetworkState state() {
-        return new NetworkState();
-    }
-
-    @Override
-    public Tensor forward11(Tensor x) {
-        return x.softmax(axis);
+        if (x.rank() == 0) {
+            throw new IllegalArgumentException("Input node must have at least one dimension.");
+        }
+        this.setValue(x.value().mean1d(axis));
+        backEdge(x, () -> this.grad().div(x.dim(axis)).strexp(axis, x.dim(axis)));
     }
 }

@@ -159,14 +159,14 @@ public class DArrayManagerTest {
         var t4 = manager.stride(dt, Shape.of(1, 2), Order.C, 1., 2, 3, 4);
 
 
-        var t = manager.cat(0, List.of(t1, t2, t3));
+        var t = manager.cat(dt, 0, List.of(t1, t2, t3));
         int i = 1;
         var it = t.ptrIterator(Order.C);
         while (it.hasNext()) {
             assertEquals(dt.cast(i++), t.ptrGet(it.nextInt()));
         }
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> manager.cat(0, List.of(t1, t4)));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> manager.cat(dt, 0, List.of(t1, t4)));
         assertEquals("NArrays are not valid for concatenation", ex.getMessage());
     }
 
@@ -181,7 +181,7 @@ public class DArrayManagerTest {
                 {1., 7, 13, 2, 8, 14, 3, 9, 15, 4, 10, 16, 5, 11, 17, 6, 12, 18}
         };
         for (int s = 0; s < 3; s++) {
-            var t = manager.stack(s, List.of(t1, t2, t3));
+            var t = manager.stack(dt, s, List.of(t1, t2, t3));
             int i = 0;
             var it = t.ptrIterator(Order.defaultOrder());
             while (it.hasNext()) {
@@ -189,7 +189,7 @@ public class DArrayManagerTest {
             }
         }
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> manager.stack(0, List.of(t1, t2.t_())));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> manager.stack(dt, 0, List.of(t1, t2.t_())));
         assertEquals("NArrays are not valid for stack, they have to have the same dimensions.", ex.getMessage());
     }
 

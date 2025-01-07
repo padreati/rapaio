@@ -19,35 +19,16 @@
  *
  */
 
-package rapaio.nn.layer;
+package rapaio.nn.tensors.unary;
 
-import java.util.List;
-
-import rapaio.nn.NetworkState;
 import rapaio.nn.Tensor;
-import rapaio.nn.TensorManager;
 
-public class Softmax extends AbstractNetwork {
+public final class Sigmoid extends Tensor {
 
-    private final int axis;
+    public Sigmoid(Tensor x) {
+        super(x.tm(), Sigmoid.class.getSimpleName());
 
-    public Softmax(TensorManager tm, int axis) {
-        super(tm);
-        this.axis = axis;
-    }
-
-    @Override
-    public List<Tensor> parameters() {
-        return List.of();
-    }
-
-    @Override
-    public NetworkState state() {
-        return new NetworkState();
-    }
-
-    @Override
-    public Tensor forward11(Tensor x) {
-        return x.softmax(axis);
+        this.setValue(x.value().sigmoid());
+        backEdge(x, () -> this.grad().mul(this.value().mul(this.value().neg().add_(1))));
     }
 }

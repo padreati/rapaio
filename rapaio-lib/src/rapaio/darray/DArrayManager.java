@@ -234,11 +234,11 @@ public abstract class DArrayManager {
      * @param nArrays NArrays to concatenate
      * @return new NArray with concatenated data
      */
-    public final <N extends Number> DArray<N> stack(int axis, Collection<? extends DArray<N>> nArrays) {
-        return stack(Order.defaultOrder(), axis, nArrays);
+    public final <N extends Number> DArray<N> stack(DType<N> dt, int axis, Collection<? extends DArray<?>> nArrays) {
+        return stack(dt, Order.defaultOrder(), axis, nArrays);
     }
 
-    public final <N extends Number> DArray<N> stack(Order order, int axis, Collection<? extends DArray<N>> nArrays) {
+    public final <N extends Number> DArray<N> stack(DType<N> dt, Order order, int axis, Collection<? extends DArray<?>> nArrays) {
         var nArrayList = nArrays.stream().toList();
         for (int i = 1; i < nArrayList.size(); i++) {
             if (!nArrayList.get(i - 1).shape().equals(nArrayList.get(i).shape())) {
@@ -254,35 +254,35 @@ public abstract class DArrayManager {
             newDims[i + 1] = nArrayList.getFirst().shape().dim(i);
         }
         newDims[axis] = nArrayList.size();
-        var result = zeros(nArrayList.getFirst().dt(), Shape.of(newDims), order);
+        var result = zeros(dt, Shape.of(newDims), order);
         var slices = result.chunk(axis, true, 1);
         i = 0;
         for (; i < nArrayList.size(); i++) {
             var it1 = slices.get(i).squeeze(axis).ptrIterator(Order.defaultOrder());
             var it2 = nArrayList.get(i).ptrIterator(Order.defaultOrder());
             while (it1.hasNext() && it2.hasNext()) {
-                slices.get(i).ptrSet(it1.nextInt(), nArrayList.get(i).ptrGet(it2.nextInt()));
+                slices.get(i).ptrSet(it1.nextInt(), dt.cast(nArrayList.get(i).ptrGet(it2.nextInt())));
             }
         }
         return result;
     }
 
-    public final <N extends Number> DArray<N> cat(int axis, Collection<? extends DArray<N>> nArrays) {
-        return cat(Order.defaultOrder(), axis, nArrays);
+    public final <N extends Number> DArray<N> cat(DType<N> dt, int axis, Collection<? extends DArray<?>> nArrays) {
+        return cat(dt, Order.defaultOrder(), axis, nArrays);
     }
 
-    public final <N extends Number> DArray<N> cat(Order order, int axis, Collection<? extends DArray<N>> nArrays) {
+    public final <N extends Number> DArray<N> cat(DType<N> dt, Order order, int axis, Collection<? extends DArray<?>> nArrays) {
         var nArrayList = nArrays.stream().toList();
         DArrayManager.validateForConcatenation(axis, nArrayList.stream().map(t -> t.shape().dims()).collect(Collectors.toList()));
 
         int newDim = nArrayList.stream().mapToInt(nArray -> nArray.layout().shape().dim(axis)).sum();
-        DArray<N> first = nArrayList.getFirst();
+        DArray<?> first = nArrayList.getFirst();
         int[] newDims = Arrays.copyOf(first.shape().dims(), first.rank());
         newDims[axis] = newDim;
-        var result = zeros(first.dt(), Shape.of(newDims), order);
+        var result = zeros(dt, Shape.of(newDims), order);
 
         int start = 0;
-        for (DArray<N> array : nArrays) {
+        for (DArray<?> array : nArrays) {
             int end = start + array.shape().dim(axis);
             var dst = result.narrow(axis, true, start, end);
 
@@ -290,7 +290,7 @@ public abstract class DArrayManager {
             var it2 = dst.ptrIterator(Order.defaultOrder());
 
             while (it1.hasNext() && it2.hasNext()) {
-                dst.ptrSet(it2.nextInt(), array.ptrGet(it1.nextInt()));
+                dst.ptrSet(it2.nextInt(), dt.cast(array.ptrGet(it1.nextInt())));
             }
             start = end;
         }

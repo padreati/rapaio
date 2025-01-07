@@ -29,11 +29,11 @@ import rapaio.nn.TensorManager;
 
 public class LogSoftmax extends AbstractNetwork {
 
-    private final int dim;
+    private final int axis;
 
-    public LogSoftmax(TensorManager tm, int dim) {
+    public LogSoftmax(TensorManager tm, int axis) {
         super(tm);
-        this.dim = dim;
+        this.axis = axis;
     }
 
     @Override
@@ -48,6 +48,6 @@ public class LogSoftmax extends AbstractNetwork {
 
     @Override
     public Tensor forward11(Tensor x) {
-        return x.logsoftmax(dim);
+        return x.logsoftmax(axis);
     }
 }

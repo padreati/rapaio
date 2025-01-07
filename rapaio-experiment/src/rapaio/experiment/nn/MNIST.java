@@ -39,11 +39,11 @@ import rapaio.nn.Loss;
 import rapaio.nn.Optimizer;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
-import rapaio.nn.layer.ELU;
 import rapaio.nn.layer.LayerNorm;
 import rapaio.nn.layer.Linear;
 import rapaio.nn.layer.LogSoftmax;
 import rapaio.nn.layer.Sequential;
+import rapaio.nn.layer.Tanh;
 import rapaio.nn.loss.NegativeLikelihoodLoss;
 import rapaio.printer.Format;
 
@@ -61,20 +61,17 @@ public class MNIST {
         TabularDataset test = new TabularDataset(tm,
                 test1.darray(0).reshape(Shape.of(test1.darray(0).dim(0), 28 * 28)), test1.darray(1));
 
-        int epochs = 40 ;
+        int epochs = 10 ;
         double lr = 1e-3;
-        int batchSize = 200;
-
+        int batchSize = 100;
+        int h = 512;
 
         var nn = new Sequential(tm,
                 new LayerNorm(tm, Shape.of(784)),
-                new Linear(tm, 784, 300, true),
-                new ELU(tm),
-                new LayerNorm(tm, Shape.of(300)),
-                new Linear(tm, 300, 300, true),
-                new ELU(tm),
-                new LayerNorm(tm, Shape.of(300)),
-                new Linear(tm, 300, 10, true),
+                new Linear(tm, 784, h, true),
+                new Tanh(tm),
+                new LayerNorm(tm, Shape.of(h)),
+                new Linear(tm, h, 10, true),
                 new LogSoftmax(tm, 0)
         );
 
