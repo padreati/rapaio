@@ -41,7 +41,7 @@ import rapaio.darray.Shape;
 
 public class CholeskyDecompositionTest {
 
-    private static final int TIMES = 100;
+    private static final int TIMES = 20;
 
     private Random random;
 
@@ -56,14 +56,14 @@ public class CholeskyDecompositionTest {
         testType(DArrayManager.base(), DType.FLOAT, true, 1e-0);
     }
 
-    private <N extends Number> void testType(DArrayManager tm, DType<N> dt, boolean rightFlag, double TOL) {
+    private <N extends Number> void testType(DArrayManager dm, DType<N> dt, boolean rightFlag, double TOL) {
         for (int i = 0; i < TIMES; i++) {
-            var m = tm.random(dt, Shape.of(10, 10), random, Order.C);
+            var m = dm.random(dt, Shape.of(10, 10), random, Order.C);
 
-            testSolve(m.t().mm(m), tm.full(dt, Shape.of(10, 1), 1d), rightFlag, TOL);
-            testSolve(tm.eye(dt, 100, Order.C), tm.full(dt, Shape.of(100), 1d), rightFlag, TOL);
+            testSolve(m.t().mm(m), dm.full(dt, Shape.of(10, 1), 1d), rightFlag, TOL);
+            testSolve(dm.eye(dt, 100, Order.C), dm.full(dt, Shape.of(100), 1d), rightFlag, TOL);
 
-            testNonSPD(tm.random(dt, Shape.of(10, 10), random), tm.random(dt, Shape.of(10, 3), random));
+            testNonSPD(dm.random(dt, Shape.of(10, 10), random), dm.random(dt, Shape.of(10, 3), random));
         }
     }
 

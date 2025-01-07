@@ -38,7 +38,7 @@ import rapaio.darray.DArray;
  * <p>
  * In order to compute gradients one has to call {@link #backward(Tensor)}. The methods can be called on nodes
  * or on loss functions {@link Loss}. In all cases the node on which {@code backward} method is called must
- * have a computed gradient and that has to be a scalar.
+ * have a computed gradient, which has to have by definition the same shape as the tensor value.
  * <p>
  * To maximize the performance not all the gradients are computed. The one which are computed are for
  * the variables which has {@link Tensor#requiresGrad()} equals with {@code true}, and on all the objects

@@ -19,15 +19,29 @@
  *
  */
 
-package rapaio.nn.tensors;
+package rapaio.nn.tensors.shape;
 
-import java.util.stream.Stream;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.Test;
+
+import rapaio.darray.Shape;
+import rapaio.nn.Autograd;
 import rapaio.nn.TensorManager;
 
-public class AbstractTensorTest {
+public class ReshapeTest {
 
-    static Stream<TensorManager> managers() {
-        return Stream.of(TensorManager.ofDouble().seed(42), TensorManager.ofFloat().seed(42));
+    final TensorManager tm = TensorManager.ofFloat().seed(12345L);
+
+    @Test
+    void testReshape() {
+        var t1 = tm.randomTensor(Shape.of(2,3,4)).requiresGrad(true);
+        var t2 = t1.reshape(Shape.of(2,12));
+        t2.setGrad(tm.randomArray(t2.shape()));
+        Autograd.backward(t2);
+
+        assertNotNull(t1.grad());
+        assertTrue(t1.grad().deepEquals(t2.grad().reshape(t1.shape())));
     }
 }

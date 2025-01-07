@@ -40,7 +40,7 @@ public class MaxTest extends AbstractTensorTest {
     @ParameterizedTest
     @MethodSource("managers")
     void testMax(TensorManager tm) {
-        var x = tm.randomTensor(Shape.of(3, 2, 4), Normal.std(), random).requiresGrad(true).name("x");
+        var x = tm.randomTensor(Shape.of(3, 2, 4), Normal.std()).requiresGrad(true).name("x");
         var max = x.max(0).name("max");
         var sum = max.sum();
         sum.setGrad(tm.scalarArray(1));

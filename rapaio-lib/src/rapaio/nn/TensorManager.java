@@ -73,8 +73,9 @@ public final class TensorManager implements AutoCloseable {
         this.outerExecutor = Executors.newFixedThreadPool(outerThreads);
     }
 
-    public void seed(long seed) {
+    public TensorManager seed(long seed) {
         random.setSeed(seed);
+        return this;
     }
 
     public Random random() {
@@ -143,15 +144,15 @@ public final class TensorManager implements AutoCloseable {
         return new Variable(this, arrayManager.full(dt, shape, fill));
     }
 
-    public Variable randomTensor(Shape shape, Random random) {
+    public Variable randomTensor(Shape shape) {
         return new Variable(this, arrayManager.random(dt, shape, random));
     }
 
-    public Variable randomTensor(Shape shape, Distribution distribution, Random random) {
+    public Variable randomTensor(Shape shape, Distribution distribution) {
         return new Variable(this, arrayManager.random(dt, shape, distribution, random, Order.defaultOrder()));
     }
 
-    public Variable randomTensor(Shape shape, Distribution distribution, Random random, Order askOrder) {
+    public Variable randomTensor(Shape shape, Distribution distribution, Order askOrder) {
         return new Variable(this, arrayManager.random(dt, shape, distribution, random, askOrder));
     }
 
@@ -192,15 +193,15 @@ public final class TensorManager implements AutoCloseable {
         return arrayManager.full(dt, shape, fill);
     }
 
-    public DArray<?> randomArray(Shape shape, Random random) {
+    public DArray<?> randomArray(Shape shape) {
         return arrayManager.random(dt, shape, random);
     }
 
-    public DArray<?> randomArray(Shape shape, Distribution distribution, Random random) {
+    public DArray<?> randomArray(Shape shape, Distribution distribution) {
         return arrayManager.random(dt, shape, distribution, random, Order.defaultOrder());
     }
 
-    public DArray<?> randomArray(Shape shape, Distribution distribution, Random random, Order askOrder) {
+    public DArray<?> randomArray(Shape shape, Distribution distribution, Order askOrder) {
         return arrayManager.random(dt, shape, distribution, random, askOrder);
     }
 

@@ -23,9 +23,6 @@ package rapaio.nn.tensors;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Random;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import rapaio.darray.DArray;
@@ -38,19 +35,17 @@ public class Standardize1dTest {
 
     private static final double TOL = 1e-6;
 
-    private Random random;
-
-    @BeforeEach
-    void beforeEach() {
-        random = new Random(-67253673);
-    }
-
     @Test
     void testStandardize() {
-        testStandardizeWith(TensorManager.ofFloat().randomTensor(Shape.of(5, 3), random).requiresGrad(true).name("x"), 0);
-        testStandardizeWith(TensorManager.ofFloat().randomTensor(Shape.of(5, 3), random).requiresGrad(true).name("x"), 1);
-        testStandardizeWith(TensorManager.ofDouble().randomTensor(Shape.of(5, 3), random).requiresGrad(true).name("x"), 0);
-        testStandardizeWith(TensorManager.ofDouble().randomTensor(Shape.of(5, 3), random).requiresGrad(true).name("x"), 1);
+        try(TensorManager tm = TensorManager.ofFloat()) {
+            tm.seed(42);
+            testStandardizeWith(tm.randomTensor(Shape.of(5, 3)).requiresGrad(true).name("x"), 0);
+            testStandardizeWith(tm.randomTensor(Shape.of(5, 3)).requiresGrad(true).name("x"), 1);
+        }
+        try(TensorManager tm = TensorManager.ofDouble()) {
+            testStandardizeWith(tm.randomTensor(Shape.of(5, 3)).requiresGrad(true).name("x"), 0);
+            testStandardizeWith(tm.randomTensor(Shape.of(5, 3)).requiresGrad(true).name("x"), 1);
+        }
     }
 
     void testStandardizeWith(Tensor x, int axis) {

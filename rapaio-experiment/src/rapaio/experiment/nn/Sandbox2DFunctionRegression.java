@@ -55,7 +55,7 @@ public class Sandbox2DFunctionRegression {
         Random random = new Random(42);
 
         final int N = 1_000;
-        Tensor x = tm.randomTensor(Shape.of(N, 4), random);
+        Tensor x = tm.randomTensor(Shape.of(N, 4));
         Tensor y = tm.zerosTensor(Shape.of(N));
         for (int i = 0; i < N; i++) {
             DArray<?> row = x.value().selsq(0, i);
@@ -121,7 +121,7 @@ public class Sandbox2DFunctionRegression {
         System.out.println(Duration.of(end - start, ChronoUnit.MILLIS));
 
 
-        var input = tm.randomTensor(Shape.of(2, 4), random).name("x");
+        var input = tm.randomTensor(Shape.of(2, 4)).name("x");
         System.out.println("input:" + input.value());
         System.out.println("output:" + nn.forward11(input).value());
         System.out.println("true:" +

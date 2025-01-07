@@ -76,8 +76,6 @@ public class Adam extends ParamSet<Adam> implements Optimizer {
             for (var parameter : parameters) {
                 futures.add(executor.submit(() -> step(parameter)));
             }
-        }
-        try {
             while (!futures.isEmpty()) {
                 Future<?> future = futures.removeFirst();
                 future.get();

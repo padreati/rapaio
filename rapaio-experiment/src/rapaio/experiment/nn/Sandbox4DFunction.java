@@ -82,7 +82,7 @@ public class Sandbox4DFunction {
 
 
         final int N = 1_000;
-        Tensor x = tm.randomTensor(Shape.of(N, 4), tm.random());
+        Tensor x = tm.randomTensor(Shape.of(N, 4));
         Tensor y = tm.zerosTensor(Shape.of(N));
         for (int i = 0; i < N; i++) {
             DArray<?> row = x.value().selsq(0, i);

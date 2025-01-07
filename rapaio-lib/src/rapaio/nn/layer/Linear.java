@@ -57,9 +57,9 @@ public class Linear extends AbstractNetwork {
 
     private void reset() {
         double range = 1. / Math.sqrt(inFeatures);
-        w.setValue(tm.randomArray(Shape.of(inFeatures, outFeatures), Uniform.of(-range, range), tm.random(), Order.F));
+        w.setValue(tm.randomArray(Shape.of(inFeatures, outFeatures), Uniform.of(-range, range), Order.F));
         if (bias) {
-            b.setValue(tm.randomArray(Shape.of(outFeatures), Uniform.of(-range, range), tm.random(), Order.F));
+            b.setValue(tm.randomArray(Shape.of(outFeatures), Uniform.of(-range, range), Order.F));
         }
     }
 

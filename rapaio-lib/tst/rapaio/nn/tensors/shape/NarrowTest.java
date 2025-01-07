@@ -19,41 +19,34 @@
  *
  */
 
-package rapaio.nn.tensors.unary;
+package rapaio.nn.tensors.shape;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 
-import rapaio.darray.Order;
 import rapaio.darray.Shape;
 import rapaio.nn.Autograd;
-import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
-import rapaio.nn.tensors.AbstractTensorTest;
 
-public class ExpTest extends AbstractTensorTest {
+public class NarrowTest {
 
-    @ParameterizedTest
-    @MethodSource("managers")
-    void testExp(TensorManager tm) {
-        Tensor x = tm.randomTensor(Shape.of(4,32)).requiresGrad(true);
-        Tensor exp = x.exp();
-        Tensor sum = exp.sum();
-        sum.setGrad(tm.scalarArray(2));
+    private final TensorManager tm = TensorManager.ofFloat().seed(42);
 
-        Autograd.backward(sum);
+    @Test
+    void testNarrow() {
+        var t1 = tm.randomTensor(Shape.of(3,4,5)).requiresGrad(true).name("t1");
+        for(int axis = 0; axis < 3; axis++) {
+            var t2 = t1.narrow(axis, 1, 2).name("t2");
+            t2.setGrad(tm.fullArray(t2.shape(), 1));
+            var graph = Autograd.backward(t2);
 
-        assertNotNull(x.grad());
-        assertEquals(x.grad().shape(), x.value().shape());
+            assertNotNull(t1.grad());
+            assertEquals(t2.grad().sum().doubleValue(), t1.grad().sum().doubleValue());
+            assertEquals(t2.grad().sum().doubleValue(), t1.grad().narrow(axis, 1, 2).sum().doubleValue());
 
-        var valIt = x.value().iterator(Order.C);
-        var gradIt = x.grad().iterator(Order.C);
-
-        while (valIt.hasNext()) {
-            assertEquals(Math.exp(valIt.next().doubleValue())*2, gradIt.next().doubleValue(), 1e-6);
+            graph.resetGrad();
         }
     }
 }

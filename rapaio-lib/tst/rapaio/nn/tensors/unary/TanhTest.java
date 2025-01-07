@@ -38,7 +38,7 @@ public class TanhTest extends AbstractTensorTest {
     @ParameterizedTest
     @MethodSource("managers")
     void testTanhOp(TensorManager tm) {
-        var x = tm.randomTensor(Shape.of(32, 5), random).requiresGrad(true);
+        var x = tm.randomTensor(Shape.of(32, 5)).requiresGrad(true);
         var tanh = x.tanh();
         var sum = tanh.sum();
         sum.setGrad(tm.scalarArray(1));

@@ -21,16 +21,20 @@
 
 package rapaio.nn.optimizer;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.concurrent.CountDownLatch;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import rapaio.core.param.Param;
 import rapaio.core.param.ParamSet;
 import rapaio.core.param.ValueParam;
 import rapaio.darray.DArray;
+import rapaio.darray.DArrayManager;
 import rapaio.nn.Optimizer;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
@@ -62,21 +66,21 @@ public class SGD extends ParamSet<SGD> implements Optimizer {
 
     @Override
     public void step() {
-        CountDownLatch latch = new CountDownLatch(params.size());
-        try (ExecutorService executor = Executors.newFixedThreadPool(tm.outerThreads())) {
+        List<Future<?>> futures = new ArrayList<>();
+        try (ExecutorService executor = Executors.newFixedThreadPool(DArrayManager.base().cpuThreads())) {
             for (var parameter : params) {
-                executor.submit(() -> {
-                    stepParam(parameter);
-                    latch.countDown();
-                });
+                futures.add(executor.submit(() -> step(parameter)));
             }
-            latch.await();
-        } catch (InterruptedException e) {
+            while (!futures.isEmpty()) {
+                Future<?> future = futures.removeFirst();
+                future.get();
+            }
+        } catch (ExecutionException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void stepParam(Tensor tensor) {
+    private void step(Tensor tensor) {
         DArray<?> gt = tensor.grad();
         if (weightDecay.get() != 0) {
             gt = gt.add(tensor.value().mul(weightDecay.get()));
