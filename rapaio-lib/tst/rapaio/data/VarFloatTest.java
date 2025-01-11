@@ -38,7 +38,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import rapaio.util.collection.FloatArrays;
+import rapaio.util.collection.Floats;
 
 public class VarFloatTest {
 
@@ -158,7 +158,7 @@ public class VarFloatTest {
 
     @Test
     void testElements() {
-        float[] array = FloatArrays.newFill(10, 1);
+        float[] array = Floats.newFill(10, 1);
         VarFloat v = VarFloat.wrap(array);
         float[] elements = v.elements();
         assertArrayEquals(array, elements);

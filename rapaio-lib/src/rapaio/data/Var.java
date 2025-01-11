@@ -46,7 +46,7 @@ import rapaio.data.transform.VarTransform;
 import rapaio.printer.Printable;
 import rapaio.util.IntComparator;
 import rapaio.util.NotImplementedException;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 /**
  * Random access list of observed values (observations) of a random variable (a vector with sample values).
@@ -490,7 +490,7 @@ public interface Var extends Serializable, Printable {
     }
 
     default int[] rowsAll() {
-        return IntArrays.newSeq(0, size());
+        return Ints.seq(0, size());
     }
 
     /**

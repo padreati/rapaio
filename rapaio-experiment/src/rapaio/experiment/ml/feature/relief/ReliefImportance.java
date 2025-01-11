@@ -25,7 +25,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/19/18.
@@ -33,8 +33,8 @@ import rapaio.util.collection.IntArrays;
 public record ReliefImportance(String[] names, double[] weights) {
 
     public Frame orderedFrame() {
-        int[] rows = IntArrays.newSeq(0, names.length);
-        IntArrays.quickSort(rows, 0, names.length, (r1, r2) -> -Double.compare(weights[r1], weights[r2]));
+        int[] rows = Ints.seq(0, names.length);
+        Ints.quickSort(rows, 0, names.length, (r1, r2) -> -Double.compare(weights[r1], weights[r2]));
 
         VarDouble weightVar = VarDouble.empty().name("weights");
         VarNominal nameVar = VarNominal.empty().name("names");

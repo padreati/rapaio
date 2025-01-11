@@ -25,7 +25,7 @@ import java.util.List;
 
 import rapaio.darray.DArray;
 import rapaio.darray.Shape;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 public final class Broadcast {
 
@@ -44,7 +44,7 @@ public final class Broadcast {
             ranks[i] = rank;
             len = Math.max(rank, len);
         }
-        int[] dims = IntArrays.newFill(len, 1);
+        int[] dims = Ints.fill(len, 1);
         boolean unchanged = true;
         for (int i = 1; i <= len; i++) {
             int max = ranks[0] - i < 0 ? 0 : shapes.getFirst().dim(ranks[0] - i);

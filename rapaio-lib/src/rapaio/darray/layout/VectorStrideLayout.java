@@ -26,7 +26,7 @@ import java.util.Objects;
 
 import rapaio.darray.Order;
 import rapaio.darray.Shape;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 public final class VectorStrideLayout extends AbstractStrideLayout {
 
@@ -134,13 +134,13 @@ public final class VectorStrideLayout extends AbstractStrideLayout {
                 throw new IndexOutOfBoundsException();
             }
         }
-        if (IntArrays.containsDuplicates(axes)) {
+        if (Ints.containsDuplicates(axes)) {
             throw new IllegalArgumentException("Axes contains duplicates.");
         }
 
         int len = axes.length + 1;
-        int[] newDims = IntArrays.newFill(len, 1);
-        int[] newStrides = IntArrays.newFill(len, 0);
+        int[] newDims = Ints.fill(len, 1);
+        int[] newStrides = Ints.fill(len, 0);
 
         for (int i = 0; i < len; i++) {
             boolean found = false;

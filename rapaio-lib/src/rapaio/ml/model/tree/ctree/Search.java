@@ -32,8 +32,8 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.ml.model.tree.CTree;
 import rapaio.ml.model.tree.RowPredicate;
-import rapaio.util.collection.DoubleArrays;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Doubles;
+import rapaio.util.collection.Ints;
 
 /**
  * Impurity test implementation
@@ -104,7 +104,7 @@ public enum Search implements Serializable {
             }
 
             double[] values = df.rvar(testIndex).stream().mapToDouble().toArray();
-            IntArrays.quickSort(rows, 0, len, (i, j) -> Double.compare(values[i], values[j]));
+            Ints.quickSort(rows, 0, len, (i, j) -> Double.compare(values[i], values[j]));
 
             double bestScore = Double.NaN;
             double bestTestValue = Double.NaN;
@@ -201,7 +201,7 @@ public enum Search implements Serializable {
             var dtWeights = DensityTable.fromLabels(false, df, testName, targetName, weights);
 
             double[] rowCounts = dtCounts.rowTotals();
-            double totalRows = DoubleArrays.nanSum(rowCounts, 0, rowCounts.length);
+            double totalRows = Doubles.nanSum(rowCounts, 0, rowCounts.length);
 
             List<String> targetLevels = df.levels(targetName);
 
@@ -219,8 +219,8 @@ public enum Search implements Serializable {
                 Set<String> bestSet = null;
 
                 // sort in descending order of the first class
-                int[] levelIdx = IntArrays.newSeq(0, dtWeights.rows());
-                IntArrays.quickSort(levelIdx, 0, levelIdx.length, (k1, k2) -> Double.compare(dtWeights.get(k2, 0), dtWeights.get(k1, 0)));
+                int[] levelIdx = Ints.seq(0, dtWeights.rows());
+                Ints.quickSort(levelIdx, 0, levelIdx.length, (k1, k2) -> Double.compare(dtWeights.get(k2, 0), dtWeights.get(k1, 0)));
 
                 int leftRowCounts = 0;
 

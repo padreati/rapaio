@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 import rapaio.util.collection.IntOpenHashSet;
 
 /**
@@ -68,11 +68,11 @@ public class IntOpenHashSetTest {
 
     @Test
     void containsTest() {
-        int[] array = IntArrays.newSeq(0, 1_000_000);
-        IntArrays.shuffle(array, random);
+        int[] array = Ints.seq(0, 1_000_000);
+        Ints.shuffle(array, random);
 
-        int[] in = IntArrays.copy(array, 0, 500_000);
-        int[] out = IntArrays.copy(array, 500_000, 500_000);
+        int[] in = Ints.copy(array, 0, 500_000);
+        int[] out = Ints.copy(array, 500_000, 500_000);
 
         IntOpenHashSet set = new IntOpenHashSet();
         set.addAll(IntStream.of(in).boxed().collect(Collectors.toList()));

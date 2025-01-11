@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.experiment.math.linear.dense.DMatrixDenseC;
 import rapaio.experiment.math.linear.dense.DMatrixDenseR;
 import rapaio.experiment.math.linear.dense.DVectorStride;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 public class LinearAlgebraIdentitiesTests {
 
@@ -45,7 +45,7 @@ public class LinearAlgebraIdentitiesTests {
     private static final MatrixFactory[] mFactories = new MatrixFactory[] {
             DMatrixDenseC::random,
             DMatrixDenseR::random,
-            (rows, cols) -> DMatrix.random(rows, cols).mapRows(IntArrays.newSeq(rows)).mapCols(IntArrays.newSeq(cols))
+            (rows, cols) -> DMatrix.random(rows, cols).mapRows(Ints.seq(rows)).mapCols(Ints.seq(cols))
     };
 
     private static final VectorFactory[] vFactories = new VectorFactory[] {
@@ -60,7 +60,7 @@ public class LinearAlgebraIdentitiesTests {
             },
             size -> {
                 DVector v = DVector.random(size);
-                v = v.map(IntArrays.newSeq(0, v.size()));
+                v = v.map(Ints.seq(0, v.size()));
                 return v;
             }
     };

@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 import rapaio.io.atom.AtomSerialization;
 import rapaio.io.atom.LoadAtomHandler;
 import rapaio.io.atom.SaveAtomHandler;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 /**
  * Describes the shape of a NDArray. A NDArray is a multidimensional array which stores numbers of the same type.
@@ -174,7 +174,7 @@ public final class Shape {
 
     private int[] cStrides() {
         if (cStrides == null) {
-            cStrides = IntArrays.newFill(dims.length, 1);
+            cStrides = Ints.fill(dims.length, 1);
             for (int i = 1; i < cStrides.length; i++) {
                 for (int j = 0; j < i; j++) {
                     cStrides[j] *= dims[i];
@@ -186,7 +186,7 @@ public final class Shape {
 
     private int[] fStrides() {
         if (fStrides == null) {
-            fStrides = IntArrays.newFill(dims.length, 1);
+            fStrides = Ints.fill(dims.length, 1);
             for (int i = fStrides.length - 2; i >= 0; i--) {
                 for (int j = fStrides.length - 1; j > i; j--) {
                     fStrides[j] *= dims[i];

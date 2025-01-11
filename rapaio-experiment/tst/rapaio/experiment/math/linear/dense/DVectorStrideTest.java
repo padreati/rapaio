@@ -23,7 +23,7 @@ package rapaio.experiment.math.linear.dense;
 
 import rapaio.experiment.math.linear.DVector;
 import rapaio.experiment.math.linear.StandardDVectorTest;
-import rapaio.util.collection.DoubleArrays;
+import rapaio.util.collection.Doubles;
 
 public class DVectorStrideTest extends StandardDVectorTest {
 
@@ -43,7 +43,7 @@ public class DVectorStrideTest extends StandardDVectorTest {
 
     @Override
     public DVector generateFill(int size, double fill) {
-        return new DVectorStride(0, 1, size, DoubleArrays.newFill(size, fill));
+        return new DVectorStride(0, 1, size, Doubles.newFill(size, fill));
     }
 
     @Override

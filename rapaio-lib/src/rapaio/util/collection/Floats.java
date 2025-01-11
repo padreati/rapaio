@@ -23,7 +23,7 @@ package rapaio.util.collection;
 
 import java.util.Arrays;
 
-public class FloatArrays {
+public class Floats {
 
     /**
      * Creates a new array filled with a sequence of values starting from

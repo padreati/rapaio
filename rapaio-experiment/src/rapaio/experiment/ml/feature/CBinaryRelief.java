@@ -36,7 +36,7 @@ import rapaio.experiment.math.linear.DMatrix;
 import rapaio.experiment.ml.feature.relief.ReliefDifferenceFunction;
 import rapaio.experiment.ml.feature.relief.ReliefDistanceFunction;
 import rapaio.experiment.ml.feature.relief.ReliefImportance;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 /**
  * ReliefF algorithm for feature selection.
@@ -144,7 +144,7 @@ public class CBinaryRelief {
             for (int i = 0; i < seq.length; i++) {
                 seq[i] = i;
             }
-            IntArrays.shuffle(seq, random);
+            Ints.shuffle(seq, random);
 
             int[] rows = new int[(int) (df.rowCount() * p)];
             int rlen = rows.length;

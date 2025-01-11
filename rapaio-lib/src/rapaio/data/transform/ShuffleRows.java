@@ -28,7 +28,7 @@ import java.util.stream.IntStream;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.VarRange;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
@@ -61,7 +61,7 @@ public class ShuffleRows extends AbstractTransform {
     @Override
     public Frame coreApply(Frame df) {
         int[] mapping = IntStream.range(0, df.rowCount()).toArray();
-        IntArrays.shuffle(mapping, random);
+        Ints.shuffle(mapping, random);
         return df.mapRows(Mapping.wrap(mapping));
     }
 }

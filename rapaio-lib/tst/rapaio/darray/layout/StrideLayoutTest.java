@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.darray.Layout;
 import rapaio.darray.Order;
 import rapaio.darray.Shape;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 public class StrideLayoutTest {
 
@@ -68,13 +68,13 @@ public class StrideLayoutTest {
             Order order = random.nextDouble() > 0.5 ? Order.C : Order.F;
             var layout = StrideLayout.ofDense(Shape.of(shape), random.nextInt(10), order);
 
-            assertEquals(IntArrays.prod(shape, 0, shape.length), layout.size());
+            assertEquals(Ints.prod(shape, 0, shape.length), layout.size());
             assertEquals(shape.length, layout.rank());
             assertArrayEquals(shape, layout.dims());
             for (int j = 0; j < shape.length; j++) {
                 assertEquals(shape[j], layout.dim(j));
             }
-            int[] strides = IntArrays.newFill(shape.length, 1);
+            int[] strides = Ints.fill(shape.length, 1);
             if (order == Order.C) {
                 for (int j = shape.length - 2; j >= 0; j--) {
                     strides[j] = strides[j + 1] * shape[j + 1];

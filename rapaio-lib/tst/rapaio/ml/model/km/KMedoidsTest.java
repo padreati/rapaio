@@ -48,7 +48,7 @@ import rapaio.ml.common.distance.Manhattan;
 import rapaio.ml.common.distance.MinkowskiDistance;
 import rapaio.ml.eval.RandIndex;
 import rapaio.ml.model.ClusteringResult;
-import rapaio.util.collection.DoubleArrays;
+import rapaio.util.collection.Doubles;
 
 public class KMedoidsTest {
 
@@ -161,8 +161,8 @@ public class KMedoidsTest {
         KMedoids km = KMedoids.newAlternateModel(2).seed.set(42L);
         KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
 
-        double[] dv = DoubleArrays.newFill(x.dim(0), Double.NaN);
-        double[] ev = DoubleArrays.newFill(x.dim(0), Double.NaN);
+        double[] dv = Doubles.newFill(x.dim(0), Double.NaN);
+        double[] ev = Doubles.newFill(x.dim(0), Double.NaN);
 
         km.updateNewClosest(x, 0, dv, ev, cache);
 
@@ -191,7 +191,7 @@ public class KMedoidsTest {
             v[0] = cache.get(i, 0, x.selsq(0, i), x.selsq(0, 0));
             v[1] = cache.get(i, 10, x.selsq(0, i), x.selsq(0, 10));
             v[2] = cache.get(i, 20, x.selsq(0, i), x.selsq(0, 20));
-            DoubleArrays.quickSort(v);
+            Doubles.quickSort(v);
             assertEquals(v[0], dv[i]);
             assertEquals(v[1], ev[i]);
         }
@@ -204,8 +204,8 @@ public class KMedoidsTest {
         KMedoids km = KMedoids.newAlternateModel(2).seed.set(42L);
         KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
 
-        double[] dv = DoubleArrays.newFill(x.dim(0), Double.NaN);
-        double[] ev = DoubleArrays.newFill(x.dim(0), Double.NaN);
+        double[] dv = Doubles.newFill(x.dim(0), Double.NaN);
+        double[] ev = Doubles.newFill(x.dim(0), Double.NaN);
 
         km.updateAllClosest(x, new int[] {0, 10, 20}, dv, ev, cache);
 
@@ -214,7 +214,7 @@ public class KMedoidsTest {
             v[0] = cache.get(i, 0, x.selsq(0, i), x.selsq(0, 0));
             v[1] = cache.get(i, 10, x.selsq(0, i), x.selsq(0, 10));
             v[2] = cache.get(i, 20, x.selsq(0, i), x.selsq(0, 20));
-            DoubleArrays.quickSort(v);
+            Doubles.quickSort(v);
             assertEquals(v[0], dv[i]);
             assertEquals(v[1], ev[i]);
         }
@@ -243,8 +243,8 @@ public class KMedoidsTest {
         KMedoids km = KMedoids.newAlternateModel(2);
         KMedoids.DistanceCache cache = new KMedoids.DistanceCache(x.dim(0), new Manhattan());
 
-        double[] dv = DoubleArrays.newFill(x.dim(0), Double.NaN);
-        double[] ev = DoubleArrays.newFill(x.dim(0), Double.NaN);
+        double[] dv = Doubles.newFill(x.dim(0), Double.NaN);
+        double[] ev = Doubles.newFill(x.dim(0), Double.NaN);
         int[] centroids = km.initializePAM(x, dv, ev, cache);
         assertArrayEquals(new int[] {4, 1}, centroids);
     }

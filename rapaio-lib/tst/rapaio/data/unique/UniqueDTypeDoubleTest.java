@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.printer.opt.POpt;
-import rapaio.util.collection.DoubleArrays;
+import rapaio.util.collection.Doubles;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/22/18.
@@ -91,7 +91,7 @@ public class UniqueDTypeDoubleTest {
             values[i] = sample[random.nextInt(sample.length)];
         }
         VarDouble x = VarDouble.copy(values);
-        DoubleArrays.quickSort(values, 0, N, (u, v) -> {
+        Doubles.quickSort(values, 0, N, (u, v) -> {
             int cmp = Double.compare(u, v);
             if (cmp == 0) {
                 return 0;

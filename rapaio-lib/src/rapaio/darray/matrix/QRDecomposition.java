@@ -45,7 +45,7 @@ public class QRDecomposition<N extends Number> implements Serializable {
         // Initialize.
         this.ref = ref;
         this.dt = ref.dt();
-        this.tm = ref.manager();
+        this.tm = ref.dm();
 
         QR = ref.copy();
         diag = tm.zeros(dt, Shape.of(QR.dim(1)));

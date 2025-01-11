@@ -25,7 +25,7 @@ import java.io.Serial;
 
 import rapaio.experiment.math.linear.DMatrix;
 import rapaio.experiment.math.linear.DVector;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/4/15.
@@ -144,21 +144,21 @@ public class DMatrixMap extends AbstractDMatrix {
 
     @Override
     public DMatrix rangeRows(int start, int end) {
-        return mapRows(IntArrays.newSeq(start, end));
+        return mapRows(Ints.seq(start, end));
     }
 
     @Override
     public DMatrix rangeRowsTo(DMatrix to, int start, int end) {
-        return mapRowsTo(to, IntArrays.newSeq(start, end));
+        return mapRowsTo(to, Ints.seq(start, end));
     }
 
     @Override
     public DMatrix rangeCols(int start, int end) {
-        return mapCols(IntArrays.newSeq(start, end));
+        return mapCols(Ints.seq(start, end));
     }
 
     @Override
     public DMatrix rangeColsTo(DMatrix to, int start, int end) {
-        return mapColsTo(to, IntArrays.newSeq(start, end));
+        return mapColsTo(to, Ints.seq(start, end));
     }
 }

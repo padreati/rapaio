@@ -39,7 +39,7 @@ import rapaio.experiment.math.linear.decomposition.DoubleQRDecomposition;
 import rapaio.experiment.math.linear.dense.DMatrixDenseC;
 import rapaio.experiment.math.linear.dense.DVectorDense;
 import rapaio.printer.Printable;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.IntInt2DoubleBiFunction;
 
@@ -535,7 +535,7 @@ public interface DMatrix extends Serializable, Printable {
      * @return new mapped matrix containing all rows not specified by indexes
      */
     default DMatrix removeRows(int... indexes) {
-        int[] rows = IntArrays.removeIndexesFromDenseSequence(0, rows(), indexes);
+        int[] rows = Ints.removeIndexesFromDenseSequence(0, rows(), indexes);
         return mapRows(rows);
     }
 
@@ -547,7 +547,7 @@ public interface DMatrix extends Serializable, Printable {
      * @return new mapped matrix containing all rows not specified by indexes
      */
     default DMatrix removeRowsTo(DMatrix to, int... indexes) {
-        int[] rows = IntArrays.removeIndexesFromDenseSequence(0, rows(), indexes);
+        int[] rows = Ints.removeIndexesFromDenseSequence(0, rows(), indexes);
         return mapRowsTo(to, rows);
     }
 
@@ -558,7 +558,7 @@ public interface DMatrix extends Serializable, Printable {
      * @return new mapped matrix containing all rows not specified by indexes
      */
     default DMatrix removeRowsNew(int... indexes) {
-        int[] rows = IntArrays.removeIndexesFromDenseSequence(0, rows(), indexes);
+        int[] rows = Ints.removeIndexesFromDenseSequence(0, rows(), indexes);
         return mapRowsNew(rows);
     }
 
@@ -569,7 +569,7 @@ public interface DMatrix extends Serializable, Printable {
      * @return new mapped matrix containing all columns not specified by indexes
      */
     default DMatrix removeCols(int... indexes) {
-        int[] cols = IntArrays.removeIndexesFromDenseSequence(0, cols(), indexes);
+        int[] cols = Ints.removeIndexesFromDenseSequence(0, cols(), indexes);
         return mapCols(cols);
     }
 
@@ -581,7 +581,7 @@ public interface DMatrix extends Serializable, Printable {
      * @return new mapped matrix containing all columns not specified by indexes
      */
     default DMatrix removeColsTo(DMatrix to, int... indexes) {
-        int[] cols = IntArrays.removeIndexesFromDenseSequence(0, cols(), indexes);
+        int[] cols = Ints.removeIndexesFromDenseSequence(0, cols(), indexes);
         return mapColsTo(to, cols);
     }
 
@@ -593,7 +593,7 @@ public interface DMatrix extends Serializable, Printable {
      * @return new mapped matrix containing all columns not specified by indexes
      */
     default DMatrix removeColsNew(int... indexes) {
-        int[] cols = IntArrays.removeIndexesFromDenseSequence(0, cols(), indexes);
+        int[] cols = Ints.removeIndexesFromDenseSequence(0, cols(), indexes);
         return mapColsNew(cols);
     }
 

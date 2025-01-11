@@ -102,7 +102,7 @@ public class Cache {
                 old.data = null;
             }
             // allocate new space
-            h.data = (h.data == null) ? DArrays.zeros(Shape.of(len)) : h.data.pad(0, more);
+            h.data = (h.data == null) ? DArrays.zeros(Shape.of(len)) : h.data.pad(0, more, 1);
             size -= more;
         }
 

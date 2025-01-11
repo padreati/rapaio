@@ -64,7 +64,7 @@ public class CholeskyDecomposition<N extends Number> implements Serializable {
             throw new IllegalArgumentException("Cannot compute decomposition for integer types (dtype: "+ref.dt().id()+")");
         }
         this.dt = ref.dt();
-        this.tm = ref.manager();
+        this.tm = ref.dm();
         this.ref = ref;
         this.rightFlag = rightFlag;
 
@@ -102,7 +102,7 @@ public class CholeskyDecomposition<N extends Number> implements Serializable {
      */
     protected void leftCholesky() {
         int n = ref.dim(0);
-        l = ref.manager().zeros(ref.dt(), Shape.of(n, n), Order.C);
+        l = ref.dm().zeros(ref.dt(), Shape.of(n, n), Order.C);
         spd = (ref.dim(1) == n);
         for (int i = 0; i < n; i++) {
             double d = 0.0;

@@ -28,7 +28,7 @@ import java.util.Random;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/3/20.
@@ -55,8 +55,8 @@ public record KFold(int rounds, int folds) implements SplitStrategy {
             }
 
             // distribute rows in folds
-            int[] rows = IntArrays.newSeq(0, df.rowCount());
-            IntArrays.shuffle(rows, random);
+            int[] rows = Ints.seq(0, df.rowCount());
+            Ints.shuffle(rows, random);
             int pos = 0;
             for (int row : rows) {
                 mappings[pos++].add(row);

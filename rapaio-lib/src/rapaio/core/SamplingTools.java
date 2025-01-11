@@ -34,7 +34,7 @@ import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 /**
  * Sampling utilities.
@@ -359,7 +359,7 @@ public final class SamplingTools {
         for (int i = 0; i < rows.length; i++) {
             rows[i] = i;
         }
-        IntArrays.shuffle(rows, random);
+        Ints.shuffle(rows, random);
 
         Frame[] result = new Frame[freq.length];
         int start = 0;
@@ -447,12 +447,12 @@ public final class SamplingTools {
         }
 
         if (strata == null) {
-            int[] rows = IntArrays.newSeq(0, df.rowCount());
+            int[] rows = Ints.seq(0, df.rowCount());
             if (shuffle) {
-                IntArrays.shuffle(rows, random);
+                Ints.shuffle(rows, random);
             }
-            var trainMapping = Mapping.wrap(IntArrays.newCopy(rows, 0, trainSize));
-            var testMapping = Mapping.wrap(IntArrays.newCopy(rows, trainSize, testSize));
+            var trainMapping = Mapping.wrap(Ints.copyOf(rows, 0, trainSize));
+            var testMapping = Mapping.wrap(Ints.copyOf(rows, trainSize, testSize));
             return new TrainTestSplit(df.mapRows(trainMapping), w.mapRows(trainMapping), df.mapRows(testMapping), w.mapRows(testMapping));
         }
 

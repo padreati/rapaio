@@ -26,7 +26,7 @@ import java.util.HashMap;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 import rapaio.util.collection.IntOpenHashSet;
 
 /**
@@ -50,7 +50,7 @@ public class UniqueInt extends AbstractUnique {
         }
         int[] elements = keySet.toArray();
         if (sorted) {
-            IntArrays.quickSort(elements, 0, elements.length, (k1, k2) -> {
+            Ints.quickSort(elements, 0, elements.length, (k1, k2) -> {
                 if (k1 == VarInt.MISSING_VALUE) {
                     return -1;
                 }
@@ -92,7 +92,7 @@ public class UniqueInt extends AbstractUnique {
             if (sorted) {
                 valueSortedIds = VarInt.wrap(ids);
             } else {
-                IntArrays.quickSort(ids, 0, uniqueCount(), (i, j) -> Integer.compare(values.getInt(i), values.getInt(j)));
+                Ints.quickSort(ids, 0, uniqueCount(), (i, j) -> Integer.compare(values.getInt(i), values.getInt(j)));
             }
             valueSortedIds = VarInt.wrap(ids);
         }

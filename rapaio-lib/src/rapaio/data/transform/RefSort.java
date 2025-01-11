@@ -29,7 +29,7 @@ import rapaio.data.Mapping;
 import rapaio.data.RowComparators;
 import rapaio.data.VarRange;
 import rapaio.util.IntComparator;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
@@ -60,8 +60,8 @@ public final class RefSort extends AbstractTransform {
 
     @Override
     public Frame coreApply(Frame df) {
-        int[] rowArray = IntArrays.newSeq(0, df.rowCount());
-        IntArrays.quickSort(rowArray, 0, df.rowCount(), aggregateComparator);
+        int[] rowArray = Ints.seq(0, df.rowCount());
+        Ints.quickSort(rowArray, 0, df.rowCount(), aggregateComparator);
         return MappedFrame.byRow(df, Mapping.wrap(rowArray));
     }
 }

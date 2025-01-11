@@ -42,7 +42,7 @@ import rapaio.ml.model.svm.libsvm.ModelInfo;
 import rapaio.ml.model.svm.libsvm.ProblemInfo;
 import rapaio.ml.model.svm.libsvm.Svm;
 import rapaio.ml.model.svm.libsvm.SvmModel;
-import rapaio.util.collection.DoubleArrays;
+import rapaio.util.collection.Doubles;
 
 public class SvmClassifier extends ClassifierModel<SvmClassifier, ClassifierResult, RunInfo<SvmClassifier>> {
 
@@ -172,7 +172,7 @@ public class SvmClassifier extends ClassifierModel<SvmClassifier, ClassifierResu
                     }
                 }
 
-                double[] dist = DoubleArrays.newFill(k, Double.NEGATIVE_INFINITY);
+                double[] dist = Doubles.newFill(k, Double.NEGATIVE_INFINITY);
                 int pos = 0;
                 for (int j = 0; j < k; j++) {
                     for (int l = j + 1; l < k; l++) {

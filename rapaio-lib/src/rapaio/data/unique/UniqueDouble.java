@@ -29,8 +29,8 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.printer.Format;
-import rapaio.util.collection.DoubleArrays;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Doubles;
+import rapaio.util.collection.Ints;
 
 /**
  * Unique value feature for double values.
@@ -57,7 +57,7 @@ public class UniqueDouble extends AbstractUnique {
             elements[pos++] = value;
         }
         if (sorted) {
-            DoubleArrays.quickSort(elements, 0, elements.length, Double::compare);
+            Doubles.quickSort(elements, 0, elements.length, Double::compare);
         }
         HashMap<Double, Integer> uniqueKeys = new HashMap<>();
         values = VarDouble.wrap(elements);
@@ -92,7 +92,7 @@ public class UniqueDouble extends AbstractUnique {
                 valueSortedIds = VarInt.wrap(ids);
             } else {
 
-                IntArrays.quickSort(ids, 0, uniqueCount(), (i, j) -> Double.compare(values.getDouble(i), values.getDouble(j)));
+                Ints.quickSort(ids, 0, uniqueCount(), (i, j) -> Double.compare(values.getDouble(i), values.getDouble(j)));
             }
             valueSortedIds = VarInt.wrap(ids);
         }

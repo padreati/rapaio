@@ -23,7 +23,7 @@ package rapaio.experiment.math.linear.dense;
 
 import rapaio.experiment.math.linear.DVector;
 import rapaio.experiment.math.linear.StandardDVectorTest;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/28/21.
@@ -33,8 +33,8 @@ public class DVectorMapTest extends StandardDVectorTest {
     @Override
     public DVector generateFill(int size, double fill) {
         DVector source = DVector.fill(size, fill);
-        int[] indexes = IntArrays.newSeq(0, source.size());
-        IntArrays.reverse(indexes);
+        int[] indexes = Ints.seq(0, source.size());
+        Ints.reverse(indexes);
         return source.map(indexes);
     }
 
@@ -52,7 +52,7 @@ public class DVectorMapTest extends StandardDVectorTest {
     @Override
     public DVector generateCopy(double[] values) {
         DVector source = DVector.wrap(values);
-        return source.map(IntArrays.newSeq(0, source.size()));
+        return source.map(Ints.seq(0, source.size()));
     }
 
     @Override

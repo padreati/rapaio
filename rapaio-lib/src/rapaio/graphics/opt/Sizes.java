@@ -21,7 +21,7 @@
 
 package rapaio.graphics.opt;
 
-import rapaio.util.collection.DoubleArrays;
+import rapaio.util.collection.Doubles;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/25/20.
@@ -29,7 +29,7 @@ import rapaio.util.collection.DoubleArrays;
 public record Sizes(boolean absolute, double[] relativeSizes, int[] absoluteSizes) {
 
     public double[] getRelativeSizes(int length, double totalSize) {
-        double[] dimensions = DoubleArrays.newFill(length, -1);
+        double[] dimensions = Doubles.newFill(length, -1);
         System.arraycopy(relativeSizes, 0, dimensions, 0, relativeSizes.length);
         int countExpandable = 0;
         double sum = 0.0;
@@ -41,7 +41,7 @@ public record Sizes(boolean absolute, double[] relativeSizes, int[] absoluteSize
             }
         }
         if (countExpandable > 0 && sum >= 1) {
-            return DoubleArrays.newFill(length, 0);
+            return Doubles.newFill(length, 0);
         }
 
         if (countExpandable > 0) {
@@ -58,12 +58,12 @@ public record Sizes(boolean absolute, double[] relativeSizes, int[] absoluteSize
                 }
             }
         }
-        DoubleArrays.mul(dimensions, 0, totalSize, dimensions.length);
+        Doubles.mul(dimensions, 0, totalSize, dimensions.length);
         return dimensions;
     }
 
     public double[] getAbsoluteSizes(int length, double totalSize) {
-        double[] dimensions = DoubleArrays.newFill(length, -1);
+        double[] dimensions = Doubles.newFill(length, -1);
         for (int i = 0; i < absoluteSizes.length; i++) {
             dimensions[i] = absoluteSizes[i];
         }
@@ -77,7 +77,7 @@ public record Sizes(boolean absolute, double[] relativeSizes, int[] absoluteSize
             }
         }
         if (sum > totalSize) {
-            return DoubleArrays.newFill(length, 0);
+            return Doubles.newFill(length, 0);
         }
         double dimExpandable = (totalSize - sum) / countExpandable;
         for (int i = 0; i < dimensions.length; i++) {

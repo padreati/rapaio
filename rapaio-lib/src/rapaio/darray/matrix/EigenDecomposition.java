@@ -75,7 +75,7 @@ public final class EigenDecomposition<N extends Number> implements Serializable 
             throw new IllegalArgumentException("Only square matrices can have eigen decomposition.");
         }
         dt = a.dt();
-        tm = a.manager();
+        tm = a.dm();
         n = a.dim(1);
         real = new double[n];
         imag = new double[n];

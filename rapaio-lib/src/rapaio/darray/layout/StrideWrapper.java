@@ -28,7 +28,7 @@ import java.util.function.Function;
 
 import rapaio.darray.DArray;
 import rapaio.darray.DType;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 /**
  * Utility class which allows execution of some utility operations over an abstraction of indexed list of values
@@ -127,27 +127,27 @@ public final class StrideWrapper<N extends Number> extends AbstractList<N> {
             int comparison;
             while (b <= c && (comparison = comp.compare(get(perm[b]), (v))) <= 0) {
                 if (comparison == 0) {
-                    IntArrays.swap(perm, a++, b);
+                    Ints.swap(perm, a++, b);
                 }
                 b++;
             }
             while (c >= b && (comparison = comp.compare(get(perm[c]), (v))) >= 0) {
                 if (comparison == 0) {
-                    IntArrays.swap(perm, c, d--);
+                    Ints.swap(perm, c, d--);
                 }
                 c--;
             }
             if (b > c) {
                 break;
             }
-            IntArrays.swap(perm, b++, c--);
+            Ints.swap(perm, b++, c--);
         }
         // Swap partition elements back to middle
         int s;
         s = Math.min(a - from, b - a);
-        IntArrays.swap(perm, from, b - s, s);
+        Ints.swap(perm, from, b - s, s);
         s = Math.min(d - c, to - d - 1);
-        IntArrays.swap(perm, b, to - s, s);
+        Ints.swap(perm, b, to - s, s);
         // Recursively sort non-partition-elements
         if ((s = b - a) > 1) {
             quickSortIndirect(perm, from, from + s, comp);

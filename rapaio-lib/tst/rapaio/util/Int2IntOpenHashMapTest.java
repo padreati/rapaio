@@ -30,7 +30,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import rapaio.util.collection.Int2IntOpenHashMap;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/25/21.
@@ -46,8 +46,8 @@ public class Int2IntOpenHashMapTest {
     @BeforeEach
     void beforeEach() {
         random = new Random(42);
-        x = IntArrays.newFrom(N, row -> random.nextInt(N) - N / 2);
-        y = IntArrays.newFrom(N, row -> random.nextInt(N) - N / 2);
+        x = Ints.from(N, row -> random.nextInt(N) - N / 2);
+        y = Ints.from(N, row -> random.nextInt(N) - N / 2);
     }
 
     @Test

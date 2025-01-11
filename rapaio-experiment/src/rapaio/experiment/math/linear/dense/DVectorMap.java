@@ -28,7 +28,7 @@ import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.VectorMask;
 import rapaio.data.VarDouble;
 import rapaio.experiment.math.linear.DVector;
-import rapaio.util.collection.DoubleArrays;
+import rapaio.util.collection.Doubles;
 
 public class DVectorMap extends AbstractDVectorStore {
 
@@ -118,7 +118,7 @@ public class DVectorMap extends AbstractDVectorStore {
 
     @Override
     public DVector copy() {
-        double[] copy = DoubleArrays.copyByIndex(array, offset, indexes);
+        double[] copy = Doubles.copyByIndex(array, offset, indexes);
         return new DVectorDense(0, copy.length, copy);
     }
 
@@ -129,7 +129,7 @@ public class DVectorMap extends AbstractDVectorStore {
 
     @Override
     public VarDouble dv() {
-        double[] copy = DoubleArrays.copyByIndex(array, offset, indexes);
+        double[] copy = Doubles.copyByIndex(array, offset, indexes);
         return VarDouble.wrap(copy);
     }
 }

@@ -29,7 +29,7 @@ import rapaio.data.Var;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
 import rapaio.util.IntComparator;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/3/14.
@@ -59,8 +59,8 @@ public class VarRefSort extends AbstractVarTransform {
 
     @Override
     public Var coreApply(Var var) {
-        int[] rows = IntArrays.newSeq(0, var.size());
-        IntArrays.quickSort(rows, 0, var.size(), aggregateComparator == null ? var.refComparator() : aggregateComparator);
+        int[] rows = Ints.seq(0, var.size());
+        Ints.quickSort(rows, 0, var.size(), aggregateComparator == null ? var.refComparator() : aggregateComparator);
         return var.mapRows(Mapping.wrap(rows));
     }
 

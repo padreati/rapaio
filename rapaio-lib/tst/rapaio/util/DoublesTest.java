@@ -25,33 +25,33 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static rapaio.util.collection.DoubleArrays.add;
-import static rapaio.util.collection.DoubleArrays.addMul;
-import static rapaio.util.collection.DoubleArrays.addTo;
-import static rapaio.util.collection.DoubleArrays.copy;
-import static rapaio.util.collection.DoubleArrays.div;
-import static rapaio.util.collection.DoubleArrays.divTo;
-import static rapaio.util.collection.DoubleArrays.ensureCapacity;
-import static rapaio.util.collection.DoubleArrays.forceCapacity;
-import static rapaio.util.collection.DoubleArrays.grow;
-import static rapaio.util.collection.DoubleArrays.iterator;
-import static rapaio.util.collection.DoubleArrays.mean;
-import static rapaio.util.collection.DoubleArrays.mul;
-import static rapaio.util.collection.DoubleArrays.multTo;
-import static rapaio.util.collection.DoubleArrays.nanCount;
-import static rapaio.util.collection.DoubleArrays.nanMean;
-import static rapaio.util.collection.DoubleArrays.nanSum;
-import static rapaio.util.collection.DoubleArrays.nanVariance;
-import static rapaio.util.collection.DoubleArrays.newFill;
-import static rapaio.util.collection.DoubleArrays.newFrom;
-import static rapaio.util.collection.DoubleArrays.newSeq;
-import static rapaio.util.collection.DoubleArrays.reverse;
-import static rapaio.util.collection.DoubleArrays.shuffle;
-import static rapaio.util.collection.DoubleArrays.sub;
-import static rapaio.util.collection.DoubleArrays.subTo;
-import static rapaio.util.collection.DoubleArrays.sum;
-import static rapaio.util.collection.DoubleArrays.trim;
-import static rapaio.util.collection.DoubleArrays.variance;
+import static rapaio.util.collection.Doubles.add;
+import static rapaio.util.collection.Doubles.addMul;
+import static rapaio.util.collection.Doubles.addTo;
+import static rapaio.util.collection.Doubles.copy;
+import static rapaio.util.collection.Doubles.div;
+import static rapaio.util.collection.Doubles.divTo;
+import static rapaio.util.collection.Doubles.ensureCapacity;
+import static rapaio.util.collection.Doubles.forceCapacity;
+import static rapaio.util.collection.Doubles.grow;
+import static rapaio.util.collection.Doubles.iterator;
+import static rapaio.util.collection.Doubles.mean;
+import static rapaio.util.collection.Doubles.mul;
+import static rapaio.util.collection.Doubles.multTo;
+import static rapaio.util.collection.Doubles.nanCount;
+import static rapaio.util.collection.Doubles.nanMean;
+import static rapaio.util.collection.Doubles.nanSum;
+import static rapaio.util.collection.Doubles.nanVariance;
+import static rapaio.util.collection.Doubles.newFill;
+import static rapaio.util.collection.Doubles.newFrom;
+import static rapaio.util.collection.Doubles.newSeq;
+import static rapaio.util.collection.Doubles.reverse;
+import static rapaio.util.collection.Doubles.shuffle;
+import static rapaio.util.collection.Doubles.sub;
+import static rapaio.util.collection.Doubles.subTo;
+import static rapaio.util.collection.Doubles.sum;
+import static rapaio.util.collection.Doubles.trim;
+import static rapaio.util.collection.Doubles.variance;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
@@ -63,13 +63,13 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.util.collection.DoubleArrays;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Doubles;
+import rapaio.util.collection.Ints;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/18/19.
  */
-public class DoubleArraysTest {
+public class DoublesTest {
 
     private static final double TOL = 1e-12;
     private Random random;
@@ -326,49 +326,49 @@ public class DoubleArraysTest {
 
         // new copy preserving 10
         double[] array2 = forceCapacity(array1, 10, 10);
-        assertTrue(DoubleArrays.equals(array1, 0, array2, 0, 10));
+        assertTrue(Doubles.equals(array1, 0, array2, 0, 10));
         assertEquals(10, array2.length);
 
         // new copy preserving 80
         double[] array3 = forceCapacity(array1, 120, 80);
-        assertTrue(DoubleArrays.equals(array1, 0, array3, 0, 80));
+        assertTrue(Doubles.equals(array1, 0, array3, 0, 80));
         assertEquals(120, array3.length);
 
         // leave array untouched
         double[] array4 = ensureCapacity(array1, 10);
-        assertTrue(DoubleArrays.equals(array1, 0, array4, 0, 100));
+        assertTrue(Doubles.equals(array1, 0, array4, 0, 100));
         assertEquals(100, array4.length);
 
         // new copy preserving all available
         double[] array5 = ensureCapacity(array1, 120);
-        assertTrue(DoubleArrays.equals(array1, 0, array5, 0, 100));
+        assertTrue(Doubles.equals(array1, 0, array5, 0, 100));
         assertEquals(120, array5.length);
 
         // new copy preserving 10
         double[] array6 = ensureCapacity(array1, 120, 10);
-        assertTrue(DoubleArrays.equals(array1, 0, array6, 0, 10));
-        assertTrue(DoubleArrays.equals(newFill(90, 0), 0, array6, 10, 90));
+        assertTrue(Doubles.equals(array1, 0, array6, 0, 10));
+        assertTrue(Doubles.equals(newFill(90, 0), 0, array6, 10, 90));
 
         // leave untouched
         double[] array7 = grow(array1, 10);
-        assertTrue(DoubleArrays.equals(array1, 0, array7, 0, 100));
+        assertTrue(Doubles.equals(array1, 0, array7, 0, 100));
         assertEquals(100, array7.length);
 
         // new copy preserving all
         double[] array8 = grow(array1, 120);
-        assertTrue(DoubleArrays.equals(array1, 0, array8, 0, 100));
+        assertTrue(Doubles.equals(array1, 0, array8, 0, 100));
         assertEquals(150, array8.length);
 
         // new copy preserving 10
         double[] array9 = grow(array1, 200, 10);
-        assertTrue(DoubleArrays.equals(array1, 0, array9, 0, 10));
-        assertTrue(DoubleArrays.equals(newFill(190, 0), 0, array9, 10, 190));
+        assertTrue(Doubles.equals(array1, 0, array9, 0, 10));
+        assertTrue(Doubles.equals(newFill(190, 0), 0, array9, 10, 190));
         assertEquals(200, array9.length);
 
         // trim array to 10
         double[] array10 = trim(array1, 10);
         assertEquals(10, array10.length);
-        assertTrue(DoubleArrays.equals(array1, 0, array10, 0, 10));
+        assertTrue(Doubles.equals(array1, 0, array10, 0, 10));
     }
 
     @Test
@@ -378,25 +378,25 @@ public class DoubleArraysTest {
         double[] a = random.doubles(len).toArray();
         double[] b = random.doubles(len).toArray();
 
-        assertAsc(a, DoubleArrays::quickSort);
-        assertAsc(a, DoubleArrays::parallelQuickSort);
+        assertAsc(a, Doubles::quickSort);
+        assertAsc(a, Doubles::parallelQuickSort);
 
-        assertDesc(a, DoubleArrays::quickSort);
-        assertDesc(a, DoubleArrays::parallelQuickSort);
+        assertDesc(a, Doubles::quickSort);
+        assertDesc(a, Doubles::parallelQuickSort);
 
-        assertAscIndirect(a, DoubleArrays::quickSortIndirect);
-        assertAscIndirect(a, DoubleArrays::parallelQuickSortIndirect);
+        assertAscIndirect(a, Doubles::quickSortIndirect);
+        assertAscIndirect(a, Doubles::parallelQuickSortIndirect);
 
-        assertAsc(a, DoubleArrays::mergeSort);
-        assertDesc(a, DoubleArrays::mergeSort);
+        assertAsc(a, Doubles::mergeSort);
+        assertDesc(a, Doubles::mergeSort);
 
-        assertAsc(a, DoubleArrays::stableSort);
-        assertDesc(a, DoubleArrays::stableSort);
+        assertAsc(a, Doubles::stableSort);
+        assertDesc(a, Doubles::stableSort);
 
-        assertAsc(a, DoubleArrays::parallelQuickSort);
+        assertAsc(a, Doubles::parallelQuickSort);
 
-        assertAsc2(a, b, DoubleArrays::quickSort);
-        assertAsc2(a, b, DoubleArrays::parallelQuickSort);
+        assertAsc2(a, b, Doubles::quickSort);
+        assertAsc2(a, b, Doubles::parallelQuickSort);
 
         double[] a1 = Arrays.copyOf(a, a.length);
         shuffle(a1, new Random(42));
@@ -461,7 +461,7 @@ public class DoubleArraysTest {
     }
 
     private void assertAscIndirect(double[] array, BiConsumer<int[], double[]> alg) {
-        int[] perm = IntArrays.newSeq(0, array.length);
+        int[] perm = Ints.seq(0, array.length);
         alg.accept(perm, array);
         for (int i = 1; i < array.length; i++) {
             assertTrue(array[perm[i - 1]] <= array[perm[i]]);
@@ -474,7 +474,7 @@ public class DoubleArraysTest {
     }
 
     private void assertAscIndirect2(double[] a, double[] b, TriConsumer alg) {
-        int[] perm = IntArrays.newSeq(0, a.length);
+        int[] perm = Ints.seq(0, a.length);
         alg.accept(perm, a, b);
         for (int i = 1; i < a.length; i++) {
             assertTrue(a[perm[i - 1]] <= a[perm[i]]);

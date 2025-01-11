@@ -25,7 +25,7 @@ import java.util.Objects;
 
 import rapaio.darray.Order;
 import rapaio.darray.Shape;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 public record ScalarStrideLayout(int offset) implements StrideLayout {
 
@@ -107,11 +107,11 @@ public record ScalarStrideLayout(int offset) implements StrideLayout {
                 throw new IndexOutOfBoundsException();
             }
         }
-        if (IntArrays.containsDuplicates(axes)) {
+        if (Ints.containsDuplicates(axes)) {
             throw new IllegalArgumentException("Axes contains duplicates.");
         }
-        int[] dims = IntArrays.newFill(axes.length, 1);
-        int[] strides = IntArrays.newFill(axes.length, 0);
+        int[] dims = Ints.fill(axes.length, 1);
+        int[] strides = Ints.fill(axes.length, 0);
         return StrideLayout.of(Shape.of(dims), offset, strides);
     }
 

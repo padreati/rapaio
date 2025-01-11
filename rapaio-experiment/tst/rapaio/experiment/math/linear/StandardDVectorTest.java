@@ -35,8 +35,8 @@ import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.experiment.math.linear.dense.DMatrixDenseR;
-import rapaio.util.collection.DoubleArrays;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Doubles;
+import rapaio.util.collection.Ints;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/9/20.
@@ -58,7 +58,7 @@ public abstract class StandardDVectorTest {
     void beforeEach() {
         random = new Random(123);
         normal = Normal.std();
-        values = DoubleArrays.newFrom(0, 100, row -> normal.sampleNext());
+        values = Doubles.newFrom(0, 100, row -> normal.sampleNext());
         x = generateCopy(values);
         y = generateSeq(100);
         z = generateFill(100, 10);
@@ -172,7 +172,7 @@ public abstract class StandardDVectorTest {
 
     @Test
     void vectorDotTestMap() {
-        double result = x.dot(z.map(IntArrays.newSeq(0, z.size())));
+        double result = x.dot(z.map(Ints.seq(0, z.size())));
         assertEquals(x.sum() * 10, result, TOL);
     }
 
@@ -250,7 +250,7 @@ public abstract class StandardDVectorTest {
     @Test
     void testCumSum() {
         z.cumsum();
-        var expected = DVector.wrap(DoubleArrays.newSeq(1, z.size() + 1)).mul(10);
+        var expected = DVector.wrap(Doubles.newSeq(1, z.size() + 1)).mul(10);
         assertTrue(z.deepEquals(expected));
     }
 

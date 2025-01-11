@@ -80,7 +80,7 @@ public class Int2IntOpenHashMap implements Serializable {
         this.loadFactor = loadFactor;
         this.probing = probing;
 
-        this.array = IntArrays.newFill(2 * allocation, MISSING);
+        this.array = Ints.fill(2 * allocation, MISSING);
         this.size = 0;
     }
 
@@ -176,7 +176,7 @@ public class Int2IntOpenHashMap implements Serializable {
         if (size + increment < (int) (1.0 + loadFactor * array.length / 2)) {
             return;
         }
-        int[] copy = IntArrays.newFill(array.length * 2, MISSING);
+        int[] copy = Ints.fill(array.length * 2, MISSING);
         for (int i = 0; i < array.length; i += 2) {
             if (array[i] != MISSING) {
                 putInArray(copy, array[i], array[i + 1]);

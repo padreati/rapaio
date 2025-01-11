@@ -21,30 +21,27 @@
 
 package rapaio.experiment.darray;
 
-import java.util.List;
 import java.util.Random;
 
 import rapaio.darray.DArray;
 import rapaio.darray.DArrayManager;
 import rapaio.darray.DType;
 import rapaio.darray.Shape;
+import rapaio.util.collection.Ints;
 
 public class Sandbox {
 
     public static void main(String[] args) {
         DArrayManager am = DArrayManager.base();
-        DType<?> dt = DType.FLOAT;
+        DType<?> dt = DType.DOUBLE;
         Random random = new Random(42);
-        DArray<?> x = am.random(dt, Shape.of(5, 5), random);
+        DArray<?> x = am.seq(dt, Shape.of(6, 6));
         x.printString();
 
-        int axis = 1;
+        int[] pad = Ints.of(1,1);
+        int[] dilation = Ints.of(1,1);
 
-        List<? extends DArray<?>> splits = x.split(axis, true, 0, 1, 2);
-        for(var split : splits) {
-            split.printString();
-        }
-
-        am.cat(dt, axis, splits).printString();
+        x.pad(pad, dilation).unfold(0, 3, 1).unfold(1, 3, 1).printString();
     }
+
 }

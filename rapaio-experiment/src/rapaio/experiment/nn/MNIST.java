@@ -24,8 +24,10 @@ package rapaio.experiment.nn;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 import rapaio.darray.Shape;
 import rapaio.data.VarDouble;
@@ -39,15 +41,125 @@ import rapaio.nn.Loss;
 import rapaio.nn.Optimizer;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
+import rapaio.nn.layer.AbstractNetwork;
 import rapaio.nn.layer.LayerNorm;
 import rapaio.nn.layer.Linear;
 import rapaio.nn.layer.LogSoftmax;
-import rapaio.nn.layer.Sequential;
 import rapaio.nn.layer.Tanh;
 import rapaio.nn.loss.NegativeLikelihoodLoss;
 import rapaio.printer.Format;
 
 public class MNIST {
+
+    static class DenseNetwork extends AbstractNetwork {
+
+        private LayerNorm norm1;
+        private Linear linear1;
+        private Tanh tanh;
+        private LayerNorm norm2;
+        private Linear linear2;
+        private LogSoftmax softmax;
+
+        private final int h;
+
+        public DenseNetwork(TensorManager tm, int h) {
+            super(tm);
+            this.h = h;
+            this.norm1 = new LayerNorm(tm, Shape.of(784));
+            this.linear1 = new Linear(tm, 784, h, true);
+            this.tanh = new Tanh(tm);
+            this.norm2 = new LayerNorm(tm, Shape.of(h));
+            this.linear2 = new Linear(tm, h, 10, true);
+            this.softmax = new LogSoftmax(tm, 0);
+        }
+
+        @Override
+        public Tensor forward11(Tensor x) {
+            x = norm1.forward11(x);
+            x = linear1.forward11(x);
+            x = tanh.forward11(x);
+            x = norm2.forward11(x);
+            x = linear2.forward11(x);
+            x = softmax.forward11(x);
+            return x;
+        }
+    }
+
+    static class SplitNetwork extends AbstractNetwork {
+
+        private LayerNorm norm1;
+        private Linear[] linears1;
+        private Tanh tanh;
+        private LayerNorm norm2;
+        private Linear linear2;
+        private LogSoftmax softmax;
+
+        private final int h;
+        private final int split;
+
+        int[] indices;
+
+        public SplitNetwork(TensorManager tm, int split, int h) {
+            super(tm);
+            this.h = h;
+            this.split = split;
+
+            if (784 % split != 0) {
+                throw new IllegalArgumentException("Number of hidden units must be divisible by split");
+            }
+            this.indices = new int[784 / split];
+            for (int i = 1; i < indices.length; i++) {
+                indices[i] = indices[i - 1] + split;
+            }
+
+            this.norm1 = new LayerNorm(tm, Shape.of(784));
+
+            this.linears1 = new Linear[indices.length];
+            for (int i = 0; i < indices.length; i++) {
+                linears1[i] = new Linear(tm, split, h, true);
+            }
+            this.tanh = new Tanh(tm);
+            this.norm2 = new LayerNorm(tm, Shape.of(h * indices.length));
+            this.linear2 = new Linear(tm, h * indices.length, 10, true);
+            this.softmax = new LogSoftmax(tm, 0);
+        }
+
+        @Override
+        public List<Tensor> parameters() {
+            ArrayList<Tensor> params = new ArrayList<>();
+            params.addAll(norm1.parameters());
+            for (var lin : linears1) {
+                params.addAll(lin.parameters());
+            }
+            params.addAll(tanh.parameters());
+            params.addAll(norm2.parameters());
+            params.addAll(linear2.parameters());
+            params.addAll(softmax.parameters());
+            return params;
+        }
+
+
+        @Override
+        public Tensor forward11(Tensor x) {
+            x = norm1.forward11(x);
+
+            List<Tensor> splits = x.split(1, indices);
+            List<Tensor> after = new ArrayList<>();
+            for (int i = 0; i < splits.size(); i++) {
+                var a = linears1[i].forward11(splits.get(i));
+                a = tanh.forward11(a);
+                after.add(a);
+            }
+
+            x = tm.cat(1, after.toArray(Tensor[]::new));
+
+            x = norm2.forward11(x);
+            x = linear2.forward11(x);
+            x = softmax.forward11(x);
+            return x;
+        }
+    }
+
 
     public static void main(String[] args) throws IOException {
         TensorManager tm = TensorManager.ofFloat();
@@ -61,19 +173,11 @@ public class MNIST {
         TabularDataset test = new TabularDataset(tm,
                 test1.darray(0).reshape(Shape.of(test1.darray(0).dim(0), 28 * 28)), test1.darray(1));
 
-        int epochs = 10 ;
+        int epochs = 10;
         double lr = 1e-3;
         int batchSize = 100;
-        int h = 512;
 
-        var nn = new Sequential(tm,
-                new LayerNorm(tm, Shape.of(784)),
-                new Linear(tm, 784, h, true),
-                new Tanh(tm),
-                new LayerNorm(tm, Shape.of(h)),
-                new Linear(tm, h, 10, true),
-                new LogSoftmax(tm, 0)
-        );
+        var nn = new SplitNetwork(tm, 7, 2);
 
         var optimizer = Optimizer.Adam(tm, nn.parameters())
                 .lr.set(lr);

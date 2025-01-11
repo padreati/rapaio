@@ -31,7 +31,7 @@ import java.util.HashSet;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 /**
  * Unique value feature for label values.
@@ -87,7 +87,7 @@ public class UniqueLabel extends AbstractUnique {
                 valueSortedIds = VarInt.wrap(ids);
             } else {
                 UniqueLabelComparator cmp = new UniqueLabelComparator();
-                IntArrays.quickSort(ids, 0, ids.length, (i, j) -> cmp.compare(values.get(i), values.get(j)));
+                Ints.quickSort(ids, 0, ids.length, (i, j) -> cmp.compare(values.get(i), values.get(j)));
             }
             valueSortedIds = VarInt.wrap(ids);
         }

@@ -21,56 +21,43 @@
 
 package rapaio.util.collection;
 
+
 import java.io.Serial;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.PrimitiveIterator;
 import java.util.Random;
-import java.util.Set;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-import rapaio.util.IntComparator;
-import rapaio.util.function.Int2IntFunction;
+import rapaio.printer.Printer;
+import rapaio.printer.TextTable;
+import rapaio.printer.opt.POpt;
+import rapaio.util.DoubleComparator;
+import rapaio.util.function.Double2DoubleFunction;
+import rapaio.util.function.Int2DoubleFunction;
 
 /**
- * A class providing static methods and objects that do useful things with
- * type-specific arrays of ints.
+ * Utility class to handle the manipulation of arrays of double 64 floating point values.
  * <p>
  *
- * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/8/19.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/11/19.
  */
-public final class IntArrays {
+public final class Doubles {
 
     /**
-     * Creates a new array filled with given value. If the filled value is 0,
-     * the fill is avoided since the initialization is done with 0.
+     * Creates a double array filled with a given value.
      *
-     * @param size  size of the array
-     * @param value value to fill the array with
-     * @return filled array
+     * @param size size of the array
+     * @param fill value to fill the array
+     * @return new array instance
      */
-    public static int[] newFill(int size, int value) {
-        int[] data = new int[size];
-        if (value != 0) {
-            Arrays.fill(data, value);
+    public static double[] newFill(int size, double fill) {
+        double[] array = new double[size];
+        if (fill != 0) {
+            Arrays.fill(array, fill);
         }
-        return data;
-    }
-
-
-    /**
-     * Creates a new array filled with a sequence of values starting from
-     * 0 (inclusive) and ending with {@param end} (exclusive).
-     *
-     * @param end sequence ending value (exclusive)
-     * @return array with sequence values
-     */
-    public static int[] newSeq(int end) {
-        return newSeq(0, end);
+        return array;
     }
 
     /**
@@ -81,32 +68,16 @@ public final class IntArrays {
      * @param end   sequence ending value (exclusive)
      * @return array with sequence values
      */
-    public static int[] newSeq(final int start, final int end) {
-        int[] data = new int[end - start];
+    public static double[] newSeq(int start, int end) {
+        double[] data = new double[end - start];
         for (int i = 0; i < end - start; i++) {
-            data[i] = i + start;
+            data[i] = start + i;
         }
         return data;
     }
 
     /**
-     * Builds a new int array with values from the given chunk transformed
-     * with a function.
-     *
-     * @param len length of the array
-     * @param fun transforming function
-     * @return transformed values array
-     */
-    public static int[] newFrom(int len, Int2IntFunction fun) {
-        int[] data = new int[len];
-        for (int i = 0; i < len; i++) {
-            data[i] = fun.applyAsInt(i);
-        }
-        return data;
-    }
-
-    /**
-     * Builds a new int array with values from the given chunk transformed
+     * Builds a new double array with values from the given chunk transformed
      * with a function.
      *
      * @param source source array
@@ -115,17 +86,28 @@ public final class IntArrays {
      * @param fun    transforming function
      * @return transformed values array
      */
-    public static int[] newFrom(int[] source, int start, int end, Int2IntFunction fun) {
-        int[] data = new int[end - start];
+    public static double[] newFrom(double[] source, int start, int end, Double2DoubleFunction fun) {
+        double[] data = new double[end - start];
         for (int i = start; i < end; i++) {
-            data[i - start] = fun.applyAsInt(source[i]);
+            data[i - start] = fun.applyAsDouble(source[i]);
         }
         return data;
     }
 
-    public static int[] newCopy(int[] array, int start, int len) {
-        int[] data = new int[len];
-        System.arraycopy(array, start, data, 0, len);
+    /**
+     * Builds a new double array with values from the given chunk transformed
+     * with a function.
+     *
+     * @param start starting position from source array (inclusive)
+     * @param end   ending position from source array (exclusive)
+     * @param fun   transforming function
+     * @return transformed values array
+     */
+    public static double[] newFrom(int start, int end, Int2DoubleFunction fun) {
+        double[] data = new double[end - start];
+        for (int i = start; i < end; i++) {
+            data[i - start] = fun.applyAsDouble(i);
+        }
         return data;
     }
 
@@ -142,30 +124,35 @@ public final class IntArrays {
      * @param permutation permutation index array
      * @return new permuted values
      */
-    public static int[] newPermutation(int[] array, int[] permutation) {
-        int[] copy = new int[permutation.length];
+    public static double[] newPermutation(double[] array, int[] permutation) {
+        double[] copy = new double[permutation.length];
         for (int i = 0; i < copy.length; i++) {
             copy[i] = array[permutation[i]];
         }
         return copy;
     }
 
-    public static IntStream stream(int[] array, int start, int end) {
-        return Arrays.stream(array, start, end);
-    }
-
-    public static PrimitiveIterator.OfInt iterator(int[] array, int start, int end) {
-        return new PrimitiveIterator.OfInt() {
+    /**
+     * Creates a {@link PrimitiveIterator.OfDouble} over the array with a given {@code start}
+     * and {@code length}.
+     *
+     * @param array array of values
+     * @param start position of the first value from iterator
+     * @param len   number of elements in the iterator
+     * @return double value iterator
+     */
+    public static PrimitiveIterator.OfDouble iterator(double[] array, int start, int len) {
+        return new PrimitiveIterator.OfDouble() {
             private int pos = start;
 
             @Override
             public boolean hasNext() {
-                return pos < end;
+                return pos < start + len;
             }
 
             @Override
-            public int nextInt() {
-                if (pos >= end) {
+            public double nextDouble() {
+                if (pos >= start + len) {
                     throw new NoSuchElementException();
                 }
                 return array[pos++];
@@ -173,166 +160,335 @@ public final class IntArrays {
         };
     }
 
+    public static double[] copyByIndex(double[] src, int offset, int[] indexes) {
+        double[] copy = new double[indexes.length];
+        for (int i = 0; i < indexes.length; i++) {
+            copy[i] = src[offset + indexes[i]];
+        }
+        return copy;
+    }
+
     /**
-     * Adds scalar value to vector a from start (inclusive)
-     * to end (exclusive).
+     * Adds a scalar value to elements of an array.
+     *
+     * @param t    destination where the scalar will be added
+     * @param tOff destination offset
+     * @param s    scalar value to be added
+     * @param len  length
      */
-    public static void add(int[] a, int aStart, int x, int len) {
-        for (int i = 0; i < len; i++) {
-            a[aStart++] += x;
+    public static void add(double[] t, int tOff, double s, int len) {
+        for (int i = tOff; i < len + tOff; i++) {
+            t[i] += s;
         }
     }
 
     /**
-     * Multiply a scalar value to vector a from start (inclusive)
-     * to end (exclusive).
+     * Adds a scalar value to elements of an array and store the result into another array.
+     *
+     * @param x     first operand which is a vector
+     * @param xOff  offset of the first operand
+     * @param s     second operand which is a scalar value
+     * @param to    array where to store the results
+     * @param toOff offset of the array where to store results
+     * @param len   number of elements to be processed
      */
-    public static void mul(int[] a, int aStart, int x, int len) {
+    public static void addTo(double[] x, int xOff, double s, double[] to, int toOff, int len) {
         for (int i = 0; i < len; i++) {
-            a[aStart++] *= x;
+            to[toOff + i] = x[xOff + i] + s;
         }
     }
 
-    /**
-     * Adds values of vector b to vector a from start (inclusive)
-     * to end (exclusive).
-     */
-    public static void add(int[] a, int aStart, int[] b, int bStart, int len) {
+    public static void add(double[] x, int xOff, double[] y, int yOff, int len) {
         for (int i = 0; i < len; i++) {
-            a[aStart++] += b[bStart++];
+            x[xOff++] += y[yOff++];
         }
     }
 
-    /**
-     * Subtracts from values of vector a the values of vector b from start (inclusive)
-     * to end (exclusive). It returns the subtracted vector.
-     */
-    public static void sub(int[] a, int aStart, int[] b, int bStart, int len) {
+    public static void addTo(double[] x, int xOff, double[] y, int yOff, double[] t, int tOff, int len) {
+        for (int i = 0; i < len; i++) {
+            t[tOff++] = x[xOff++] + y[yOff++];
+        }
+    }
+
+    public static void sub(double[] a, int aStart, double s, int len) {
+        for (int i = 0; i < len; i++) {
+            a[aStart++] -= s;
+        }
+    }
+
+    public static void subTo(double[] a, int aStart, double s, double[] to, int toStart, int len) {
+        for (int i = 0; i < len; i++) {
+            to[toStart++] = a[aStart++] - s;
+        }
+    }
+
+    public static void sub(double[] a, int aStart, double[] b, int bStart, int len) {
         for (int i = 0; i < len; i++) {
             a[aStart++] -= b[bStart++];
         }
     }
 
+    public static void subTo(double[] a, int aStart, double[] b, int bStart, double[] to, int toStart, int len) {
+        for (int i = 0; i < len; i++) {
+            to[toStart++] = a[aStart++] - b[bStart++];
+        }
+    }
+
+    public static void mul(double[] a, int aStart, double s, int len) {
+        for (int i = aStart; i < len + aStart; i++) {
+            a[i] *= s;
+        }
+    }
+
+    public static void multTo(double[] a, int aStart, double s, double[] to, int toStart, int len) {
+        for (int i = 0; i < len; i++) {
+            to[toStart++] = a[aStart++] * s;
+        }
+    }
+
+    public static void mul(double[] a, int aStart, double[] b, int bStart, int len) {
+        for (int i = 0; i < len; i++) {
+            a[aStart++] *= b[bStart++];
+        }
+    }
+
+    public static void multTo(double[] a, int aStart, double[] b, int bStart, double[] to, int toStart, int len) {
+        for (int i = 0; i < len; i++) {
+            to[toStart++] = a[aStart++] * b[bStart++];
+        }
+    }
+
+    public static void div(double[] a, int aStart, double s, int len) {
+        for (int i = aStart; i < len + aStart; i++) {
+            a[i] /= s;
+        }
+    }
+
+    public static void divTo(double[] a, int aStart, double s, double[] to, int toStart, int len) {
+        for (int i = 0; i < len; i++) {
+            to[toStart++] = a[aStart++] / s;
+        }
+    }
+
+    public static void div(double[] a, int aStart, double[] b, int bStart, int len) {
+        for (int i = 0; i < len; i++) {
+            a[aStart++] /= b[bStart++];
+        }
+    }
+
+    public static void divTo(double[] a, int aStart, double[] b, int bStart, double[] to, int toStart, int len) {
+        for (int i = 0; i < len; i++) {
+            to[toStart++] = a[aStart++] / b[bStart++];
+        }
+    }
+
     /**
-     * Returns the multiplication of all elements starting with start (inclusive) till end (exclusive)
+     * Add multiple of a vector. The equation of the operation is x <- x + a * y
      */
-    public static int prod(int[] a, int start, int len) {
-        int prod = 1;
-        for (int i = start; i < start + len; i++) {
+    public static void addMul(double[] x, int xOff, double a, double[] y, int yOff, int len) {
+        for (int i = 0; i < len; i++) {
+            x[xOff + i] += a * y[yOff + i];
+        }
+    }
+
+    public static void addMulTo(double[] x, int xOff, double a, double[] y, int yOff, double[] to, int toOff, int len) {
+        for (int i = 0; i < len; i++) {
+            to[toOff + i] = x[xOff + i] + a * y[yOff + i];
+        }
+    }
+
+    public static double dotSum(double[] x, int xOff, double[] y, int yOff, int len) {
+        int delta = yOff - xOff;
+        double sum = 0.0;
+        int xLen = len + xOff;
+        for (int i = xOff; i < xLen; i++) {
+            sum += x[i] * y[i + delta];
+        }
+        return sum;
+    }
+
+    public static double sum(double[] a) {
+        return sum(a, 0, a.length);
+    }
+
+    public static double sum(double[] a, int start, int len) {
+        double sum = 0;
+        for (int i = start; i < len + start; i++) {
+            sum += a[i];
+        }
+        return sum;
+    }
+
+    /**
+     * Computes sum of all elements from array starting at position {@code start}
+     * with given {@code length).
+     *
+     * @param a     vector of values
+     * @param start first element
+     * @param len   number of elements to be summed
+     * @return sum of elements from specified range
+     */
+    public static double nanSum(double[] a, int start, int len) {
+        double sum = 0;
+        int xLen = start + len;
+        for (int i = start; i < xLen; i++) {
+            if (Double.isNaN(a[i])) {
+                continue;
+            }
+            sum += a[i];
+        }
+        return sum;
+    }
+
+    public static double prod(double[] a, int start, int len) {
+        double prod = 1;
+        for (int i = start; i < len + start; i++) {
             prod *= a[i];
         }
         return prod;
     }
 
-    /**
-     * Computes sum_{i=start}^{end} a[i]*b[i].
-     *
-     * @param a      first array
-     * @param aStart start for the first array
-     * @param b      second array
-     * @param bStart start position
-     * @param len    size of the operation
-     * @return computed value
-     */
-    public static int prodsum(int[] a, int aStart, int[] b, int bStart, int len) {
-        int sum = 0;
-        for (int i = 0; i < len; i++) {
-            sum += a[aStart++] * b[bStart++];
+    public static double nanProd(double[] a, int start, int len) {
+        double prod = 1;
+        for (int i = start; i < len + start; i++) {
+            if (Double.isNaN(a[i])) {
+                continue;
+            }
+            prod *= a[i];
         }
-        return sum;
+        return prod;
     }
 
-    public static boolean equals(int[] a, int aStart, int[] b, int bStart, int len) {
-        for (int i = 0; i < len - aStart; i++) {
+    public static int nanCount(double[] a, int start, int len) {
+        int count = 0;
+        for (int i = start; i < start + len; i++) {
+            if (Double.isNaN(a[i])) {
+                continue;
+            }
+            count++;
+        }
+        return count;
+    }
+
+    public static double mean(double[] a, int start, int len) {
+        return sum(a, start, len) / len;
+    }
+
+    public static double nanMean(double[] a, int start, int len) {
+        double sum = 0;
+        int count = 0;
+        for (int i = start; i < len + start; i++) {
+            if (Double.isNaN(a[i])) {
+                continue;
+            }
+            sum += a[i];
+            count++;
+        }
+        return sum / count;
+    }
+
+    public static double variance(double[] a, int start, int len) {
+        if (len == 0) {
+            return Double.NaN;
+        }
+        double mean = mean(a, start, len);
+        double sum2 = 0;
+        double sum3 = 0;
+        for (int i = start; i < start + len; i++) {
+            sum2 += Math.pow(a[i] - mean, 2);
+            sum3 += a[i] - mean;
+        }
+        return (sum2 - Math.pow(sum3, 2) / len) / (len - 1.0);
+    }
+
+    public static double nanVariance(double[] a, int start, int len) {
+        double mean = nanMean(a, start, len);
+        int completeCount = nanCount(a, start, len);
+        if (completeCount == 0) {
+            return Double.NaN;
+        }
+        double sum2 = 0;
+        double sum3 = 0;
+        for (int i = start; i < len + start; i++) {
+            if (Double.isNaN(a[i])) {
+                continue;
+            }
+            sum2 += Math.pow(a[i] - mean, 2);
+            sum3 += a[i] - mean;
+        }
+        return (sum2 - Math.pow(sum3, 2) / completeCount) / (completeCount - 1.0);
+    }
+
+    public static int argmin(double[] values, int offset, int size) {
+        int amin = offset;
+        for (int i = offset + 1; i < offset + size; i++) {
+            if (values[amin] > values[i]) {
+                amin = i;
+            }
+        }
+        return amin;
+    }
+
+    public static double min(double[] values, int offset, int size) {
+        double min = values[offset];
+        for (int i = offset + 1; i < offset + size; i++) {
+            if (min > values[i]) {
+                min = values[i];
+            }
+        }
+        return min;
+    }
+
+    public static int argmax(double[] values, int offset, int size) {
+        int amax = offset;
+        for (int i = offset + 1; i < offset + size; i++) {
+            if (values[amax] < values[i]) {
+                amax = i;
+            }
+        }
+        return amax;
+    }
+
+    public static double max(double[] values, int offset, int size) {
+        double max = values[offset];
+        for (int i = offset + 1; i < offset + size; i++) {
+            if (max < values[i]) {
+                max = values[i];
+            }
+        }
+        return max;
+    }
+
+    /**
+     * Those functions were copied from fastutil but adapted for our use case.
+     * The reason is to avoid importing the huge library of fastutil and
+     * to have a baseline for our implementations
+     */
+    public static final double[] EMPTY_ARRAY = {};
+
+    /**
+     * Returns true if two array intervals have equal elements.
+     * First interval is contained in vector {@param a} starting from {@param aStart}
+     * of length {@param length}. Second interval is contained in array {@param b}
+     * and starts at {@param bStart} with length {@param length}.
+     * <p>
+     * For comparisons of full arrays use {@link Arrays#equals(double[], double[])}
+     *
+     * @param a      array containing the first interval
+     * @param aStart index of the first element from the first interval
+     * @param b      array containing the second interval
+     * @param bStart index of the first element from the second interval
+     * @param length length of both intervals
+     * @return true if values from both intervals are the same, falso otherwise
+     */
+    public static boolean equals(final double[] a, final int aStart, final double[] b, final int bStart, final int length) {
+        for (int i = 0; i < length; i++) {
             if (a[aStart + i] != b[bStart + i]) {
                 return false;
             }
         }
         return true;
     }
-
-    public static int[] removeIndexesFromDenseSequence(int start, int end, int[] removeIndexes) {
-        Set<Integer> rem = Arrays.stream(removeIndexes)
-                .boxed()
-                .filter(x -> x >= start)
-                .filter(x -> x < end)
-                .collect(Collectors.toSet());
-        int[] cols = new int[end - start - rem.size()];
-        int pos = 0;
-        for (int i = start; i < end; i++) {
-            if (rem.contains(i)) {
-                continue;
-            }
-            cols[pos++] = i;
-        }
-        return cols;
-    }
-
-    /**
-     * Returns true if the values from indexes are semi positive and values
-     * covers a contiguous range of integer numbers, contains no duplicates and values are
-     * in increasing order.
-     * <p>
-     * Returns the start element value
-     *
-     * @param indexes index array to be checked
-     * @return value of the start element, if we have a contiguous interval, {@code -1} otherwise
-     */
-    public static boolean isDenseArray(int[] indexes) {
-        int start = indexes[0];
-        for (int index : indexes) {
-            start = Math.min(start, index);
-        }
-        if (indexes[0] != start || indexes[0] < 0) {
-            return false;
-        }
-        for (int i = 1; i < indexes.length; i++) {
-            if (indexes[i] != indexes[i - 1] + 1) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static boolean containsDuplicates(int[] indexes) {
-        HashSet<Integer> set = new HashSet<>();
-        for (int index : indexes) {
-            if (set.contains(index)) {
-                return true;
-            }
-            set.add(index);
-        }
-        return false;
-    }
-
-    public static int argmax(int[] array, int start, int end) {
-        if (array.length == 0) {
-            return -1;
-        }
-        int max = array[start];
-        int argmax = start;
-        for (int i = start + 1; i < end; i++) {
-            if (max < array[i]) {
-                argmax = i;
-                max = array[i];
-            }
-        }
-        return argmax;
-    }
-
-    /**
-     * A static, final, empty array.
-     */
-    public static final int[] EMPTY_ARRAY = {};
-    /**
-     * A static, final, empty array to be used as default array in allocations. An
-     * object distinct from {@link #EMPTY_ARRAY} makes it possible to have different
-     * behaviors depending on whether the user required an empty allocation, or we are
-     * just lazily delaying allocation.
-     *
-     * @see java.util.ArrayList
-     */
-    public static final int[] DEFAULT_EMPTY_ARRAY = {};
 
     /**
      * Forces an array to contain the given number of entries, preserving just a part of the array.
@@ -343,8 +499,8 @@ public final class IntArrays {
      * @return an array with {@code length} entries whose first {@code preserve}
      * entries are the same as those of {@code array}.
      */
-    public static int[] forceCapacity(final int[] array, final int length, final int preserve) {
-        final int[] t = new int[length];
+    public static double[] forceCapacity(final double[] array, final int length, final int preserve) {
+        final double[] t = new double[length];
         System.arraycopy(array, 0, t, 0, preserve);
         return t;
     }
@@ -361,7 +517,7 @@ public final class IntArrays {
      * an array with {@code length} entries whose first {@code array.length}
      * entries are the same as those of {@code array}.
      */
-    public static int[] ensureCapacity(final int[] array, final int length) {
+    public static double[] ensureCapacity(final double[] array, final int length) {
         return ensureCapacity(array, length, array.length);
     }
 
@@ -375,7 +531,7 @@ public final class IntArrays {
      * an array with {@code length} entries whose first {@code preserve}
      * entries are the same as those of {@code array}.
      */
-    public static int[] ensureCapacity(final int[] array, final int length, final int preserve) {
+    public static double[] ensureCapacity(final double[] array, final int length, final int preserve) {
         return length > array.length ? forceCapacity(array, length, preserve) : array;
     }
 
@@ -394,7 +550,7 @@ public final class IntArrays {
      * max({@code length},{@code array.length}/&phi;) entries whose first
      * {@code array.length} entries are the same as those of {@code array}.
      */
-    public static int[] grow(final int[] array, final int length) {
+    public static double[] grow(final double[] array, final int length) {
         return grow(array, length, array.length);
     }
 
@@ -414,10 +570,10 @@ public final class IntArrays {
      * max({@code length},{@code array.length}/&phi;) entries whose first
      * {@code preserve} entries are the same as those of {@code array}.
      */
-    public static int[] grow(final int[] array, final int length, final int preserve) {
+    public static double[] grow(final double[] array, final int length, final int preserve) {
         if (length > array.length) {
             final int newLength = (int) Math.max(Math.min((long) array.length + (array.length >> 1), TArrays.MAX_ARRAY_SIZE), length);
-            final int[] t = new int[newLength];
+            final double[] t = new double[newLength];
             System.arraycopy(array, 0, t, 0, preserve);
             return t;
         }
@@ -434,11 +590,12 @@ public final class IntArrays {
      * {@code length} entries whose entries are the same as
      * the first {@code length} entries of {@code array}.
      */
-    public static int[] trim(final int[] array, final int length) {
+    public static double[] trim(final double[] array, final int length) {
         if (length >= array.length) {
             return array;
         }
-        final int[] t = length == 0 ? EMPTY_ARRAY : new int[length];
+        final double[] t =
+                length == 0 ? EMPTY_ARRAY : new double[length];
         System.arraycopy(array, 0, t, 0, length);
         return t;
     }
@@ -451,52 +608,12 @@ public final class IntArrays {
      * @param length the number of elements to copy.
      * @return a new array containing {@code length} elements of {@code array} starting at {@code offset}.
      */
-    public static int[] copy(final int[] array, final int offset, final int length) {
-        ensureOffsetLength(array, offset, length);
-        final int[] a =
-                length == 0 ? EMPTY_ARRAY : new int[length];
+    public static double[] copy(final double[] array, final int offset, final int length) {
+        TArrays.ensureOffsetLength(array.length, offset, length);
+        final double[] a =
+                length == 0 ? EMPTY_ARRAY : new double[length];
         System.arraycopy(array, offset, a, 0, length);
         return a;
-    }
-
-    /**
-     * Returns a copy of an array.
-     *
-     * @param array an array.
-     * @return a copy of {@code array}.
-     */
-    public static int[] copy(final int[] array) {
-        return array.clone();
-    }
-
-    /**
-     * Ensures that a range given by its first (inclusive) and last (exclusive) elements fits an array.
-     *
-     * <p>This method may be used whenever an array range check is needed.
-     *
-     * @param a    an array.
-     * @param from a start index (inclusive).
-     * @param to   an end index (exclusive).
-     * @throws IllegalArgumentException       if {@code from} is greater than {@code to}.
-     * @throws ArrayIndexOutOfBoundsException if {@code from} or {@code to} are greater than the array length or negative.
-     */
-    public static void ensureFromTo(final int[] a, final int from, final int to) {
-        TArrays.ensureFromTo(a.length, from, to);
-    }
-
-    /**
-     * Ensures that a range given by an offset and a length fits an array.
-     *
-     * <p>This method may be used whenever an array range check is needed.
-     *
-     * @param a      an array.
-     * @param offset a start index.
-     * @param length a length (the number of elements in the range).
-     * @throws IllegalArgumentException       if {@code length} is negative.
-     * @throws ArrayIndexOutOfBoundsException if {@code offset} is negative or {@code offset}+{@code length} is greater than the array length.
-     */
-    public static void ensureOffsetLength(final int[] a, final int offset, final int length) {
-        TArrays.ensureOffsetLength(a.length, offset, length);
     }
 
     /**
@@ -506,7 +623,7 @@ public final class IntArrays {
      * @param b another array.
      * @throws IllegalArgumentException if the two argument arrays are not of the same length.
      */
-    public static void ensureSameLength(final int[] a, final int[] b) {
+    public static void ensureSameLength(final double[] a, final double[] b) {
         if (a.length != b.length) {
             throw new IllegalArgumentException("Array size mismatch: " + a.length + " != " + b.length);
         }
@@ -515,17 +632,18 @@ public final class IntArrays {
     private static final int QUICKSORT_NO_REC = 16;
     private static final int PARALLEL_QUICKSORT_NO_FORK = 8192;
     private static final int QUICKSORT_MEDIAN_OF_9 = 128;
+
     private static final int MERGESORT_NO_REC = 16;
 
     /**
-     * Swaps two elements of an anrray.
+     * Swaps two elements of an array.
      *
      * @param x an array.
      * @param a a position in {@code x}.
      * @param b another position in {@code x}.
      */
-    public static void swap(final int[] x, final int a, final int b) {
-        final int t = x[a];
+    public static void swap(final double[] x, final int a, final int b) {
+        final double t = x[a];
         x[a] = x[b];
         x[b] = t;
     }
@@ -538,22 +656,20 @@ public final class IntArrays {
      * @param b another position in {@code x}.
      * @param n the number of elements to exchange starting at {@code a} and {@code b}.
      */
-    public static void swap(final int[] x, int a, int b, final int n) {
+    public static void swap(final double[] x, int a, int b, final int n) {
         for (int i = 0; i < n; i++, a++, b++) {
             swap(x, a, b);
         }
     }
 
-    private static int med3(final int[] x, final int a, final int b, final int c, IntComparator comp) {
+    private static int med3(final double[] x, final int a, final int b, final int c, DoubleComparator comp) {
         final int ab = comp.compare(x[a], x[b]);
         final int ac = comp.compare(x[a], x[c]);
         final int bc = comp.compare(x[b], x[c]);
-        return (ab < 0 ?
-                (bc < 0 ? b : ac < 0 ? c : a) :
-                (bc > 0 ? b : ac > 0 ? c : a));
+        return (ab < 0 ? (bc < 0 ? b : ac < 0 ? c : a) : (bc > 0 ? b : ac > 0 ? c : a));
     }
 
-    private static void selectionSort(final int[] a, final int from, final int to, final IntComparator comp) {
+    private static void selectionSort(final double[] a, final int from, final int to, final DoubleComparator comp) {
         for (int i = from; i < to - 1; i++) {
             int m = i;
             for (int j = i + 1; j < to; j++) {
@@ -562,18 +678,18 @@ public final class IntArrays {
                 }
             }
             if (m != i) {
-                final int u = a[i];
+                final double u = a[i];
                 a[i] = a[m];
                 a[m] = u;
             }
         }
     }
 
-    private static void insertionSort(final int[] a, final int from, final int to, final IntComparator comp) {
+    private static void insertionSort(final double[] a, final int from, final int to, final DoubleComparator comp) {
         for (int i = from; ++i < to; ) {
-            int t = a[i];
+            double t = a[i];
             int j = i;
-            for (int u = a[j - 1]; comp.compare(t, u) < 0; u = a[--j - 1]) {
+            for (double u = a[j - 1]; comp.compare(t, u) < 0; u = a[--j - 1]) {
                 a[j] = u;
                 if (from == j - 1) {
                     --j;
@@ -600,7 +716,7 @@ public final class IntArrays {
      * @param to   the index of the last element (exclusive) to be sorted.
      * @param comp the comparator to determine the sorting order.
      */
-    public static void quickSort(final int[] x, final int from, final int to, final IntComparator comp) {
+    public static void quickSort(final double[] x, final int from, final int to, final DoubleComparator comp) {
         final int len = to - from;
         // Selection sort on smallest arrays
         if (len < QUICKSORT_NO_REC) {
@@ -611,14 +727,14 @@ public final class IntArrays {
         int m = from + len / 2;
         int l = from;
         int n = to - 1;
-        if (len > QUICKSORT_MEDIAN_OF_9) { // Big arrays, pseudo-median of 9
+        if (len > QUICKSORT_MEDIAN_OF_9) { // Big arrays, pseudomedian of 9
             int s = len / 8;
             l = med3(x, l, l + s, l + 2 * s, comp);
             m = med3(x, m - s, m, m + s, comp);
             n = med3(x, n - 2 * s, n - s, n, comp);
         }
         m = med3(x, l, m, n, comp); // Mid-size, med of 3
-        final int v = x[m];
+        final double v = x[m];
         // Establish Invariant: v* (<v)* (>v)* v*
         int a = from, b = a, c = to - 1, d = c;
         while (true) {
@@ -669,19 +785,19 @@ public final class IntArrays {
      * @param x    the array to be sorted.
      * @param comp the comparator to determine the sorting order.
      */
-    public static void quickSort(final int[] x, final IntComparator comp) {
+    public static void quickSort(final double[] x, final DoubleComparator comp) {
         quickSort(x, 0, x.length, comp);
     }
 
-    protected static class ForkJoinQuickSortComp extends RecursiveAction {
+    private static class ForkJoinQuickSortComp extends RecursiveAction {
         @Serial
-        private static final long serialVersionUID = -8205272777060082445L;
+        private static final long serialVersionUID = 148666739567982885L;
         private final int from;
         private final int to;
-        private final int[] x;
-        private final IntComparator comp;
+        private final double[] x;
+        private final DoubleComparator comp;
 
-        public ForkJoinQuickSortComp(final int[] x, final int from, final int to, final IntComparator comp) {
+        public ForkJoinQuickSortComp(final double[] x, final int from, final int to, final DoubleComparator comp) {
             this.from = from;
             this.to = to;
             this.x = x;
@@ -690,7 +806,7 @@ public final class IntArrays {
 
         @Override
         protected void compute() {
-            final int[] x = this.x;
+            final double[] x = this.x;
             final int len = to - from;
             if (len < PARALLEL_QUICKSORT_NO_FORK) {
                 quickSort(x, from, to, comp);
@@ -705,7 +821,7 @@ public final class IntArrays {
             m = med3(x, m - s, m, m + s, comp);
             n = med3(x, n - 2 * s, n - s, n, comp);
             m = med3(x, l, m, n, comp);
-            final int v = x[m];
+            final double v = x[m];
             // Establish Invariant: v* (<v)* (>v)* v*
             int a = from, b = a, c = to - 1, d = c;
             while (true) {
@@ -762,14 +878,13 @@ public final class IntArrays {
      * @param to   the index of the last element (exclusive) to be sorted.
      * @param comp the comparator to determine the sorting order.
      */
-    public static void parallelQuickSort(final int[] x, final int from, final int to, final IntComparator comp) {
+    public static void parallelQuickSort(final double[] x, final int from, final int to, final DoubleComparator comp) {
         if (to - from < PARALLEL_QUICKSORT_NO_FORK) {
             quickSort(x, from, to, comp);
         } else {
-            try (ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors())) {
-                pool.invoke(new ForkJoinQuickSortComp(x, from, to, comp));
-                pool.shutdown();
-            }
+            final ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
+            pool.invoke(new ForkJoinQuickSortComp(x, from, to, comp));
+            pool.shutdown();
         }
     }
 
@@ -787,40 +902,38 @@ public final class IntArrays {
      * @param x    the array to be sorted.
      * @param comp the comparator to determine the sorting order.
      */
-    public static void parallelQuickSort(final int[] x, final IntComparator comp) {
+    public static void parallelQuickSort(final double[] x, final DoubleComparator comp) {
         parallelQuickSort(x, 0, x.length, comp);
     }
 
-    private static int med3(final int[] x, final int a, final int b, final int c) {
-        final int ab = (Integer.compare((x[a]), (x[b])));
-        final int ac = (Integer.compare((x[a]), (x[c])));
-        final int bc = (Integer.compare((x[b]), (x[c])));
-        return (ab < 0 ?
-                (bc < 0 ? b : ac < 0 ? c : a) :
-                (bc > 0 ? b : ac > 0 ? c : a));
+    private static int med3(final double[] x, final int a, final int b, final int c) {
+        final int ab = Double.compare(x[a], x[b]);
+        final int ac = Double.compare(x[a], x[c]);
+        final int bc = Double.compare(x[b], x[c]);
+        return (ab < 0 ? (bc < 0 ? b : ac < 0 ? c : a) : (bc > 0 ? b : ac > 0 ? c : a));
     }
 
-    private static void selectionSort(final int[] a, final int from, final int to) {
+    private static void selectionSort(final double[] a, final int from, final int to) {
         for (int i = from; i < to - 1; i++) {
             int m = i;
             for (int j = i + 1; j < to; j++) {
-                if (((a[j]) < (a[m]))) {
+                if ((Double.compare((a[j]), (a[m])) < 0)) {
                     m = j;
                 }
             }
             if (m != i) {
-                final int u = a[i];
+                final double u = a[i];
                 a[i] = a[m];
                 a[m] = u;
             }
         }
     }
 
-    private static void insertionSort(final int[] a, final int from, final int to) {
+    private static void insertionSort(final double[] a, final int from, final int to) {
         for (int i = from; ++i < to; ) {
-            int t = a[i];
+            double t = a[i];
             int j = i;
-            for (int u = a[j - 1]; ((t) < (u)); u = a[--j - 1]) {
+            for (double u = a[j - 1]; (Double.compare((t), (u)) < 0); u = a[--j - 1]) {
                 a[j] = u;
                 if (from == j - 1) {
                     --j;
@@ -846,7 +959,7 @@ public final class IntArrays {
      * @param to   the index of the last element (exclusive) to be sorted.
      */
 
-    public static void quickSort(final int[] x, final int from, final int to) {
+    public static void quickSort(final double[] x, final int from, final int to) {
         final int len = to - from;
         // Selection sort on smallest arrays
         if (len < QUICKSORT_NO_REC) {
@@ -857,25 +970,25 @@ public final class IntArrays {
         int m = from + len / 2;
         int l = from;
         int n = to - 1;
-        if (len > QUICKSORT_MEDIAN_OF_9) { // Big arrays, pseud-omedian of 9
+        if (len > QUICKSORT_MEDIAN_OF_9) { // Big arrays, pseudomedian of 9
             int s = len / 8;
             l = med3(x, l, l + s, l + 2 * s);
             m = med3(x, m - s, m, m + s);
             n = med3(x, n - 2 * s, n - s, n);
         }
         m = med3(x, l, m, n); // Mid-size, med of 3
-        final int v = x[m];
+        final double v = x[m];
         // Establish Invariant: v* (<v)* (>v)* v*
         int a = from, b = a, c = to - 1, d = c;
         while (true) {
             int comparison;
-            while (b <= c && (comparison = (Integer.compare((x[b]), (v)))) <= 0) {
+            while (b <= c && (comparison = (Double.compare((x[b]), (v)))) <= 0) {
                 if (comparison == 0) {
                     swap(x, a++, b);
                 }
                 b++;
             }
-            while (c >= b && (comparison = (Integer.compare((x[c]), (v)))) >= 0) {
+            while (c >= b && (comparison = (Double.compare((x[c]), (v)))) >= 0) {
                 if (comparison == 0) {
                     swap(x, c, d--);
                 }
@@ -913,18 +1026,18 @@ public final class IntArrays {
      *
      * @param x the array to be sorted.
      */
-    public static void quickSort(final int[] x) {
+    public static void quickSort(final double[] x) {
         quickSort(x, 0, x.length);
     }
 
     protected static class ForkJoinQuickSort extends RecursiveAction {
         @Serial
-        private static final long serialVersionUID = -5796422686450520496L;
+        private static final long serialVersionUID = 5946421837363465218L;
         private final int from;
         private final int to;
-        private final int[] x;
+        private final double[] x;
 
-        public ForkJoinQuickSort(final int[] x, final int from, final int to) {
+        public ForkJoinQuickSort(final double[] x, final int from, final int to) {
             this.from = from;
             this.to = to;
             this.x = x;
@@ -933,7 +1046,7 @@ public final class IntArrays {
         @Override
 
         protected void compute() {
-            final int[] x = this.x;
+            final double[] x = this.x;
             final int len = to - from;
             if (len < PARALLEL_QUICKSORT_NO_FORK) {
                 quickSort(x, from, to);
@@ -948,18 +1061,18 @@ public final class IntArrays {
             m = med3(x, m - s, m, m + s);
             n = med3(x, n - 2 * s, n - s, n);
             m = med3(x, l, m, n);
-            final int v = x[m];
+            final double v = x[m];
             // Establish Invariant: v* (<v)* (>v)* v*
             int a = from, b = a, c = to - 1, d = c;
             while (true) {
                 int comparison;
-                while (b <= c && (comparison = (Integer.compare((x[b]), (v)))) <= 0) {
+                while (b <= c && (comparison = (Double.compare((x[b]), (v)))) <= 0) {
                     if (comparison == 0) {
                         swap(x, a++, b);
                     }
                     b++;
                 }
-                while (c >= b && (comparison = (Integer.compare((x[c]), (v)))) >= 0) {
+                while (c >= b && (comparison = (Double.compare((x[c]), (v)))) >= 0) {
                     if (comparison == 0) {
                         swap(x, c, d--);
                     }
@@ -1003,14 +1116,13 @@ public final class IntArrays {
      * @param from the index of the first element (inclusive) to be sorted.
      * @param to   the index of the last element (exclusive) to be sorted.
      */
-    public static void parallelQuickSort(final int[] x, final int from, final int to) {
+    public static void parallelQuickSort(final double[] x, final int from, final int to) {
         if (to - from < PARALLEL_QUICKSORT_NO_FORK) {
             quickSort(x, from, to);
         } else {
-            try (ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors())) {
-                pool.invoke(new ForkJoinQuickSort(x, from, to));
-                pool.shutdown();
-            }
+            final ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
+            pool.invoke(new ForkJoinQuickSort(x, from, to));
+            pool.shutdown();
         }
     }
 
@@ -1026,27 +1138,25 @@ public final class IntArrays {
      *
      * @param x the array to be sorted.
      */
-    public static void parallelQuickSort(final int[] x) {
+    public static void parallelQuickSort(final double[] x) {
         parallelQuickSort(x, 0, x.length);
     }
 
-    private static int med3Indirect(final int[] perm, final int[] x, final int a, final int b, final int c) {
-        final int aa = x[perm[a]];
-        final int bb = x[perm[b]];
-        final int cc = x[perm[c]];
-        final int ab = (Integer.compare((aa), (bb)));
-        final int ac = (Integer.compare((aa), (cc)));
-        final int bc = (Integer.compare((bb), (cc)));
-        return (ab < 0 ?
-                (bc < 0 ? b : ac < 0 ? c : a) :
-                (bc > 0 ? b : ac > 0 ? c : a));
+    private static int med3Indirect(final int[] perm, final double[] x, final int a, final int b, final int c) {
+        final double aa = x[perm[a]];
+        final double bb = x[perm[b]];
+        final double cc = x[perm[c]];
+        final int ab = (Double.compare((aa), (bb)));
+        final int ac = (Double.compare((aa), (cc)));
+        final int bc = (Double.compare((bb), (cc)));
+        return (ab < 0 ? (bc < 0 ? b : ac < 0 ? c : a) : (bc > 0 ? b : ac > 0 ? c : a));
     }
 
-    private static void insertionSortIndirect(final int[] perm, final int[] a, final int from, final int to) {
+    private static void insertionSortIndirect(final int[] perm, final double[] a, final int from, final int to) {
         for (int i = from; ++i < to; ) {
             int t = perm[i];
             int j = i;
-            for (int u = perm[j - 1]; ((a[t]) < (a[u])); u = perm[--j - 1]) {
+            for (int u = perm[j - 1]; (Double.compare((a[t]), (a[u])) < 0); u = perm[--j - 1]) {
                 perm[j] = u;
                 if (from == j - 1) {
                     --j;
@@ -1077,7 +1187,7 @@ public final class IntArrays {
      * @param to   the index of the last element (exclusive) to be sorted.
      */
 
-    public static void quickSortIndirect(final int[] perm, final int[] x, final int from, final int to) {
+    public static void quickSortIndirect(final int[] perm, final double[] x, final int from, final int to) {
         final int len = to - from;
         // Selection sort on smallest arrays
         if (len < QUICKSORT_NO_REC) {
@@ -1088,41 +1198,41 @@ public final class IntArrays {
         int m = from + len / 2;
         int l = from;
         int n = to - 1;
-        if (len > QUICKSORT_MEDIAN_OF_9) { // Big arrays, pseudo-median of 9
+        if (len > QUICKSORT_MEDIAN_OF_9) { // Big arrays, pseudomedian of 9
             int s = len / 8;
             l = med3Indirect(perm, x, l, l + s, l + 2 * s);
             m = med3Indirect(perm, x, m - s, m, m + s);
             n = med3Indirect(perm, x, n - 2 * s, n - s, n);
         }
         m = med3Indirect(perm, x, l, m, n); // Mid-size, med of 3
-        final int v = x[perm[m]];
+        final double v = x[perm[m]];
         // Establish Invariant: v* (<v)* (>v)* v*
         int a = from, b = a, c = to - 1, d = c;
         while (true) {
             int comparison;
-            while (b <= c && (comparison = (Integer.compare((x[perm[b]]), (v)))) <= 0) {
+            while (b <= c && (comparison = (Double.compare((x[perm[b]]), (v)))) <= 0) {
                 if (comparison == 0) {
-                    IntArrays.swap(perm, a++, b);
+                    Ints.swap(perm, a++, b);
                 }
                 b++;
             }
-            while (c >= b && (comparison = (Integer.compare((x[perm[c]]), (v)))) >= 0) {
+            while (c >= b && (comparison = (Double.compare((x[perm[c]]), (v)))) >= 0) {
                 if (comparison == 0) {
-                    IntArrays.swap(perm, c, d--);
+                    Ints.swap(perm, c, d--);
                 }
                 c--;
             }
             if (b > c) {
                 break;
             }
-            IntArrays.swap(perm, b++, c--);
+            Ints.swap(perm, b++, c--);
         }
         // Swap partition elements back to middle
         int s;
         s = Math.min(a - from, b - a);
-        IntArrays.swap(perm, from, b - s, s);
+        Ints.swap(perm, from, b - s, s);
         s = Math.min(d - c, to - d - 1);
-        IntArrays.swap(perm, b, to - s, s);
+        Ints.swap(perm, b, to - s, s);
         // Recursively sort non-partition-elements
         if ((s = b - a) > 1) {
             quickSortIndirect(perm, x, from, from + s);
@@ -1149,19 +1259,19 @@ public final class IntArrays {
      * @param perm a permutation array indexing {@code x}.
      * @param x    the array to be sorted.
      */
-    public static void quickSortIndirect(final int[] perm, final int[] x) {
+    public static void quickSortIndirect(final int[] perm, final double[] x) {
         quickSortIndirect(perm, x, 0, x.length);
     }
 
     protected static class ForkJoinQuickSortIndirect extends RecursiveAction {
         @Serial
-        private static final long serialVersionUID = -1214362895430371120L;
+        private static final long serialVersionUID = 1491029076069500451L;
         private final int from;
         private final int to;
         private final int[] perm;
-        private final int[] x;
+        private final double[] x;
 
-        public ForkJoinQuickSortIndirect(final int[] perm, final int[] x, final int from, final int to) {
+        public ForkJoinQuickSortIndirect(final int[] perm, final double[] x, final int from, final int to) {
             this.from = from;
             this.to = to;
             this.x = x;
@@ -1169,9 +1279,8 @@ public final class IntArrays {
         }
 
         @Override
-
         protected void compute() {
-            final int[] x = this.x;
+            final double[] x = this.x;
             final int len = to - from;
             if (len < PARALLEL_QUICKSORT_NO_FORK) {
                 quickSortIndirect(perm, x, from, to);
@@ -1186,34 +1295,34 @@ public final class IntArrays {
             m = med3Indirect(perm, x, m - s, m, m + s);
             n = med3Indirect(perm, x, n - 2 * s, n - s, n);
             m = med3Indirect(perm, x, l, m, n);
-            final int v = x[perm[m]];
+            final double v = x[perm[m]];
             // Establish Invariant: v* (<v)* (>v)* v*
             int a = from, b = a, c = to - 1, d = c;
             while (true) {
                 int comparison;
-                while (b <= c && (comparison = (Integer.compare((x[perm[b]]), (v)))) <= 0) {
+                while (b <= c && (comparison = (Double.compare((x[perm[b]]), (v)))) <= 0) {
                     if (comparison == 0) {
-                        IntArrays.swap(perm, a++, b);
+                        Ints.swap(perm, a++, b);
                     }
                     b++;
                 }
-                while (c >= b && (comparison = (Integer.compare((x[perm[c]]), (v)))) >= 0) {
+                while (c >= b && (comparison = (Double.compare((x[perm[c]]), (v)))) >= 0) {
                     if (comparison == 0) {
-                        IntArrays.swap(perm, c, d--);
+                        Ints.swap(perm, c, d--);
                     }
                     c--;
                 }
                 if (b > c) {
                     break;
                 }
-                IntArrays.swap(perm, b++, c--);
+                Ints.swap(perm, b++, c--);
             }
             // Swap partition elements back to middle
             int t;
             s = Math.min(a - from, b - a);
-            IntArrays.swap(perm, from, b - s, s);
+            Ints.swap(perm, from, b - s, s);
             s = Math.min(d - c, to - d - 1);
-            IntArrays.swap(perm, b, to - s, s);
+            Ints.swap(perm, b, to - s, s);
             // Recursively sort non-partition-elements
             s = b - a;
             t = d - c;
@@ -1246,14 +1355,13 @@ public final class IntArrays {
      * @param from the index of the first element (inclusive) to be sorted.
      * @param to   the index of the last element (exclusive) to be sorted.
      */
-    public static void parallelQuickSortIndirect(final int[] perm, final int[] x, final int from, final int to) {
+    public static void parallelQuickSortIndirect(final int[] perm, final double[] x, final int from, final int to) {
         if (to - from < PARALLEL_QUICKSORT_NO_FORK) {
             quickSortIndirect(perm, x, from, to);
         } else {
-            try (ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors())) {
-                pool.invoke(new ForkJoinQuickSortIndirect(perm, x, from, to));
-                pool.shutdown();
-            }
+            final ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
+            pool.invoke(new ForkJoinQuickSortIndirect(perm, x, from, to));
+            pool.shutdown();
         }
     }
 
@@ -1274,7 +1382,7 @@ public final class IntArrays {
      * @param perm a permutation array indexing {@code x}.
      * @param x    the array to be sorted.
      */
-    public static void parallelQuickSortIndirect(final int[] perm, final int[] x) {
+    public static void parallelQuickSortIndirect(final int[] perm, final double[] x) {
         parallelQuickSortIndirect(perm, x, 0, x.length);
     }
 
@@ -1298,18 +1406,18 @@ public final class IntArrays {
      * @param from the index of the first element (inclusive) to be stabilized.
      * @param to   the index of the last element (exclusive) to be stabilized.
      */
-    public static void stabilize(final int[] perm, final int[] x, final int from, final int to) {
+    public static void stabilize(final int[] perm, final double[] x, final int from, final int to) {
         int curr = from;
         for (int i = from + 1; i < to; i++) {
             if (x[perm[i]] != x[perm[curr]]) {
                 if (i - curr > 1) {
-                    IntArrays.parallelQuickSort(perm, curr, i);
+                    Ints.parallelQuickSort(perm, curr, i);
                 }
                 curr = i;
             }
         }
         if (to - curr > 1) {
-            IntArrays.parallelQuickSort(perm, curr, to);
+            Ints.parallelQuickSort(perm, curr, to);
         }
     }
 
@@ -1331,40 +1439,40 @@ public final class IntArrays {
      * @param perm a permutation array indexing {@code x} so that it is sorted.
      * @param x    the sorted array to be stabilized.
      */
-    public static void stabilize(final int[] perm, final int[] x) {
+    public static void stabilize(final int[] perm, final double[] x) {
         stabilize(perm, x, 0, perm.length);
     }
 
-    private static int med3(final int[] x, final int[] y, final int a, final int b, final int c) {
+    private static int med3(final double[] x, final double[] y, final int a, final int b, final int c) {
         int t;
-        final int ab = (t = (Integer.compare((x[a]), (x[b])))) == 0 ? (Integer.compare((y[a]), (y[b]))) : t;
-        final int ac = (t = (Integer.compare((x[a]), (x[c])))) == 0 ? (Integer.compare((y[a]), (y[c]))) : t;
-        final int bc = (t = (Integer.compare((x[b]), (x[c])))) == 0 ? (Integer.compare((y[b]), (y[c]))) : t;
+        final int ab = (t = (Double.compare((x[a]), (x[b])))) == 0 ? (Double.compare((y[a]), (y[b]))) : t;
+        final int ac = (t = (Double.compare((x[a]), (x[c])))) == 0 ? (Double.compare((y[a]), (y[c]))) : t;
+        final int bc = (t = (Double.compare((x[b]), (x[c])))) == 0 ? (Double.compare((y[b]), (y[c]))) : t;
         return (ab < 0 ?
                 (bc < 0 ? b : ac < 0 ? c : a) :
                 (bc > 0 ? b : ac > 0 ? c : a));
     }
 
-    private static void swap(final int[] x, final int[] y, final int a, final int b) {
-        final int t = x[a];
-        final int u = y[a];
+    private static void swap(final double[] x, final double[] y, final int a, final int b) {
+        final double t = x[a];
+        final double u = y[a];
         x[a] = x[b];
         y[a] = y[b];
         x[b] = t;
         y[b] = u;
     }
 
-    private static void swap(final int[] x, final int[] y, int a, int b, final int n) {
+    private static void swap(final double[] x, final double[] y, int a, int b, final int n) {
         for (int i = 0; i < n; i++, a++, b++) {
             swap(x, y, a, b);
         }
     }
 
-    private static void selectionSort(final int[] a, final int[] b, final int from, final int to) {
+    private static void selectionSort(final double[] a, final double[] b, final int from, final int to) {
         for (int i = from; i < to - 1; i++) {
             int m = i, u;
             for (int j = i + 1; j < to; j++) {
-                if ((u = (Integer.compare((a[j]), (a[m])))) < 0 || u == 0 && ((b[j]) < (b[m]))) {
+                if ((u = (Double.compare((a[j]), (a[m])))) < 0 || u == 0 && (Double.compare((b[j]), (b[m])) < 0)) {
                     m = j;
                 }
             }
@@ -1394,7 +1502,7 @@ public final class IntArrays {
      * @param to   the index of the last element (exclusive) to be sorted.
      */
 
-    public static void quickSort(final int[] x, final int[] y, final int from, final int to) {
+    public static void quickSort(final double[] x, final double[] y, final int from, final int to) {
         final int len = to - from;
         if (len < QUICKSORT_NO_REC) {
             selectionSort(x, y, from, to);
@@ -1404,25 +1512,25 @@ public final class IntArrays {
         int m = from + len / 2;
         int l = from;
         int n = to - 1;
-        if (len > QUICKSORT_MEDIAN_OF_9) { // Big arrays, pseudo-median of 9
+        if (len > QUICKSORT_MEDIAN_OF_9) { // Big arrays, pseudomedian of 9
             int s = len / 8;
             l = med3(x, y, l, l + s, l + 2 * s);
             m = med3(x, y, m - s, m, m + s);
             n = med3(x, y, n - 2 * s, n - s, n);
         }
         m = med3(x, y, l, m, n); // Mid-size, med of 3
-        final int v = x[m], w = y[m];
+        final double v = x[m], w = y[m];
         // Establish Invariant: v* (<v)* (>v)* v*
         int a = from, b = a, c = to - 1, d = c;
         while (true) {
             int comparison, t;
-            while (b <= c && (comparison = (t = (Integer.compare((x[b]), (v)))) == 0 ? (Integer.compare((y[b]), (w))) : t) <= 0) {
+            while (b <= c && (comparison = (t = (Double.compare((x[b]), (v)))) == 0 ? (Double.compare((y[b]), (w))) : t) <= 0) {
                 if (comparison == 0) {
                     swap(x, y, a++, b);
                 }
                 b++;
             }
-            while (c >= b && (comparison = (t = (Integer.compare((x[c]), (v)))) == 0 ? (Integer.compare((y[c]), (w))) : t) >= 0) {
+            while (c >= b && (comparison = (t = (Double.compare((x[c]), (v)))) == 0 ? (Double.compare((y[c]), (w))) : t) >= 0) {
                 if (comparison == 0) {
                     swap(x, y, c, d--);
                 }
@@ -1463,19 +1571,19 @@ public final class IntArrays {
      * @param x the first array to be sorted.
      * @param y the second array to be sorted.
      */
-    public static void quickSort(final int[] x, final int[] y) {
+    public static void quickSort(final double[] x, final double[] y) {
         ensureSameLength(x, y);
         quickSort(x, y, 0, x.length);
     }
 
     protected static class ForkJoinQuickSort2 extends RecursiveAction {
         @Serial
-        private static final long serialVersionUID = -8103612594173799536L;
+        private static final long serialVersionUID = 1L;
         private final int from;
         private final int to;
-        private final int[] x, y;
+        private final double[] x, y;
 
-        public ForkJoinQuickSort2(final int[] x, final int[] y, final int from, final int to) {
+        public ForkJoinQuickSort2(final double[] x, final double[] y, final int from, final int to) {
             this.from = from;
             this.to = to;
             this.x = x;
@@ -1483,10 +1591,9 @@ public final class IntArrays {
         }
 
         @Override
-
         protected void compute() {
-            final int[] x = this.x;
-            final int[] y = this.y;
+            final double[] x = this.x;
+            final double[] y = this.y;
             final int len = to - from;
             if (len < PARALLEL_QUICKSORT_NO_FORK) {
                 quickSort(x, y, from, to);
@@ -1501,18 +1608,18 @@ public final class IntArrays {
             m = med3(x, y, m - s, m, m + s);
             n = med3(x, y, n - 2 * s, n - s, n);
             m = med3(x, y, l, m, n);
-            final int v = x[m], w = y[m];
+            final double v = x[m], w = y[m];
             // Establish Invariant: v* (<v)* (>v)* v*
             int a = from, b = a, c = to - 1, d = c;
             while (true) {
                 int comparison, t;
-                while (b <= c && (comparison = (t = (Integer.compare((x[b]), (v)))) == 0 ? (Integer.compare((y[b]), (w))) : t) <= 0) {
+                while (b <= c && (comparison = (t = (Double.compare((x[b]), (v)))) == 0 ? (Double.compare((y[b]), (w))) : t) <= 0) {
                     if (comparison == 0) {
                         swap(x, y, a++, b);
                     }
                     b++;
                 }
-                while (c >= b && (comparison = (t = (Integer.compare((x[c]), (v)))) == 0 ? (Integer.compare((y[c]), (w))) : t) >= 0) {
+                while (c >= b && (comparison = (t = (Double.compare((x[c]), (v)))) == 0 ? (Double.compare((y[c]), (w))) : t) >= 0) {
                     if (comparison == 0) {
                         swap(x, y, c, d--);
                     }
@@ -1563,14 +1670,13 @@ public final class IntArrays {
      * @param from the index of the first element (inclusive) to be sorted.
      * @param to   the index of the last element (exclusive) to be sorted.
      */
-    public static void parallelQuickSort(final int[] x, final int[] y, final int from, final int to) {
+    public static void parallelQuickSort(final double[] x, final double[] y, final int from, final int to) {
         if (to - from < PARALLEL_QUICKSORT_NO_FORK) {
             quickSort(x, y, from, to);
         }
-        try (ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors())) {
-            pool.invoke(new ForkJoinQuickSort2(x, y, from, to));
-            pool.shutdown();
-        }
+        final ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
+        pool.invoke(new ForkJoinQuickSort2(x, y, from, to));
+        pool.shutdown();
     }
 
     /**
@@ -1592,9 +1698,37 @@ public final class IntArrays {
      * @param x the first array to be sorted.
      * @param y the second array to be sorted.
      */
-    public static void parallelQuickSort(final int[] x, final int[] y) {
+    public static void parallelQuickSort(final double[] x, final double[] y) {
         ensureSameLength(x, y);
         parallelQuickSort(x, y, 0, x.length);
+    }
+
+    /**
+     * Sorts the specified range of elements according to the order induced by the specified comparator,
+     * potentially dynamically choosing an appropriate algorithm given the type and size of the array.
+     * No assurance is made of the stability of the sort.
+     *
+     * @param a    the array to be sorted.
+     * @param from the index of the first element (inclusive) to be sorted.
+     * @param to   the index of the last element (exclusive) to be sorted.
+     * @param comp the comparator to determine the sorting order.
+     * @since 8.3.0
+     */
+    public static void unstableSort(final double[] a, final int from, final int to, DoubleComparator comp) {
+        quickSort(a, from, to, comp);
+    }
+
+    /**
+     * Sorts an array according to the order induced by the specified comparator,
+     * potentially dynamically choosing an appropriate algorithm given the type and size of the array.
+     * No assurance is made of the stability of the sort.
+     *
+     * @param a    the array to be sorted.
+     * @param comp the comparator to determine the sorting order.
+     * @since 8.3.0
+     */
+    public static void unstableSort(final double[] a, DoubleComparator comp) {
+        unstableSort(a, 0, a.length, comp);
     }
 
     /**
@@ -1610,7 +1744,7 @@ public final class IntArrays {
      *             of {@code a} in the specified range.
      */
 
-    public static void mergeSort(final int[] a, final int from, final int to, final int[] supp) {
+    public static void mergeSort(final double[] a, final int from, final int to, final double[] supp) {
         int len = to - from;
         // Insertion sort on smallest arrays
         if (len < MERGESORT_NO_REC) {
@@ -1623,13 +1757,13 @@ public final class IntArrays {
         mergeSort(supp, mid, to, a);
         // If list is already sorted, just copy from supp to a.  This is an
         // optimization that results in faster sorts for nearly ordered lists.
-        if (((supp[mid - 1]) <= (supp[mid]))) {
+        if ((Double.compare((supp[mid - 1]), (supp[mid])) <= 0)) {
             System.arraycopy(supp, from, a, from, len);
             return;
         }
         // Merge sorted halves (now in supp) into a
         for (int i = from, p = from, q = mid; i < to; i++) {
-            if (q >= to || p < mid && ((supp[p]) <= (supp[q]))) {
+            if (q >= to || p < mid && (Double.compare((supp[p]), (supp[q])) <= 0)) {
                 a[i] = supp[p++];
             } else {
                 a[i] = supp[q++];
@@ -1647,7 +1781,7 @@ public final class IntArrays {
      * @param from the index of the first element (inclusive) to be sorted.
      * @param to   the index of the last element (exclusive) to be sorted.
      */
-    public static void mergeSort(final int[] a, final int from, final int to) {
+    public static void mergeSort(final double[] a, final int from, final int to) {
         mergeSort(a, from, to, a.clone());
     }
 
@@ -1659,7 +1793,7 @@ public final class IntArrays {
      *
      * @param a the array to be sorted.
      */
-    public static void mergeSort(final int[] a) {
+    public static void mergeSort(final double[] a) {
         mergeSort(a, 0, a.length);
     }
 
@@ -1677,7 +1811,7 @@ public final class IntArrays {
      * @param supp a support array containing at least {@code to} elements, and whose entries are identical to those
      *             of {@code a} in the specified range.
      */
-    public static void mergeSort(final int[] a, final int from, final int to, IntComparator comp, final int[] supp) {
+    public static void mergeSort(final double[] a, final int from, final int to, DoubleComparator comp, final double[] supp) {
         int len = to - from;
         // Insertion sort on smallest arrays
         if (len < MERGESORT_NO_REC) {
@@ -1716,7 +1850,7 @@ public final class IntArrays {
      * @param to   the index of the last element (exclusive) to be sorted.
      * @param comp the comparator to determine the sorting order.
      */
-    public static void mergeSort(final int[] a, final int from, final int to, IntComparator comp) {
+    public static void mergeSort(final double[] a, final int from, final int to, DoubleComparator comp) {
         mergeSort(a, from, to, comp, a.clone());
     }
 
@@ -1730,8 +1864,80 @@ public final class IntArrays {
      * @param a    the array to be sorted.
      * @param comp the comparator to determine the sorting order.
      */
-    public static void mergeSort(final int[] a, IntComparator comp) {
+    public static void mergeSort(final double[] a, DoubleComparator comp) {
         mergeSort(a, 0, a.length, comp);
+    }
+
+    /**
+     * Sorts an array according to the natural ascending order,
+     * potentially dynamically choosing an appropriate algorithm given the type and size of the array. The
+     * sort will be stable unless it is provable that it would be impossible for there to be any difference
+     * between a stable and unstable sort for the given type, in which case stability is meaningless and thus
+     * unspecified.
+     *
+     * <p>An array as large as {@code a} may be allocated by this method.
+     *
+     * @param a    the array to be sorted.
+     * @param from the index of the first element (inclusive) to be sorted.
+     * @param to   the index of the last element (exclusive) to be sorted.
+     * @since 8.3.0
+     */
+    public static void stableSort(final double[] a, final int from, final int to) {
+        // Due to subtle differences between Float/Double.compare and operator compare, it is
+        // not safe to delegate this to java.util.Arrays.sort(double[], int, int)
+        mergeSort(a, from, to);
+    }
+
+    /**
+     * Sorts the specified range of elements according to the natural ascending order
+     * potentially dynamically choosing an appropriate algorithm given the type and size of the array. The
+     * sort will be stable unless it is provable that it would be impossible for there to be any difference
+     * between a stable and unstable sort for the given type, in which case stability is meaningless and thus
+     * unspecified.
+     *
+     * <p>An array as large as {@code a} may be allocated by this method.
+     *
+     * @param a the array to be sorted.
+     * @since 8.3.0
+     */
+    public static void stableSort(final double[] a) {
+        stableSort(a, 0, a.length);
+    }
+
+    /**
+     * Sorts the specified range of elements according to the order induced by the specified comparator,
+     * potentially dynamically choosing an appropriate algorithm given the type and size of the array. The
+     * sort will be stable unless it is provable that it would be impossible for there to be any difference
+     * between a stable and unstable sort for the given type, in which case stability is meaningless and thus
+     * unspecified.
+     *
+     * <p>An array as large as {@code a} may be allocated by this method.
+     *
+     * @param a    the array to be sorted.
+     * @param from the index of the first element (inclusive) to be sorted.
+     * @param to   the index of the last element (exclusive) to be sorted.
+     * @param comp the comparator to determine the sorting order.
+     * @since 8.3.0
+     */
+    public static void stableSort(final double[] a, final int from, final int to, DoubleComparator comp) {
+        mergeSort(a, from, to, comp);
+    }
+
+    /**
+     * Sorts an array according to the order induced by the specified comparator,
+     * potentially dynamically choosing an appropriate algorithm given the type and size of the array. The
+     * sort will be stable unless it is provable that it would be impossible for there to be any difference
+     * between a stable and unstable sort for the given type, in which case stability is meaningless and thus
+     * unspecified.
+     *
+     * <p>An array as large as {@code a} may be allocated by this method.
+     *
+     * @param a    the array to be sorted.
+     * @param comp the comparator to determine the sorting order.
+     * @since 8.3.0
+     */
+    public static void stableSort(final double[] a, DoubleComparator comp) {
+        stableSort(a, 0, a.length, comp);
     }
 
     /**
@@ -1755,8 +1961,8 @@ public final class IntArrays {
      * @see java.util.Arrays
      */
 
-    public static int binarySearch(final int[] a, int from, int to, final int key) {
-        int midVal;
+    public static int binarySearch(final double[] a, int from, int to, final double key) {
+        double midVal;
         to--;
         while (from <= to) {
             final int mid = (from + to) >>> 1;
@@ -1790,7 +1996,7 @@ public final class IntArrays {
      * and only if the key is found.
      * @see java.util.Arrays
      */
-    public static int binarySearch(final int[] a, final int key) {
+    public static int binarySearch(final double[] a, final double key) {
         return binarySearch(a, 0, a.length, key);
     }
 
@@ -1815,8 +2021,8 @@ public final class IntArrays {
      * and only if the key is found.
      * @see java.util.Arrays
      */
-    public static int binarySearch(final int[] a, int from, int to, final int key, final IntComparator c) {
-        int midVal;
+    public static int binarySearch(final double[] a, int from, int to, final double key, final DoubleComparator c) {
+        double midVal;
         to--;
         while (from <= to) {
             final int mid = (from + to) >>> 1;
@@ -1852,7 +2058,7 @@ public final class IntArrays {
      * and only if the key is found.
      * @see java.util.Arrays
      */
-    public static int binarySearch(final int[] a, final int key, final IntComparator c) {
+    public static int binarySearch(final double[] a, final double key, final DoubleComparator c) {
         return binarySearch(a, 0, a.length, key, c);
     }
 
@@ -1865,10 +2071,10 @@ public final class IntArrays {
      * @param random a pseudorandom number generator.
      * @return {@code a}.
      */
-    public static int[] shuffle(final int[] a, final int from, final int to, final Random random) {
+    public static double[] shuffle(final double[] a, final int from, final int to, final Random random) {
         for (int i = to - from; i-- != 0; ) {
             final int p = random.nextInt(i + 1);
-            final int t = a[from + i];
+            final double t = a[from + i];
             a[from + i] = a[from + p];
             a[from + p] = t;
         }
@@ -1882,7 +2088,7 @@ public final class IntArrays {
      * @param random a pseudorandom number generator.
      * @return {@code a}.
      */
-    public static int[] shuffle(final int[] a, final Random random) {
+    public static double[] shuffle(final double[] a, final Random random) {
         for (int i = a.length; i-- != 0; ) {
             final int p = random.nextInt(i + 1);
             swap(a, i, p);
@@ -1896,10 +2102,10 @@ public final class IntArrays {
      * @param a the array to be reversed.
      * @return {@code a}.
      */
-    public static int[] reverse(final int[] a) {
+    public static double[] reverse(final double[] a) {
         final int length = a.length;
         for (int i = length / 2; i-- != 0; ) {
-            final int t = a[length - i - 1];
+            final double t = a[length - i - 1];
             a[length - i - 1] = a[i];
             a[i] = t;
         }
@@ -1914,13 +2120,69 @@ public final class IntArrays {
      * @param to   the index of the last element (exclusive) to be reversed.
      * @return {@code a}.
      */
-    public static int[] reverse(final int[] a, final int from, final int to) {
+    public static double[] reverse(final double[] a, final int from, final int to) {
         final int length = to - from;
         for (int i = length / 2; i-- != 0; ) {
-            final int t = a[from + length - i - 1];
+            final double t = a[from + length - i - 1];
             a[from + length - i - 1] = a[from + i];
             a[from + i] = t;
         }
         return a;
+    }
+
+    public static String toString(double[] array, Printer printer, POpt<?>... opts) {
+        var pOpts = printer.getOptions().bind(opts);
+        StringBuilder sb = new StringBuilder();
+        sb.append("double[]{length:").append(array.length).append(", values:");
+        sb.append("[");
+        for (int i = 0; i < Math.min(20, array.length); i++) {
+            sb.append(pOpts.getFloatFormat().format(array[i]));
+            if (i != array.length - 1) {
+                sb.append(",");
+            }
+        }
+        if (array.length > 20) {
+            sb.append("...");
+        }
+        sb.append("]}");
+        return sb.toString();
+    }
+
+    public static String toContent(double[] array, Printer printer, POpt<?>... options) {
+        int head = 20;
+        int tail = 2;
+
+        if (head + tail >= array.length) {
+            return toFullContent(array, printer, options);
+        }
+
+        int[] rows = new int[Math.min(head + tail + 1, array.length)];
+        for (int i = 0; i < head; i++) {
+            rows[i] = i;
+        }
+        rows[head] = -1;
+        for (int i = 0; i < tail; i++) {
+            rows[i + head + 1] = i + array.length - tail;
+        }
+        TextTable tt = TextTable.empty(rows.length, 2, 0, 1);
+        for (int i = 0; i < rows.length; i++) {
+            if (rows[i] == -1) {
+                tt.textCenter(i, 0, "...");
+                tt.textCenter(i, 1, "...");
+            } else {
+                tt.intRow(i, 0, rows[i]);
+                tt.floatFlexLong(i, 1, array[rows[i]]);
+            }
+        }
+        return tt.getDynamicText(printer, options);
+    }
+
+    public static String toFullContent(double[] array, Printer printer, POpt<?>... options) {
+        TextTable tt = TextTable.empty(array.length, 2, 0, 1);
+        for (int i = 0; i < array.length; i++) {
+            tt.intRow(i, 0, i);
+            tt.floatFlexLong(i, 1, array[i]);
+        }
+        return tt.getDynamicText(printer, options);
     }
 }

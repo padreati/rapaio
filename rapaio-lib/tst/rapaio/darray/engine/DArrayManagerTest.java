@@ -77,7 +77,7 @@ public class DArrayManagerTest {
 
     <N extends Number> void testZeros(DArrayManager manager, DType<N> dt) {
         var t = manager.zeros(dt, Shape.of(10, 20));
-        assertEquals(manager, t.manager());
+        assertEquals(manager, t.dm());
         assertEquals(t.shape(), Shape.of(10, 20));
         var it = t.ptrIterator();
         while (it.hasNext()) {

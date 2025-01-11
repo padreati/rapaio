@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.printer.opt.POpt;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/22/18.
@@ -89,7 +89,7 @@ public class UniqueIntTest {
             values[i] = sample[random.nextInt(sample.length)];
         }
         VarInt x = VarInt.copy(values);
-        IntArrays.quickSort(values, 0, N, Integer::compare);
+        Ints.quickSort(values, 0, N, Integer::compare);
 
         UniqueInt unique = UniqueInt.of(x, false);
         assertEquals(sample.length, unique.uniqueCount());

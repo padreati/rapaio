@@ -64,7 +64,7 @@ public class IntOpenHashSet implements Serializable, IntIterable {
         this.seed = seed;
         this.loadFactor = loadFactor;
         this.probing = probing;
-        this.array = IntArrays.newFill(allocation, MISSING);
+        this.array = Ints.fill(allocation, MISSING);
     }
 
     /**
@@ -122,7 +122,7 @@ public class IntOpenHashSet implements Serializable, IntIterable {
      */
     public PrimitiveIterator.OfInt iterator() {
         int[] copy = toArray();
-        return IntArrays.iterator(copy, 0, copy.length);
+        return Ints.iterator(copy, 0, copy.length);
     }
 
     public int[] toArray() {
@@ -188,7 +188,7 @@ public class IntOpenHashSet implements Serializable, IntIterable {
 
     private void ensureCapacity(int increment) {
         int len = (int) Math.ceil(2 * size / loadFactor);
-        int[] copy = IntArrays.newFill(len, MISSING);
+        int[] copy = Ints.fill(len, MISSING);
         for (int x : array) {
             if (x == MISSING) {
                 continue;

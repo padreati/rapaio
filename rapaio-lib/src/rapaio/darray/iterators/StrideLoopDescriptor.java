@@ -26,7 +26,7 @@ import java.util.Arrays;
 import jdk.incubator.vector.VectorSpecies;
 import rapaio.darray.Order;
 import rapaio.darray.layout.StrideLayout;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 /**
  * A loop stride descriptor contains the same information as a loop iterator, but in a precomputed form.
@@ -77,8 +77,8 @@ public final class StrideLoopDescriptor<N extends Number> {
         int[] outerDims = Arrays.copyOfRange(compact.dims(), 1, compact.rank());
         int[] outerStrides = Arrays.copyOfRange(compact.strides(), 1, compact.rank());
 
-        int count = IntArrays.prod(outerDims, 0, outerDims.length);
-        this.offsets = IntArrays.newFill(count, layout.offset());
+        int count = Ints.prod(outerDims, 0, outerDims.length);
+        this.offsets = Ints.fill(count, layout.offset());
 
         int inner = 1;
         for (int i = 0; i < outerDims.length; i++) {

@@ -37,8 +37,8 @@ import rapaio.data.VarDouble;
 import rapaio.experiment.math.linear.DMatrix;
 import rapaio.experiment.math.linear.DVector;
 import rapaio.util.DoubleComparator;
-import rapaio.util.collection.DoubleArrays;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Doubles;
+import rapaio.util.collection.Ints;
 import rapaio.util.function.Double2DoubleFunction;
 
 public final class DVectorDense extends AbstractDVectorStore {
@@ -48,7 +48,7 @@ public final class DVectorDense extends AbstractDVectorStore {
     }
 
     public static DVectorDense fill(int n, double fill) {
-        return new DVectorDense(0, n, DoubleArrays.newFill(n, fill));
+        return new DVectorDense(0, n, Doubles.newFill(n, fill));
     }
 
     public static DVectorDense wrap(double... values) {
@@ -168,7 +168,7 @@ public final class DVectorDense extends AbstractDVectorStore {
 
     @Override
     public DVector map(int... indexes) {
-        if (indexes.length > 0 && IntArrays.isDenseArray(indexes)) {
+        if (indexes.length > 0 && Ints.isDenseArray(indexes)) {
             return new DVectorDense(offset + indexes[0], indexes.length, array);
         }
         return new DVectorMap(offset, indexes, array);
@@ -615,7 +615,7 @@ public final class DVectorDense extends AbstractDVectorStore {
         checkConformance(y);
         if (y instanceof DVectorDense yd) {
             double[] copy = new double[size];
-            DoubleArrays.addMulTo(array, offset, a, yd.array, yd.offset, copy, 0, size);
+            Doubles.addMulTo(array, offset, a, yd.array, yd.offset, copy, 0, size);
             return new DVectorDense(0, copy.length, copy);
         }
         double[] copy = new double[size];
@@ -822,7 +822,7 @@ public final class DVectorDense extends AbstractDVectorStore {
 
     @Override
     public double nanprod() {
-        return DoubleArrays.nanProd(array, offset, size);
+        return Doubles.nanProd(array, offset, size);
     }
 
     @Override
@@ -835,47 +835,47 @@ public final class DVectorDense extends AbstractDVectorStore {
 
     @Override
     public int nancount() {
-        return DoubleArrays.nanCount(array, offset, size);
+        return Doubles.nanCount(array, offset, size);
     }
 
     @Override
     public double mean() {
-        return DoubleArrays.mean(array, offset, size);
+        return Doubles.mean(array, offset, size);
     }
 
     @Override
     public double nanmean() {
-        return DoubleArrays.nanMean(array, offset, size);
+        return Doubles.nanMean(array, offset, size);
     }
 
     @Override
     public double variance() {
-        return DoubleArrays.variance(array, offset, size);
+        return Doubles.variance(array, offset, size);
     }
 
     @Override
     public double nanvariance() {
-        return DoubleArrays.nanVariance(array, offset, size);
+        return Doubles.nanVariance(array, offset, size);
     }
 
     @Override
     public int argmin() {
-        return DoubleArrays.argmin(array, offset, size) - offset;
+        return Doubles.argmin(array, offset, size) - offset;
     }
 
     @Override
     public double min() {
-        return DoubleArrays.min(array, offset, size);
+        return Doubles.min(array, offset, size);
     }
 
     @Override
     public int argmax() {
-        return DoubleArrays.argmax(array, offset, size) - offset;
+        return Doubles.argmax(array, offset, size) - offset;
     }
 
     @Override
     public double max() {
-        return DoubleArrays.max(array, offset, size);
+        return Doubles.max(array, offset, size);
     }
 
     @Override
@@ -912,14 +912,14 @@ public final class DVectorDense extends AbstractDVectorStore {
 
     @Override
     public DVector sortValues(DoubleComparator comp) {
-        DoubleArrays.quickSort(array, offset, offset + size, comp);
+        Doubles.quickSort(array, offset, offset + size, comp);
         return this;
     }
 
     @Override
     public DVector sortValuesNew(DoubleComparator comp) {
         double[] copy = solidArrayCopy();
-        DoubleArrays.quickSort(copy, 0, size, comp);
+        Doubles.quickSort(copy, 0, size, comp);
         return new DVectorDense(0, size, copy);
     }
 

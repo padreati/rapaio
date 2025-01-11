@@ -44,7 +44,7 @@ import rapaio.graphics.opt.GOpt;
 import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -132,13 +132,13 @@ public class BarPlot extends Artist {
 
         // sort if required
         switch (options.getSort()) {
-            case SORT_ASC -> IntArrays.quickSort(indexes, 0, len, (o1, o2) -> {
+            case SORT_ASC -> Ints.quickSort(indexes, 0, len, (o1, o2) -> {
                 if (totals[o1] == totals[o2]) {
                     return 0;
                 }
                 return totals[o1] < totals[o2] ? -1 : 1;
             });
-            case SORT_DESC -> IntArrays.quickSort(indexes, 0, len, (o1, o2) -> {
+            case SORT_DESC -> Ints.quickSort(indexes, 0, len, (o1, o2) -> {
                 if (totals[o1] == totals[o2]) {
                     return 0;
                 }
@@ -150,7 +150,7 @@ public class BarPlot extends Artist {
         }
 
         // apply top if it is the case
-        selection = IntArrays.copy(indexes, 0, Math.min(options.getTop(), len));
+        selection = Ints.copy(indexes, 0, Math.min(options.getTop(), len));
 
     }
 

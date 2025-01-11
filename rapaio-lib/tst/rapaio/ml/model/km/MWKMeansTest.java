@@ -41,7 +41,7 @@ import rapaio.data.VarType;
 import rapaio.data.transform.Jitter;
 import rapaio.datasets.Datasets;
 import rapaio.ml.eval.RandIndex;
-import rapaio.util.collection.DoubleArrays;
+import rapaio.util.collection.Doubles;
 
 public class MWKMeansTest {
 
@@ -58,7 +58,7 @@ public class MWKMeansTest {
         for (int t = 0; t < 10; t++) {
 
             var dist = Gamma.of(1, 0.5);
-            var array = DoubleArrays.newFrom(0, 1_000, i -> dist.sampleNext(random));
+            var array = Doubles.newFrom(0, 1_000, i -> dist.sampleNext(random));
             var y = DArrays.stride(array).mul_(10.).sort_(0, true);
             double beta = random.nextDouble() * 10 + 1;
 

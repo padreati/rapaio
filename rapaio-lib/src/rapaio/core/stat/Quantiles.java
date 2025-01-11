@@ -29,7 +29,7 @@ import rapaio.data.Var;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
-import rapaio.util.collection.DoubleArrays;
+import rapaio.util.collection.Doubles;
 
 
 /**
@@ -87,7 +87,7 @@ public class Quantiles implements Printable {
             return x;
         }
         if (completeCount == 1) {
-            return DoubleArrays.newFill(percentiles.length, 0);
+            return Doubles.newFill(percentiles.length, 0);
         }
 
         Arrays.sort(x, 0, completeCount);

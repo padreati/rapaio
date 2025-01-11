@@ -55,7 +55,7 @@ import rapaio.ml.model.RunInfo;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/13/21.
@@ -176,7 +176,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             int len = (int) (x.dim(0) * gammas.size() * p);
             int[] selection = SamplingTools.sampleWOR(x.dim(0) * gammas.size(), len);
             Feature[] factories = new Feature[selection.length];
-            IntArrays.quickSort(selection);
+            Ints.quickSort(selection);
             int pp = 0;
             for (int pos : selection) {
                 int sigmaIndex = pos / x.dim(0);
@@ -228,7 +228,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             int len = Math.max(1, (int) (x.dim(0) * p));
             int[] selection = SamplingTools.sampleWOR(x.dim(0), len);
             Feature[] factories = new Feature[selection.length];
-            IntArrays.quickSort(selection);
+            Ints.quickSort(selection);
             int pp = 0;
             for (int rowIndex : selection) {
                 var xrow = x.selsq(0, rowIndex).copy();
@@ -481,7 +481,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
 
         sb.append("> relevant vectors count: ").append(mrelevanceVectors.dim(0)).append("\n");
         sb.append("> relevant vector training indexes: [")
-                .append(IntArrays.stream(trainingIndexes, 0, trainingIndexes.length).mapToObj(String::valueOf)
+                .append(Ints.stream(trainingIndexes, 0, trainingIndexes.length).mapToObj(String::valueOf)
                         .collect(Collectors.joining(",")))
                 .append("]\n");
         sb.append("> convergence: ").append(converged).append("\n> iterations: ").append(iterations).append("\n");
@@ -575,7 +575,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
             n = x.dim(0);
             fcount = parent.features.size();
             phi = buildPhi();
-            indexes = IntArrays.newSeq(0, parent.features.size());
+            indexes = Ints.seq(0, parent.features.size());
             phi_t_phi = phi.t().mm(phi);
             phi_t_y = phi.t().mv(y);
 
@@ -977,7 +977,7 @@ public class RVMRegression extends RegressionModel<RVMRegression, RegressionResu
                 candidates.add(i);
             }
 
-            fails = IntArrays.newFill(fcount, 0);
+            fails = Ints.fill(fcount, 0);
 
             // initialize raw features
             phiiDotPhii = DArrays.full(Shape.of(fcount), Double.NaN);

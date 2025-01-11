@@ -25,7 +25,7 @@ import static java.lang.StrictMath.min;
 import static java.lang.StrictMath.pow;
 
 import static rapaio.math.MathTools.log2;
-import static rapaio.util.collection.DoubleArrays.nanSum;
+import static rapaio.util.collection.Doubles.nanSum;
 
 import java.io.Serial;
 import java.io.Serializable;

@@ -47,7 +47,7 @@ import rapaio.ml.model.ClusteringModel;
 import rapaio.ml.model.RunInfo;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 /**
  * KMeans clustering algorithm.
@@ -202,7 +202,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
         DArray<Double> m = initialDf.darray();
         c = initializeClusters(random, m);
 
-        int[] assignment = IntArrays.newFill(m.dim(0), -1);
+        int[] assignment = Ints.fill(m.dim(0), -1);
         errors = VarDouble.empty().name("errors");
 
         assignToCentroids(m, assignment, true);
@@ -359,7 +359,7 @@ public class KMCluster extends ClusteringModel<KMCluster, KMClusterResult, RunIn
 
     @Override
     public KMClusterResult corePredict(Frame df, boolean withScores) {
-        int[] assignment = IntArrays.newFill(df.rowCount(), -1);
+        int[] assignment = Ints.fill(df.rowCount(), -1);
         DArray<Double> m = df.darray();
         assignToCentroids(m, assignment, false);
         return KMClusterResult.valueOf(this, df, VarInt.wrap(assignment));

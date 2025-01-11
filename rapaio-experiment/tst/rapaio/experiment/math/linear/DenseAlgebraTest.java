@@ -48,8 +48,8 @@ import rapaio.printer.Format;
 import rapaio.printer.opt.POpt;
 import rapaio.printer.opt.POpts;
 import rapaio.util.DoubleComparators;
-import rapaio.util.collection.DoubleArrays;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Doubles;
+import rapaio.util.collection.Ints;
 
 public class DenseAlgebraTest {
 
@@ -98,9 +98,9 @@ public class DenseAlgebraTest {
                 DMatrix m = new DMatrixDenseR(rows, cols);
                 setMatrixValues(m, rows, cols);
                 return m
-                        .mapRows(IntArrays.newSeq(rows))
-                        .mapCols(IntArrays.newSeq(cols))
-                        .mapRows(IntArrays.newSeq(rows));
+                        .mapRows(Ints.seq(rows))
+                        .mapCols(Ints.seq(cols))
+                        .mapRows(Ints.seq(rows));
             }
     };
 
@@ -114,7 +114,7 @@ public class DenseAlgebraTest {
 
     private static final VectorFactory[] vectorFactories = new VectorFactory[] {
             // base vector
-            n -> new DVectorBase(DoubleArrays.newSeq(1, n + 1)),
+            n -> new DVectorBase(Doubles.newSeq(1, n + 1)),
             // dense vector
             n -> {
                 double[] values = new double[10 + n];
@@ -142,7 +142,7 @@ public class DenseAlgebraTest {
                 return new DVectorDense(0, 10 + 2 * n, values).map(indexes);
             },
             // var vector
-            n -> new DVectorVar<>(VarDouble.wrap(DoubleArrays.newSeq(1, n + 1)))
+            n -> new DVectorVar<>(VarDouble.wrap(Doubles.newSeq(1, n + 1)))
     };
 
     @FunctionalInterface
@@ -190,10 +190,10 @@ public class DenseAlgebraTest {
             test1matrix(mf, m -> assertTrue(m.mapValues(1, m.argmin(1)).deepEquals(m.min(1)), message));
 
             int[] inRows = new int[] {1, 3};
-            int[] outRows = IntArrays.removeIndexesFromDenseSequence(0, mf.newMatrix().rows(), inRows);
+            int[] outRows = Ints.removeIndexesFromDenseSequence(0, mf.newMatrix().rows(), inRows);
 
             int[] inCols = new int[] {1, 3};
-            int[] outCols = IntArrays.removeIndexesFromDenseSequence(0, mf.newMatrix().cols(), inCols);
+            int[] outCols = Ints.removeIndexesFromDenseSequence(0, mf.newMatrix().cols(), inCols);
 
             test1matrix(mf, m -> assertTrue(m.mapRows(inRows).deepEquals(m.removeRows(outRows))));
             test1matrix(mf, m -> assertTrue(m.mapCols(inCols).deepEquals(m.removeCols(outCols))));
@@ -699,9 +699,9 @@ public class DenseAlgebraTest {
             test1vector(vf, v -> assertTrue(v.sortValuesNew(false).deepEquals(v.sortValues(false))));
 
             test1vector(vf, v -> {
-                int[] indexes1 = IntArrays.newSeq(v.size());
-                int[] indexes2 = IntArrays.newSeq(v.size());
-                int[] indexes3 = IntArrays.newSeq(v.size());
+                int[] indexes1 = Ints.seq(v.size());
+                int[] indexes2 = Ints.seq(v.size());
+                int[] indexes3 = Ints.seq(v.size());
 
                 v.sortIndexes(indexes1);
                 v.sortIndexes(true, indexes2);

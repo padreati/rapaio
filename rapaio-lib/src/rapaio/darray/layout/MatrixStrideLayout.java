@@ -28,7 +28,7 @@ import java.util.stream.IntStream;
 
 import rapaio.darray.Order;
 import rapaio.darray.Shape;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 public class MatrixStrideLayout extends AbstractStrideLayout {
 
@@ -142,12 +142,12 @@ public class MatrixStrideLayout extends AbstractStrideLayout {
             case C -> {
                 newDims = Arrays.copyOf(shape.dims(), shape.rank());
                 newStrides = Arrays.copyOf(strides, shape.rank());
-                IntArrays.reverse(newDims);
-                IntArrays.reverse(newStrides);
+                Ints.reverse(newDims);
+                Ints.reverse(newStrides);
             }
             case S -> {
-                int[] storageOrder = IntArrays.newSeq(shape.rank());
-                IntArrays.quickSort(storageOrder,
+                int[] storageOrder = Ints.seq(shape.rank());
+                Ints.quickSort(storageOrder,
                         (i, j) -> {
                             if (strides[i] == 0 && strides[j] == 0) {
                                 return Integer.compare(dim(i), dim(j));
@@ -164,8 +164,8 @@ public class MatrixStrideLayout extends AbstractStrideLayout {
                             }
                             return Integer.compare(dim(i), dim(j));
                         });
-                newDims = IntArrays.newPermutation(shape.dims(), storageOrder);
-                newStrides = IntArrays.newPermutation(strides, storageOrder);
+                newDims = Ints.newPermutation(shape.dims(), storageOrder);
+                newStrides = Ints.newPermutation(strides, storageOrder);
             }
             default -> throw new IllegalStateException();
         }
@@ -227,7 +227,7 @@ public class MatrixStrideLayout extends AbstractStrideLayout {
         if (axes.length > 2) {
             throw new IllegalArgumentException("Matrix allows maximum two axes as parameters.");
         }
-        if (IntArrays.containsDuplicates(axes)) {
+        if (Ints.containsDuplicates(axes)) {
             throw new IllegalArgumentException("Duplicates values in axis parameters.");
         }
 
@@ -259,13 +259,13 @@ public class MatrixStrideLayout extends AbstractStrideLayout {
                 throw new IndexOutOfBoundsException();
             }
         }
-        if (IntArrays.containsDuplicates(axes)) {
+        if (Ints.containsDuplicates(axes)) {
             throw new IllegalArgumentException("Axes contains duplicates.");
         }
 
         int len = rank() + axes.length;
-        int[] newDims = IntArrays.newFill(len, 1);
-        int[] newStrides = IntArrays.newFill(len, 0);
+        int[] newDims = Ints.fill(len, 1);
+        int[] newStrides = Ints.fill(len, 0);
 
         int lastDim = 0;
         for (int i = 0; i < len; i++) {
@@ -303,8 +303,8 @@ public class MatrixStrideLayout extends AbstractStrideLayout {
 
     @Override
     public StrideLayout revert() {
-        int[] reversedDims = IntArrays.reverse(Arrays.copyOf(shape.dims(), shape.rank()));
-        int[] reversedStride = IntArrays.reverse(Arrays.copyOf(strides, shape.rank()));
+        int[] reversedDims = Ints.reverse(Arrays.copyOf(shape.dims(), shape.rank()));
+        int[] reversedStride = Ints.reverse(Arrays.copyOf(strides, shape.rank()));
         return StrideLayout.of(Shape.of(reversedDims), offset, reversedStride);
     }
 
@@ -319,8 +319,8 @@ public class MatrixStrideLayout extends AbstractStrideLayout {
         if (src == dst) {
             return this;
         }
-        int[] askDims = IntArrays.copy(shape.dims());
-        int[] askStrides = IntArrays.copy(strides);
+        int[] askDims = Ints.copy(shape.dims());
+        int[] askStrides = Ints.copy(strides);
         int tmpDim = askDims[src];
         int tmpStride = askStrides[src];
         for (int i = src; i < dst; i++) {
@@ -343,11 +343,11 @@ public class MatrixStrideLayout extends AbstractStrideLayout {
         if (src == dst) {
             return this;
         }
-        int[] askDims = IntArrays.copy(shape.dims());
-        int[] askStrides = IntArrays.copy(strides);
+        int[] askDims = Ints.copy(shape.dims());
+        int[] askStrides = Ints.copy(strides);
 
-        IntArrays.swap(askDims, src, dst);
-        IntArrays.swap(askStrides, src, dst);
+        Ints.swap(askDims, src, dst);
+        Ints.swap(askStrides, src, dst);
 
         return StrideLayout.of(Shape.of(askDims), offset, askStrides);
     }
@@ -410,8 +410,8 @@ public class MatrixStrideLayout extends AbstractStrideLayout {
             throw new IllegalArgumentException("Dimension values contains duplicates: [" +
                     IntStream.of(dims).mapToObj(String::valueOf).collect(Collectors.joining("")) + "]");
         }
-        int[] newDims = IntArrays.newPermutation(dims(), dims);
-        int[] newStrides = IntArrays.newPermutation(strides, dims);
+        int[] newDims = Ints.newPermutation(dims(), dims);
+        int[] newStrides = Ints.newPermutation(strides, dims);
         return StrideLayout.of(Shape.of(newDims), offset, newStrides);
     }
 

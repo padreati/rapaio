@@ -189,6 +189,10 @@ public final class TensorManager implements AutoCloseable {
         return arrayManager.zeros(dt, shape);
     }
 
+    public DArray<?> zerosArray(DType<?> dt, Shape shape, Order order) {
+        return arrayManager.zeros(dt, shape, order);
+    }
+
     public DArray<?> fullArray(Shape shape, double fill) {
         return arrayManager.full(dt, shape, fill);
     }

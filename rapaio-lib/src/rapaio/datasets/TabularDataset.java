@@ -28,7 +28,7 @@ import java.util.Random;
 import rapaio.darray.DArray;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 public class TabularDataset implements TensorDataset<TabularDataset> {
 
@@ -83,8 +83,8 @@ public class TabularDataset implements TensorDataset<TabularDataset> {
     public TabularDataset[] trainTestSplit(double testPercentage) {
         int trainSize = (int) ((1 - testPercentage) * len);
 
-        int[] index = IntArrays.newSeq(len);
-        IntArrays.shuffle(index, tm.random());
+        int[] index = Ints.seq(len);
+        Ints.shuffle(index, tm.random());
         int[] trainIndex = Arrays.copyOfRange(index, 0, trainSize);
         int[] testIndex = Arrays.copyOfRange(index, trainSize, len);
         return new TabularDataset[] {
@@ -109,9 +109,9 @@ public class TabularDataset implements TensorDataset<TabularDataset> {
         int pos = 0;
 
         public BatchIndexIterator(int batchSize, boolean shuffle, boolean skipLast, Random random, DArray<?>[] arrays) {
-            this.index = IntArrays.newSeq(Arrays.stream(arrays).mapToInt(array -> array.dim(0)).min().orElse(0));
+            this.index = Ints.seq(Arrays.stream(arrays).mapToInt(array -> array.dim(0)).min().orElse(0));
             if (shuffle) {
-                IntArrays.shuffle(this.index, random);
+                Ints.shuffle(this.index, random);
             }
             this.batchSize = batchSize;
             this.len = Math.floorDiv(index.length, batchSize) + ((!skipLast && index.length % batchSize != 0) ? 1 : 0);

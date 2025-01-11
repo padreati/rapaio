@@ -95,9 +95,9 @@ public final class Autograd {
         public void run() {
             buildDeps();
             for (Tensor tensor : reverse) {
-                for (Tensor.BackFunction backFunction : tensor.backFunctions()) {
+                for (BackFunction backFunction : tensor.backFunctions()) {
                     if (computeGrad.contains(backFunction.ref())) {
-                        backFunction.ref().addGrad(backFunction.fun().get());
+                        backFunction.apply();;
                     }
                 }
                 if (!retainGrad) {
@@ -115,7 +115,7 @@ public final class Autograd {
             HashMap<Tensor, List<Tensor>> parents = new HashMap<>();
             coverage.forEach(node -> parents.put(node, new ArrayList<>()));
             for (Tensor tensor : coverage) {
-                for (Tensor.BackFunction edge : tensor.backFunctions()) {
+                for (BackFunction edge : tensor.backFunctions()) {
                     parents.get(edge.ref()).add(tensor);
                 }
             }
@@ -136,7 +136,7 @@ public final class Autograd {
                 }
                 Tensor next = opNext.get();
                 frontier.remove(next);
-                for (Tensor.BackFunction bf : next.backFunctions()) {
+                for (BackFunction bf : next.backFunctions()) {
                     counters.put(bf.ref(), counters.get(bf.ref()) - 1);
                     frontier.add(bf.ref());
                 }

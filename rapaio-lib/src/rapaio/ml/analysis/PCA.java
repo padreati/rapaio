@@ -38,7 +38,7 @@ import rapaio.data.VarType;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/2/15.
@@ -126,7 +126,7 @@ public class PCA extends ParamSet<PCA> implements Printable {
 
         logger.fine("sort eigen values and vectors");
 
-        int[] mapping = IntArrays.newSeq(0, eigenValues.size());
+        int[] mapping = Ints.seq(0, eigenValues.size());
         eigenValues.externalSort(mapping, false);
 
         eigenValues = eigenValues.sel(0, mapping);

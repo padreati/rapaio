@@ -30,7 +30,7 @@ import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/23/18.
@@ -70,7 +70,7 @@ public abstract class AbstractUnique implements Unique {
                 counts[i] = rowLists.get(i).size();
                 ids2[i] = i;
             }
-            IntArrays.quickSort(ids2, 0, uniqueCount(), (i, j) -> Integer.compare(counts[i], counts[j]));
+            Ints.quickSort(ids2, 0, uniqueCount(), (i, j) -> Integer.compare(counts[i], counts[j]));
             countSortedIds = VarInt.wrap(ids2);
         }
         return countSortedIds;

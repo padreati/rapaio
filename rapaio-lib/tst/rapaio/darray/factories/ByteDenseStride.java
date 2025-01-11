@@ -28,7 +28,7 @@ import rapaio.darray.DArrayManager;
 import rapaio.darray.Order;
 import rapaio.darray.Shape;
 import rapaio.darray.layout.StrideLayout;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 public final class ByteDenseStride extends ByteDense {
 
@@ -38,9 +38,9 @@ public final class ByteDenseStride extends ByteDense {
 
     @Override
     public DArray<Byte> seq(Shape shape) {
-        int[] strides = IntArrays.newFill(shape.rank(), 1);
-        int[] ordering = IntArrays.newSeq(0, shape.rank());
-        IntArrays.shuffle(ordering, new Random(42));
+        int[] strides = Ints.fill(shape.rank(), 1);
+        int[] ordering = Ints.seq(0, shape.rank());
+        Ints.shuffle(ordering, new Random(42));
         for (int i = 1; i < shape.rank(); i++) {
             int next = -1;
             int prev = -1;
@@ -70,9 +70,9 @@ public final class ByteDenseStride extends ByteDense {
     @Override
     public DArray<Byte> zeros(Shape shape) {
         int offset = 10;
-        int[] strides = IntArrays.newFill(shape.rank(), 1);
-        int[] ordering = IntArrays.newSeq(0, shape.rank());
-        IntArrays.shuffle(ordering, new Random(42));
+        int[] strides = Ints.fill(shape.rank(), 1);
+        int[] ordering = Ints.seq(0, shape.rank());
+        Ints.shuffle(ordering, new Random(42));
 
         for (int i = 1; i < shape.rank(); i++) {
             int next = -1;
@@ -98,9 +98,9 @@ public final class ByteDenseStride extends ByteDense {
     @Override
     public DArray<Byte> random(Shape shape) {
         int offset = 10;
-        int[] strides = IntArrays.newFill(shape.rank(), 1);
-        int[] ordering = IntArrays.newSeq(0, shape.rank());
-        IntArrays.shuffle(ordering, new Random(42));
+        int[] strides = Ints.fill(shape.rank(), 1);
+        int[] ordering = Ints.seq(0, shape.rank());
+        Ints.shuffle(ordering, new Random(42));
 
         for (int i = 1; i < shape.rank(); i++) {
             int next = -1;

@@ -29,13 +29,13 @@ import org.junit.jupiter.api.Test;
 
 import rapaio.experiment.math.linear.DVector;
 import rapaio.experiment.math.linear.StandardDVectorTest;
-import rapaio.util.collection.DoubleArrays;
+import rapaio.util.collection.Doubles;
 
 public class DVectorDenseTest extends StandardDVectorTest {
 
     @Override
     public DVector generateFill(int size, double fill) {
-        return new DVectorDense(10, size, DoubleArrays.newFill(10 + size, fill));
+        return new DVectorDense(10, size, Doubles.newFill(10 + size, fill));
     }
 
     @Override

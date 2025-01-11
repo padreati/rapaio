@@ -37,7 +37,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.util.collection.DoubleArrays;
+import rapaio.util.collection.Doubles;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -80,7 +80,7 @@ public class SamplingToolsTest {
             v.addDouble(next);
         }
         double[] values = v.elements();
-        DoubleArrays.quickSort(values, 0, v.size(), Double::compare);
+        Doubles.quickSort(values, 0, v.size(), Double::compare);
         for (int i = 1; i < v.size(); i++) {
             assertTrue(values[i] - values[i - 1] >= 1);
         }

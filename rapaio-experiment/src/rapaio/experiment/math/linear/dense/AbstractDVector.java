@@ -33,8 +33,8 @@ import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
 import rapaio.util.DoubleComparator;
-import rapaio.util.collection.DoubleArrays;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Doubles;
+import rapaio.util.collection.Ints;
 import rapaio.util.function.Double2DoubleFunction;
 
 /**
@@ -899,7 +899,7 @@ public abstract class AbstractDVector implements DVector {
         for (int i = 0; i < size(); i++) {
             copy[i] = get(i);
         }
-        DoubleArrays.quickSort(copy, 0, size(), comp);
+        Doubles.quickSort(copy, 0, size(), comp);
         return new DVectorDense(0, size(), copy);
     }
 
@@ -1039,27 +1039,27 @@ public abstract class AbstractDVector implements DVector {
             int comparison;
             while (b <= c && (comparison = comp.compare(get(perm[b]), v)) <= 0) {
                 if (comparison == 0) {
-                    IntArrays.swap(perm, a++, b);
+                    Ints.swap(perm, a++, b);
                 }
                 b++;
             }
             while (c >= b && (comparison = comp.compare(get(perm[c]), v)) >= 0) {
                 if (comparison == 0) {
-                    IntArrays.swap(perm, c, d--);
+                    Ints.swap(perm, c, d--);
                 }
                 c--;
             }
             if (b > c) {
                 break;
             }
-            IntArrays.swap(perm, b++, c--);
+            Ints.swap(perm, b++, c--);
         }
         // Swap partition elements back to middle
         int s;
         s = Math.min(a - from, b - a);
-        IntArrays.swap(perm, from, b - s, s);
+        Ints.swap(perm, from, b - s, s);
         s = Math.min(d - c, to - d - 1);
-        IntArrays.swap(perm, b, to - s, s);
+        Ints.swap(perm, b, to - s, s);
         // Recursively sort non-partition-elements
         if ((s = b - a) > 1) {
             quickSortIndirect(perm, from, from + s, comp);

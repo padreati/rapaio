@@ -37,8 +37,8 @@ import rapaio.experiment.math.linear.dense.DVectorDense;
 import rapaio.printer.Printable;
 import rapaio.util.DoubleComparator;
 import rapaio.util.DoubleComparators;
-import rapaio.util.collection.DoubleArrays;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Doubles;
+import rapaio.util.collection.Ints;
 import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.Int2DoubleFunction;
 
@@ -91,7 +91,7 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      * @return new dense vector of given type
      */
     static DVectorDense fill(int n, double fill) {
-        return new DVectorDense(0, n, DoubleArrays.newFill(n, fill));
+        return new DVectorDense(0, n, Doubles.newFill(n, fill));
     }
 
     /**
@@ -165,7 +165,7 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
      * @return dense vector with computed values
      */
     static DVector from(int len, Int2DoubleFunction fun) {
-        return wrapAt(0, len, DoubleArrays.newFrom(0, len, fun));
+        return wrapAt(0, len, Doubles.newFrom(0, len, fun));
     }
 
     /**
@@ -205,15 +205,15 @@ public interface DVector extends Serializable, Printable, Iterable<Double> {
     }
 
     default DVector range(int start, int end) {
-        return map(IntArrays.newSeq(start, end));
+        return map(Ints.seq(start, end));
     }
 
     default DVector rangeTo(DVector to, int start, int end) {
-        return mapTo(to, IntArrays.newSeq(start, end));
+        return mapTo(to, Ints.seq(start, end));
     }
 
     default DVector rangeNew(int start, int end) {
-        return mapNew(IntArrays.newSeq(start, end));
+        return mapNew(Ints.seq(start, end));
     }
 
     /**

@@ -30,8 +30,8 @@ import java.util.Set;
 import rapaio.core.SamplingTools;
 import rapaio.darray.DArray;
 import rapaio.ml.common.distance.Distance;
-import rapaio.util.collection.DoubleArrays;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Doubles;
+import rapaio.util.collection.Ints;
 
 /**
  * Function which produces initial centroids for KMeans algorithm
@@ -50,7 +50,7 @@ public enum KMClusterInit implements Serializable {
         @Override
         public DArray<Double> init(final Random random, Distance distance, DArray<Double> m, int k) {
 
-            int[] centroids = IntArrays.newFill(k, -1);
+            int[] centroids = Ints.fill(k, -1);
 
             centroids[0] = random.nextInt(m.dim(0));
             Set<Integer> ids = new HashSet<>();
@@ -71,8 +71,8 @@ public enum KMClusterInit implements Serializable {
                     }
                 }
                 // normalize the weights
-                double sum = DoubleArrays.sum(p, 0, p.length);
-                DoubleArrays.div(p, 0, sum, p.length);
+                double sum = Doubles.sum(p, 0, p.length);
+                Doubles.div(p, 0, sum, p.length);
 
                 int next = SamplingTools.sampleWeightedWR(random, 1, p)[0];
                 centroids[i] = next;

@@ -32,7 +32,7 @@ import rapaio.data.unique.UniqueLabel;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -224,7 +224,7 @@ public abstract class AbstractVar implements Var {
     private void fillSummaryLabel(Var var, TextTable tt, int headerColIndex, int valueColIndex) {
         UniqueLabel unique = Unique.ofLabel(var.stream().complete().toMappedVar(), false);
         int[] ids = unique.countSortedIds().elements();
-        IntArrays.reverse(ids, 0, unique.uniqueCount());
+        Ints.reverse(ids, 0, unique.uniqueCount());
 
         int rowCount = var.size();
         int nans = (int) (var.size() - var.stream().complete().count());

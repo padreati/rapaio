@@ -46,8 +46,8 @@ import rapaio.ml.common.distance.Manhattan;
 import rapaio.ml.model.ClusteringModel;
 import rapaio.ml.model.ClusteringResult;
 import rapaio.ml.model.RunInfo;
-import rapaio.util.collection.DoubleArrays;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Doubles;
+import rapaio.util.collection.Ints;
 
 /**
  * KMedoids clustering algorithms. Implemented methods are alternate and PAM. Fast PAM has to be implemented.
@@ -183,7 +183,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
             clusters.computeIfAbsent(assign[i], c -> new ArrayList<>()).add(i);
         }
 
-        int[] newClusters = IntArrays.copy(cint);
+        int[] newClusters = Ints.copy(cint);
         for (int i = 0; i < cint.length; i++) {
 
             int c = cint[i];
@@ -275,9 +275,9 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
         DistanceCache cache = new DistanceCache(x.dim(0), distance.get());
 
         // array which stores the distance to the closest centroid
-        double[] dv = DoubleArrays.newFill(x.dim(0), Double.NaN);
+        double[] dv = Doubles.newFill(x.dim(0), Double.NaN);
         // array which stores the distance to the second closest centroid
-        double[] ev = DoubleArrays.newFill(x.dim(0), Double.NaN);
+        double[] ev = Doubles.newFill(x.dim(0), Double.NaN);
 
         LOGGER.finest("Initialize centroids as random instances.");
         int[] centroidIndexes = initializePAM(x, dv, ev, cache);
@@ -520,7 +520,7 @@ public class KMedoids extends ClusteringModel<KMedoids, ClusteringResult<KMedoid
         public DistanceCache(int len, Distance distance) {
             this.len = len;
             this.distance = distance;
-            this.values = DoubleArrays.newFill(len * len, Double.NaN);
+            this.values = Doubles.newFill(len * len, Double.NaN);
         }
 
         public double get(int i, int j, DArray<Double> vi, DArray<Double> vj) {

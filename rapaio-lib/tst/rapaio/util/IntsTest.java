@@ -25,19 +25,19 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static rapaio.util.collection.IntArrays.copy;
-import static rapaio.util.collection.IntArrays.ensureCapacity;
-import static rapaio.util.collection.IntArrays.forceCapacity;
-import static rapaio.util.collection.IntArrays.grow;
-import static rapaio.util.collection.IntArrays.iterator;
-import static rapaio.util.collection.IntArrays.newCopy;
-import static rapaio.util.collection.IntArrays.newFill;
-import static rapaio.util.collection.IntArrays.newFrom;
-import static rapaio.util.collection.IntArrays.newSeq;
-import static rapaio.util.collection.IntArrays.prod;
-import static rapaio.util.collection.IntArrays.prodsum;
-import static rapaio.util.collection.IntArrays.sub;
-import static rapaio.util.collection.IntArrays.trim;
+import static rapaio.util.collection.Ints.copy;
+import static rapaio.util.collection.Ints.ensureCapacity;
+import static rapaio.util.collection.Ints.forceCapacity;
+import static rapaio.util.collection.Ints.grow;
+import static rapaio.util.collection.Ints.iterator;
+import static rapaio.util.collection.Ints.copyOf;
+import static rapaio.util.collection.Ints.fill;
+import static rapaio.util.collection.Ints.from;
+import static rapaio.util.collection.Ints.seq;
+import static rapaio.util.collection.Ints.prod;
+import static rapaio.util.collection.Ints.prodsum;
+import static rapaio.util.collection.Ints.sub;
+import static rapaio.util.collection.Ints.trim;
 
 import java.util.NoSuchElementException;
 import java.util.PrimitiveIterator;
@@ -49,12 +49,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/11/19.
  */
-public class IntArraysTest {
+public class IntsTest {
 
     private Random random;
 
@@ -65,10 +65,10 @@ public class IntArraysTest {
 
     @Test
     void buildersTest() {
-        assertArrayEquals(new int[] {10, 10, 10}, newFill(3, 10));
-        assertArrayEquals(new int[] {10, 11, 12}, newSeq(10, 13));
-        assertArrayEquals(new int[] {4, 9, 16}, newFrom(new int[] {1, 2, 3, 4, 5}, 1, 4, x -> x * x));
-        assertArrayEquals(new int[] {3, 5}, newCopy(new int[] {1, 3, 5, 7}, 1, 2));
+        assertArrayEquals(new int[] {10, 10, 10}, fill(3, 10));
+        assertArrayEquals(new int[] {10, 11, 12}, seq(10, 13));
+        assertArrayEquals(new int[] {4, 9, 16}, from(new int[] {1, 2, 3, 4, 5}, 1, 4, x -> x * x));
+        assertArrayEquals(new int[] {3, 5}, copyOf(new int[] {1, 3, 5, 7}, 1, 2));
     }
 
     private void testEqualArrays(int[] actual, int... expected) {
@@ -99,7 +99,7 @@ public class IntArraysTest {
 
     @Test
     void testMinus() {
-        int[] a = newSeq(0, 100);
+        int[] a = seq(0, 100);
         int[] b = copy(a);
 
         sub(a, 0, b, 0, 100);
@@ -110,7 +110,7 @@ public class IntArraysTest {
 
     @Test
     void testDot() {
-        var a = newSeq(0, 100);
+        var a = seq(0, 100);
         var b = copy(a);
 
         int result = prodsum(a, 0, b, 0, 100);
@@ -128,77 +128,77 @@ public class IntArraysTest {
 
     @Test
     void testCapacity() {
-        var array1 = newSeq(0, 100);
+        var array1 = seq(0, 100);
 
         // new copy preserving 10
         var array2 = forceCapacity(array1, 10, 10);
-        assertTrue(IntArrays.equals(array1, 0, array2, 0, 10));
+        assertTrue(Ints.equals(array1, 0, array2, 0, 10));
         assertEquals(10, array2.length);
 
         // new copy preserving 80
         var array3 = forceCapacity(array1, 120, 80);
-        assertTrue(IntArrays.equals(array1, 0, array3, 0, 80));
+        assertTrue(Ints.equals(array1, 0, array3, 0, 80));
         assertEquals(120, array3.length);
 
         // leave array untouched
         var array4 = ensureCapacity(array1, 10);
-        assertTrue(IntArrays.equals(array1, 0, array4, 0, 100));
+        assertTrue(Ints.equals(array1, 0, array4, 0, 100));
         assertEquals(100, array4.length);
 
         // new copy preserving all available
         var array5 = ensureCapacity(array1, 120);
-        assertTrue(IntArrays.equals(array1, 0, array5, 0, 100));
+        assertTrue(Ints.equals(array1, 0, array5, 0, 100));
         assertEquals(120, array5.length);
 
         // new copy preserving 10
         var array6 = ensureCapacity(array1, 120, 10);
-        assertTrue(IntArrays.equals(array1, 0, array6, 0, 10));
-        assertTrue(IntArrays.equals(newFill(90, 0), 0, array6, 10, 90));
+        assertTrue(Ints.equals(array1, 0, array6, 0, 10));
+        assertTrue(Ints.equals(fill(90, 0), 0, array6, 10, 90));
 
         // leave untouched
         var array7 = grow(array1, 10);
-        assertTrue(IntArrays.equals(array1, 0, array7, 0, 100));
+        assertTrue(Ints.equals(array1, 0, array7, 0, 100));
         assertEquals(100, array7.length);
 
         // new copy preserving all
         var array8 = grow(array1, 120);
-        assertTrue(IntArrays.equals(array1, 0, array8, 0, 100));
+        assertTrue(Ints.equals(array1, 0, array8, 0, 100));
         assertEquals(150, array8.length);
 
         // new copy preserving 10
         var array9 = grow(array1, 200, 10);
-        assertTrue(IntArrays.equals(array1, 0, array9, 0, 10));
-        assertTrue(IntArrays.equals(newFill(190, 0), 0, array9, 10, 190));
+        assertTrue(Ints.equals(array1, 0, array9, 0, 10));
+        assertTrue(Ints.equals(fill(190, 0), 0, array9, 10, 190));
         assertEquals(200, array9.length);
 
         // trim array to 10
         var array10 = trim(array1, 10);
         assertEquals(10, array10.length);
-        assertTrue(IntArrays.equals(array1, 0, array10, 0, 10));
+        assertTrue(Ints.equals(array1, 0, array10, 0, 10));
     }
 
     @Test
     void testSorting() {
 
         int len = 100_000;
-        var a = newSeq(0, len);
-        var b = newSeq(0, len);
+        var a = seq(0, len);
+        var b = seq(0, len);
 
-        assertAsc(a, IntArrays::quickSort);
-        assertAsc(a, IntArrays::parallelQuickSort);
+        assertAsc(a, Ints::quickSort);
+        assertAsc(a, Ints::parallelQuickSort);
 
-        assertDesc(a, IntArrays::quickSort);
-        assertDesc(a, IntArrays::parallelQuickSort);
+        assertDesc(a, Ints::quickSort);
+        assertDesc(a, Ints::parallelQuickSort);
 
-        assertAscIndirect(a, IntArrays::quickSortIndirect);
-        assertAscIndirect(a, IntArrays::parallelQuickSortIndirect);
+        assertAscIndirect(a, Ints::quickSortIndirect);
+        assertAscIndirect(a, Ints::parallelQuickSortIndirect);
 
-        assertAsc(a, IntArrays::mergeSort);
-        assertDesc(a, IntArrays::mergeSort);
+        assertAsc(a, Ints::mergeSort);
+        assertDesc(a, Ints::mergeSort);
 
-        assertAsc(a, IntArrays::parallelQuickSort);
-        assertAsc2(a, b, IntArrays::quickSort);
-        assertAsc2(a, b, IntArrays::parallelQuickSort);
+        assertAsc(a, Ints::parallelQuickSort);
+        assertAsc2(a, b, Ints::quickSort);
+        assertAsc2(a, b, Ints::parallelQuickSort);
     }
 
     private void assertAsc(int[] src, Consumer<int[]> fun) {
@@ -231,7 +231,7 @@ public class IntArraysTest {
     }
 
     private void assertAscIndirect(int[] array, BiConsumer<int[], int[]> alg) {
-        int[] perm = newSeq(0, array.length);
+        int[] perm = seq(0, array.length);
         alg.accept(perm, array);
         for (int i = 1; i < array.length; i++) {
             assertTrue(array[perm[i - 1]] <= array[perm[i]]);

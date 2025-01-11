@@ -28,7 +28,7 @@ import java.util.Random;
 import java.util.stream.IntStream;
 
 import rapaio.data.Mapping;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/27/18.
@@ -114,7 +114,7 @@ public final class IntervalMapping implements Mapping {
 
     @Override
     public int[] elements() {
-        return IntArrays.newSeq(start, end);
+        return Ints.seq(start, end);
     }
 
     @Override

@@ -24,6 +24,7 @@ package rapaio.nn;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import rapaio.darray.Compare;
@@ -88,9 +89,6 @@ import rapaio.nn.tensors.unary.Tanh;
  * The tensor manager is used to create new DArrays and to provide data types, execution pools and other things.
  */
 public abstract class Tensor {
-
-    public record BackFunction(Tensor ref, Supplier<DArray<?>> fun) {
-    }
 
     protected final TensorManager tm;
     protected String name;
@@ -247,8 +245,12 @@ public abstract class Tensor {
         return backFunctions;
     }
 
-    protected final void backEdge(Tensor ref, Supplier<DArray<?>> backFun) {
-        backFunctions.add(new BackFunction(ref, backFun));
+    protected final void backEdge(Tensor ref, Supplier<DArray<?>> addFun) {
+        backFunctions.add(BackFunction.of(ref, addFun));
+    }
+
+    protected final void backEdge(Tensor ref, Consumer<DArray<?>> updateFun) {
+        backFunctions.add(BackFunction.of(ref, updateFun));
     }
 
     @Override

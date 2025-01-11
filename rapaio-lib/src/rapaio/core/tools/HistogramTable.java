@@ -32,7 +32,7 @@ import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
-import rapaio.util.collection.DoubleArrays;
+import rapaio.util.collection.Doubles;
 
 public final class HistogramTable implements Printable {
 
@@ -123,7 +123,7 @@ public final class HistogramTable implements Printable {
                 pOpts.getFloatFormat().format(min),
                 pOpts.getFloatFormat().format(max),
                 bins,
-                DoubleArrays.toContent(freq, printer, options)
+                Doubles.toContent(freq, printer, options)
         );
     }
 
@@ -141,7 +141,7 @@ public final class HistogramTable implements Printable {
                 pOpts.getFloatFormat().format(min),
                 pOpts.getFloatFormat().format(max),
                 bins,
-                DoubleArrays.toContent(freq, printer, options)
+                Doubles.toContent(freq, printer, options)
         );
     }
 
@@ -159,7 +159,7 @@ public final class HistogramTable implements Printable {
                 pOpts.getFloatFormat().format(min),
                 pOpts.getFloatFormat().format(max),
                 bins,
-                DoubleArrays.toFullContent(freq, printer, options)
+                Doubles.toFullContent(freq, printer, options)
         );
     }
 }

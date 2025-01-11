@@ -30,7 +30,7 @@ import rapaio.darray.iterators.StridePointerIterator;
 import rapaio.io.atom.AtomSerialization;
 import rapaio.io.atom.LoadAtomHandler;
 import rapaio.io.atom.SaveAtomHandler;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 public interface StrideLayout extends Layout {
 
@@ -55,14 +55,14 @@ public interface StrideLayout extends Layout {
         order = Order.autoFC(order);
         int[] strides = switch (order) {
             case C -> {
-                int[] rowStrides = IntArrays.newFill(shape.rank(), 1);
+                int[] rowStrides = Ints.fill(shape.rank(), 1);
                 for (int i = rowStrides.length - 2; i >= 0; i--) {
                     rowStrides[i] = shape.dim(i + 1) * rowStrides[i + 1];
                 }
                 yield rowStrides;
             }
             case F -> {
-                int[] colStrides = IntArrays.newFill(shape.rank(), 1);
+                int[] colStrides = Ints.fill(shape.rank(), 1);
                 for (int i = 1; i < colStrides.length; i++) {
                     colStrides[i] = shape.dim(i - 1) * colStrides[i - 1];
                 }

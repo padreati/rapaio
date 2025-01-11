@@ -57,6 +57,7 @@ import rapaio.darray.factories.IntegerDenseRow;
 import rapaio.darray.factories.IntegerDenseStride;
 import rapaio.darray.factories.IntegerDenseStrideView;
 import rapaio.data.OperationNotAvailableException;
+import rapaio.util.collection.Ints;
 import rapaio.util.function.IntIntBiFunction;
 
 public class DArrayTest {
@@ -104,7 +105,7 @@ public class DArrayTest {
         if (value instanceof Integer) {
             assertEquals(DType.INTEGER, t.dt());
         }
-        assertEquals(g.engine(), t.manager());
+        assertEquals(g.engine(), t.dm());
     }
 
     @ParameterizedTest
@@ -1878,6 +1879,18 @@ public class DArrayTest {
 
         DArray<N> r5 = t1.sumTo(Shape.of(3, 1, 2), false);
         assertEquals(Shape.of(3, 1, 2), r5.shape());
+    }
+
+    @ParameterizedTest
+    @MethodSource("dataFactorySource")
+    <N extends Number> void padUnpadTest(DataFactory<N> g) {
+        var x = g.seq(Shape.of(3, 5, 6));
+
+        int[] pad = Ints.of(3, 2);
+        int[] dilation = Ints.of(2, 1);
+
+        var y = x.pad(pad, dilation).unpad(pad, dilation);
+        assertTrue(x.deepEquals(y));
     }
 
     private <N extends Number> N sequenceSum(DataFactory<N> g, int len) {

@@ -21,7 +21,7 @@
 
 package rapaio.ml.loss;
 
-import static rapaio.util.collection.DoubleArrays.sum;
+import static rapaio.util.collection.Doubles.sum;
 
 import java.io.Serial;
 

@@ -34,8 +34,8 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.experiment.math.linear.DMatrix;
 import rapaio.experiment.math.linear.DVector;
-import rapaio.util.collection.DoubleArrays;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Doubles;
+import rapaio.util.collection.Ints;
 import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.IntInt2DoubleBiFunction;
 
@@ -63,7 +63,7 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
     }
 
     public static DMatrixDenseC fill(int rows, int cols, double fill) {
-        return new DMatrixDenseC(0, rows, cols, DoubleArrays.newFill(rows * cols, fill));
+        return new DMatrixDenseC(0, rows, cols, Doubles.newFill(rows * cols, fill));
     }
 
     public static DMatrixDenseC fill(int rows, int cols, IntInt2DoubleBiFunction fun) {
@@ -474,13 +474,13 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
 
     @Override
     public DMatrix mapRows(int... indexes) {
-        if (IntArrays.isDenseArray(indexes)) {
+        if (Ints.isDenseArray(indexes)) {
             int start = indexes[0];
             int end = indexes[indexes.length - 1];
             return rangeRows(start, end + 1);
         }
-        int[] colIndexes = IntArrays.newSeq(0, cols());
-        IntArrays.mul(colIndexes, 0, colStride, colIndexes.length);
+        int[] colIndexes = Ints.seq(0, cols());
+        Ints.mul(colIndexes, 0, colStride, colIndexes.length);
         return new DMatrixMap(offset, indexes, colIndexes, array);
     }
 
@@ -496,14 +496,14 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
 
     @Override
     public DMatrix mapCols(int... indexes) {
-        if (IntArrays.isDenseArray(indexes)) {
+        if (Ints.isDenseArray(indexes)) {
             int start = indexes[0];
             int end = indexes[indexes.length - 1];
             return rangeCols(start, end + 1);
         }
-        int[] rowIndexes = IntArrays.newSeq(0, rows);
+        int[] rowIndexes = Ints.seq(0, rows);
         int[] colIndexes = Arrays.copyOf(indexes, indexes.length);
-        IntArrays.mul(colIndexes, 0, colStride, colIndexes.length);
+        Ints.mul(colIndexes, 0, colStride, colIndexes.length);
         return new DMatrixMap(offset, rowIndexes, colIndexes, array);
     }
 
@@ -526,7 +526,7 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
 
     @Override
     public DMatrix rangeRowsTo(DMatrix to, int start, int end) {
-        return mapRowsTo(to, IntArrays.newSeq(start, end));
+        return mapRowsTo(to, Ints.seq(start, end));
     }
 
     @Override
@@ -538,7 +538,7 @@ public class DMatrixDenseC extends AbstractDMatrix implements DMatrixStore {
 
     @Override
     public DMatrix rangeColsTo(DMatrix to, int start, int end) {
-        return mapColsTo(to, IntArrays.newSeq(start, end));
+        return mapColsTo(to, Ints.seq(start, end));
     }
 
     @Override

@@ -52,20 +52,20 @@ import rapaio.printer.Printable;
 import rapaio.util.function.IntIntBiFunction;
 
 /**
- * A NArray is a multidimensional array which contains elements of the same type.
+ * A {@link DArray} is a multidimensional array which contains elements of the same type.
  * Elements are indexed organized in zero, one or multiple dimensions.
  * <p>
- * NArrays with a low number of dimensions are known also under more specific names:
+ * DArrays with a low number of dimensions are known also under more specific names:
  * <ul>
- *     <li>scalar</li> an NArray with zero dimensions which contains a single element
- *     <li>vector</li> an NArray with one dimension
- *     <li>matrix</li> an NArray with two dimensions
+ *     <li>scalar</li> a darray with zero dimensions which contains a single element
+ *     <li>vector</li> a darray with one dimension
+ *     <li>matrix</li> a darray with two dimensions
  * </ul>
  * <p>
- * The type of data elements from an NArray is marked as a generic data type and also described by {@link #dt()}.
+ * The type of data elements from a {@link DArray} is marked as a generic data type and also described by {@link #dt()}.
  * <p>
- * An NArray is created by a factory which implements {@link DArrayManager}. Each NArray provides a link towards the manager
- * which created it through {@link #manager()}.
+ * A darray is created by a factory which implements {@link DArrayManager}. Each DArray provides a link towards the manager
+ * which created it through {@link #dm()}.
  * <p>
  * The elements are logically organized like a hyper cube with a given number of dimensions {@link #rank()}. The size of each
  * dimension is described by a {@link Shape} object and the {@link Layout} describes how the details related
@@ -77,47 +77,51 @@ import rapaio.util.function.IntIntBiFunction;
  */
 public abstract sealed class DArray<N extends Number> implements Printable, Iterable<N> permits AbstractStrideDArray {
 
-    protected final DArrayManager manager;
+    protected final DArrayManager dm;
+    protected final DType<N> dt;
     protected final Storage storage;
 
-    protected DArray(DArrayManager manager, Storage storage) {
-        this.manager = manager;
+    protected DArray(DArrayManager dm, DType<N> dt, Storage storage) {
+        this.dm = dm;
+        this.dt = dt;
         this.storage = storage;
     }
 
     /**
-     * NArray manager which created this NArray instance.
+     * {@link DArrayManager} which created this instance.
      */
-    public final DArrayManager manager() {
-        return manager;
+    public final DArrayManager dm() {
+        return dm;
     }
 
     /**
-     * {@link DType} describes the data type of the elements contained by the NArray and provides also related utilities like value
+     * {@link DType} describes the data type of the elements contained by the darray and provides also related utilities like value
      * casting.
      *
-     * @return NArray data type
+     * @return darray data type
      */
-    public abstract DType<N> dt();
+    public final DType<N> dt() {
+        return dt;
+    }
 
     /**
-     * NArray layout contains the complete information about logical layout of data elements in storage memory.
+     * DArray layout contains information about logical layout of data elements in storage memory.
      *
-     * @return NArray layout
+     * @return DArray layout
      */
     public abstract Layout layout();
 
     /**
      * Shape describes the number of dimensions and the size on each dimension of the multidimensional elements.
      *
-     * @return NArray shape
+     * @return DArray shape
      */
     public final Shape shape() {
         return layout().shape();
     }
 
     /**
-     * Rank is the number of dimensions for the NArray.
+     * Rank is the number of dimensions for the DArray.
      *
      * @return number of dimensions or rank
      */
@@ -142,11 +146,25 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
         return shape().dim(axis);
     }
 
+    public final int[] strides() {
+        if (layout() instanceof StrideLayout l) {
+            return l.strides();
+        }
+        throw new OperationNotAvailableException("Layout is not StrideLayout");
+    }
+
+    public final int stride(int axis) {
+        if (layout() instanceof StrideLayout l) {
+            return l.stride(axis);
+        }
+        throw new OperationNotAvailableException("Layout is not StrideLayout");
+    }
+
     /**
-     * Size of an NArray is the number of elements contained in NArray and is equal with
+     * Size of an DArray is the number of elements contained in DArray and is equal with
      * the product of dimension's sizes
      *
-     * @return number of elements from NArray
+     * @return number of elements from DArray
      */
     public final int size() {
         return shape().size();
@@ -162,43 +180,43 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     }
 
     /**
-     * A scalar is an NArray with no dimensions.
+     * A scalar is a darray with no dimensions.
      *
-     * @return true if the rank of NArray is 0
+     * @return true if the rank is 0
      */
     public final boolean isScalar() {
         return rank() == 0;
     }
 
     /**
-     * A vector is an NArray with one dimension.
+     * A vector is a darray with one dimension.
      *
-     * @return true if the rank of the NArray is 1
+     * @return true if the rank is 1
      */
     public final boolean isVector() {
         return rank() == 1;
     }
 
     /**
-     * A matrix is an NArray with two dimensions.
+     * A matrix is a darray with two dimensions.
      *
-     * @return true if the rank of the NArray is 2
+     * @return true if the rank is 2
      */
     public final boolean isMatrix() {
         return rank() == 2;
     }
 
     /**
-     * Creates a new NArray with a different shape. If possible, the data will not be copied.
-     * If data is copied, the result will be a dense NArray of default order.
+     * Creates a new darray with a different shape. If possible, the data will not be copied.
+     * If data is copied, the result will be a dense darray with default order.
      * <p>
-     * In order to reshape an NArray, the source shape and destination shape must have the same size.
+     * In order to reshape a darray, the source shape and destination shape must have the same size.
      * <p>
      * The order in which elements are read is {@code C} if data is stored in C order, {@code F} if data is stored
      * in F order, and default for the other cases.
      *
      * @param shape destination shape
-     * @return new NArray instance, wrapping, if possible, the data from the old NArray.
+     * @return new instance, wrapping, if possible, the data from the old darray.
      * @see DArray#reshape(Shape, Order)
      */
     public final DArray<N> reshape(Shape shape) {
@@ -206,9 +224,8 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     }
 
     /**
-     * Creates a new NArray with a different shape. If possible, the data will not be copied.
-     * <p>
-     * In order to reshape an NArray, the source shape and destination shape must have the same size.
+     * Creates a new darray with a different shape. If possible, the data will not be copied.
+     * In order to reshape a darray, the source shape and destination shape must have the same size.
      * <p>
      * The indexes are interpreted according to order parameter:
      * <ul>
@@ -220,16 +237,16 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      * </ul>
      * <p>
      * Notice that the asked order is not the order in which data is stored, but in which data is interpreted for reshape.
-     * If a new copy is created, that will also be the order in which new NArray copy will store data
+     * If a new copy is created, that will also be the order in which new DArray copy will store data
      *
      * @param shape    destination shape
      * @param askOrder destination order, if the data will be copied, otherwise the parameter is ignored.
-     * @return new NArray instance, wrapping, if possible, the data from the old NArray.
+     * @return new DArray instance, wrapping, if possible, the data from the old DArray.
      */
     public abstract DArray<N> reshape(Shape shape, Order askOrder);
 
     /**
-     * Creates a new transposed NArray. Data will be copied and stored with default order.
+     * Creates a new transposed darray. Data will be copied and stored with default order.
      *
      * @return copy of the transposed vector
      */
@@ -238,9 +255,9 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     }
 
     /**
-     * Creates a new transposed NArray. Data will be stored in the specified order given as parameter.
+     * Creates a new transposed darray. Data will be stored in the specified order given as parameter.
      * <p>
-     * The only accepted orders are C order and F order.
+     * The only accepted orders are {@link Order#C} and {@link Order#F}.
      *
      * @param askOrder storage order
      * @return copy of the transposed vector
@@ -250,39 +267,39 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     }
 
     /**
-     * Transpose of an NArray. A transposed NArray is an NArray which reverts axis, the first axis becomes the last,
+     * Transpose of a darray. A transposed darray is a darray with reverted axis, the first axis becomes the last,
      * the second axis becomes the second to last and so on.
      * <p>
      * Data storage remain the same, no new storage copy is created.
-     * As such, any modification on a transposed NArray will affect the original NArray.
+     * As such, any modification on a transposed darray will affect the original darray.
      *
-     * @return a transposed view of the NArray
+     * @return a transposed view of the DArray
      */
     public abstract DArray<N> t_();
 
     /**
-     * Collapses the NArray into one dimension using the default order. The order is used for reading. In the case when a view
-     * can't be created, a new NArray will be created with the storage order same as reading order.
+     * Collapses the darray into one dimension using the default order. The order is used for reading. In the case when a view
+     * can't be created, a new darray will be created with the storage order same as reading order.
      *
-     * @return an NArray with elements in given order (new copy if needed)
+     * @return an DArray with elements in given order (new copy if needed)
      */
     public final DArray<N> ravel() {
         return ravel(Order.defaultOrder());
     }
 
     /**
-     * Collapses the NArray into one dimension using the given order. The order is used for reading. In the case when a view
-     * can't be created, a new NArray will be created with the storage order same as reading order.
+     * Collapses the darray into one dimension using the given order. The order is used for reading. In the case when a view
+     * can't be created, a new darray will be created with the storage order same as reading order.
      *
      * @param askOrder order of the elements
-     * @return an NArray with elements in given order (new copy if needed)
+     * @return a darray with elements in given order (new copy if needed)
      */
     public abstract DArray<N> ravel(Order askOrder);
 
     /**
      * Creates a copy of the array, flattened into one dimension. The order of the elements is the default order.
      *
-     * @return a copy of the NArray with elements in asked order.
+     * @return a copy of the darray with elements in asked order.
      */
     public final DArray<N> flatten() {
         return flatten(Order.defaultOrder());
@@ -292,7 +309,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      * Creates a copy of the array, flattened into one dimension. The order of the elements is given as parameter.
      *
      * @param askOrder order of the elements
-     * @return a copy of the NArray with elements in asked order.
+     * @return a copy of the darray with elements in asked order.
      */
     public abstract DArray<N> flatten(Order askOrder);
 
@@ -300,28 +317,29 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      * Collapses the given axes if are of dimension one. This operation does not create a new copy of the data.
      * If any dimension doesn't have size one, the dimension will remain as it is.
      *
-     * @return view of the same NArray with the given dimensions equal with one collapsed
+     * @return view of the same darray with the given dimensions equal with one collapsed
      */
     public abstract DArray<N> squeeze(int... axes);
 
     /**
-     * Creates a new NArray view with an additional dimensions at the position specified by {@param axes}.
+     * Creates a new darray view with additional dimensions at the position specified by {@param axes}.
+     * The new dimensions will have size {@code 1}.
      * Specified axes value should be between 0 (inclusive) and the number of dimensions plus the number of added axes (exclusive).
      *
      * @param axes indexes of the axes to be added
-     * @return new view NArray with added axes
+     * @return new view darray with added axes
      */
     public abstract DArray<N> stretch(int... axes);
 
     /**
-     * Creates a new NArray by repeating values along a given dimension of size 1. This operation is
-     * similar with repeating values, with the difference that the resulting NArray will be a view over the same data,
+     * Creates a new darray by repeating values along a given dimension of size 1. This operation is
+     * similar with repeating values, with the difference that the resulting darray will be a view over the same data,
      * thus avoiding copying data. This is possible if the corresponding stride is set to 0 and the corresponding original
      * dimension has size 1.
      *
      * @param axis specified dimension
      * @param dim  new size of the dimension, which is equivalent with how many times the values are repeated
-     * @return new view over the original NArray with repeated data along a given dimension
+     * @return new view over the original DArray with repeated data along a given dimension
      */
     public abstract DArray<N> expand(int axis, int dim);
 
@@ -339,58 +357,61 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     }
 
     /**
-     * Creates an NArray view with dimensions permuted in the order specified in parameter. The
+     * Creates a darray view with dimensions permuted in the order specified in parameter. The
      * parameter is an integer array containing all values from closed interval {@code [0,(rank-1)]}.
      * The order in which those values are passed defined the dimension permutation.
      *
      * @param dims dimension permutation
-     * @return new NArray view with permuted dimensions
+     * @return new DArray view with permuted dimensions
      */
     public abstract DArray<N> permute(int... dims);
 
     /**
-     * Creates a new NArray view with source axis moved into the given destination position.
+     * Creates a new darray view with source axis moved into the given destination position.
+     * The axes between {@code src} and {@code dst} are shifted one position.
      *
      * @param src source axis
      * @param dst destination axis position
-     * @return new view NArray with moved axis
+     * @return new darray view with moved axis
      */
     public abstract DArray<N> moveAxis(int src, int dst);
 
     /**
-     * Swap two axis. This does not affect the storage.
+     * Swap two axis. All other exes remains the same. This operation creates a darray view.
      *
      * @param src source axis
      * @param dst destination axis
-     * @return new view NArray with swapped axis
+     * @return new view DArray with swapped axis
      */
     public abstract DArray<N> swapAxis(int src, int dst);
 
     /**
-     * Creates a new NArray view with one truncated axis, all other axes remain the same.
+     * Creates a new darray view with one truncated dimension, all other dimensions remain the same.
+     * The truncated dimension will remain, even if it is unitary.
      *
      * @param axis  axis to be truncated
      * @param start start index inclusive
      * @param end   end index exclusive
-     * @return new view NArray with truncated axis
+     * @return new darray view with truncated axis
      */
     public final DArray<N> narrow(int axis, int start, int end) {
         return narrow(axis, true, start, end);
     }
 
     /**
-     * Creates a new NArray view with one truncated axis, all other axes remain the same.
+     * Creates a new darray view with one truncated axis, all other axes remain the same.
+     * The truncated dimension will be removed if {@code keepDim} is false, and it has unit 1 after truncation.
      *
      * @param axis    axis to be truncated
      * @param keepDim keep dimension or not
      * @param start   start index inclusive
      * @param end     end index exclusive
-     * @return new view NArray with truncated axis
+     * @return new view DArray with truncated axis
      */
     public abstract DArray<N> narrow(int axis, boolean keepDim, int start, int end);
 
     /**
-     * Creates a new NArray view with possibly all truncated axes.
+     * Creates a new darray view with possibly all truncated axes.
      *
      * @param keepDim keep dimensions even if some of have length 1, false otherwise
      * @param starts  vector of indexes where narrow interval starts
@@ -400,37 +421,38 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     public abstract DArray<N> narrowAll(boolean keepDim, int[] starts, int[] ends);
 
     /**
-     * Splits the NArray into multiple view NArrays along a given axis. The resulting NArrays are narrowed versions of the original NArray,
+     * Splits the darray into multiple darray views along a given axis. The resulting darrays are narrowed versions of the original ones,
      * with the start index being the current index, and the end being the next index or the end of the dimension.
      *
      * @param axis    axis to split along
      * @param indexes indexes to split along, being start indexes for truncation
-     * @return list of new NArrays with truncated data.
+     * @return list of new DArrays with truncated data.
      */
     public abstract List<DArray<N>> split(int axis, boolean keepDim, int... indexes);
 
     /**
-     * Splits the NArray into multiple view NArrays along all axes. The resulting NArrays are narrowed versions of the original NArrays,
+     * Splits the darray into multiple darray views along all axes. The resulting darrays are narrowed versions of the original ones,
      * having for each dimension the start index being the current index in that dimension, and the end index being the next index in
      * that dimension. The indices are given as an array of arrays with length equal with number of axes, and for each sub array the
      * split indexes specified.
      *
-     * @param keepDim keep original dimensions even if some dimensions have size 1, false otherwise
+     * @param keepDim if is true, then the original dimensions will be removed if they have size 1 after truncation, keep them otherwise
      * @param indexes array of arrays of indices
-     * @return list of new NArrays with truncated axes
+     * @return list of new darrays with truncated axes
      */
     public abstract List<DArray<N>> splitAll(boolean keepDim, int[][] indexes);
 
     /**
-     * Slices the narray along a given axis.
-     * The resulting narrays are narrowed versions of the original one with size given by step.
-     * The last narray in list might have lesser dimension size if step does not divide dimension size.
+     * Slices the darray along a given axis. The resulting darrays are narrowed versions of the original one with size given by step.
+     * <p>
+     * The last darray in list might have lesser dimension size if step does not divide dimension size exactly.
+     * <p>
      * It also may return fewer chunks if the number of requested chunks is greater than the dimension of the axis.
-     * The resulting NArrays are views over the original one.
+     * The resulting darrays are views over the original one.
      *
      * @param axis axis to slice along
      * @param step step size
-     * @return list of new NArrays with truncated data.
+     * @return list of new DArrays with truncated data.
      */
     public final List<DArray<N>> chunk(int axis, boolean keepDim, int step) {
         int dim = layout().shape().dim(axis);
@@ -447,14 +469,14 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     }
 
     /**
-     * Slices the n-array along all dimensions.
-     * The resulting n-arrays are truncated versions of the original with sizes in each dimensions given by steps.
-     * The last n-array might have dimensions lesser than steps if the original dimension does not divide exactly at step.
-     * The resulting NArrays are views over the original one.
+     * Slices the darray along all dimensions.
+     * The resulting darrays are truncated versions of the original with sizes in each dimensions given by steps.
+     * The last darray might have dimensions lesser than the other if the original dimension does not divide exactly at step.
+     * The resulting darrays are views over the original one.
      *
      * @param keepDim keep the original dimensions even if those have dimensions of size 1, remove them otherwise
      * @param steps   array of steps, one step for each dimension
-     * @return list of NArrays with truncated data
+     * @return list of darrays with truncated data
      */
     public final List<DArray<N>> chunkAll(boolean keepDim, int[] steps) {
         if (layout().rank() != steps.length) {
@@ -472,28 +494,38 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     }
 
     /**
-     * Creates a new NArray by stacking or concatenating this NArray multiple times along a given axis.
+     * Creates a new darray by stacking or concatenating this darray multiple times along a given axis.
      * <p>
-     * The resulting NArray will be stored in default order.
+     * The resulting darray will be stored in default order.
      *
      * @param axis   the axis which will be repeated
      * @param repeat the number of repetitions
-     * @param stack  stack NArrays if true, concatenate if false
-     * @return NArray with repeated values along given axis
+     * @param stack  stack DArrays if true, concatenate if false
+     * @return darray with repeated values along given axis
      */
     public final DArray<N> repeat(int axis, int repeat, boolean stack) {
         return repeat(Order.defaultOrder(), axis, repeat, stack);
     }
 
+    /**
+     * Creates a new darray by stacking or concatenating this darray multiple times along a given axis.
+     * <p>
+     * The resulting darray will be stored in the specified order.
+     *
+     * @param axis   the axis which will be repeated
+     * @param repeat the number of repetitions
+     * @param stack  stack DArrays if true, concatenate if false
+     * @return darray with repeated values along given axis
+     */
     public final DArray<N> repeat(Order order, int axis, int repeat, boolean stack) {
         List<DArray<N>> copies = new ArrayList<>(repeat);
         for (int i = 0; i < repeat; i++) {
             copies.add(this);
         }
         if (stack) {
-            return manager.stack(dt(), order, axis, copies);
+            return dm.stack(dt, order, axis, copies);
         } else {
-            return manager.cat(dt(), order, axis, copies);
+            return dm.cat(dt, order, axis, copies);
         }
     }
 
@@ -502,13 +534,13 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      * a new copy of data. The indices value can be repeated or specified in any order as long as there are integer values in range
      * {@code 0} inclusive and {@code dim(axis)} exclusive.
      * <p>
-     * The resulting NArray will have the dimension specified by axis of size equal with the length of indices.
+     * The resulting darray will have the dimension specified by axis of size equal with the length of indices.
      * <p>
      * If a new copy is required, the storage order is the default order.
      *
      * @param axis    specified axis
      * @param indices indices of the taken values along the specified axis
-     * @return NArray with mapped values along the given dimension
+     * @return DArray with mapped values along the given dimension
      */
     public final DArray<N> sel(int axis, int... indices) {
         return sel(Order.defaultOrder(), axis, indices);
@@ -519,31 +551,31 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      * a new copy of data. The indices value can be repeated or specified in any order as long as there are integer values in range
      * {@code 0} inclusive and {@code dim(axis)} exclusive.
      * <p>
-     * The resulting NArray will have the dimension specified by axis of size equal with the length of indices.
+     * The resulting DArray will have the dimension specified by axis of size equal with the length of indices.
      * <p>
      * If a new copy is required, the storage order is the specified order.
      *
      * @param order   storage order if new data copy is required, ignored otherwise
      * @param axis    specified axis
      * @param indices indices of the taken values along the specified axis
-     * @return NArray with mapped values along the given dimension
+     * @return DArray with mapped values along the given dimension
      */
     public abstract DArray<N> sel(Order order, int axis, int... indices);
 
     /**
      * Takes values along a given axis from the specified indices and squeeze the given axis if a single index is requested. For example,
-     * one can take a single row from a matrix NArray and the resulting NArray will have a single dimension, aka the resulting
-     * NArray will be a vector. This operation will create a view when is possible, otherwise will create
+     * one can take a single row from a matrix DArray and the resulting DArray will have a single dimension, aka the resulting
+     * DArray will be a vector. This operation will create a view when is possible, otherwise will create
      * a new copy of data. The indices value can be repeated or specified in any order as long as there are integer values in range
      * {@code 0} inclusive and {@code dim(axis)} exclusive.
      * <p>
-     * The resulting NArray will have the dimension specified by axis of size equal with the length of indices.
+     * The resulting DArray will have the dimension specified by axis of size equal with the length of indices.
      * <p>
      * If a new copy is required, the storage order is the default order.
      *
      * @param axis    specified axis
      * @param indices indices of the taken values along the specified axis
-     * @return NArray with mapped values along the given dimension
+     * @return DArray with mapped values along the given dimension
      */
     public final DArray<N> selsq(int axis, int... indices) {
         return selsq(Order.defaultOrder(), axis, indices);
@@ -551,19 +583,19 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
 
     /**
      * Takes values along a given axis from the specified indices and squeeze the given axis if a single index is requested. For example,
-     * one can take a single row from a matrix NArray and the resulting NArray will have a single dimension, aka the resulting
-     * NArray will be a vector. This operation will create a view when is possible, otherwise will create
+     * one can take a single row from a matrix DArray and the resulting DArray will have a single dimension, aka the resulting
+     * darray will be a vector. This operation will create a view when is possible, otherwise will create
      * a new copy of data. The indices value can be repeated or specified in any order as long as there are integer values in range
      * {@code 0} inclusive and {@code dim(axis)} exclusive.
      * <p>
-     * The resulting NArray will have the dimension specified by axis of size equal with the length of indices.
+     * The resulting DArray will have the dimension specified by axis of size equal with the length of indices.
      * <p>
      * If a new copy is required, the storage order is the order specified by parameter.
      *
-     * @param order   order specified for the new NArray, if a copy of the data is required
+     * @param order   order specified for the new DArray, if a copy of the data is required
      * @param axis    specified axis
      * @param indices indices of the taken values along the specified axis
-     * @return NArray with mapped values along the given dimension
+     * @return DArray with mapped values along the given dimension
      */
     public final DArray<N> selsq(Order order, int axis, int... indices) {
         return sel(order, axis, indices).squeeze(axis);
@@ -578,7 +610,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      *
      * @param axis    axis along to remove values
      * @param indices indices of the values from the specified axis to be removes.
-     * @return NArray with removes values along the given dimension
+     * @return DArray with removes values along the given dimension
      */
     public final DArray<N> rem(int axis, int... indices) {
         return rem(Order.defaultOrder(), axis, indices);
@@ -594,7 +626,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      * @param order   order of the copied data, if a copy is needed
      * @param axis    axis along to remove values
      * @param indices indices of the values from the specified axis to be removes.
-     * @return NArray with removed values along the given dimension
+     * @return DArray with removed values along the given dimension
      */
     public final DArray<N> rem(Order order, int axis, int... indices) {
         Set<Integer> toRemove = new HashSet<>();
@@ -620,7 +652,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      *
      * @param axis    axis along to remove values
      * @param indices indices of the values from the specified axis to be removes.
-     * @return squeezed NArray with removed values along the given dimension
+     * @return squeezed DArray with removed values along the given dimension
      */
     public final DArray<N> remsq(int axis, int... indices) {
         return remsq(Order.defaultOrder(), axis, indices);
@@ -637,156 +669,424 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      * @param order   order of the copied data, if a copy is needed
      * @param axis    axis along to remove values
      * @param indices indices of the values from the specified axis to be removes.
-     * @return squeezed NArray with removed values along the given dimension
+     * @return squeezed DArray with removed values along the given dimension
      */
     public final DArray<N> remsq(Order order, int axis, int... indices) {
         return rem(order, axis, indices).squeeze(axis);
     }
 
+    /**
+     * Returns a view of the original darray which contains all slices of size {@code size} from this darray in the dimension {@code axis}.
+     * Step between two slices is given by {@code step}.
+     * <p>
+     * If dim is the size of the given axis, the new dimension in the returned view will be {@code (dim - size) / step + 1).
+     * An additional dimension of size size is appended to the returned darray.
+     * <p>
+     *
+     * @param newAxis position of the new dimension
+     * @param axis    dimension which is unfolded
+     * @param size    size of each slice that is unfolded
+     * @param step    distance between each slice
+     * @return
+     */
+    public final DArray<N> unfold(int axis, int size, int step) {
+        return unfold(rank(), axis, size, step);
+    }
+
+    /**
+     * Returns a view of the original darray which contains all slices of size {@code size} from this darray in the dimension {@code axis}.
+     * Step between two slices is given by {@code step}.
+     * <p>
+     * If dim is the size of the given axis, the new dimension in the returned view will be {@code (dim - size) / step + 1).
+     * An additional dimension of size size is added in the returned view at position {@code newAxis}.
+     * <p>
+     *
+     * @param newAxis position of the new dimension
+     * @param axis    dimension which is unfolded
+     * @param size    size of each slice that is unfolded
+     * @param step    distance between each slice
+     * @return
+     */
+    public final DArray<N> unfold(int newAxis, int axis, int size, int step) {
+        int[] dims = dims();
+        int[] strides = ((StrideLayout) layout()).strides();
+
+        int oldDim = dim(axis);
+        int newDim = Math.ceilDiv(oldDim - size + 1, step);
+        int newStride = strides[axis] * step;
+
+        int[] newDims = Arrays.copyOf(dims, dims.length + 1);
+        int[] newStrides = Arrays.copyOf(strides, strides.length + 1);
+        newDims[axis] = newDim;
+        newStrides[axis] = newStride;
+
+        for (int i = newDims.length - 1; i > newAxis; i--) {
+            newDims[i] = newDims[i - 1];
+            newStrides[i] = newStrides[i - 1];
+        }
+        newDims[newAxis] = size;
+        newStrides[newAxis] = strides[axis];
+        return dm.stride(dt, StrideLayout.of(newDims, ((StrideLayout) layout()).offset(), newStrides), storage);
+    }
+
+    /**
+     * Gather values from this darray into a new one along an axis specified by {@code axis} at indexes found in {@code index}.
+     * The index must have the same rank as this darray.
+     * <p>
+     * The result is a new darray with the same shape as the {@code index}, with the same type as this index and with default order.
+     *
+     * @param axis  axis along which to index
+     * @param index the indices of the elements to gather
+     * @return new darray with gathered values
+     */
     public final DArray<N> gather(int axis, DArray<?> index) {
         return gather(axis, index, Order.defaultOrder());
     }
 
+    /**
+     * Gather values from this darray into a new one along an axis specified by {@code axis} at indexes found in {@code index}.
+     * The index must have the same rank as this darray.
+     * <p>
+     * The result is a new darray with the same shape as the {@code index}, with the same type as this index and with specified order.
+     *
+     * @param axis  axis along which to index
+     * @param index the indices of the elements to gather
+     * @return new darray with gathered values
+     */
     public final DArray<N> gather(int axis, DArray<?> index, Order askOrder) {
-        return manager.zeros(dt(), index.shape(), askOrder).gather_(axis, index, this);
+        return dm.zeros(dt, index.shape(), askOrder).gather_(axis, index, this);
     }
 
+    /**
+     * Gather values into this darray from {@code input} along an axis specified by {@code axis} at indexes found in {@code index}.
+     * The index must have the same rank as the {@code input}, and the same shape as this darray.
+     *
+     * @param axis  axis along which to index
+     * @param index the indices of the elements to gather
+     * @return new darray with gathered values
+     */
     public abstract DArray<N> gather_(int axis, DArray<?> index, DArray<?> input);
 
+    /**
+     * Writes values from this darry along an axis specified by {@code axis} at indexes found in {@code index}.
+     * The values are written in {@code out}, which has to have the same shape as {@code index}. The {@code index} must have the
+     * same rank as this darray.
+     *
+     * @param axis  axis along which to index
+     * @param index the indices of the elements to scatter
+     * @param out   the darray where the values will be written
+     * @return the destination array
+     */
     public final DArray<?> scatter(int axis, DArray<?> index, DArray<?> out) {
         return out.scatter_(axis, index, this);
     }
 
+    /**
+     * Writes values from {@code input} into this darray along an axis specified by {@code axis} at indices found in {@code index}.
+     * This array, which is the destination, must have the same shape as {@code index}. The input must have the same rank as {@code index}.
+     *
+     * @param axis  axis along which to index
+     * @param index the indices of the elements to scatter
+     * @param input input darray from which the values are taken
+     * @return this darray which is also the destination
+     */
     public abstract DArray<?> scatter_(int axis, DArray<?> index, DArray<?> input);
 
     /**
-     * Get value at indexed position. An indexed position is a tuple of rank
-     * dimension, with an integer value on each dimension.
+     * Get value at indexed position. An indexed position is an int array of length equals with {@code rank},
+     * with a value for each dimension.
      *
-     * @param indexes indexed position
+     * @param indices indexed position
      * @return value at indexed position
      */
-    public abstract N get(int... indexes);
+    public abstract N get(int... indices);
 
-    public final byte getByte(int... indexes) {
-        return storage.getByte(layout().pointer(indexes));
-    }
-
-    public final int getInt(int... indexes) {
-        return storage.getInt(layout().pointer(indexes));
-    }
-
-    public final float getFloat(int... indexes) {
-        return storage.getFloat(layout().pointer(indexes));
-    }
-
-    public final double getDouble(int... indexes) {
-        return storage.getDouble(layout().pointer(indexes));
+    /**
+     * Gets the value at the indexed position as a byte value.
+     *
+     * @param indices indexed position
+     * @return value at indexed position
+     */
+    public final byte getByte(int... indices) {
+        return storage.getByte(layout().pointer(indices));
     }
 
     /**
-     * Sets value at indexed position.
+     * Gets the value at the indexed position as an int value.
+     *
+     * @param indices indexed position
+     * @return value at indexed position
+     */
+    public final int getInt(int... indices) {
+        return storage.getInt(layout().pointer(indices));
+    }
+
+    /**
+     * Gets the value at the indexed position as a float value.
+     *
+     * @param indices indexed position
+     * @return value at indexed position
+     */
+    public final float getFloat(int... indices) {
+        return storage.getFloat(layout().pointer(indices));
+    }
+
+    /**
+     * Gets the value at the indexed position as a double value.
+     *
+     * @param indices indexed position
+     * @return value at indexed position
+     */
+    public final double getDouble(int... indices) {
+        return storage.getDouble(layout().pointer(indices));
+    }
+
+    /**
+     * Sets value at indexed position. An indexed position is an int array of length equals with {@code rank},
+     * with a value for each dimension.
      *
      * @param value   value to be set
-     * @param indexes indexed position
+     * @param indices indexed position
      */
-    public abstract void set(N value, int... indexes);
-
-    public final void setByte(byte value, int... indexes) {
-        storage.setByte(layout().pointer(indexes), value);
-    }
-
-    public final void setInt(int value, int... indexes) {
-        storage.setInt(layout().pointer(indexes), value);
-    }
-
-    public final void setFloat(float value, int... indexes) {
-        storage.setFloat(layout().pointer(indexes), value);
-    }
-
-    public final void setDouble(double value, int... indexes) {
-        storage.setDouble(layout().pointer(indexes), value);
-    }
+    public abstract void set(N value, int... indices);
 
     /**
-     * Sets value at indexed position.
+     * Sets byte value at indexed position. An indexed position is an int array of length equals with {@code rank},
+     * with a value for each dimension.
      *
      * @param value   value to be set
-     * @param indexes indexed position
+     * @param indices indexed position
      */
-    public abstract void inc(N value, int... indexes);
-
-    public final void incDouble(double value, int... indexes) {
-        storage.incDouble(layout().pointer(indexes), value);
+    public final void setByte(byte value, int... indices) {
+        storage.setByte(layout().pointer(indices), value);
     }
 
     /**
-     * Get value at pointer. A pointer is an index value at the memory layout.
+     * Sets int value at indexed position. An indexed position is an int array of length equals with {@code rank},
+     * with a value for each dimension.
+     *
+     * @param value   value to be set
+     * @param indices indexed position
+     */
+    public final void setInt(int value, int... indices) {
+        storage.setInt(layout().pointer(indices), value);
+    }
+
+    /**
+     * Sets float value at indexed position. An indexed position is an int array of length equals with {@code rank},
+     * with a value for each dimension.
+     *
+     * @param value   value to be set
+     * @param indices indexed position
+     */
+    public final void setFloat(float value, int... indices) {
+        storage.setFloat(layout().pointer(indices), value);
+    }
+
+    /**
+     * Sets double value at indexed position. An indexed position is an int array of length equals with {@code rank},
+     * with a value for each dimension.
+     *
+     * @param value   value to be set
+     * @param indices indexed position
+     */
+    public final void setDouble(double value, int... indices) {
+        storage.setDouble(layout().pointer(indices), value);
+    }
+
+    /**
+     * Increments the value at indexed position. An indexed position is an int array of length equals with {@code rank},
+     * with a value for each dimension.
+     *
+     * @param value   value to be set
+     * @param indices indexed position
+     */
+    public abstract void inc(N value, int... indices);
+
+    /**
+     * Increments the byte value at indexed position. An indexed position is an int array of length equals with {@code rank},
+     * with a value for each dimension.
+     *
+     * @param value   value to be set
+     * @param indices indexed position
+     */
+    public final void incByte(byte value, int... indices) {
+        storage.incByte(layout().pointer(indices), value);
+    }
+
+    /**
+     * Increments the int value at indexed position. An indexed position is an int array of length equals with {@code rank},
+     * with a value for each dimension.
+     *
+     * @param value   value to be set
+     * @param indices indexed position
+     */
+    public final void incInt(int value, int... indices) {
+        storage.incInt(layout().pointer(indices), value);
+    }
+
+    /**
+     * Increments the float value at indexed position. An indexed position is an int array of length equals with {@code rank},
+     * with a value for each dimension.
+     *
+     * @param value   value to be set
+     * @param indices indexed position
+     */
+    public final void incFloat(float value, int... indices) {
+        storage.incFloat(layout().pointer(indices), value);
+    }
+
+    /**
+     * Increments the double value at indexed position. An indexed position is an int array of length equals with {@code rank},
+     * with a value for each dimension.
+     *
+     * @param value   value to be set
+     * @param indices indexed position
+     */
+    public final void incDouble(double value, int... indices) {
+        storage.incDouble(layout().pointer(indices), value);
+    }
+
+    /**
+     * Gets value at pointer. A pointer is an offset position in the storage.
      *
      * @param ptr data pointer
      * @return element at data pointer
      */
     public abstract N ptrGet(int ptr);
 
+    /**
+     * Gets byte value at pointer. A pointer is an offset position in the storage.
+     *
+     * @param ptr data pointer
+     * @return element at data pointer
+     */
     public final byte ptrGetByte(int ptr) {
         return storage.getByte(ptr);
     }
 
+    /**
+     * Gets int value at pointer. A pointer is an offset position in the storage.
+     *
+     * @param ptr data pointer
+     * @return element at data pointer
+     */
     public final int ptrGetInt(int ptr) {
         return storage.getInt(ptr);
     }
 
+    /**
+     * Gets float value at pointer. A pointer is an offset position in the storage.
+     *
+     * @param ptr data pointer
+     * @return element at data pointer
+     */
     public final float ptrGetFloat(int ptr) {
         return storage.getFloat(ptr);
     }
 
+    /**
+     * Gets double value at pointer. A pointer is an offset position in the storage.
+     *
+     * @param ptr data pointer
+     * @return element at data pointer
+     */
     public final double ptrGetDouble(int ptr) {
         return storage.getDouble(ptr);
     }
 
     /**
-     * Sets value at given pointer.
+     * Sets value at given pointer. A pointer is an offset position in storage.
      *
      * @param ptr   data pointer
      * @param value element value to be set at data pointer
      */
     public abstract void ptrSet(int ptr, N value);
 
+    /**
+     * Sets byte value at given pointer. A pointer is an offset position in storage.
+     *
+     * @param ptr   data pointer
+     * @param value element value to be set at data pointer
+     */
     public final void ptrSetByte(int ptr, byte value) {
         storage.setByte(ptr, value);
     }
 
+    /**
+     * Sets int value at given pointer. A pointer is an offset position in storage.
+     *
+     * @param ptr   data pointer
+     * @param value element value to be set at data pointer
+     */
     public final void ptrSetInt(int ptr, int value) {
         storage.setInt(ptr, value);
     }
 
+    /**
+     * Sets float value at given pointer. A pointer is an offset position in storage.
+     *
+     * @param ptr   data pointer
+     * @param value element value to be set at data pointer
+     */
     public final void ptrSetFloat(int ptr, float value) {
         storage.setFloat(ptr, value);
     }
 
+    /**
+     * Sets double value at given pointer. A pointer is an offset position in storage.
+     *
+     * @param ptr   data pointer
+     * @param value element value to be set at data pointer
+     */
     public final void ptrSetDouble(int ptr, double value) {
         storage.setDouble(ptr, value);
     }
 
+    /**
+     * Increments the byte value at given pointer. A pointer is an offset position in storage.
+     *
+     * @param ptr   data pointer
+     * @param value element value to be added to the value at data pointer
+     */
     public final void ptrIncByte(int ptr, byte value) {
         storage.incByte(ptr, value);
     }
 
+    /**
+     * Increments the int value at given pointer. A pointer is an offset position in storage.
+     *
+     * @param ptr   data pointer
+     * @param value element value to be added to the value at data pointer
+     */
     public final void ptrIncInt(int ptr, int value) {
         storage.incInt(ptr, value);
     }
 
+    /**
+     * Increments the float value at given pointer. A pointer is an offset position in storage.
+     *
+     * @param ptr   data pointer
+     * @param value element value to be added to the value at data pointer
+     */
     public final void ptrIncFloat(int ptr, float value) {
         storage.incFloat(ptr, value);
     }
 
+    /**
+     * Increments the double value at given pointer. A pointer is an offset position in storage.
+     *
+     * @param ptr   data pointer
+     * @param value element value to be added to the value at data pointer
+     */
     public final void ptrIncDouble(int ptr, double value) {
         storage.incDouble(ptr, value);
     }
 
     /**
-     * Produces an iterator over the values from this NArray in the
-     * storage order.
+     * Produces an iterator over the values from this darray in the storage order. The storage order is a computed order in which
+     * the computed offsets are increasing, allowing better performance.
+     * The iterator is immutable.
      *
      * @return value iterator
      */
@@ -794,14 +1094,32 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
         return iterator(Order.S);
     }
 
+    /**
+     * Produces an iterator over the values from this darray in the order specified by {@code askOrder}.
+     * The iterator is immutable.
+     *
+     * @return value iterator
+     */
     public abstract Iterator<N> iterator(Order askOrder);
 
+    /**
+     * Produces a stream with values from this darray in the storage order. The storage order is a computed order in which
+     * the computed offsets are increasing, allowing better performance.
+     *
+     * @return value stream
+     */
     public final Stream<N> stream() {
         return stream(Order.defaultOrder());
     }
 
-    public final Stream<N> stream(Order order) {
-        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator(order), Spliterator.ORDERED), false);
+    /**
+     * Produces a stream with values from this darray in the order specified by {@code askOrder}.
+     *
+     * @return value stream
+     */
+    public final Stream<N> stream(Order askOrder) {
+        return StreamSupport.stream(
+                Spliterators.spliteratorUnknownSize(iterator(askOrder), Spliterator.ORDERED | Spliterator.IMMUTABLE), false);
     }
 
     /**
@@ -823,7 +1141,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     public abstract PointerIterator ptrIterator(Order askOrder);
 
     /**
-     * Creates a new NArray in the default storage order, having as values the result of
+     * Creates a new darray in the default storage order, having as values the result of
      * a function which receives as parameters two integers: order index and storage pointer value.
      * <p>
      * The order index is a zero integer increasing value determined by the order in which
@@ -838,7 +1156,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     }
 
     /**
-     * Creates a new NArray in the order determined by parameter, having as values the result of
+     * Creates a new darray in the order determined by parameter, having as values the result of
      * a function which receives as parameters two integers: order index and storage pointer value.
      * <p>
      * The order index is a zero integer increasing value determined by the order in which
@@ -853,7 +1171,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     }
 
     /**
-     * Changes values from NArray in the default order, having as values the result of
+     * Changes values from DArray in the default order, having as values the result of
      * a function which receives as parameters two integers: order index and storage pointer value.
      * <p>
      * The order index is a zero integer increasing value determined by the order in which
@@ -870,7 +1188,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     }
 
     /**
-     * Changes values from NArray in the order specified by parameter, having as values the result of
+     * Changes values from this darray in the order specified by parameter, having as values the result of
      * a function which receives as parameters two integers: order index and storage pointer value.
      * <p>
      * The order index is a zero integer increasing value determined by the order in which
@@ -884,6 +1202,12 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      */
     public abstract DArray<N> apply_(Order askOrder, IntIntBiFunction<N> fun);
 
+    /**
+     * Creates a new darray with values transformed by function {@code fun} with default order.
+     *
+     * @param fun function which transforms values
+     * @return new darray with transformed values
+     */
     public final DArray<N> apply(Function<N, N> fun) {
         return apply(Order.defaultOrder(), fun);
     }
@@ -1571,11 +1895,11 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     }
 
     /**
-     * Adds in place the given matrix {@code t} multiplied by {@code factor} to the NArray element wise.
+     * Adds in place the given matrix {@code t} multiplied by {@code factor} to the DArray element wise.
      *
      * @param factor multiplication factor
-     * @param t      NArray to be multiplied and added to the current one
-     * @return same NArray with values changed
+     * @param t      DArray to be multiplied and added to the current one
+     * @return same DArray with values changed
      */
     public abstract DArray<N> fma_(N factor, DArray<?> t);
 
@@ -1869,7 +2193,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
 
     /**
      * Computes the outer product between two vectors. This operation is available only if the two
-     * NArrays are vectors. The result is a matrix of shape {@code (n,m)}, where {@code n} is the
+     * DArrays are vectors. The result is a matrix of shape {@code (n,m)}, where {@code n} is the
      * size of the first vector and {@code m} is the size of the second vector.
      * <p>
      * This operation does not perform broadcast.
@@ -1885,7 +2209,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     }
 
     /**
-     * Performs matrix vector dot product. The first NArray must be a matrix and the second NArray must be a vector.
+     * Performs matrix vector dot product. The first DArray must be a matrix and the second DArray must be a vector.
      * Also, the second dimension of the matrix must have the same size as the dimension of the vector.
      * <p>
      * The result is a vector of the size equal with the first dimension of the matrix.
@@ -1900,7 +2224,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     }
 
     /**
-     * Performs matrix vector dot product. The first NArray must be a matrix and the second NArray must be a vector.
+     * Performs matrix vector dot product. The first DArray must be a matrix and the second DArray must be a vector.
      * Also, the second dimension of the matrix must have the same size as the dimension of the vector.
      * <p>
      * The result is a vector of the size equal with the first dimension of the matrix.
@@ -1913,21 +2237,21 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     public abstract DArray<N> mv(DArray<?> other, Order askOrder);
 
     /**
-     * Performs a batched matrix vector multiplication. Self NArray plays the role of matrix batch, the {@code other} NArray
+     * Performs a batched matrix vector multiplication. Self DArray plays the role of matrix batch, the {@code other} DArray
      * is the vector batch.
      * <p>
      * If both arguments are scalars the result is a unit length batch of a scalar shape {@code (1,1)}.
      * <p>
-     * If self NArray is matrix {@code (n,m)} and other NArray is a vector shape {code (m)}, the result is a unit batch
+     * If self DArray is matrix {@code (n,m)} and other DArray is a vector shape {code (m)}, the result is a unit batch
      * of shape {@code (1,n)}.
      * <p>
-     * If self is a batch matrix NArray of shape {@code (b,n,m)} and second is a vector shape {@code (m)}, the vectors is multiplied with
+     * If self is a batch matrix DArray of shape {@code (b,n,m)} and second is a vector shape {@code (m)}, the vectors is multiplied with
      * all the matrices in the batch and the result will have shape {@code (b,n)}.
      * <p>
-     * If self is a matrix NArray of shape {@code (n,m)} and the other is a batch of vectors with shape {@code (b,m)}, the matrix will
+     * If self is a matrix DArray of shape {@code (n,m)} and the other is a batch of vectors with shape {@code (b,m)}, the matrix will
      * be multiplied with every vector in the batch and the result will have shape {@code (b,n)}.
      * <p>
-     * If self NArray is a batch of matrices with shape {@code (b,n,m)} and {code other} is a batch of vectors with shape {@code (b,m)},
+     * If self DArray is a batch of matrices with shape {@code (b,n,m)} and {code other} is a batch of vectors with shape {@code (b,m)},
      * each matrix from the batch will be multiplied with its corresponding vector from the batch and the result will have shape {@code (b,m)}.
      * <p>
      * All other configurations are invalid and an {@link IllegalArgumentException} exception will be thrown.
@@ -1942,21 +2266,21 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     }
 
     /**
-     * Performs a batched matrix vector multiplication. Self NArray plays the role of matrix batch, the {@code other} NArray
+     * Performs a batched matrix vector multiplication. Self DArray plays the role of matrix batch, the {@code other} DArray
      * is the vector batch.
      * <p>
      * If both arguments are scalars the result is a unit length batch of a scalar shape {@code (1,1)}.
      * <p>
-     * If self NArray is matrix {@code (n,m)} and other NArray is a vector shape {code (m)}, the result is a unit batch
+     * If self DArray is matrix {@code (n,m)} and other DArray is a vector shape {code (m)}, the result is a unit batch
      * of shape {@code (1,n)}.
      * <p>
-     * If self is a batch matrix NArray of shape {@code (b,n,m)} and second is a vector shape {@code (m)}, the vectors is multiplied with
+     * If self is a batch matrix DArray of shape {@code (b,n,m)} and second is a vector shape {@code (m)}, the vectors is multiplied with
      * all the matrices in the batch and the result will have shape {@code (b,n)}.
      * <p>
-     * If self is a matrix NArray of shape {@code (n,m)} and the other is a batch of vectors with shape {@code (b,m)}, the matrix will
+     * If self is a matrix DArray of shape {@code (n,m)} and the other is a batch of vectors with shape {@code (b,m)}, the matrix will
      * be multiplied with every vector in the batch and the result will have shape {@code (b,n)}.
      * <p>
-     * If self NArray is a batch of matrices with shape {@code (b,n,m)} and {code other} is a batch of vectors with shape {@code (b,m)},
+     * If self DArray is a batch of matrices with shape {@code (b,n,m)} and {code other} is a batch of vectors with shape {@code (b,m)},
      * each matrix from the batch will be multiplied with its corresponding vector from the batch and the result will have shape {@code (b,m)}.
      * <p>
      * All other configurations are invalid and an {@link IllegalArgumentException} exception will be thrown.
@@ -1971,14 +2295,14 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
 
     /**
      * Performs the dot product between this object transposed, which must be a vector, and the other
-     * NArray which must be a matrix. The size of the vector must be equal with the size of the first dimesion of the matrix.
+     * DArray which must be a matrix. The size of the vector must be equal with the size of the first dimesion of the matrix.
      * <p>
      * The result is a vector with size equal with the size of the second dimension of the matrix.
      * This operation is equivalent with calling {@link #mv(DArray)}, but with transposed matrix.
      * <p>
      * This operation does not perform broadcasting and the storage order of the result is the default order.
      *
-     * @param other the other NArray which must be a matrix.
+     * @param other the other DArray which must be a matrix.
      * @return the result of the vector transpose matrix dot product
      */
     public final DArray<N> vtm(DArray<?> other) {
@@ -1987,34 +2311,34 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
 
     /**
      * Performs the dot product between this object transposed, which must be a vector, and the other
-     * NArray which must be a matrix. The size of the vector must be equal with the size of the first dimesion of the matrix.
+     * DArray which must be a matrix. The size of the vector must be equal with the size of the first dimesion of the matrix.
      * <p>
      * The result is a vector with size equal with the size of the second dimension of the matrix.
      * This operation is equivalent with calling {@link #mv(DArray)}, but with transposed matrix.
      * <p>
      * This operation does not perform broadcasting and the storage order of the result is specified by {@code askOrder} parameter.
      *
-     * @param other the other NArray which must be a matrix.
+     * @param other the other DArray which must be a matrix.
      * @return the result of the vector transpose matrix dot product
      */
     public abstract DArray<N> vtm(DArray<?> other, Order askOrder);
 
     /**
-     * Performs a batched vector transposed matrix multiplication. Self NArray plays the role of vector batch, the {@code other} NArray
+     * Performs a batched vector transposed matrix multiplication. Self DArray plays the role of vector batch, the {@code other} DArray
      * is the matrix batch.
      * <p>
      * If both arguments are scalars the result is a unit length batch of a scalar shape {@code (1,1)}.
      * <p>
-     * If self is vector {@code (n)} and other NArray is a matrix {code (n,m)}, the result is a unit batch
+     * If self is vector {@code (n)} and other DArray is a matrix {code (n,m)}, the result is a unit batch
      * of shape {@code (1,m)}.
      * <p>
-     * If self is a batch vector NArray of shape {@code (b,n)} and second is a matrix shape {@code (n,m)}, the vector are multiplied with
+     * If self is a batch vector DArray of shape {@code (b,n)} and second is a matrix shape {@code (n,m)}, the vector are multiplied with
      * all the same matrix and the result will have shape {@code (b,m)}.
      * <p>
-     * If self is a vector NArray of shape {@code (n)} and the other is a batch of matrices with shape {@code (b,n,m)}, the vector will
+     * If self is a vector DArray of shape {@code (n)} and the other is a batch of matrices with shape {@code (b,n,m)}, the vector will
      * be multiplied with every matrix in the batch and the result will have shape {@code (b,m)}.
      * <p>
-     * If self NArray is a batch of vectors with shape {@code (b,n)} and {code other} is a batch of matrices with shape {@code (b,n,m)},
+     * If self DArray is a batch of vectors with shape {@code (b,n)} and {code other} is a batch of matrices with shape {@code (b,n,m)},
      * each vector from the batch will be multiplied with its corresponding matrix from the batch and the result will have shape {@code (b,m)}.
      * <p>
      * All other configurations are invalid and an {@link IllegalArgumentException} exception will be thrown.
@@ -2029,21 +2353,21 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     }
 
     /**
-     * Performs a batched vector transposed matrix multiplication. Self NArray plays the role of vector batch, the {@code other} NArray
+     * Performs a batched vector transposed matrix multiplication. Self DArray plays the role of vector batch, the {@code other} DArray
      * is the matrix batch.
      * <p>
      * If both arguments are scalars the result is a unit length batch of a scalar shape {@code (1,1)}.
      * <p>
-     * If self is vector {@code (n)} and other NArray is a matrix {code (n,m)}, the result is a unit batch
+     * If self is vector {@code (n)} and other DArray is a matrix {code (n,m)}, the result is a unit batch
      * of shape {@code (1,m)}.
      * <p>
-     * If self is a batch vector NArray of shape {@code (b,n)} and second is a matrix shape {@code (n,m)}, the vector are multiplied with
+     * If self is a batch vector DArray of shape {@code (b,n)} and second is a matrix shape {@code (n,m)}, the vector are multiplied with
      * all the same matrix and the result will have shape {@code (b,n)}.
      * <p>
-     * If self is a vector NArray of shape {@code (n)} and the other is a batch of matrices with shape {@code (b,n,m)}, the vector will
+     * If self is a vector DArray of shape {@code (n)} and the other is a batch of matrices with shape {@code (b,n,m)}, the vector will
      * be multiplied with every matrix in the batch and the result will have shape {@code (b,m)}.
      * <p>
-     * If self NArray is a batch of vectors with shape {@code (b,n)} and {code other} is a batch of matrices with shape {@code (b,n,m)},
+     * If self DArray is a batch of vectors with shape {@code (b,n)} and {code other} is a batch of matrices with shape {@code (b,n,m)},
      * each vector from the batch will be multiplied with its corresponding matrix from the batch and the result will have shape {@code (b,m)}.
      * <p>
      * All other configurations are invalid and an {@link IllegalArgumentException} exception will be thrown.
@@ -2057,7 +2381,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     public abstract DArray<?> bvtm(DArray<?> other, Order askOrder);
 
     /**
-     * Performs matrix multiplication between two NArrays. The two NArrays must both be matrices.
+     * Performs matrix multiplication between two DArrays. The two DArrays must both be matrices.
      * <p>
      * This operation does not perform broadcast. The matrices must have compatible dimension sizes.
      * The second dimension of the first matrix must be equal with the first dimension of the first matrix.
@@ -2073,7 +2397,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     }
 
     /**
-     * Performs matrix multiplication between two NArrays. The two NArrays must both be matrices.
+     * Performs matrix multiplication between two DArrays. The two DArrays must both be matrices.
      * <p>
      * This operation does not perform broadcast. The matrices must have compatible dimension sizes.
      * The second dimension of the first matrix must be equal with the first dimension of the first matrix.
@@ -2088,7 +2412,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
 
     /**
      * Performs batch matrix-matrix multiplication. Batch index is the first parameter, if exists.
-     * If self is an NArray of shape {@code (b,n,m)} and {@code other} has shape {@code (b,m,p)}
+     * If self is an DArray of shape {@code (b,n,m)} and {@code other} has shape {@code (b,m,p)}
      * the result will have shape {@code (b,n,p)}. If the batch axis is missing than it will be appended
      * from the other operator, if both batch axis are missing a batch axis of size 1 added.
      * <p>
@@ -2118,7 +2442,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
 
     /**
      * Performs batch matrix-matrix multiplication. Batch index is the first parameter, if exists.
-     * If self is an NArray of shape {@code (b,n,m)} and {@code other} has shape {@code (b,m,p)}
+     * If self is an DArray of shape {@code (b,n,m)} and {@code other} has shape {@code (b,m,p)}
      * the result will have shape {@code (b,n,p)}. If the batch axis is missing than it will be appended
      * from the other operator, if both batch axis are missing a batch axis of size 1 added.
      * <p>
@@ -2160,11 +2484,11 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      * the {code diagonal}-th diagonal above the main diagonal is specified. If the {code diagonal}
      * is a negative number, then the {code diagonal-th} diagonal below the main diagonal is specified.
      * <p>
-     * If the input NArray is a vector, it creates a matrix with elements on the specified diagonal.
+     * If the input DArray is a vector, it creates a matrix with elements on the specified diagonal.
      * The resulting matrix is a square matrix with dimension size to accommodate all the elements
      * from the vector.
      * <p>
-     * If the input NArray is a matrix, then the result is a vector which contains the elements from that
+     * If the input DArray is a matrix, then the result is a vector which contains the elements from that
      * diagonal and has the size equal with the number of elements from that diagonal.
      *
      * @param diagonal number which specifies the diagonal, 0 for main one
@@ -2248,7 +2572,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
             throw new IllegalArgumentException("Available only for matrices.");
         }
         if (!dt().floatingPoint()) {
-            throw new OperationNotAvailableException("Available only for floating point NArrays.");
+            throw new OperationNotAvailableException("Available only for floating point DArrays.");
         }
         return t().mm(this, askOrder).div_(dim(0) - ddof);
     }
@@ -2262,7 +2586,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
             throw new OperationNotAvailableException("Available only for matrices.");
         }
         if (!dt().floatingPoint()) {
-            throw new OperationNotAvailableException("Available only for floating point NArrays.");
+            throw new OperationNotAvailableException("Available only for floating point DArrays.");
         }
         DArray<N> mean = mean1d(0);
         DArray<N> centered = sub(mean);
@@ -2278,7 +2602,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
             throw new IllegalArgumentException("Available only for matrices.");
         }
         if (!dt().floatingPoint()) {
-            throw new OperationNotAvailableException("Available only for floating point NArrays.");
+            throw new OperationNotAvailableException("Available only for floating point DArrays.");
         }
         DArray<N> std = std1d(0, 0);
         DArray<N> scaled = sub(mean1d(0));
@@ -2288,29 +2612,29 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     // -- Comparison Ops -- //
 
     /**
-     * Creates a new NArray with values sorted along the dimension given as parameters. The order is ascending or descending, given
+     * Creates a new DArray with values sorted along the dimension given as parameters. The order is ascending or descending, given
      * as parameter.
      * <p>
-     * The order of the new NArray is the default order.
+     * The order of the new DArray is the default order.
      *
      * @param axis dimension along which the values will be sorted
      * @param asc  if true the values will be sorted in ascending order, otherwise in descending order
-     * @return a new copy NArray with values sorted along the given dimension
+     * @return a new copy DArray with values sorted along the given dimension
      */
     public final DArray<N> sort(int axis, boolean asc) {
         return sort(Order.defaultOrder(), axis, asc);
     }
 
     /**
-     * Creates a new NArray with values sorted along the dimension given as parameters. The order is ascending or descending, given
+     * Creates a new DArray with values sorted along the dimension given as parameters. The order is ascending or descending, given
      * as parameter.
      * <p>
-     * The order of the new NArray is the order specified as parameter.
+     * The order of the new DArray is the order specified as parameter.
      *
-     * @param order order of the new NArray
+     * @param order order of the new DArray
      * @param axis  dimension along which the values will be sorted
      * @param asc   if true the values will be sorted in ascending order, otherwise in descending order
-     * @return a new copy NArray with values sorted along the given dimension
+     * @return a new copy DArray with values sorted along the given dimension
      */
     public final DArray<N> sort(Order order, int axis, boolean asc) {
         return copy(order).sort_(axis, asc);
@@ -2322,13 +2646,13 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      *
      * @param axis dimension along which the values will be sorted
      * @param asc  if true the values will be sorted in ascending order, otherwise in descending order
-     * @return same NArray instance with values sorted along the given dimension
+     * @return same DArray instance with values sorted along the given dimension
      */
     public abstract DArray<N> sort_(int axis, boolean asc);
 
     /**
-     * Sorts indices given as an array of parameters according to the values from flatten NArray.
-     * NArray must have a single dimension with size greater than the biggest index value.
+     * Sorts indices given as an array of parameters according to the values from flatten DArray.
+     * DArray must have a single dimension with size greater than the biggest index value.
      *
      * @param indices indices which will be sorted
      * @param asc     sort ascending if true, descending otherwise
@@ -2341,61 +2665,90 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     //------- SUMMARY OPERATIONS ----------//
 
     @SuppressWarnings("unchecked")
-    public final <M extends Number> DArray<M> cast(DType<M> dtype) {
-        if ((dtype.id() == dt().id())) {
+    public final <M extends Number> DArray<M> cast(DType<M> dt) {
+        if ((dt.id() == dt().id())) {
             return (DArray<M>) this;
         } else {
-            return cast(dtype, Order.A);
+            return cast(dt, Order.A);
         }
     }
 
-    public abstract <M extends Number> DArray<M> cast(DType<M> dType, Order askOrder);
+    public abstract <M extends Number> DArray<M> cast(DType<M> dt, Order askOrder);
 
-    /**
-     * Creates a padded copy of an NArray along the first dimension. The padded copy will be an NArray with the same shape other than the
-     * first dimension which will have size {@code before + dim(0) + after}, having first and last elements padded with 0.
-     * <p>
-     *
-     * @return resized padded copy of the original NArray
-     */
-    public final DArray<N> pad(int before, int after) {
-        return pad(0, before, after);
+    public final DArray<N> pad(int axis, int pad, int dilation) {
+        return pad(axis, pad, dilation, Order.defaultOrder());
     }
 
-    /**
-     * Creates a padded copy of an NArray along a given dimension. The padded copy will be an NArray with the same shape
-     * on all axis other than the specified as parameter, the later being increased to {@code before + dim(axis) + after},
-     * having first and last elements padded with 0.
-     * <p>
-     *
-     * @return resized padded copy of the original NArray
-     */
-    public final DArray<N> pad(int axis, int before, int after) {
+    public final DArray<N> pad(int axis, int pad, int dilation, Order askOrder) {
         int[] newDims = Arrays.copyOf(dims(), rank());
-        newDims[axis] += before + after;
-        DArray<N> copy = manager().zeros(dt(), Shape.of(newDims), Order.defaultOrder());
-        copyTo(copy.narrow(axis, true, before, before + dim(axis)));
+        newDims[axis] = 2 * pad + (dim(axis) - 1) * dilation + 1;
+        DArray<N> copy = dm.zeros(dt, Shape.of(newDims), askOrder);
+        copyTo(copy.unpad(axis, pad, dilation));
         return copy;
     }
 
+    public final DArray<N> pad(int[] pad, int[] dilation) {
+        return pad(pad, dilation, Order.defaultOrder());
+    }
+
+    public final DArray<N> pad(int[] pad, int[] dilation, Order askOrder) {
+        if (pad.length != dilation.length) {
+            throw new IllegalArgumentException("Length of pad and length of dilation must be the same.");
+        }
+        if (pad.length > rank()) {
+            throw new IllegalArgumentException("Length of pad and dilation must be less than or equal with darray rank.");
+        }
+        int[] newDims = Arrays.copyOf(dims(), rank());
+        for (int i = 0; i < pad.length; i++) {
+            newDims[newDims.length - i - 1] =
+                    2 * pad[pad.length - i - 1] + (dim(newDims.length - i - 1) - 1) * dilation[pad.length - i - 1] + 1;
+        }
+        DArray<N> copy = dm.zeros(dt, Shape.of(newDims), askOrder);
+        copyTo(copy.unpad(pad, dilation));
+        return copy;
+    }
+
+    public final DArray<N> unpad(int axis, int pad, int dilation) {
+        int[] newDims = Arrays.copyOf(dims(), rank());
+        newDims[axis] = Math.ceilDiv(dim(axis) - 2 * pad - 1, dilation) + 1;
+        int newOffset = ((StrideLayout) layout()).offset() + pad * stride(axis);
+        int[] newStrides = Arrays.copyOf(strides(), strides().length);
+        newStrides[axis] *= dilation;
+        return dm.stride(dt, StrideLayout.of(newDims, newOffset, newStrides), storage);
+    }
+
+    public final DArray<N> unpad(int[] pad, int[] dilation) {
+        if (pad.length != dilation.length) {
+            throw new IllegalArgumentException("Length of pad and length of dilation must be the same.");
+        }
+        if (pad.length > rank()) {
+            throw new IllegalArgumentException("Length of pad and dilation must be less than or equal with darray rank.");
+        }
+        DArray<N> last = this;
+        for (int i = 0; i < pad.length; i++) {
+            last = last.unpad(rank() - i - 1, pad[pad.length - i - 1], dilation[pad.length - i - 1]);
+        }
+        return last;
+    }
+
     /**
-     * Creates a copy of the original NArray with the given order. Only {@link Order#C} or {@link Order#F} are allowed.
+     * Creates a copy of the original DArray with the given order. Only {@link Order#C} or {@link Order#F} are allowed.
      * <p>
      * The order does not determine how values are read, but how values will be stored.
      *
-     * @return new copy of the NArray
+     * @return new copy of the DArray
      */
     public final DArray<N> copy() {
         return copy(Order.defaultOrder());
     }
 
     /**
-     * Creates a copy of the original NArray with the given order. Only {@link Order#C} or {@link Order#F} are allowed.
+     * Creates a copy of the original DArray with the given order. Only {@link Order#C} or {@link Order#F} are allowed.
      * <p>
      * The order does not determine how values are read, but how values will be stored.
      *
-     * @param askOrder desired order of the copy NArray.
-     * @return new copy of the NArray
+     * @param askOrder desired order of the copy DArray.
+     * @return new copy of the DArray
      */
     public abstract DArray<N> copy(Order askOrder);
 

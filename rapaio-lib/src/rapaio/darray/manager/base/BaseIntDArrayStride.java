@@ -64,20 +64,13 @@ import rapaio.darray.operator.impl.ReduceOpMax;
 import rapaio.darray.operator.impl.ReduceOpMin;
 import rapaio.data.OperationNotAvailableException;
 import rapaio.printer.Format;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 import rapaio.util.function.IntIntBiFunction;
 
 public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
 
-    private static final DType<Integer> dt = DType.INTEGER;
-
-    public BaseIntDArrayStride(DArrayManager engine, StrideLayout layout, Storage storage) {
-        super(engine, layout, storage);
-    }
-
-    @Override
-    public DType<Integer> dt() {
-        return dt;
+    public BaseIntDArrayStride(DArrayManager dm, StrideLayout layout, Storage storage) {
+        super(dm, DType.INTEGER, layout, storage);
     }
 
     @Override
@@ -99,10 +92,10 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         }
         StrideLayout newLayout = layout.attemptReshape(askShape, askOrder);
         if (newLayout != null) {
-            return manager.stride(dt, newLayout, storage);
+            return dm.stride(dt, newLayout, storage);
         }
         var it = new StridePointerIterator(layout, askOrder);
-        DArray<Integer> copy = manager.zeros(dt, askShape, askOrder);
+        DArray<Integer> copy = dm.zeros(dt, askShape, askOrder);
         var copyIt = copy.ptrIterator(askOrder);
         while (it.hasNext()) {
             copy.ptrSetInt(copyIt.nextInt(), storage.getInt(it.nextInt()));
@@ -113,7 +106,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     @Override
     public DArray<Integer> flatten(Order askOrder) {
         askOrder = Order.autoFC(askOrder);
-        var result = manager.zeros(dt, Shape.of(layout.size()), askOrder);
+        var result = dm.zeros(dt, Shape.of(layout.size()), askOrder);
         var out = result.storage();
         int ptr = 0;
         var loop = StrideLoopDescriptor.of(layout, askOrder, dt().vs());
@@ -169,18 +162,18 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     }
 
     @Override
-    public Integer get(int... indexes) {
-        return storage.getInt(layout.pointer(indexes));
+    public Integer get(int... indices) {
+        return storage.getInt(layout.pointer(indices));
     }
 
     @Override
-    public void set(Integer value, int... indexes) {
-        storage.setInt(layout.pointer(indexes), value);
+    public void set(Integer value, int... indices) {
+        storage.setInt(layout.pointer(indices), value);
     }
 
     @Override
-    public void inc(Integer value, int... indexes) {
-        storage.incInt(layout.pointer(indexes), value);
+    public void inc(Integer value, int... indices) {
+        storage.incInt(layout.pointer(indices), value);
     }
 
     @Override
@@ -194,7 +187,8 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     }
 
     public final Iterator<Integer> iterator(Order askOrder) {
-        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(ptrIterator(askOrder), Spliterator.ORDERED), false)
+        return StreamSupport.stream(
+                Spliterators.spliteratorUnknownSize(ptrIterator(askOrder), Spliterator.ORDERED | Spliterator.IMMUTABLE), false)
                 .map(storage::getInt).iterator();
     }
 
@@ -249,7 +243,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
                 while (it.hasNext() && taskList.size() < chunk) {
                     int ptr = it.nextInt();
                     taskList.add(() -> {
-                        manager.stride(dt, StrideLayout.of(new int[] {selDim}, ptr, new int[] {selStride}), storage).unary_(op);
+                        dm.stride(dt, StrideLayout.of(new int[] {selDim}, ptr, new int[] {selStride}), storage).unary_(op);
                     });
                 }
                 executor.submit(() -> {
@@ -366,7 +360,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         int selDim = layout.dim(axis);
         int selStride = layout.stride(axis);
 
-        DArray<Integer> res = manager.zeros(dt, Shape.of(newDims), Order.autoFC(order));
+        DArray<Integer> res = dm.zeros(dt, Shape.of(newDims), Order.autoFC(order));
         var resIt = res.ptrIterator(Order.C);
         var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
 
@@ -381,7 +375,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
                     int resPtr = resIt.next();
                     taskList.add(() -> {
                         StrideLayout strideLayout = StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride});
-                        int value = manager.stride(dt, strideLayout, storage).reduce(op);
+                        int value = dm.stride(dt, strideLayout, storage).reduce(op);
                         res.ptrSetInt(resPtr, value);
                     });
                 }
@@ -423,7 +417,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
             }
         }
         if (rank() == shape.rank()) {
-            return manager.scalar(dt, reduce(op));
+            return dm.scalar(dt, reduce(op));
         }
 
         int[] firstDims = Arrays.copyOfRange(layout.dims(), 0, rank() - shape.rank());
@@ -432,14 +426,14 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         int[] lastStrides = Arrays.copyOfRange(layout.strides(), rank() - shape.rank(), rank());
 
         StrideLayout firstLayout = StrideLayout.of(firstDims, layout().offset(), firstStrides);
-        DArray<Integer> result = manager.zeros(dt, Shape.of(firstDims), order);
+        DArray<Integer> result = dm.zeros(dt, Shape.of(firstDims), order);
         PointerIterator resIt = result.ptrIterator(Order.C);
         PointerIterator firstIt = new StridePointerIterator(firstLayout, Order.C);
 
         while (resIt.hasNext()) {
             int ptr = resIt.nextInt();
             int offset = firstIt.nextInt();
-            int value = manager.stride(dt, StrideLayout.of(lastDims, offset, lastStrides), storage).reduce(op);
+            int value = dm.stride(dt, StrideLayout.of(lastDims, offset, lastStrides), storage).reduce(op);
             result.ptrSet(ptr, value);
         }
         if (keepDim) {
@@ -453,7 +447,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     @Override
     public DArray<Integer> reduceTo(DArrayReduceOp op, Shape targetShape, boolean keepDim, Order order) {
         if (targetShape.rank() == 0) {
-            return manager.scalar(dt, reduce(op));
+            return dm.scalar(dt, reduce(op));
         }
         Broadcast.ElementWise broadcast = Broadcast.elementWise(this.shape(), targetShape);
         if (!broadcast.valid() || !broadcast.shape().equals(this.shape())) {
@@ -513,7 +507,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
             }
         }
 
-        DArray<Integer> result = manager.zeros(dt, Shape.of(lastDims), order);
+        DArray<Integer> result = dm.zeros(dt, Shape.of(lastDims), order);
         PointerIterator resIt = result.ptrIterator(Order.C);
         PointerIterator lastIt = StrideLayout.of(lastDims, layout().offset(), lastStrides).ptrIterator(Order.C);
 
@@ -528,7 +522,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
                     int ptr = resIt.nextInt();
                     int offset = lastIt.nextInt();
                     taskList.add(() -> {
-                        int value = manager.stride(dt, StrideLayout.of(firstDims, offset, firstStrides), storage).reduce(op);
+                        int value = dm.stride(dt, StrideLayout.of(firstDims, offset, firstStrides), storage).reduce(op);
                         result.ptrSet(ptr, value);
                     });
                 }
@@ -566,7 +560,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         int selDim = layout.dim(axis);
         int selStride = layout.stride(axis);
 
-        DArray<Integer> res = manager.zeros(dt, Shape.of(newDims), Order.autoFC(order));
+        DArray<Integer> res = dm.zeros(dt, Shape.of(newDims), Order.autoFC(order));
         if (!res.shape().equals(mean.shape())) {
             throw new IllegalArgumentException(String.format(
                     "Mean array %s must have the same shape as the result array %s.", mean.shape(), res.shape()));
@@ -588,7 +582,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
                     taskList.add(() -> {
                         StrideLayout strideLayout = StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride});
                         int m = mean.ptrGetInt(meanIt.next());
-                        int value = manager.stride(dt, strideLayout, storage).reduce(DArrayOp.reduceVarc(ddof, m));
+                        int value = dm.stride(dt, strideLayout, storage).reduce(DArrayOp.reduceVarc(ddof, m));
                         res.ptrSet(resPtr, value);
                     });
                 }
@@ -625,7 +619,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
             }
         }
         if (rank() == shape.rank()) {
-            return manager.scalar(dt, var(ddof, mean.getInt()));
+            return dm.scalar(dt, var(ddof, mean.getInt()));
         }
 
         int[] firstDims = Arrays.copyOfRange(layout.dims(), 0, rank() - shape.rank());
@@ -637,7 +631,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         if (mean.shape().equals(firstLayout.shape())) {
             throw new IllegalArgumentException("Mean darray must have the same shape as the result array.");
         }
-        DArray<Integer> result = manager.zeros(dt, Shape.of(firstDims), order);
+        DArray<Integer> result = dm.zeros(dt, Shape.of(firstDims), order);
         PointerIterator resIt = result.ptrIterator(Order.C);
         PointerIterator firstIt = new StridePointerIterator(firstLayout, Order.C);
         PointerIterator meanIt = mean.ptrIterator(Order.C);
@@ -646,7 +640,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
             int ptr = resIt.nextInt();
             int offset = firstIt.nextInt();
             int value =
-                    manager.stride(dt, StrideLayout.of(lastDims, offset, lastStrides), storage).var(ddof, mean.ptrGetInt(meanIt.next()));
+                    dm.stride(dt, StrideLayout.of(lastDims, offset, lastStrides), storage).var(ddof, mean.ptrGetInt(meanIt.next()));
             result.ptrSet(ptr, value);
         }
         if (keepDim) {
@@ -692,7 +686,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         int selDim = layout.dim(axis);
         int selStride = layout.stride(axis);
 
-        DArray<Integer> res = manager.zeros(DType.INTEGER, Shape.of(newDims), Order.autoFC(order));
+        DArray<Integer> res = dm.zeros(DType.INTEGER, Shape.of(newDims), Order.autoFC(order));
 
         var resIt = res.ptrIterator(Order.C);
         var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
@@ -708,7 +702,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
                     int resPtr = resIt.next();
                     taskList.add(() -> {
                         StrideLayout strideLayout = StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride});
-                        int value = manager.stride(dt, strideLayout, storage).argmax();
+                        int value = dm.stride(dt, strideLayout, storage).argmax();
                         res.ptrSetInt(resPtr, value);
                     });
                 }
@@ -743,7 +737,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         int selDim = layout.dim(axis);
         int selStride = layout.stride(axis);
 
-        DArray<Integer> res = manager.zeros(DType.INTEGER, Shape.of(newDims), Order.autoFC(order));
+        DArray<Integer> res = dm.zeros(DType.INTEGER, Shape.of(newDims), Order.autoFC(order));
 
         var resIt = res.ptrIterator(Order.C);
         var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
@@ -759,7 +753,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
                     int resPtr = resIt.next();
                     taskList.add(() -> {
                         StrideLayout strideLayout = StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride});
-                        int value = manager.stride(dt, strideLayout, storage).argmin();
+                        int value = dm.stride(dt, strideLayout, storage).argmin();
                         res.ptrSetInt(resPtr, value);
                     });
                 }
@@ -894,7 +888,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
                     String.format("Operands are not valid for matrix-vector multiplication (m = %s, v = %s).",
                             shape(), other.shape()));
         }
-        var result = manager.zeros(dt, Shape.of(shape().dim(0)), askOrder);
+        var result = dm.zeros(dt, Shape.of(shape().dim(0)), askOrder);
         for (int i = 0; i < shape().dim(0); i++) {
             result.ptrSetInt(i, selsq(0, i).inner(other));
         }
@@ -932,7 +926,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     }
 
     private DArray<Integer> bmvInternal(DArray<?> other, Order askOrder) {
-        DArray<Integer> res = manager.zeros(dt, Shape.of(dim(0), dim(1)), askOrder);
+        DArray<Integer> res = dm.zeros(dt, Shape.of(dim(0), dim(1)), askOrder);
         for (int b = 0; b < dim(0); b++) {
             selsq(0, b).mv(other.selsq(0, b)).copyTo(res.selsq(0, b));
         }
@@ -947,7 +941,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
                             shape(), other.shape())
             );
         }
-        var result = manager.zeros(dt, Shape.of(other.dim(1)), askOrder);
+        var result = dm.zeros(dt, Shape.of(other.dim(1)), askOrder);
         for (int i = 0; i < other.dim(1); i++) {
             result.ptrSetInt(i, this.inner(other.selsq(1, i)));
         }
@@ -985,7 +979,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     }
 
     private DArray<Integer> bvtmInternal(DArray<?> other, Order askOrder) {
-        DArray<Integer> res = manager.zeros(dt, Shape.of(dim(0), other.dim(2)), askOrder);
+        DArray<Integer> res = dm.zeros(dt, Shape.of(dim(0), other.dim(2)), askOrder);
         for (int b = 0; b < dim(0); b++) {
             selsq(0, b).vtm(other.selsq(0, b)).copyTo(res.selsq(0, b));
         }
@@ -1001,7 +995,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         if (askOrder == Order.S) {
             throw new IllegalArgumentException("Illegal askOrder value, must be Order.C or Order.F");
         }
-        var ret = manager.zeros(dt, Shape.of(shape().dim(0), other.shape().dim(1)), askOrder);
+        var ret = dm.zeros(dt, Shape.of(shape().dim(0), other.shape().dim(1)), askOrder);
         return mmInternalParallel(other, ret);
     }
 
@@ -1080,7 +1074,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     }
 
     private DArray<Integer> bmmInternal(DArray<?> other, Order askOrder) {
-        DArray<Integer> res = manager.zeros(dt, Shape.of(dim(0), dim(1), other.dim(2)), askOrder);
+        DArray<Integer> res = dm.zeros(dt, Shape.of(dim(0), dim(1), other.dim(2)), askOrder);
         for (int b = 0; b < dim(0); b++) {
             ((BaseIntDArrayStride) selsq(0, b)).mmInternalParallel(other.selsq(0, b), res.selsq(0, b));
         }
@@ -1109,7 +1103,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         }
         if (isVector()) {
             int n = dim(0) + Math.abs(diagonal);
-            DArray<Integer> m = manager.zeros(dt, Shape.of(n, n));
+            DArray<Integer> m = dm.zeros(dt, Shape.of(n, n));
             for (int i = 0; i < dim(0); i++) {
                 m.setInt(getInt(i), i + Math.abs(Math.min(diagonal, 0)), i + Math.max(diagonal, 0));
             }
@@ -1125,7 +1119,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
             for (int i = 0; i < len; i++) {
                 diag[i] = getInt(i + Math.abs(Math.min(diagonal, 0)), i + Math.max(diagonal, 0));
             }
-            return manager.stride(dt, Shape.of(len), Order.defaultOrder(), diag);
+            return dm.stride(dt, Shape.of(len), Order.defaultOrder(), diag);
         }
         throw new OperationNotAvailableException("This operation is available for tensors with shape " + shape() + ".");
     }
@@ -1172,8 +1166,8 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     public DArray<Integer> copy(Order askOrder) {
         askOrder = Order.autoFC(askOrder);
 
-        var copy = manager.storageManager().zeros(dt, size());
-        var dst = manager.stride(dt, StrideLayout.ofDense(shape(), 0, askOrder), copy);
+        var copy = dm.storageManager().zeros(dt, size());
+        var dst = dm.stride(dt, StrideLayout.ofDense(shape(), 0, askOrder), copy);
 
         if (layout.storageFastOrder() == askOrder) {
             sameLayoutCopy(copy, askOrder);
@@ -1201,14 +1195,14 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
 
         if (to instanceof BaseIntDArrayStride dst) {
 
-            int limit = Math.floorDiv(L2_CACHE_SIZE, dt().byteCount() * 2 * manager.cpuThreads() * 8);
+            int limit = Math.floorDiv(L2_CACHE_SIZE, dt().byteCount() * 2 * dm.cpuThreads() * 8);
 
             if (layout.size() > limit) {
 
                 int[] slices = Arrays.copyOf(layout.dims(), layout.rank());
-                int size = IntArrays.prod(slices, 0, slices.length);
+                int size = Ints.prod(slices, 0, slices.length);
                 while (size > limit) {
-                    int axis = IntArrays.argmax(slices, 0, slices.length);
+                    int axis = Ints.argmax(slices, 0, slices.length);
                     size = size * (slices[axis] / 2) / slices[axis];
                     slices[axis] = slices[axis] / 2;
                 }
@@ -1221,7 +1215,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
                 int[] starts = new int[slices.length];
                 int[] ends = new int[slices.length];
 
-                try (ExecutorService executor = Executors.newFixedThreadPool(manager.cpuThreads())) {
+                try (ExecutorService executor = Executors.newFixedThreadPool(dm.cpuThreads())) {
                     List<Future<?>> futures = new ArrayList<>();
                     Stack<Integer> stack = new Stack<>();
                     boolean loop = true;
@@ -1229,8 +1223,8 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
                         int level = stack.size();
                         if (loop) {
                             if (level == slices.length) {
-                                int[] ss = IntArrays.copy(starts);
-                                int[] es = IntArrays.copy(ends);
+                                int[] ss = Ints.copy(starts);
+                                int[] es = Ints.copy(ends);
                                 futures.add(executor.submit(() -> {
                                     BaseIntDArrayStride s = (BaseIntDArrayStride) this.narrowAll(false, ss, es);
                                     BaseIntDArrayStride d = (BaseIntDArrayStride) dst.narrowAll(false, ss, es);

@@ -33,8 +33,8 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.experiment.math.linear.DMatrix;
 import rapaio.experiment.math.linear.DVector;
-import rapaio.util.collection.DoubleArrays;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Doubles;
+import rapaio.util.collection.Ints;
 import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.IntInt2DoubleBiFunction;
 
@@ -62,7 +62,7 @@ public class DMatrixDenseR extends AbstractDMatrix implements DMatrixStore {
     }
 
     public static DMatrixDenseR fill(int rows, int cols, double fill) {
-        return new DMatrixDenseR(0, rows, cols, DoubleArrays.newFill(rows * cols, fill));
+        return new DMatrixDenseR(0, rows, cols, Doubles.newFill(rows * cols, fill));
     }
 
     public static DMatrixDenseR fill(int rows, int cols, IntInt2DoubleBiFunction fun) {
@@ -465,16 +465,16 @@ public class DMatrixDenseR extends AbstractDMatrix implements DMatrixStore {
     @Override
     public DMatrix mapRows(int... indexes) {
         int[] rowIndexes = Arrays.copyOf(indexes, indexes.length);
-        IntArrays.mul(rowIndexes, 0, rowStride, rowIndexes.length);
-        int[] colIndexes = IntArrays.newSeq(0, cols);
+        Ints.mul(rowIndexes, 0, rowStride, rowIndexes.length);
+        int[] colIndexes = Ints.seq(0, cols);
         return new DMatrixMap(offset, rowIndexes, colIndexes, array);
     }
 
     @Override
     public DMatrix mapRowsTo(DMatrix to, int... indexes) {
         int[] rowIndexes = Arrays.copyOf(indexes, indexes.length);
-        IntArrays.mul(rowIndexes, 0, rowStride, rowIndexes.length);
-        int[] colIndexes = IntArrays.newSeq(0, cols);
+        Ints.mul(rowIndexes, 0, rowStride, rowIndexes.length);
+        int[] colIndexes = Ints.seq(0, cols);
         for (int i = 0; i < rowIndexes.length; i++) {
             for (int j = 0; j < colIndexes.length; j++) {
                 to.set(i, j, array[offset + rowIndexes[i] + colIndexes[j]]);
@@ -485,15 +485,15 @@ public class DMatrixDenseR extends AbstractDMatrix implements DMatrixStore {
 
     @Override
     public DMatrix mapCols(int... indexes) {
-        int[] rowIndexes = IntArrays.newSeq(0, rows);
-        IntArrays.mul(rowIndexes, 0, rowStride, rowIndexes.length);
+        int[] rowIndexes = Ints.seq(0, rows);
+        Ints.mul(rowIndexes, 0, rowStride, rowIndexes.length);
         return new DMatrixMap(offset, rowIndexes, indexes, array);
     }
 
     @Override
     public DMatrix mapColsTo(DMatrix to, int... indexes) {
-        int[] rowIndexes = IntArrays.newSeq(0, rows);
-        IntArrays.mul(rowIndexes, 0, rowStride, rowIndexes.length);
+        int[] rowIndexes = Ints.seq(0, rows);
+        Ints.mul(rowIndexes, 0, rowStride, rowIndexes.length);
         for (int i = 0; i < rowIndexes.length; i++) {
             for (int j = 0; j < indexes.length; j++) {
                 to.set(i, j, array[offset + rowIndexes[i] + indexes[j]]);
@@ -504,22 +504,22 @@ public class DMatrixDenseR extends AbstractDMatrix implements DMatrixStore {
 
     @Override
     public DMatrix rangeRows(int start, int end) {
-        return mapRows(IntArrays.newSeq(start, end));
+        return mapRows(Ints.seq(start, end));
     }
 
     @Override
     public DMatrix rangeRowsTo(DMatrix to, int start, int end) {
-        return mapRowsTo(to, IntArrays.newSeq(start, end));
+        return mapRowsTo(to, Ints.seq(start, end));
     }
 
     @Override
     public DMatrix rangeCols(int start, int end) {
-        return mapCols(IntArrays.newSeq(start, end));
+        return mapCols(Ints.seq(start, end));
     }
 
     @Override
     public DMatrix rangeColsTo(DMatrix to, int start, int end) {
-        return mapColsTo(to, IntArrays.newSeq(start, end));
+        return mapColsTo(to, Ints.seq(start, end));
     }
 
     @Override
@@ -541,7 +541,7 @@ public class DMatrixDenseR extends AbstractDMatrix implements DMatrixStore {
         IntStream.range(0, slices + 1).parallel()
                 .forEach(s -> {
                     for (int i = s * sliceSize; i < Math.min(rows(), (s + 1) * sliceSize); i++) {
-                        c[i] = DoubleArrays.dotSum(array, offset + i * rowStride, vector, 0, cols);
+                        c[i] = Doubles.dotSum(array, offset + i * rowStride, vector, 0, cols);
                     }
                 });
         return new DVectorDense(0, c.length, c);

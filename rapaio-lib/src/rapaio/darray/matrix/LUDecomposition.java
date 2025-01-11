@@ -35,7 +35,7 @@ import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 /**
  * LU Decomposition.
@@ -74,7 +74,7 @@ public class LUDecomposition<N extends Number> implements Serializable, Printabl
             throw new IllegalArgumentException("For LU decomposition, number of rows must be greater or equal with number of columns.");
         }
         this.dt = ref.dt();
-        this.tm = ref.manager();
+        this.tm = ref.dm();
         this.ref = ref;
         this.method = method;
         switch (method) {
@@ -90,7 +90,7 @@ public class LUDecomposition<N extends Number> implements Serializable, Printabl
     public void buildCrout() {
 
         LU = ref.copy();
-        piv = IntArrays.newSeq(ref.dim(0));
+        piv = Ints.seq(ref.dim(0));
         pivSign = 1;
         double[] LUcolj = new double[ref.dim(0)];
 
@@ -152,7 +152,7 @@ public class LUDecomposition<N extends Number> implements Serializable, Printabl
     public void buildGaussianElimination() {
         // Initialize.
         LU = ref.copy();
-        piv = IntArrays.newSeq(ref.dim(0));
+        piv = Ints.seq(ref.dim(0));
         pivSign = 1;
         // Main loop.
         for (int k = 0; k < ref.dim(1); k++) {

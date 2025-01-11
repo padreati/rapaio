@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 
 import rapaio.darray.DArray;
 import rapaio.darray.DArrays;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 import rapaio.util.collection.TArrays;
 
 public class Svm {
@@ -436,7 +436,7 @@ public class Svm {
     public static double[] svm_binary_svc_probability(SvmProblem prob, SvmParameter param, double cp, double cn) {
         int i;
         int nr_fold = 5;
-        int[] perm = IntArrays.newSeq(0, prob.len);
+        int[] perm = Ints.seq(0, prob.len);
         double[] dec_values = new double[prob.len];
 
         // random shuffle
@@ -585,8 +585,8 @@ public class Svm {
         // we swap labels to ensure that internally the binary SVM has positive data corresponding to the +1 instances.
         //
         if (nr_class == 2 && label[0] == -1 && label[1] == 1) {
-            IntArrays.swap(label, 0, 1);
-            IntArrays.swap(count, 0, 1);
+            Ints.swap(label, 0, 1);
+            Ints.swap(count, 0, 1);
             for (i = 0; i < l; i++) {
                 data_label[i] = data_label[i] == 0 ? 1 : 0;
             }
@@ -874,7 +874,7 @@ public class Svm {
             for (c = 0; c < nr_class; c++) {
                 for (i = 0; i < count[c]; i++) {
                     int j = i + prob.random.nextInt(count[c] - i);
-                    IntArrays.swap(index, start[c] + i, start[c] + j);
+                    Ints.swap(index, start[c] + i, start[c] + j);
                 }
             }
             for (i = 0; i < nrFold; i++) {
@@ -907,7 +907,7 @@ public class Svm {
             }
             for (i = 0; i < l; i++) {
                 int j = i + prob.random.nextInt(l - i);
-                IntArrays.swap(perm, i, j);
+                Ints.swap(perm, i, j);
             }
             for (i = 0; i <= nrFold; i++) {
                 fold_start[i] = i * l / nrFold;

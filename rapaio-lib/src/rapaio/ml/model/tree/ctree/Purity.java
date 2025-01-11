@@ -21,7 +21,7 @@
 
 package rapaio.ml.model.tree.ctree;
 
-import static rapaio.util.collection.DoubleArrays.nanSum;
+import static rapaio.util.collection.Doubles.nanSum;
 
 import java.io.Serializable;
 

@@ -27,7 +27,7 @@ import rapaio.data.MappedVar;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.experiment.math.linear.DVector;
-import rapaio.util.collection.DoubleArrays;
+import rapaio.util.collection.Doubles;
 
 /**
  * Wrapper class over a {@link Var} and offers basic implementations for vector operations.
@@ -66,7 +66,7 @@ public class DVectorVar<T extends Var> extends AbstractDVector {
 
     @Override
     public DVectorDense copy() {
-        double[] copy = DoubleArrays.newFrom(0, size(), ref::getDouble);
+        double[] copy = Doubles.newFrom(0, size(), ref::getDouble);
         return DVector.wrap(copy);
     }
 
@@ -103,7 +103,7 @@ public class DVectorVar<T extends Var> extends AbstractDVector {
         if (ref instanceof VarDouble refd) {
             return refd;
         }
-        double[] copy = DoubleArrays.newFrom(0, size(), ref::getDouble);
+        double[] copy = Doubles.newFrom(0, size(), ref::getDouble);
         return VarDouble.wrap(copy);
     }
 }

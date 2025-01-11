@@ -30,11 +30,9 @@ public class Narrow extends Tensor {
 
         this.setValue(x.value().narrow(axis, true, start, end));
 
-        backEdge(x, () -> {
-            var grad = tm.zerosArray(x.shape());
+        backEdge(x, grad -> {
             var narrow = grad.narrow(axis, true, start, end);
             narrow.add_(this.grad);
-            return grad;
         });
     }
 }

@@ -33,7 +33,7 @@ import rapaio.graphics.opt.GOpt;
 import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.opt.Palette;
 import rapaio.printer.Figure;
-import rapaio.util.collection.DoubleArrays;
+import rapaio.util.collection.Doubles;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
@@ -150,10 +150,10 @@ public class GridLayer implements Figure {
 
         for (G g : list) {
             Rectangle rect = new Rectangle(
-                    (int) (r.x + DoubleArrays.sum(w, 0, g.col)),
-                    (int) (r.y + DoubleArrays.sum(h, 0, g.row)),
-                    (int) (DoubleArrays.sum(w, g.col, g.width)),
-                    (int) (DoubleArrays.sum(h, g.row, g.height)));
+                    (int) (r.x + Doubles.sum(w, 0, g.col)),
+                    (int) (r.y + Doubles.sum(h, 0, g.row)),
+                    (int) (Doubles.sum(w, g.col, g.width)),
+                    (int) (Doubles.sum(h, g.row, g.height)));
             g.plot.prepare(g2d, rect);
         }
     }
@@ -178,10 +178,10 @@ public class GridLayer implements Figure {
 
         for (G g : list) {
             Rectangle rect = new Rectangle(
-                    (int) (r.x + DoubleArrays.sum(w, 0, g.col)),
-                    (int) (r.y + DoubleArrays.sum(h, 0, g.row)),
-                    (int) (DoubleArrays.sum(w, g.col, g.width)),
-                    (int) (DoubleArrays.sum(h, g.row, g.height)));
+                    (int) (r.x + Doubles.sum(w, 0, g.col)),
+                    (int) (r.y + Doubles.sum(h, 0, g.row)),
+                    (int) (Doubles.sum(w, g.col, g.width)),
+                    (int) (Doubles.sum(h, g.row, g.height)));
             g.plot.paint((Graphics2D) g2d.create(), rect);
         }
     }
