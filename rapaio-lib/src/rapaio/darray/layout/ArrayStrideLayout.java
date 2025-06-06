@@ -445,7 +445,7 @@ public class ArrayStrideLayout extends AbstractStrideLayout {
     @Override
     public StrideLayout permute(int[] dims) {
         if (strides.length != dims.length) {
-            throw new IllegalArgumentException("Numer of dimension is not equal with rank.");
+            throw new IllegalArgumentException("Number of dimension is not equal with rank.");
         }
         boolean[] flags = new boolean[rank()];
         int flagCount = 0;

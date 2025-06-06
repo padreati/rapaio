@@ -137,7 +137,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     }
 
     /**
-     * Size of the dimension
+     * Size of a given dimension
      *
      * @param axis the index of that dimension
      * @return size of the dimension for the given {@code axis}
@@ -683,14 +683,15 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      * An additional dimension of size size is appended to the returned darray.
      * <p>
      *
-     * @param newAxis position of the new dimension
-     * @param axis    dimension which is unfolded
-     * @param size    size of each slice that is unfolded
-     * @param step    distance between each slice
+     * @param newAxis  position of the new dimension
+     * @param axis     dimension which is unfolded
+     * @param size     size of each slice that is unfolded
+     * @param step     distance between each slice
+     * @param dilation distance between each element from each slice
      * @return
      */
-    public final DArray<N> unfold(int axis, int size, int step) {
-        return unfold(rank(), axis, size, step);
+    public final DArray<N> unfold(int axis, int size, int step, int dilation) {
+        return unfold(rank(), axis, size, step, dilation);
     }
 
     /**
@@ -701,22 +702,23 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      * An additional dimension of size size is added in the returned view at position {@code newAxis}.
      * <p>
      *
-     * @param newAxis position of the new dimension
-     * @param axis    dimension which is unfolded
-     * @param size    size of each slice that is unfolded
-     * @param step    distance between each slice
+     * @param newAxis  position of the new dimension
+     * @param axis     dimension which is unfolded
+     * @param size     size of each slice that is unfolded
+     * @param step     distance between each slice
+     * @param dilation distance between each element from each slice
      * @return
      */
-    public final DArray<N> unfold(int newAxis, int axis, int size, int step) {
-        int[] dims = dims();
-        int[] strides = ((StrideLayout) layout()).strides();
+    public final DArray<N> unfold(int newAxis, int axis, int size, int step, int dilation) {
+
+        int kernel = (size - 1) * dilation + 1;
 
         int oldDim = dim(axis);
-        int newDim = Math.ceilDiv(oldDim - size + 1, step);
-        int newStride = strides[axis] * step;
+        int newDim = Math.floorDiv(oldDim - kernel, step) + 1;
+        int newStride = stride(axis) * step;
 
-        int[] newDims = Arrays.copyOf(dims, dims.length + 1);
-        int[] newStrides = Arrays.copyOf(strides, strides.length + 1);
+        int[] newDims = Arrays.copyOf(dims(), dims().length + 1);
+        int[] newStrides = Arrays.copyOf(strides(), strides().length + 1);
         newDims[axis] = newDim;
         newStrides[axis] = newStride;
 
@@ -725,7 +727,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
             newStrides[i] = newStrides[i - 1];
         }
         newDims[newAxis] = size;
-        newStrides[newAxis] = strides[axis];
+        newStrides[newAxis] = stride(axis) * dilation;
         return dm.stride(dt, StrideLayout.of(newDims, ((StrideLayout) layout()).offset(), newStrides), storage);
     }
 
@@ -2675,50 +2677,50 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
 
     public abstract <M extends Number> DArray<M> cast(DType<M> dt, Order askOrder);
 
-    public final DArray<N> pad(int axis, int pad, int dilation) {
-        return pad(axis, pad, dilation, Order.defaultOrder());
+    public final DArray<N> pad(int axis, int pad, int inflation) {
+        return pad(axis, pad, inflation, Order.defaultOrder());
     }
 
-    public final DArray<N> pad(int axis, int pad, int dilation, Order askOrder) {
+    public final DArray<N> pad(int axis, int pad, int inflation, Order askOrder) {
         int[] newDims = Arrays.copyOf(dims(), rank());
-        newDims[axis] = 2 * pad + (dim(axis) - 1) * dilation + 1;
+        newDims[axis] = 2 * pad + (dim(axis) - 1) * inflation + 1;
         DArray<N> copy = dm.zeros(dt, Shape.of(newDims), askOrder);
-        copyTo(copy.unpad(axis, pad, dilation));
+        copyTo(copy.unpad(axis, pad, inflation));
         return copy;
     }
 
-    public final DArray<N> pad(int[] pad, int[] dilation) {
-        return pad(pad, dilation, Order.defaultOrder());
+    public final DArray<N> pad(int[] pad, int[] inflation) {
+        return pad(pad, inflation, Order.defaultOrder());
     }
 
-    public final DArray<N> pad(int[] pad, int[] dilation, Order askOrder) {
-        if (pad.length != dilation.length) {
-            throw new IllegalArgumentException("Length of pad and length of dilation must be the same.");
+    public final DArray<N> pad(int[] pad, int[] inflation, Order askOrder) {
+        if (pad.length != inflation.length) {
+            throw new IllegalArgumentException("Length of pad and length of inflation must be the same.");
         }
         if (pad.length > rank()) {
-            throw new IllegalArgumentException("Length of pad and dilation must be less than or equal with darray rank.");
+            throw new IllegalArgumentException("Length of pad and inflation must be less than or equal with darray rank.");
         }
         int[] newDims = Arrays.copyOf(dims(), rank());
         for (int i = 0; i < pad.length; i++) {
             newDims[newDims.length - i - 1] =
-                    2 * pad[pad.length - i - 1] + (dim(newDims.length - i - 1) - 1) * dilation[pad.length - i - 1] + 1;
+                    2 * pad[pad.length - i - 1] + (dim(newDims.length - i - 1) - 1) * inflation[pad.length - i - 1] + 1;
         }
         DArray<N> copy = dm.zeros(dt, Shape.of(newDims), askOrder);
-        copyTo(copy.unpad(pad, dilation));
+        copyTo(copy.unpad(pad, inflation));
         return copy;
     }
 
-    public final DArray<N> unpad(int axis, int pad, int dilation) {
+    public final DArray<N> unpad(int axis, int pad, int inflation) {
         int[] newDims = Arrays.copyOf(dims(), rank());
-        newDims[axis] = Math.ceilDiv(dim(axis) - 2 * pad - 1, dilation) + 1;
+        newDims[axis] = Math.ceilDiv(dim(axis) - 2 * pad - 1, inflation) + 1;
         int newOffset = ((StrideLayout) layout()).offset() + pad * stride(axis);
         int[] newStrides = Arrays.copyOf(strides(), strides().length);
-        newStrides[axis] *= dilation;
+        newStrides[axis] *= inflation;
         return dm.stride(dt, StrideLayout.of(newDims, newOffset, newStrides), storage);
     }
 
-    public final DArray<N> unpad(int[] pad, int[] dilation) {
-        if (pad.length != dilation.length) {
+    public final DArray<N> unpad(int[] pad, int[] inflation) {
+        if (pad.length != inflation.length) {
             throw new IllegalArgumentException("Length of pad and length of dilation must be the same.");
         }
         if (pad.length > rank()) {
@@ -2726,7 +2728,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
         }
         DArray<N> last = this;
         for (int i = 0; i < pad.length; i++) {
-            last = last.unpad(rank() - i - 1, pad[pad.length - i - 1], dilation[pad.length - i - 1]);
+            last = last.unpad(rank() - i - 1, pad[pad.length - i - 1], inflation[pad.length - i - 1]);
         }
         return last;
     }

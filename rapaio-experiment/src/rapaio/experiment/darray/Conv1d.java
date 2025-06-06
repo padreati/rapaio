@@ -21,22 +21,38 @@
 
 package rapaio.experiment.darray;
 
-import rapaio.darray.DArray;
 import rapaio.darray.DArrayManager;
 import rapaio.darray.DType;
-import rapaio.darray.Order;
 import rapaio.darray.Shape;
 
-public class Sandbox {
+public class Conv1d {
 
     public static void main(String[] args) {
+
         DArrayManager dm = DArrayManager.base();
-        DType<?> dt = DType.DOUBLE;
-        DArray<?> x = dm.seq(dt, Shape.of(6, 6));
+        DType<?> dt = DType.FLOAT;
+
+        int n = 2;
+        int cIn = 2;
+        int l = 10;
+        int cOut = 3;
+
+        var x = dm.seq(dt, Shape.of(n, cIn, l));
         x.printString();
 
-        x.copy(Order.F).printString();
+        int k = 3;
+        int p = 0;
+        int s = 2;
+        int d = 1;
 
+        var xp = x.pad(2, p, 1);
+        xp.printString();
+
+        var xf = xp.unfold(2, k, s, d);
+        xf.printString();
+
+
+        var w = dm.seq(dt, Shape.of(k, cOut, cIn));
+        w.printString();
     }
-
 }

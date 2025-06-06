@@ -1,9 +1,9 @@
 module rapaio.lib {
 
     requires java.desktop;
-    requires java.logging;
 
     requires jdk.incubator.vector;
+    requires java.sql;
 
     exports rapaio.core;
     exports rapaio.core.correlation;

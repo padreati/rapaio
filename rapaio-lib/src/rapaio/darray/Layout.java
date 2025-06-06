@@ -162,25 +162,23 @@ public interface Layout {
     Layout permute(int[] dims);
 
     static Order storageFastTandemOrder(Layout firstLayout, Layout secondLayout) {
-        if (firstLayout instanceof StrideLayout firstStride) {
-            if (secondLayout instanceof StrideLayout secondStride) {
-                // find first an agreement
-                if (firstStride.isCOrdered() && secondStride.isCOrdered()) {
-                    return Order.C;
-                }
-                if (firstLayout.isFOrdered() && secondLayout.isFOrdered()) {
-                    return Order.F;
-                }
-                // if no agreement, choose first if C/F
-                if (firstLayout.isCOrdered()) {
-                    return Order.C;
-                }
-                if (firstLayout.isFOrdered()) {
-                    return Order.F;
-                }
-                // if nothing, choose default
-                return Order.defaultOrder();
+        if (firstLayout instanceof StrideLayout firstStride && secondLayout instanceof StrideLayout secondStride) {
+            // find first an agreement
+            if (firstStride.isCOrdered() && secondStride.isCOrdered()) {
+                return Order.C;
             }
+            if (firstLayout.isFOrdered() && secondLayout.isFOrdered()) {
+                return Order.F;
+            }
+            // if no agreement, choose first if C/F
+            if (firstLayout.isCOrdered()) {
+                return Order.C;
+            }
+            if (firstLayout.isFOrdered()) {
+                return Order.F;
+            }
+            // if nothing, choose default
+            return Order.defaultOrder();
         }
         throw new NotImplementedException("This feature is not implemented yet for other layout types.");
     }
