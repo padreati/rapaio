@@ -92,9 +92,9 @@ public class UnaryOpAsin extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector a = s.getFloatVector(p, loop.simdOffsets(), 0);
+                FloatVector a = s.getFloatVector(p, loop.simdIdx(), 0);
                 a = a.lanewise(VectorOperators.ASIN);
-                s.setFloatVector(a, p, loop.simdOffsets(), 0);
+                s.setFloatVector(a, p, loop.simdIdx(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.bound; i++) {
@@ -142,9 +142,9 @@ public class UnaryOpAsin extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = s.getDoubleVector(p, loop.simdOffsets(), 0);
+                DoubleVector a = s.getDoubleVector(p, loop.simdIdx(), 0);
                 a = a.lanewise(VectorOperators.ASIN);
-                s.setDoubleVector(a, p, loop.simdOffsets(), 0);
+                s.setDoubleVector(a, p, loop.simdIdx(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.bound; i++) {

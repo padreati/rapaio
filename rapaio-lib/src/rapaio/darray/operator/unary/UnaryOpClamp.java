@@ -90,7 +90,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getByteVector(p, loop.simdOffsets(), 0);
+                var a = s.getByteVector(p, loop.simdIdx(), 0);
                 if (hasMin) {
                     var m = a.compare(VectorOperators.LT, byteMin);
                     a = a.blend(byteMin, m);
@@ -99,7 +99,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
                     var m = a.compare(VectorOperators.GT, byteMax);
                     a = a.blend(byteMax, m);
                 }
-                s.setByteVector(a, p, loop.simdOffsets(), 0);
+                s.setByteVector(a, p, loop.simdIdx(), 0);
                 p += loop.simdLen * loop.step;
             }
             for (; i < loop.bound; i++) {
@@ -163,7 +163,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getIntVector(p, loop.simdOffsets(), 0);
+                var a = s.getIntVector(p, loop.simdIdx(), 0);
                 if (hasMin) {
                     var m = a.compare(VectorOperators.LT, intMin);
                     a = a.blend(intMin, m);
@@ -172,7 +172,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
                     var m = a.compare(VectorOperators.GT, intMax);
                     a = a.blend(intMax, m);
                 }
-                s.setIntVector(a, p, loop.simdOffsets(), 0);
+                s.setIntVector(a, p, loop.simdIdx(), 0);
                 p += loop.simdLen * loop.step;
             }
             for (; i < loop.bound; i++) {
@@ -236,7 +236,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getFloatVector(p, loop.simdOffsets(), 0);
+                var a = s.getFloatVector(p, loop.simdIdx(), 0);
                 if (hasMin) {
                     var m = a.compare(VectorOperators.LT, floatMin);
                     a = a.blend(floatMin, m);
@@ -245,7 +245,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
                     var m = a.compare(VectorOperators.GT, floatMax);
                     a = a.blend(floatMax, m);
                 }
-                s.setFloatVector(a, p, loop.simdOffsets(), 0);
+                s.setFloatVector(a, p, loop.simdIdx(), 0);
                 p += loop.simdLen * loop.step;
             }
             for (; i < loop.bound; i++) {
@@ -309,7 +309,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getDoubleVector(p, loop.simdOffsets(), 0);
+                var a = s.getDoubleVector(p, loop.simdIdx(), 0);
                 if (hasMin) {
                     var m = a.compare(VectorOperators.LT, doubleMin);
                     a = a.blend(doubleMin, m);
@@ -318,7 +318,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
                     var m = a.compare(VectorOperators.GT, doubleMax);
                     a = a.blend(doubleMax, m);
                 }
-                s.setDoubleVector(a, p, loop.simdOffsets(), 0);
+                s.setDoubleVector(a, p, loop.simdIdx(), 0);
                 p += loop.simdLen * loop.step;
             }
             for (; i < loop.bound; i++) {

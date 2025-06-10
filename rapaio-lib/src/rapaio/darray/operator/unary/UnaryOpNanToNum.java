@@ -101,12 +101,12 @@ public class UnaryOpNanToNum<N extends Number> extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector b = s.getFloatVector(p, loop.simdOffsets(), 0);
+                FloatVector b = s.getFloatVector(p, loop.simdIdx(), 0);
                 if (!b.test(VectorOperators.IS_FINITE).allTrue()) {
                     b = b.blend(vnan, b.test(VectorOperators.IS_NAN));
                     b = b.blend(vpinf, b.compare(VectorOperators.EQ, Float.POSITIVE_INFINITY));
                     b = b.blend(vninf, b.compare(VectorOperators.EQ, Float.NEGATIVE_INFINITY));
-                    s.setFloatVector(b, p, loop.simdOffsets(), 0);
+                    s.setFloatVector(b, p, loop.simdIdx(), 0);
                 }
                 p += loop.step * loop.simdLen;
             }
@@ -168,12 +168,12 @@ public class UnaryOpNanToNum<N extends Number> extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector b = s.getDoubleVector(p, loop.simdOffsets(), 0);
+                DoubleVector b = s.getDoubleVector(p, loop.simdIdx(), 0);
                 if (!b.test(VectorOperators.IS_FINITE).allTrue()) {
                     b = b.blend(vnan, b.test(VectorOperators.IS_NAN));
                     b = b.blend(vpinf, b.compare(VectorOperators.EQ, Double.POSITIVE_INFINITY));
                     b = b.blend(vninf, b.compare(VectorOperators.EQ, Double.NEGATIVE_INFINITY));
-                    s.setDoubleVector(b, p, loop.simdOffsets(), 0);
+                    s.setDoubleVector(b, p, loop.simdIdx(), 0);
                 }
                 p += loop.step * loop.simdLen;
             }

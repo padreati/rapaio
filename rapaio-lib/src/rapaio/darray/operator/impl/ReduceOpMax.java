@@ -70,7 +70,7 @@ public final class ReduceOpMax extends DArrayReduceOp {
             ByteVector a = Simd.broadcast(initByte);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                ByteVector v = storage.getByteVector(p, loop.simdOffsets(), 0);
+                ByteVector v = storage.getByteVector(p, loop.simdIdx(), 0);
                 a = a.max(v);
                 p += loop.simdLen * loop.step;
             }
@@ -122,7 +122,7 @@ public final class ReduceOpMax extends DArrayReduceOp {
             IntVector a = Simd.broadcast(initInt);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                IntVector v = storage.getIntVector(p, loop.simdOffsets(), 0);
+                IntVector v = storage.getIntVector(p, loop.simdIdx(), 0);
                 a = a.max(v);
                 p += loop.simdLen * loop.step;
             }
@@ -174,7 +174,7 @@ public final class ReduceOpMax extends DArrayReduceOp {
             FloatVector a = Simd.broadcast(initFloat);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector v = storage.getFloatVector(p, loop.simdOffsets(), 0);
+                FloatVector v = storage.getFloatVector(p, loop.simdIdx(), 0);
                 a = a.max(v);
                 p += loop.simdLen * loop.step;
             }
@@ -226,7 +226,7 @@ public final class ReduceOpMax extends DArrayReduceOp {
             DoubleVector a = Simd.broadcast(initDouble);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector v = storage.getDoubleVector(p, loop.simdOffsets(), 0);
+                DoubleVector v = storage.getDoubleVector(p, loop.simdIdx(), 0);
                 a = a.max(v);
                 p += loop.simdLen * loop.step;
             }

@@ -91,9 +91,9 @@ public final class UnaryOpSigmoid extends DArrayUnaryOp {
             int i = 0;
             FloatVector one = Simd.broadcast(1f);
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getFloatVector(p, loop.simdOffsets(), 0);
+                var a = s.getFloatVector(p, loop.simdIdx(), 0);
                 a = one.div(one.add(a.neg().lanewise(VectorOperators.EXP)));
-                s.setFloatVector(a, p, loop.simdOffsets(), 0);
+                s.setFloatVector(a, p, loop.simdIdx(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.bound; i++) {
@@ -137,9 +137,9 @@ public final class UnaryOpSigmoid extends DArrayUnaryOp {
             int i = 0;
             DoubleVector one = Simd.broadcast(1d);
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = s.getDoubleVector(p, loop.simdOffsets(), 0);
+                DoubleVector a = s.getDoubleVector(p, loop.simdIdx(), 0);
                 a = one.div(one.add(a.neg().lanewise(VectorOperators.EXP)));
-                s.setDoubleVector(a, p, loop.simdOffsets(), 0);
+                s.setDoubleVector(a, p, loop.simdIdx(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.bound; i++) {

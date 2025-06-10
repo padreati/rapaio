@@ -120,7 +120,7 @@ public final class ReduceOpVarc extends DArrayReduceOp {
             FloatVector vsum2 = Simd.zeroFloat();
             FloatVector vsum3 = Simd.zeroFloat();
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector a = storage.getFloatVector(p, loop.simdOffsets(), 0);
+                FloatVector a = storage.getFloatVector(p, loop.simdIdx(), 0);
                 FloatVector c = a.sub(vmean);
                 FloatVector c2 = c.mul(c);
                 vsum2 = vsum2.add(c2);
@@ -202,7 +202,7 @@ public final class ReduceOpVarc extends DArrayReduceOp {
             DoubleVector vsum2 = Simd.zeroDouble();
             DoubleVector vsum3 = Simd.zeroDouble();
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = storage.getDoubleVector(p, loop.simdOffsets(), 0);
+                DoubleVector a = storage.getDoubleVector(p, loop.simdIdx(), 0);
                 DoubleVector c = a.sub(vmean);
                 DoubleVector c2 = c.mul(c);
                 vsum2 = vsum2.add(c2);

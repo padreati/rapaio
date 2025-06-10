@@ -27,7 +27,7 @@
     <groupId>io.github.padreati</groupId>
     <artifactId>rapaio</artifactId>
     <packaging>pom</packaging>
-    <version>7.1.0</version>
+    <version>8.0.0</version>
     <name>rapaio</name>
     <description>Rapaio Library</description>
     <url>https://github.com/padreati/rapaio</url>
@@ -57,10 +57,10 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>23</maven.compiler.source>
-        <maven.compiler.target>23</maven.compiler.target>
-        <maven.compiler.release>23</maven.compiler.release>
-        <java.version>23</java.version>
+        <java.version>24</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven.compiler.release>${java.version}</maven.compiler.release>
         <maven.plugin.validation>VERBOSE</maven.plugin.validation>
     </properties>
 
@@ -92,7 +92,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>3.5.1</version>
                 <configuration>
                     <reuseForks>true</reuseForks>
                     <!--suppress UnresolvedMavenProperty -->

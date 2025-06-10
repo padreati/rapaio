@@ -57,7 +57,7 @@ public class UnaryOpFill<N extends Number> extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                s.setByteVector(a, p, loop.simdOffsets(), 0);
+                s.setByteVector(a, p, loop.simdIdx(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.bound; i++) {
@@ -99,7 +99,7 @@ public class UnaryOpFill<N extends Number> extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                s.setIntVector(a, p, loop.simdOffsets(), 0);
+                s.setIntVector(a, p, loop.simdIdx(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.bound; i++) {
@@ -141,7 +141,7 @@ public class UnaryOpFill<N extends Number> extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                s.setFloatVector(a, p, loop.simdOffsets(), 0);
+                s.setFloatVector(a, p, loop.simdIdx(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.bound; i++) {
@@ -183,7 +183,7 @@ public class UnaryOpFill<N extends Number> extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                s.setDoubleVector(a, p, loop.simdOffsets(), 0);
+                s.setDoubleVector(a, p, loop.simdIdx(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.bound; i++) {

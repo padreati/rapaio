@@ -71,7 +71,7 @@ public final class ReduceOpNanProd extends DArrayReduceOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                ByteVector v = storage.getByteVector(p, loop.simdOffsets(), 0);
+                ByteVector v = storage.getByteVector(p, loop.simdIdx(), 0);
                 a = a.mul(v);
                 p += loop.simdLen * loop.step;
             }
@@ -123,7 +123,7 @@ public final class ReduceOpNanProd extends DArrayReduceOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                IntVector v = storage.getIntVector(p, loop.simdOffsets(), 0);
+                IntVector v = storage.getIntVector(p, loop.simdIdx(), 0);
                 a = a.mul(v);
                 p += loop.simdLen * loop.step;
             }
@@ -180,7 +180,7 @@ public final class ReduceOpNanProd extends DArrayReduceOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector v = storage.getFloatVector(p, loop.simdOffsets(), 0);
+                FloatVector v = storage.getFloatVector(p, loop.simdIdx(), 0);
                 VectorMask<Float> m = v.test(VectorOperators.IS_NAN);
                 a = a.mul(v, m.not());
                 p += loop.simdLen * loop.step;
@@ -245,7 +245,7 @@ public final class ReduceOpNanProd extends DArrayReduceOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector v = storage.getDoubleVector(p, loop.simdOffsets(), 0);
+                DoubleVector v = storage.getDoubleVector(p, loop.simdIdx(), 0);
                 VectorMask<Double> m = v.test(VectorOperators.IS_NAN);
                 a = a.mul(v, m.not());
                 p += loop.simdLen * loop.step;

@@ -99,7 +99,7 @@ public final class StrideLoopDescriptor<N extends Number> {
         }
     }
 
-    public int[] simdOffsets() {
+    public int[] simdIdx() {
         if (simdOffsets == null) {
             simdOffsets = new int[simdLen];
             for (int i = 0; i < simdOffsets.length; i++) {

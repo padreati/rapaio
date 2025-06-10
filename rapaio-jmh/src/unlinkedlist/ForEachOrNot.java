@@ -43,7 +43,7 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
 
 import commons.Utils;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.Ints;
 
 @BenchmarkMode( {Mode.Throughput})
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -58,7 +58,7 @@ public class ForEachOrNot {
 
         @Setup(Level.Invocation)
         public void setup() {
-            array = IntArrays.newSeq(0, len);
+            array = Ints.seq(0, len);
             arrayList = new ArrayList<>();
             for (int i = 0; i < len; i++) {
                 arrayList.add(i);

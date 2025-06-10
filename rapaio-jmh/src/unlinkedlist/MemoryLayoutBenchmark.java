@@ -60,7 +60,7 @@ import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.artist.Legend;
 import rapaio.io.Csv;
 import rapaio.sys.WS;
-import rapaio.util.collection.DoubleArrays;
+import rapaio.util.collection.Doubles;
 
 @BenchmarkMode( {Mode.AverageTime})
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
@@ -83,7 +83,7 @@ public class MemoryLayoutBenchmark {
         @Setup(Level.Invocation)
         public void setup() {
             Random random = new Random(42);
-            array = DoubleArrays.newFrom(0, n, _ -> random.nextDouble());
+            array = Doubles.newFrom(0, n, _ -> random.nextDouble());
             msArray = MemorySegment.ofArray(array);
             storage = new ArrayStorageManager().from(dt, array);
             msExternal = Arena.ofAuto().allocate(n * 8, 8);

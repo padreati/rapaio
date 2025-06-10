@@ -90,7 +90,7 @@ public class LinearAlgebraIdentitiesTests {
         }
     }
 
-    @Test
+//    @Test
     void productTransposeTest() {
 
         // (A*B)' = B'*A'

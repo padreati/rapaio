@@ -118,7 +118,7 @@ public final class ReduceOpMean extends DArrayReduceOp {
             FloatVector a = Simd.broadcast(initFloat);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector v = storage.getFloatVector(p, loop.simdOffsets(), 0);
+                FloatVector v = storage.getFloatVector(p, loop.simdIdx(), 0);
                 a = a.add(v);
                 p += loop.simdLen * loop.step;
             }
@@ -136,7 +136,7 @@ public final class ReduceOpMean extends DArrayReduceOp {
             FloatVector a = Simd.broadcast(initFloat);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector v = storage.getFloatVector(p, loop.simdOffsets(), 0);
+                FloatVector v = storage.getFloatVector(p, loop.simdIdx(), 0);
                 v = v.sub(mean);
                 a = a.add(v);
                 p += loop.simdLen * loop.step;
@@ -222,7 +222,7 @@ public final class ReduceOpMean extends DArrayReduceOp {
             DoubleVector a = Simd.broadcast(initDouble);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector v = storage.getDoubleVector(p, loop.simdOffsets(), 0);
+                DoubleVector v = storage.getDoubleVector(p, loop.simdIdx(), 0);
                 a = a.add(v);
                 p += loop.simdLen * loop.step;
             }
@@ -240,7 +240,7 @@ public final class ReduceOpMean extends DArrayReduceOp {
             DoubleVector a = Simd.broadcast(initDouble);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector v = storage.getDoubleVector(p, loop.simdOffsets(), 0);
+                DoubleVector v = storage.getDoubleVector(p, loop.simdIdx(), 0);
                 v = v.sub(mean);
                 a = a.add(v);
                 p += loop.simdLen * loop.step;

@@ -101,7 +101,7 @@ public final class FloatDenseStride extends FloatDense {
         int offset = 10;
         int[] strides = Ints.fill(shape.rank(), 1);
         int[] ordering = Ints.seq(0, shape.rank());
-        Ints.shuffle(ordering, new Random(42));
+        Ints.shuffle(ordering, random);
 
         for (int i = 1; i < shape.rank(); i++) {
             int next = -1;

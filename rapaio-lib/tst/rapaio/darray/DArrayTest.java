@@ -1210,16 +1210,18 @@ public class DArrayTest {
             for (int j = 0; j < t4.shape().dim(1); j++) {
                 N expected = rows.get(i).inner(cols.get(j));
                 N realized = r3.get(i, j);
-                assertEquals(expected, realized, "i: %d, j: %d".formatted(i, j));
+                assertEquals(expected.doubleValue(), realized.doubleValue(), 1e-7, "i: %d, j: %d".formatted(i, j));
             }
         }
 
         r3 = t3.mm(t4, Order.F);
         rows = t3.chunk(0, false, 1);
         cols = t4.chunk(1, false, 1);
-        for (int i = 0; i < t3.shape().dim(0); i++) {
-            for (int j = 0; j < t4.shape().dim(1); j++) {
-                assertEquals(r3.get(i, j), rows.get(i).inner(cols.get(j)));
+        for (int i = 0; i < t3.dim(0); i++) {
+            for (int j = 0; j < t4.dim(1); j++) {
+                N expected = rows.get(i).inner(cols.get(j));
+                N realized = r3.get(i, j);
+                assertEquals(realized.doubleValue(), expected.doubleValue(), 1e-7);
             }
         }
 

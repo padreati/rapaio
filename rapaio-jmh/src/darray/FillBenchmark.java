@@ -60,7 +60,7 @@ import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.artist.Legend;
 import rapaio.io.Csv;
 import rapaio.sys.WS;
-import rapaio.util.collection.DoubleArrays;
+import rapaio.util.collection.Doubles;
 
 @BenchmarkMode( {Mode.AverageTime})
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -82,7 +82,7 @@ public class FillBenchmark {
         @Setup(Level.Invocation)
         public void setup() {
             Random random = new Random(42);
-            double[] array = DoubleArrays.newFrom(0, n * n, _ -> random.nextDouble());
+            double[] array = Doubles.newFrom(0, n * n, _ -> random.nextDouble());
 
             jsatA = new DenseMatrix(n, n);
             int p = 0;

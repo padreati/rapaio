@@ -88,9 +88,9 @@ public class UnaryOpPow extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getFloatVector(p, loop.simdOffsets(), 0);
+                var a = s.getFloatVector(p, loop.simdIdx(), 0);
                 a = a.pow((float) power);
-                s.setFloatVector(a, p, loop.simdOffsets(), 0);
+                s.setFloatVector(a, p, loop.simdIdx(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.bound; i++) {
@@ -132,9 +132,9 @@ public class UnaryOpPow extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = s.getDoubleVector(p, loop.simdOffsets(), 0);
+                DoubleVector a = s.getDoubleVector(p, loop.simdIdx(), 0);
                 a = a.pow(power);
-                s.setDoubleVector(a, p, loop.simdOffsets(), 0);
+                s.setDoubleVector(a, p, loop.simdIdx(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.bound; i++) {

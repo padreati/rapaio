@@ -90,9 +90,9 @@ public class UnaryOpFillNan<N extends Number> extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector b = s.getFloatVector(p, loop.simdOffsets(), 0);
+                FloatVector b = s.getFloatVector(p, loop.simdIdx(), 0);
                 b = b.blend(a, b.test(VectorOperators.IS_NAN));
-                s.setFloatVector(b, p, loop.simdOffsets(), 0);
+                s.setFloatVector(b, p, loop.simdIdx(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.bound; i++) {
@@ -142,9 +142,9 @@ public class UnaryOpFillNan<N extends Number> extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector b = s.getDoubleVector(p, loop.simdOffsets(), 0);
+                DoubleVector b = s.getDoubleVector(p, loop.simdIdx(), 0);
                 b = b.blend(a, b.test(VectorOperators.IS_NAN));
-                s.setDoubleVector(b, p, loop.simdOffsets(), 0);
+                s.setDoubleVector(b, p, loop.simdIdx(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.bound; i++) {

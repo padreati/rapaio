@@ -63,9 +63,9 @@ public class UnaryOpAbs extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var a = s.getByteVector(p, loop.simdOffsets(), 0);
+                var a = s.getByteVector(p, loop.simdIdx(), 0);
                 a = a.abs();
-                s.setByteVector(a, p, loop.simdOffsets(), 0);
+                s.setByteVector(a, p, loop.simdIdx(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.bound; i++) {
@@ -113,9 +113,9 @@ public class UnaryOpAbs extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                IntVector a = s.getIntVector(p, loop.simdOffsets(), 0);
+                IntVector a = s.getIntVector(p, loop.simdIdx(), 0);
                 a = a.abs();
-                s.setIntVector(a, p, loop.simdOffsets(), 0);
+                s.setIntVector(a, p, loop.simdIdx(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.bound; i++) {
@@ -163,9 +163,9 @@ public class UnaryOpAbs extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector a = s.getFloatVector(p, loop.simdOffsets(), 0);
+                FloatVector a = s.getFloatVector(p, loop.simdIdx(), 0);
                 a = a.abs();
-                s.setFloatVector(a, p, loop.simdOffsets(), 0);
+                s.setFloatVector(a, p, loop.simdIdx(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.bound; i++) {
@@ -213,9 +213,9 @@ public class UnaryOpAbs extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector a = s.getDoubleVector(p, loop.simdOffsets(), 0);
+                DoubleVector a = s.getDoubleVector(p, loop.simdIdx(), 0);
                 a = a.abs();
-                s.setDoubleVector(a, p, loop.simdOffsets(), 0);
+                s.setDoubleVector(a, p, loop.simdIdx(), 0);
                 p += loop.step * loop.simdLen;
             }
             for (; i < loop.bound; i++) {

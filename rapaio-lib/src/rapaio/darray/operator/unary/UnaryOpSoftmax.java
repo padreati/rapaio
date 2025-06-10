@@ -125,7 +125,7 @@ public class UnaryOpSoftmax extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                vmax = vmax.max(s.getFloatVector(p, loop.simdOffsets(), 0));
+                vmax = vmax.max(s.getFloatVector(p, loop.simdIdx(), 0));
                 p += loop.simdLen * loop.step;
             }
             max = Math.max(max, vmax.reduceLanes(VectorOperators.MAX));
@@ -140,10 +140,10 @@ public class UnaryOpSoftmax extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector v = s.getFloatVector(p, loop.simdOffsets(), 0);
+                FloatVector v = s.getFloatVector(p, loop.simdIdx(), 0);
                 v = v.sub(vmax).lanewise(VectorOperators.EXP);
                 vsum = vsum.add(v);
-                s.setFloatVector(v, p, loop.simdOffsets(), 0);
+                s.setFloatVector(v, p, loop.simdIdx(), 0);
                 p += loop.simdLen * loop.step;
             }
             sum += vsum.reduceLanes(VectorOperators.ADD);
@@ -159,8 +159,8 @@ public class UnaryOpSoftmax extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                FloatVector v = s.getFloatVector(p, loop.simdOffsets(), 0);
-                s.setFloatVector(v.div(vsum), p, loop.simdOffsets(), 0);
+                FloatVector v = s.getFloatVector(p, loop.simdIdx(), 0);
+                s.setFloatVector(v.div(vsum), p, loop.simdIdx(), 0);
                 p += loop.simdLen * loop.step;
             }
             for (; i < loop.bound; i++) {
@@ -256,7 +256,7 @@ public class UnaryOpSoftmax extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                vmax = vmax.max(s.getDoubleVector(p, loop.simdOffsets(), 0));
+                vmax = vmax.max(s.getDoubleVector(p, loop.simdIdx(), 0));
                 p += loop.simdLen * loop.step;
             }
             max = Math.max(max, vmax.reduceLanes(VectorOperators.MAX));
@@ -271,10 +271,10 @@ public class UnaryOpSoftmax extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector v = s.getDoubleVector(p, loop.simdOffsets(), 0);
+                DoubleVector v = s.getDoubleVector(p, loop.simdIdx(), 0);
                 v = v.sub(vmax).lanewise(VectorOperators.EXP);
                 vsum = vsum.add(v);
-                s.setDoubleVector(v, p, loop.simdOffsets(), 0);
+                s.setDoubleVector(v, p, loop.simdIdx(), 0);
                 p += loop.simdLen * loop.step;
             }
             sum += vsum.reduceLanes(VectorOperators.ADD);
@@ -290,8 +290,8 @@ public class UnaryOpSoftmax extends DArrayUnaryOp {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                DoubleVector v = s.getDoubleVector(p, loop.simdOffsets(), 0);
-                s.setDoubleVector(v.div(vsum), p, loop.simdOffsets(), 0);
+                DoubleVector v = s.getDoubleVector(p, loop.simdIdx(), 0);
+                s.setDoubleVector(v.div(vsum), p, loop.simdIdx(), 0);
                 p += loop.simdLen * loop.step;
             }
             for (; i < loop.bound; i++) {

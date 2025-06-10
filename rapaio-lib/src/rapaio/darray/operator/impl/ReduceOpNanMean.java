@@ -126,7 +126,7 @@ public final class ReduceOpNanMean extends DArrayReduceOp {
             FloatVector a = Simd.zeroFloat();
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var v = storage.getFloatVector(p, loop.simdOffsets(), 0);
+                var v = storage.getFloatVector(p, loop.simdIdx(), 0);
                 var m = v.test(VectorOperators.IS_NAN);
                 a = a.add(v, m.not());
                 count += m.not().trueCount();
@@ -149,7 +149,7 @@ public final class ReduceOpNanMean extends DArrayReduceOp {
             FloatVector a = Simd.zeroFloat();
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var v = storage.getFloatVector(p, loop.simdOffsets(), 0);
+                var v = storage.getFloatVector(p, loop.simdIdx(), 0);
                 var m = v.test(VectorOperators.IS_NAN);
                 v = v.sub(mean, m.not());
                 a = a.add(v, m.not());
@@ -254,7 +254,7 @@ public final class ReduceOpNanMean extends DArrayReduceOp {
             var a = Simd.zeroDouble();
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var v = storage.getDoubleVector(p, loop.simdOffsets(), 0);
+                var v = storage.getDoubleVector(p, loop.simdIdx(), 0);
                 var m = v.test(VectorOperators.IS_NAN);
                 a = a.add(v, m.not());
                 count += m.not().trueCount();
@@ -277,7 +277,7 @@ public final class ReduceOpNanMean extends DArrayReduceOp {
             var a = Simd.zeroDouble();
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
-                var v = storage.getDoubleVector(p, loop.simdOffsets(), 0);
+                var v = storage.getDoubleVector(p, loop.simdIdx(), 0);
                 var m = v.test(VectorOperators.IS_NAN);
                 v = v.sub(mean, m.not());
                 a = a.add(v, m.not());

@@ -21,7 +21,6 @@
 
 package rapaio.darray.manager.base;
 
-import static rapaio.util.Hardware.CORES;
 import static rapaio.util.Hardware.L2_CACHE_SIZE;
 
 import java.util.ArrayList;
@@ -188,7 +187,7 @@ public final class BaseByteDArrayStride extends AbstractStrideDArray<Byte> {
 
     public final Iterator<Byte> iterator(Order askOrder) {
         return StreamSupport.stream(
-                Spliterators.spliteratorUnknownSize(ptrIterator(askOrder), Spliterator.ORDERED | Spliterator.IMMUTABLE), false)
+                        Spliterators.spliteratorUnknownSize(ptrIterator(askOrder), Spliterator.ORDERED | Spliterator.IMMUTABLE), false)
                 .map(storage::getByte).iterator();
     }
 
@@ -306,9 +305,9 @@ public final class BaseByteDArrayStride extends AbstractStrideDArray<Byte> {
                     }
                 } else {
                     for (; i < loop.simdBound; i += loop.simdLen) {
-                        ByteVector a = storage.getByteVector(p, loop.simdOffsets(), 0);
+                        ByteVector a = storage.getByteVector(p, loop.simdIdx(), 0);
                         a = op.applyByte(a, m);
-                        storage.setByteVector(a, p, loop.simdOffsets(), 0);
+                        storage.setByteVector(a, p, loop.simdIdx(), 0);
                         p += loop.simdLen * loop.step;
                     }
                 }
@@ -840,35 +839,59 @@ public final class BaseByteDArrayStride extends AbstractStrideDArray<Byte> {
     }
 
     private Byte innerUnchecked(DArray<?> other, int start, int end) {
-        if (start >= end || start < 0 || end > other.shape().dim(0)) {
+        if (start > end || start < 0 || end > other.shape().dim(0)) {
             throw new IllegalArgumentException("Start and end indexes are invalid (start: %d, end: %s).".formatted(start, end));
         }
         BaseByteDArrayStride dts = (BaseByteDArrayStride) other;
 
-        int offset1 = layout.offset();
-        int offset2 = dts.layout.offset();
-        int step1 = layout.stride(0);
-        int step2 = dts.layout.stride(0);
+        int step1 = loop.step;
+        int step2 = dts.loop.step;
 
         int i = 0;
-        int p1 = offset1 + start * step1;
-        int p2 = offset2 + start * step2;
+        int p1 = loop.offsets[0] + start * step1;
+        int p2 = dts.loop.offsets[0] + start * step2;
         byte sum = 0;
 
         if (storage.supportSimd() && dts.storage.supportSimd()) {
             int simdBound = Simd.vsb.loopBound(end - start);
             if (simdBound > 0) {
                 ByteVector vsum = Simd.zeroByte();
-                for (; i < simdBound; i += loop.simdLen) {
-                    ByteVector v1 = (step1 == 1) ?
-                            storage.getByteVector(p1) :
-                            storage.getByteVector(p1, loop.simdOffsets(), 0);
-                    ByteVector v2 = (step2 == 1) ?
-                            dts.storage.getByteVector(p2) :
-                            dts.storage.getByteVector(p2, dts.loop.simdOffsets(), 0);
-                    vsum = vsum.add(v1.mul(v2));
-                    p1 += step1 * loop.simdLen;
-                    p2 += step2 * loop.simdLen;
+                if (step1 == 1) {
+                    if (step2 == 1) {
+                        for (; i < simdBound; i += loop.simdLen) {
+                            ByteVector v1 = storage.getByteVector(p1);
+                            ByteVector v2 = dts.storage.getByteVector(p2);
+                            vsum = vsum.add(v1.mul(v2));
+                            p1 += loop.simdLen;
+                            p2 += loop.simdLen;
+                        }
+                    } else {
+                        for (; i < simdBound; i += loop.simdLen) {
+                            ByteVector v1 = storage.getByteVector(p1);
+                            ByteVector v2 = dts.storage.getByteVector(p2, dts.loop.simdIdx(), 0);
+                            vsum = vsum.add(v1.mul(v2));
+                            p1 += loop.simdLen;
+                            p2 += step2 * loop.simdLen;
+                        }
+                    }
+                } else {
+                    if (step2 == 1) {
+                        for (; i < simdBound; i += loop.simdLen) {
+                            ByteVector v1 = storage.getByteVector(p1, loop.simdIdx(), 0);
+                            ByteVector v2 = dts.storage.getByteVector(p2);
+                            vsum = vsum.add(v1.mul(v2));
+                            p1 += step1 * loop.simdLen;
+                            p2 += loop.simdLen;
+                        }
+                    } else {
+                        for (; i < simdBound; i += loop.simdLen) {
+                            ByteVector v1 = storage.getByteVector(p1, loop.simdIdx(), 0);
+                            ByteVector v2 = dts.storage.getByteVector(p2, dts.loop.simdIdx(), 0);
+                            vsum = vsum.add(v1.mul(v2));
+                            p1 += step1 * loop.simdLen;
+                            p2 += step2 * loop.simdLen;
+                        }
+                    }
                 }
                 sum += vsum.reduceLanes(VectorOperators.ADD);
             }
@@ -1007,53 +1030,91 @@ public final class BaseByteDArrayStride extends AbstractStrideDArray<Byte> {
         List<DArray<Byte>> rows = unbind(0, false);
         List<DArray<Byte>> cols = other.cast(dt()).unbind(1, false);
 
-        int chunk = (int) Math.floor(Math.sqrt(L2_CACHE_SIZE / 2. / CORES / dt().byteCount()));
-        chunk = chunk >= 8 ? chunk - chunk % 8 : chunk;
-
-        int vectorChunk = chunk > 64 ? chunk * 4 : chunk;
-        int innerChunk = chunk > 64 ? (int) Math.ceil(Math.sqrt(chunk / 4.)) : (int) Math.ceil(Math.sqrt(chunk));
-
         int off = ((StrideLayout) to.layout()).offset();
         int iStride = ((StrideLayout) to.layout()).stride(0);
         int jStride = ((StrideLayout) to.layout()).stride(1);
 
-        CountDownLatch latch = new CountDownLatch(Math.ceilDiv(m, innerChunk) * Math.ceilDiv(p, innerChunk));
-        try (ExecutorService service = Executors.newVirtualThreadPerTaskExecutor()) {
+        CountDownLatch latch = new CountDownLatch(m * p);
+//        try (ExecutorService service = Executors.newFixedThreadPool(8)) {
 
-            for (int r = 0; r < m; r += innerChunk) {
-                int rs = r;
-                int re = Math.min(m, r + innerChunk);
-
-                for (int c = 0; c < p; c += innerChunk) {
-                    int cs = c;
-                    int ce = Math.min(p, c + innerChunk);
-
-                    service.submit(() -> {
-                        for (int k = 0; k < n; k += vectorChunk) {
-                            int end = Math.min(n, k + vectorChunk);
-                            for (int i = rs; i < re; i++) {
-                                var krow = (BaseByteDArrayStride) rows.get(i);
-                                int offset = off + i * iStride;
-                                for (int j = cs; j < ce; j++) {
-                                    to.ptrIncByte(offset + j * jStride, (byte) (krow.innerUnchecked(cols.get(j), k, end)));
-                                }
-                            }
-                        }
-                        latch.countDown();
-                    });
-                }
+        for (int r = 0; r < m; r++) {
+            int rr = r;
+            for (int c = 0; c < p; c++) {
+                int cc = c;
+//                    service.submit(() -> {
+                var krow = (BaseByteDArrayStride) rows.get(rr);
+                to.ptrIncByte(off + rr * iStride + cc * jStride, (byte) (krow.innerUnchecked(cols.get(cc), 0, n)));
+//                        latch.countDown();
+//                    });
             }
+//            }
 
-            try {
-                latch.await();
-                service.shutdown();
-                service.shutdownNow();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+//            try {
+//                latch.await();
+//                service.shutdown();
+//                service.shutdownNow();
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
         }
         return to;
     }
+
+//    private DArray<Byte> mmInternalParallel(DArray<?> other, DArray<Byte> to) {
+//        int m = shape().dim(0);
+//        int n = shape().dim(1);
+//        int p = other.shape().dim(1);
+//
+//        List<DArray<Byte>> rows = unbind(0, false);
+//        List<DArray<Byte>> cols = other.cast(dt()).unbind(1, false);
+//
+//        int chunk = (int) Math.floor(Math.sqrt(L2_CACHE_SIZE / 2. / CORES / dt().byteCount()));
+//        chunk = chunk >= 8 ? chunk - chunk % 8 : chunk;
+//
+//        int vectorChunk = chunk > 64 ? chunk * 4 : chunk;
+//        int innerChunk = chunk > 64 ? (int) Math.ceil(Math.sqrt(chunk / 4.)) : (int) Math.ceil(Math.sqrt(chunk));
+//
+//        int off = ((StrideLayout) to.layout()).offset();
+//        int iStride = ((StrideLayout) to.layout()).stride(0);
+//        int jStride = ((StrideLayout) to.layout()).stride(1);
+//
+//        CountDownLatch latch = new CountDownLatch(Math.ceilDiv(m, innerChunk) * Math.ceilDiv(p, innerChunk));
+//        try (ExecutorService service = Executors.newVirtualThreadPerTaskExecutor()) {
+//
+//            for (int r = 0; r < m; r += innerChunk) {
+//                int rs = r;
+//                int re = Math.min(m, r + innerChunk);
+//
+//                for (int c = 0; c < p; c += innerChunk) {
+//                    int cs = c;
+//                    int ce = Math.min(p, c + innerChunk);
+//
+//                    service.submit(() -> {
+//                        for (int k = 0; k < n; k += vectorChunk) {
+//                            int end = Math.min(n, k + vectorChunk);
+//                            for (int i = rs; i < re; i++) {
+//                                var krow = (BaseByteDArrayStride) rows.get(i);
+//                                int offset = off + i * iStride;
+//                                for (int j = cs; j < ce; j++) {
+//                                    to.ptrIncByte(offset + j * jStride, (byte) (krow.innerUnchecked(cols.get(j), k, end)));
+//                                }
+//                            }
+//                        }
+//                        latch.countDown();
+//                    });
+//                }
+//            }
+//
+//            try {
+//                latch.await();
+//                service.shutdown();
+//                service.shutdownNow();
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
+//        return to;
+//    }
 
     @Override
     public DArray<Byte> bmm(DArray<?> other, Order askOrder) {
