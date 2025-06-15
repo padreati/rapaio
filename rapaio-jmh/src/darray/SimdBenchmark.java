@@ -90,7 +90,7 @@ public class SimdBenchmark {
             }
             storage = base.storageManager().from(dt, array);
             loop = StrideLoopDescriptor.of(
-                    StrideLayout.of(new int[] {n}, 0, new int[] {1}), Order.C, Simd.vsd);
+                    StrideLayout.of(new int[] {n}, 0, new int[] {1}), Order.C, Simd.vsDouble);
 
         }
     }
@@ -115,7 +115,7 @@ public class SimdBenchmark {
 
 //    @Benchmark
     public void sqrStorageVector(SimdBenchmarkState bs, Blackhole bh) {
-        VectorSpecies<Double> vs = Simd.vsd;
+        VectorSpecies<Double> vs = Simd.vsDouble;
 
         int i = 0;
         for (; i < vs.loopBound(bs.storage.size()); i += vs.length()) {
@@ -133,7 +133,7 @@ public class SimdBenchmark {
     @Benchmark
     public void sqrOpWithLoop(SimdBenchmarkState bs, Blackhole bh) {
         StrideLoopDescriptor<Double> loop = StrideLoopDescriptor.of(
-                StrideLayout.of(new int[] {bs.storage.size()}, 0, new int[] {1}), Order.C, Simd.vsd);
+                StrideLayout.of(new int[] {bs.storage.size()}, 0, new int[] {1}), Order.C, Simd.vsDouble);
         DArrayOp.unarySqr().applyDouble(loop, bs.storage);
         bh.consume(bs.storage);
     }
@@ -143,7 +143,6 @@ public class SimdBenchmark {
         DArrayOp.unarySqr().applyDouble(bs.loop, bs.storage);
         bh.consume(bs.storage);
     }
-
 
     public static void main() throws RunnerException, IOException {
 

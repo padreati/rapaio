@@ -93,7 +93,7 @@ public final class ReduceOpNanMean extends DArrayReduceOp {
         }
         float mean = sum / count;
         sum = 0;
-        FloatVector vmean = FloatVector.broadcast(Simd.vsf, mean);
+        FloatVector vmean = FloatVector.broadcast(Simd.vsFloat, mean);
         for (int p : loop.offsets) {
             FloatVector a = Simd.zeroFloat();
             int i = 0;

@@ -31,7 +31,7 @@ import rapaio.darray.storage.FloatStorage;
 
 public final class FloatArrayStorage extends FloatStorage {
 
-    private static final VectorSpecies<Float> vsf = Simd.vsf;
+    private static final VectorSpecies<Float> vsf = Simd.vsFloat;
 
 
     private final float[] array;

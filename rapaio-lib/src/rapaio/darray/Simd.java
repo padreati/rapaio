@@ -29,40 +29,40 @@ import jdk.incubator.vector.VectorSpecies;
 
 public final class Simd {
 
-    public static final VectorSpecies<Double> vsd = DoubleVector.SPECIES_PREFERRED;
-    public static final VectorSpecies<Float> vsf = FloatVector.SPECIES_PREFERRED;
-    public static final VectorSpecies<Integer> vsi = IntVector.SPECIES_PREFERRED;
-    public static final VectorSpecies<Byte> vsb = ByteVector.SPECIES_PREFERRED;
+    public static final VectorSpecies<Byte> vsByte = ByteVector.SPECIES_PREFERRED;
+    public static final VectorSpecies<Integer> vsInt = IntVector.SPECIES_PREFERRED;
+    public static final VectorSpecies<Float> vsFloat = FloatVector.SPECIES_PREFERRED;
+    public static final VectorSpecies<Double> vsDouble = DoubleVector.SPECIES_PREFERRED;
 
     public static ByteVector zeroByte() {
-        return ByteVector.zero(vsb);
+        return ByteVector.zero(vsByte);
     }
 
     public static ByteVector broadcast(byte value) {
-        return ByteVector.broadcast(vsb, value);
+        return ByteVector.broadcast(vsByte, value);
     }
 
     public static IntVector zeroInt() {
-        return IntVector.zero(vsi);
+        return IntVector.zero(vsInt);
     }
 
     public static IntVector broadcast(int value) {
-        return IntVector.broadcast(vsi, value);
+        return IntVector.broadcast(vsInt, value);
     }
 
     public static FloatVector zeroFloat() {
-        return FloatVector.zero(vsf);
+        return FloatVector.zero(vsFloat);
     }
 
     public static FloatVector broadcast(float value) {
-        return FloatVector.broadcast(vsf, value);
+        return FloatVector.broadcast(vsFloat, value);
     }
 
     public static DoubleVector zeroDouble() {
-        return DoubleVector.zero(vsd);
+        return DoubleVector.zero(vsDouble);
     }
 
     public static DoubleVector broadcast(double value) {
-        return DoubleVector.broadcast(vsd, value);
+        return DoubleVector.broadcast(vsDouble, value);
     }
 }

@@ -111,7 +111,7 @@ public final class ReduceOpVarc extends DArrayReduceOp {
     @Override
     protected float reduceFloatVectorStep(StrideLoopDescriptor<Float> loop, Storage storage) {
         float mean = Double.isFinite(initMean) ? (float) initMean : DArrayOp.reduceMean().reduceFloat(loop, storage);
-        FloatVector vmean = FloatVector.broadcast(Simd.vsf, mean);
+        FloatVector vmean = FloatVector.broadcast(Simd.vsFloat, mean);
 
         float sum2 = 0;
         float sum3 = 0;

@@ -853,7 +853,7 @@ public final class BaseByteDArrayStride extends AbstractStrideDArray<Byte> {
         byte sum = 0;
 
         if (storage.supportSimd() && dts.storage.supportSimd()) {
-            int simdBound = Simd.vsb.loopBound(end - start);
+            int simdBound = Simd.vsByte.loopBound(end - start);
             if (simdBound > 0) {
                 ByteVector vsum = Simd.zeroByte();
                 if (step1 == 1) {

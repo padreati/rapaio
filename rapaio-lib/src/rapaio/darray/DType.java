@@ -167,7 +167,7 @@ public abstract class DType<N extends Number> {
 
         @Override
         public VectorSpecies<Byte> vs() {
-            return Simd.vsb;
+            return Simd.vsByte;
         }
     }
 
@@ -219,7 +219,7 @@ public abstract class DType<N extends Number> {
 
         @Override
         public VectorSpecies<Integer> vs() {
-            return Simd.vsi;
+            return Simd.vsInt;
         }
     }
 
@@ -271,7 +271,7 @@ public abstract class DType<N extends Number> {
 
         @Override
         public VectorSpecies<Float> vs() {
-            return Simd.vsf;
+            return Simd.vsFloat;
         }
     }
 
@@ -323,7 +323,7 @@ public abstract class DType<N extends Number> {
 
         @Override
         public VectorSpecies<Double> vs() {
-            return Simd.vsd;
+            return Simd.vsDouble;
         }
     }
 }

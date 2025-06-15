@@ -1,7 +1,7 @@
 "Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: n"
-"darray.SimdBenchmark.sqrOpWithLoop","thrpt",1,3,34338.084169,26585.034970,"ops/ms",15
-"darray.SimdBenchmark.sqrOpWithLoop","thrpt",1,3,28014.586990,38291.146199,"ops/ms",105
-"darray.SimdBenchmark.sqrOpWithLoop","thrpt",1,3,6899.166315,3471.208282,"ops/ms",1325
-"darray.SimdBenchmark.sqrOpWithoutLoop","thrpt",1,3,46898.365939,10137.881980,"ops/ms",15
-"darray.SimdBenchmark.sqrOpWithoutLoop","thrpt",1,3,37579.995428,9387.182167,"ops/ms",105
-"darray.SimdBenchmark.sqrOpWithoutLoop","thrpt",1,3,7695.963827,1977.771249,"ops/ms",1325
+"darray.SimdBenchmark.sqrOpWithLoop","thrpt",1,3,32631.347142,22799.324626,"ops/ms",15
+"darray.SimdBenchmark.sqrOpWithLoop","thrpt",1,3,23462.524878,30535.203964,"ops/ms",105
+"darray.SimdBenchmark.sqrOpWithLoop","thrpt",1,3,6742.272815,6032.415743,"ops/ms",1325
+"darray.SimdBenchmark.sqrOpWithoutLoop","thrpt",1,3,45001.000138,2742.906959,"ops/ms",15
+"darray.SimdBenchmark.sqrOpWithoutLoop","thrpt",1,3,34736.854080,5751.552125,"ops/ms",105
+"darray.SimdBenchmark.sqrOpWithoutLoop","thrpt",1,3,7617.220449,2902.529386,"ops/ms",1325

@@ -37,7 +37,7 @@ public class SimdApp {
             buffer[i] = i;
         }
 
-        VectorSpecies<Integer> vs = Simd.vsi;
+        VectorSpecies<Integer> vs = Simd.vsInt;
         int i = 0;
 
         int simdBound = vs.loopBound(buffer.length);

@@ -31,7 +31,7 @@ import rapaio.darray.storage.IntStorage;
 
 public final class IntArrayStorage extends IntStorage {
 
-    private static final VectorSpecies<Integer> vsi = Simd.vsi;
+    private static final VectorSpecies<Integer> vsi = Simd.vsInt;
     private final int[] array;
 
     public IntArrayStorage(byte[] array) {

@@ -853,7 +853,7 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
         float sum = 0;
 
         if (storage.supportSimd() && dts.storage.supportSimd()) {
-            int simdBound = Simd.vsf.loopBound(end - start);
+            int simdBound = Simd.vsFloat.loopBound(end - start);
             if (simdBound > 0) {
                 FloatVector vsum = Simd.zeroFloat();
                 if (step1 == 1) {

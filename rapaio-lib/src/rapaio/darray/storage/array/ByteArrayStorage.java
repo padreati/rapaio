@@ -31,7 +31,7 @@ import rapaio.darray.storage.ByteStorage;
 
 public final class ByteArrayStorage extends ByteStorage {
 
-    private static final VectorSpecies<Byte> vsb = Simd.vsb;
+    private static final VectorSpecies<Byte> vsb = Simd.vsByte;
 
     private final byte[] array;
 

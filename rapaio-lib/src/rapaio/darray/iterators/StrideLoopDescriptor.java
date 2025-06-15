@@ -43,7 +43,7 @@ public final class StrideLoopDescriptor<N extends Number> {
     public final int[] offsets;
     public final int simdLen;
     public final int simdBound;
-    private int[] simdOffsets;
+    private int[] simdIdx;
 
     private StrideLoopDescriptor(StrideLayout layout, Order askOrder, VectorSpecies<N> vs) {
         this.simdLen = vs.length();
@@ -100,12 +100,12 @@ public final class StrideLoopDescriptor<N extends Number> {
     }
 
     public int[] simdIdx() {
-        if (simdOffsets == null) {
-            simdOffsets = new int[simdLen];
-            for (int i = 0; i < simdOffsets.length; i++) {
-                simdOffsets[i] = i * step;
+        if (simdIdx == null) {
+            simdIdx = new int[simdLen];
+            for (int i = 0; i < simdIdx.length; i++) {
+                simdIdx[i] = i * step;
             }
         }
-        return simdOffsets;
+        return simdIdx;
     }
 }

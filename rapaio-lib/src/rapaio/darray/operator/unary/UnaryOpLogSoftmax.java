@@ -132,7 +132,7 @@ public class UnaryOpLogSoftmax extends DArrayUnaryOp {
                 p += loop.step;
             }
         }
-        vmax = FloatVector.broadcast(Simd.vsf, max);
+        vmax = FloatVector.broadcast(Simd.vsFloat, max);
         float logsum = 0;
         FloatVector vlogsum = Simd.zeroFloat();
         for (int p : loop.offsets) {

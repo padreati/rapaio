@@ -31,7 +31,7 @@ import rapaio.darray.storage.DoubleStorage;
 
 public final class DoubleArrayStorage extends DoubleStorage {
 
-    private static final VectorSpecies<Double> vsd = Simd.vsd;
+    private static final VectorSpecies<Double> vsd = Simd.vsDouble;
 
     private final double[] array;
 
