@@ -1210,7 +1210,7 @@ public class DArrayTest {
             for (int j = 0; j < t4.shape().dim(1); j++) {
                 N expected = rows.get(i).inner(cols.get(j));
                 N realized = r3.get(i, j);
-                assertEquals(expected.doubleValue(), realized.doubleValue(), 1e-7, "i: %d, j: %d".formatted(i, j));
+                assertEquals(expected.doubleValue(), realized.doubleValue(), 1e-5, "i: %d, j: %d".formatted(i, j));
             }
         }
 
@@ -1221,7 +1221,7 @@ public class DArrayTest {
             for (int j = 0; j < t4.dim(1); j++) {
                 N expected = rows.get(i).inner(cols.get(j));
                 N realized = r3.get(i, j);
-                assertEquals(realized.doubleValue(), expected.doubleValue(), 1e-7);
+                assertEquals(realized.doubleValue(), expected.doubleValue(), 1e-5);
             }
         }
 

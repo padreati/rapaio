@@ -856,42 +856,14 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
             int simdBound = Simd.vsFloat.loopBound(end - start);
             if (simdBound > 0) {
                 FloatVector vsum = Simd.zeroFloat();
-                if (step1 == 1) {
-                    if (step2 == 1) {
-                        for (; i < simdBound; i += loop.simdLen) {
-                            FloatVector v1 = storage.getFloatVector(p1);
-                            FloatVector v2 = dts.storage.getFloatVector(p2);
-                            vsum = vsum.add(v1.mul(v2));
-                            p1 += loop.simdLen;
-                            p2 += loop.simdLen;
-                        }
-                    } else {
-                        for (; i < simdBound; i += loop.simdLen) {
-                            FloatVector v1 = storage.getFloatVector(p1);
-                            FloatVector v2 = dts.storage.getFloatVector(p2, dts.loop.simdIdx(), 0);
-                            vsum = vsum.add(v1.mul(v2));
-                            p1 += loop.simdLen;
-                            p2 += step2 * loop.simdLen;
-                        }
-                    }
-                } else {
-                    if (step2 == 1) {
-                        for (; i < simdBound; i += loop.simdLen) {
-                            FloatVector v1 = storage.getFloatVector(p1, loop.simdIdx(), 0);
-                            FloatVector v2 = dts.storage.getFloatVector(p2);
-                            vsum = vsum.add(v1.mul(v2));
-                            p1 += step1 * loop.simdLen;
-                            p2 += loop.simdLen;
-                        }
-                    } else {
-                        for (; i < simdBound; i += loop.simdLen) {
-                            FloatVector v1 = storage.getFloatVector(p1, loop.simdIdx(), 0);
-                            FloatVector v2 = dts.storage.getFloatVector(p2, dts.loop.simdIdx(), 0);
-                            vsum = vsum.add(v1.mul(v2));
-                            p1 += step1 * loop.simdLen;
-                            p2 += step2 * loop.simdLen;
-                        }
-                    }
+                for (; i < simdBound; i += loop.simdLen) {
+                    FloatVector v1 = step1 == 1 ?
+                            storage.getFloatVector(p1) : storage.getFloatVector(p1, loop.simdIdx(), 0);
+                    FloatVector v2 = step2 == 1 ?
+                            dts.storage.getFloatVector(p2) : dts.storage.getFloatVector(p2, dts.loop.simdIdx(), 0);
+                    vsum = vsum.add(v1.mul(v2));
+                    p1 += loop.simdLen * step1;
+                    p2 += dts.loop.simdLen * step2;
                 }
                 sum += vsum.reduceLanes(VectorOperators.ADD);
             }

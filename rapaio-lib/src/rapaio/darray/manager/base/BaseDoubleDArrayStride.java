@@ -856,42 +856,14 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
             int simdBound = Simd.vsDouble.loopBound(end - start);
             if (simdBound > 0) {
                 DoubleVector vsum = Simd.zeroDouble();
-                if (step1 == 1) {
-                    if (step2 == 1) {
-                        for (; i < simdBound; i += loop.simdLen) {
-                            DoubleVector v1 = storage.getDoubleVector(p1);
-                            DoubleVector v2 = dts.storage.getDoubleVector(p2);
-                            vsum = vsum.add(v1.mul(v2));
-                            p1 += loop.simdLen;
-                            p2 += loop.simdLen;
-                        }
-                    } else {
-                        for (; i < simdBound; i += loop.simdLen) {
-                            DoubleVector v1 = storage.getDoubleVector(p1);
-                            DoubleVector v2 = dts.storage.getDoubleVector(p2, dts.loop.simdIdx(), 0);
-                            vsum = vsum.add(v1.mul(v2));
-                            p1 += loop.simdLen;
-                            p2 += step2 * loop.simdLen;
-                        }
-                    }
-                } else {
-                    if (step2 == 1) {
-                        for (; i < simdBound; i += loop.simdLen) {
-                            DoubleVector v1 = storage.getDoubleVector(p1, loop.simdIdx(), 0);
-                            DoubleVector v2 = dts.storage.getDoubleVector(p2);
-                            vsum = vsum.add(v1.mul(v2));
-                            p1 += step1 * loop.simdLen;
-                            p2 += loop.simdLen;
-                        }
-                    } else {
-                        for (; i < simdBound; i += loop.simdLen) {
-                            DoubleVector v1 = storage.getDoubleVector(p1, loop.simdIdx(), 0);
-                            DoubleVector v2 = dts.storage.getDoubleVector(p2, dts.loop.simdIdx(), 0);
-                            vsum = vsum.add(v1.mul(v2));
-                            p1 += step1 * loop.simdLen;
-                            p2 += step2 * loop.simdLen;
-                        }
-                    }
+                for (; i < simdBound; i += loop.simdLen) {
+                    DoubleVector v1 = step1 == 1 ?
+                            storage.getDoubleVector(p1) : storage.getDoubleVector(p1, loop.simdIdx(), 0);
+                    DoubleVector v2 = step2 == 1 ?
+                            dts.storage.getDoubleVector(p2) : dts.storage.getDoubleVector(p2, dts.loop.simdIdx(), 0);
+                    vsum = vsum.add(v1.mul(v2));
+                    p1 += loop.simdLen * step1;
+                    p2 += dts.loop.simdLen * step2;
                 }
                 sum += vsum.reduceLanes(VectorOperators.ADD);
             }
