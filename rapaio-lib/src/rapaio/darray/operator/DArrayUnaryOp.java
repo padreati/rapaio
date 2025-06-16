@@ -37,7 +37,7 @@ public abstract class DArrayUnaryOp {
         return floatingPointOnly;
     }
 
-    public final void applyByte(StrideLoopDescriptor<Byte> loop, Storage s) {
+    public final void applyByte(StrideLoopDescriptor loop, Storage s) {
         if (floatingPointOnly()) {
             throw new OperationNotAvailableException();
         }
@@ -52,7 +52,7 @@ public abstract class DArrayUnaryOp {
         }
     }
 
-    public final void applyInt(StrideLoopDescriptor<Integer> loop, Storage s) {
+    public final void applyInt(StrideLoopDescriptor loop, Storage s) {
         if (floatingPointOnly()) {
             throw new OperationNotAvailableException();
         }
@@ -67,7 +67,7 @@ public abstract class DArrayUnaryOp {
         }
     }
 
-    public final void applyFloat(StrideLoopDescriptor<Float> loop, Storage s) {
+    public final void applyFloat(StrideLoopDescriptor loop, Storage s) {
         if (s.supportSimd()) {
             if (loop.step == 1) {
                 applyUnitFloat(loop, s);
@@ -79,7 +79,7 @@ public abstract class DArrayUnaryOp {
         }
     }
 
-    public final void applyDouble(StrideLoopDescriptor<Double> loop, Storage s) {
+    public final void applyDouble(StrideLoopDescriptor loop, Storage s) {
         if (s.supportSimd()) {
             if (loop.step == 1) {
                 applyUnitDouble(loop, s);
@@ -91,28 +91,28 @@ public abstract class DArrayUnaryOp {
         }
     }
 
-    protected abstract void applyUnitByte(StrideLoopDescriptor<Byte> loop, Storage s);
+    protected abstract void applyUnitByte(StrideLoopDescriptor loop, Storage s);
 
-    protected abstract void applyStepByte(StrideLoopDescriptor<Byte> loop, Storage s);
+    protected abstract void applyStepByte(StrideLoopDescriptor loop, Storage s);
 
-    protected abstract void applyGenericByte(StrideLoopDescriptor<Byte> loop, Storage s);
+    protected abstract void applyGenericByte(StrideLoopDescriptor loop, Storage s);
 
-    protected abstract void applyUnitInt(StrideLoopDescriptor<Integer> loop, Storage s);
+    protected abstract void applyUnitInt(StrideLoopDescriptor loop, Storage s);
 
-    protected abstract void applyStepInt(StrideLoopDescriptor<Integer> loop, Storage s);
+    protected abstract void applyStepInt(StrideLoopDescriptor loop, Storage s);
 
-    protected abstract void applyGenericInt(StrideLoopDescriptor<Integer> loop, Storage s);
+    protected abstract void applyGenericInt(StrideLoopDescriptor loop, Storage s);
 
-    protected abstract void applyUnitFloat(StrideLoopDescriptor<Float> loop, Storage s);
+    protected abstract void applyUnitFloat(StrideLoopDescriptor loop, Storage s);
 
-    protected abstract void applyStepFloat(StrideLoopDescriptor<Float> loop, Storage s);
+    protected abstract void applyStepFloat(StrideLoopDescriptor loop, Storage s);
 
-    protected abstract void applyGenericFloat(StrideLoopDescriptor<Float> loop, Storage s);
+    protected abstract void applyGenericFloat(StrideLoopDescriptor loop, Storage s);
 
-    protected abstract void applyUnitDouble(StrideLoopDescriptor<Double> loop, Storage s);
+    protected abstract void applyUnitDouble(StrideLoopDescriptor loop, Storage s);
 
-    protected abstract void applyStepDouble(StrideLoopDescriptor<Double> loop, Storage s);
+    protected abstract void applyStepDouble(StrideLoopDescriptor loop, Storage s);
 
-    protected abstract void applyGenericDouble(StrideLoopDescriptor<Double> loop, Storage s);
+    protected abstract void applyGenericDouble(StrideLoopDescriptor loop, Storage s);
 }
 

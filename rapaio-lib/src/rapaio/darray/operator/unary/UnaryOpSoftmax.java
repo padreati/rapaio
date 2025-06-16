@@ -37,37 +37,37 @@ public class UnaryOpSoftmax extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyUnitByte(StrideLoopDescriptor<Byte> loop, Storage s) {
+    protected void applyUnitByte(StrideLoopDescriptor loop, Storage s) {
         throw new OperationNotAvailableException();
     }
 
     @Override
-    protected void applyStepByte(StrideLoopDescriptor<Byte> loop, Storage s) {
+    protected void applyStepByte(StrideLoopDescriptor loop, Storage s) {
         throw new OperationNotAvailableException();
     }
 
     @Override
-    protected void applyGenericByte(StrideLoopDescriptor<Byte> loop, Storage s) {
+    protected void applyGenericByte(StrideLoopDescriptor loop, Storage s) {
         throw new OperationNotAvailableException();
     }
 
     @Override
-    protected void applyUnitInt(StrideLoopDescriptor<Integer> loop, Storage s) {
+    protected void applyUnitInt(StrideLoopDescriptor loop, Storage s) {
         throw new OperationNotAvailableException();
     }
 
     @Override
-    protected void applyStepInt(StrideLoopDescriptor<Integer> loop, Storage s) {
+    protected void applyStepInt(StrideLoopDescriptor loop, Storage s) {
         throw new OperationNotAvailableException();
     }
 
     @Override
-    protected void applyGenericInt(StrideLoopDescriptor<Integer> loop, Storage s) {
+    protected void applyGenericInt(StrideLoopDescriptor loop, Storage s) {
         throw new OperationNotAvailableException();
     }
 
     @Override
-    protected void applyUnitFloat(StrideLoopDescriptor<Float> loop, Storage s) {
+    protected void applyUnitFloat(StrideLoopDescriptor loop, Storage s) {
         float max = Float.NEGATIVE_INFINITY;
         FloatVector vmax = Simd.broadcast(max);
         for (int p : loop.offsets) {
@@ -119,7 +119,7 @@ public class UnaryOpSoftmax extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyStepFloat(StrideLoopDescriptor<Float> loop, Storage s) {
+    protected void applyStepFloat(StrideLoopDescriptor loop, Storage s) {
         float max = Float.NEGATIVE_INFINITY;
         FloatVector vmax = Simd.broadcast(max);
         for (int p : loop.offsets) {
@@ -171,7 +171,7 @@ public class UnaryOpSoftmax extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyGenericFloat(StrideLoopDescriptor<Float> loop, Storage s) {
+    protected void applyGenericFloat(StrideLoopDescriptor loop, Storage s) {
         float max = Float.NEGATIVE_INFINITY;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
@@ -198,7 +198,7 @@ public class UnaryOpSoftmax extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyUnitDouble(StrideLoopDescriptor<Double> loop, Storage s) {
+    protected void applyUnitDouble(StrideLoopDescriptor loop, Storage s) {
         double max = Double.NEGATIVE_INFINITY;
         DoubleVector vmax = Simd.broadcast(max);
         for (int p : loop.offsets) {
@@ -250,7 +250,7 @@ public class UnaryOpSoftmax extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyStepDouble(StrideLoopDescriptor<Double> loop, Storage s) {
+    protected void applyStepDouble(StrideLoopDescriptor loop, Storage s) {
         double max = Double.NEGATIVE_INFINITY;
         DoubleVector vmax = Simd.broadcast(max);
         for (int p : loop.offsets) {
@@ -302,7 +302,7 @@ public class UnaryOpSoftmax extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyGenericDouble(StrideLoopDescriptor<Double> loop, Storage s) {
+    protected void applyGenericDouble(StrideLoopDescriptor loop, Storage s) {
         double max = Double.NEGATIVE_INFINITY;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {

@@ -41,31 +41,31 @@ public class UnaryOpFillNan<N extends Number> extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyUnitByte(StrideLoopDescriptor<Byte> loop, Storage s) {
+    protected void applyUnitByte(StrideLoopDescriptor loop, Storage s) {
     }
 
     @Override
-    protected void applyStepByte(StrideLoopDescriptor<Byte> loop, Storage s) {
+    protected void applyStepByte(StrideLoopDescriptor loop, Storage s) {
     }
 
     @Override
-    protected void applyGenericByte(StrideLoopDescriptor<Byte> loop, Storage s) {
+    protected void applyGenericByte(StrideLoopDescriptor loop, Storage s) {
     }
 
     @Override
-    protected void applyUnitInt(StrideLoopDescriptor<Integer> loop, Storage s) {
+    protected void applyUnitInt(StrideLoopDescriptor loop, Storage s) {
     }
 
     @Override
-    protected void applyStepInt(StrideLoopDescriptor<Integer> loop, Storage s) {
+    protected void applyStepInt(StrideLoopDescriptor loop, Storage s) {
     }
 
     @Override
-    protected void applyGenericInt(StrideLoopDescriptor<Integer> loop, Storage s) {
+    protected void applyGenericInt(StrideLoopDescriptor loop, Storage s) {
     }
 
     @Override
-    protected void applyUnitFloat(StrideLoopDescriptor<Float> loop, Storage s) {
+    protected void applyUnitFloat(StrideLoopDescriptor loop, Storage s) {
         var a = Simd.broadcast(fillFloat);
         for (int p : loop.offsets) {
             int i = 0;
@@ -85,7 +85,7 @@ public class UnaryOpFillNan<N extends Number> extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyStepFloat(StrideLoopDescriptor<Float> loop, Storage s) {
+    protected void applyStepFloat(StrideLoopDescriptor loop, Storage s) {
         var a = Simd.broadcast(fillFloat);
         for (int p : loop.offsets) {
             int i = 0;
@@ -105,7 +105,7 @@ public class UnaryOpFillNan<N extends Number> extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyGenericFloat(StrideLoopDescriptor<Float> loop, Storage s) {
+    protected void applyGenericFloat(StrideLoopDescriptor loop, Storage s) {
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
                 if (Float.isNaN(s.getFloat(p))) {
@@ -117,7 +117,7 @@ public class UnaryOpFillNan<N extends Number> extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyUnitDouble(StrideLoopDescriptor<Double> loop, Storage s) {
+    protected void applyUnitDouble(StrideLoopDescriptor loop, Storage s) {
         var a = Simd.broadcast(fillDouble);
         for (int p : loop.offsets) {
             int i = 0;
@@ -137,7 +137,7 @@ public class UnaryOpFillNan<N extends Number> extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyStepDouble(StrideLoopDescriptor<Double> loop, Storage s) {
+    protected void applyStepDouble(StrideLoopDescriptor loop, Storage s) {
         var a = Simd.broadcast(fillDouble);
         for (int p : loop.offsets) {
             int i = 0;
@@ -157,7 +157,7 @@ public class UnaryOpFillNan<N extends Number> extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyGenericDouble(StrideLoopDescriptor<Double> loop, Storage s) {
+    protected void applyGenericDouble(StrideLoopDescriptor loop, Storage s) {
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
                 if (Double.isNaN(s.getDouble(p))) {

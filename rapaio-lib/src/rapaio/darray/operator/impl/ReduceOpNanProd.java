@@ -45,7 +45,7 @@ public final class ReduceOpNanProd extends DArrayReduceOp {
     private static final double initDouble = 1;
 
     @Override
-    protected byte reduceByteVectorUnit(StrideLoopDescriptor<Byte> loop, Storage storage) {
+    protected byte reduceByteVectorUnit(StrideLoopDescriptor loop, Storage storage) {
         byte result = initByte;
         ByteVector a = Simd.broadcast(initByte);
         for (int p : loop.offsets) {
@@ -65,7 +65,7 @@ public final class ReduceOpNanProd extends DArrayReduceOp {
     }
 
     @Override
-    protected byte reduceByteVectorStep(StrideLoopDescriptor<Byte> loop, Storage storage) {
+    protected byte reduceByteVectorStep(StrideLoopDescriptor loop, Storage storage) {
         byte result = initByte;
         ByteVector a = Simd.broadcast(initByte);
         for (int p : loop.offsets) {
@@ -85,7 +85,7 @@ public final class ReduceOpNanProd extends DArrayReduceOp {
     }
 
     @Override
-    protected byte reduceByteDefault(StrideLoopDescriptor<Byte> loop, Storage storage) {
+    protected byte reduceByteDefault(StrideLoopDescriptor loop, Storage storage) {
         byte result = initByte;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
@@ -97,7 +97,7 @@ public final class ReduceOpNanProd extends DArrayReduceOp {
     }
 
     @Override
-    protected int reduceIntVectorUnit(StrideLoopDescriptor<Integer> loop, Storage storage) {
+    protected int reduceIntVectorUnit(StrideLoopDescriptor loop, Storage storage) {
         int result = initInt;
         IntVector a = Simd.broadcast(initInt);
         for (int p : loop.offsets) {
@@ -117,7 +117,7 @@ public final class ReduceOpNanProd extends DArrayReduceOp {
     }
 
     @Override
-    protected int reduceIntVectorStep(StrideLoopDescriptor<Integer> loop, Storage storage) {
+    protected int reduceIntVectorStep(StrideLoopDescriptor loop, Storage storage) {
         int result = initInt;
         IntVector a = Simd.broadcast(initInt);
         for (int p : loop.offsets) {
@@ -137,7 +137,7 @@ public final class ReduceOpNanProd extends DArrayReduceOp {
     }
 
     @Override
-    protected int reduceIntDefault(StrideLoopDescriptor<Integer> loop, Storage storage) {
+    protected int reduceIntDefault(StrideLoopDescriptor loop, Storage storage) {
         int result = initInt;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
@@ -149,7 +149,7 @@ public final class ReduceOpNanProd extends DArrayReduceOp {
     }
 
     @Override
-    protected float reduceFloatVectorUnit(StrideLoopDescriptor<Float> loop, Storage storage) {
+    protected float reduceFloatVectorUnit(StrideLoopDescriptor loop, Storage storage) {
         float result = initFloat;
         FloatVector a = Simd.broadcast(initFloat);
         for (int p : loop.offsets) {
@@ -174,7 +174,7 @@ public final class ReduceOpNanProd extends DArrayReduceOp {
     }
 
     @Override
-    protected float reduceFloatVectorStep(StrideLoopDescriptor<Float> loop, Storage storage) {
+    protected float reduceFloatVectorStep(StrideLoopDescriptor loop, Storage storage) {
         float result = initFloat;
         FloatVector a = Simd.broadcast(initFloat);
         for (int p : loop.offsets) {
@@ -199,7 +199,7 @@ public final class ReduceOpNanProd extends DArrayReduceOp {
     }
 
     @Override
-    protected float reduceFloatDefault(StrideLoopDescriptor<Float> loop, Storage storage) {
+    protected float reduceFloatDefault(StrideLoopDescriptor loop, Storage storage) {
         float result = initFloat;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
@@ -214,7 +214,7 @@ public final class ReduceOpNanProd extends DArrayReduceOp {
     }
 
     @Override
-    protected double reduceDoubleVectorUnit(StrideLoopDescriptor<Double> loop, Storage storage) {
+    protected double reduceDoubleVectorUnit(StrideLoopDescriptor loop, Storage storage) {
         double result = initDouble;
         DoubleVector a = Simd.broadcast(initDouble);
         for (int p : loop.offsets) {
@@ -239,7 +239,7 @@ public final class ReduceOpNanProd extends DArrayReduceOp {
     }
 
     @Override
-    protected double reduceDoubleVectorStep(StrideLoopDescriptor<Double> loop, Storage storage) {
+    protected double reduceDoubleVectorStep(StrideLoopDescriptor loop, Storage storage) {
         double result = initDouble;
         DoubleVector a = Simd.broadcast(initDouble);
         for (int p : loop.offsets) {
@@ -263,7 +263,7 @@ public final class ReduceOpNanProd extends DArrayReduceOp {
     }
 
     @Override
-    protected double reduceDoubleDefault(StrideLoopDescriptor<Double> loop, Storage storage) {
+    protected double reduceDoubleDefault(StrideLoopDescriptor loop, Storage storage) {
         double result = initDouble;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {

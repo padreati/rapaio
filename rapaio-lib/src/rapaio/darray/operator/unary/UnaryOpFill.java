@@ -36,7 +36,7 @@ public class UnaryOpFill<N extends Number> extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyUnitByte(StrideLoopDescriptor<Byte> loop, Storage s) {
+    protected void applyUnitByte(StrideLoopDescriptor loop, Storage s) {
         var a = Simd.broadcast(fill.byteValue());
         for (int p : loop.offsets) {
             int i = 0;
@@ -52,7 +52,7 @@ public class UnaryOpFill<N extends Number> extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyStepByte(StrideLoopDescriptor<Byte> loop, Storage s) {
+    protected void applyStepByte(StrideLoopDescriptor loop, Storage s) {
         var a = Simd.broadcast(fill.byteValue());
         for (int p : loop.offsets) {
             int i = 0;
@@ -68,7 +68,7 @@ public class UnaryOpFill<N extends Number> extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyGenericByte(StrideLoopDescriptor<Byte> loop, Storage s) {
+    protected void applyGenericByte(StrideLoopDescriptor loop, Storage s) {
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
                 s.setByte(p, fill.byteValue());
@@ -78,7 +78,7 @@ public class UnaryOpFill<N extends Number> extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyUnitInt(StrideLoopDescriptor<Integer> loop, Storage s) {
+    protected void applyUnitInt(StrideLoopDescriptor loop, Storage s) {
         var a = Simd.broadcast(fill.intValue());
         for (int p : loop.offsets) {
             int i = 0;
@@ -94,7 +94,7 @@ public class UnaryOpFill<N extends Number> extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyStepInt(StrideLoopDescriptor<Integer> loop, Storage s) {
+    protected void applyStepInt(StrideLoopDescriptor loop, Storage s) {
         var a = Simd.broadcast(fill.intValue());
         for (int p : loop.offsets) {
             int i = 0;
@@ -110,7 +110,7 @@ public class UnaryOpFill<N extends Number> extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyGenericInt(StrideLoopDescriptor<Integer> loop, Storage s) {
+    protected void applyGenericInt(StrideLoopDescriptor loop, Storage s) {
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
                 s.setInt(p, fill.intValue());
@@ -120,7 +120,7 @@ public class UnaryOpFill<N extends Number> extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyUnitFloat(StrideLoopDescriptor<Float> loop, Storage s) {
+    protected void applyUnitFloat(StrideLoopDescriptor loop, Storage s) {
         var a = Simd.broadcast(fill.floatValue());
         for (int p : loop.offsets) {
             int i = 0;
@@ -136,7 +136,7 @@ public class UnaryOpFill<N extends Number> extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyStepFloat(StrideLoopDescriptor<Float> loop, Storage s) {
+    protected void applyStepFloat(StrideLoopDescriptor loop, Storage s) {
         var a = Simd.broadcast(fill.floatValue());
         for (int p : loop.offsets) {
             int i = 0;
@@ -152,7 +152,7 @@ public class UnaryOpFill<N extends Number> extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyGenericFloat(StrideLoopDescriptor<Float> loop, Storage s) {
+    protected void applyGenericFloat(StrideLoopDescriptor loop, Storage s) {
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
                 s.setFloat(p, fill.floatValue());
@@ -162,7 +162,7 @@ public class UnaryOpFill<N extends Number> extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyUnitDouble(StrideLoopDescriptor<Double> loop, Storage s) {
+    protected void applyUnitDouble(StrideLoopDescriptor loop, Storage s) {
         var a = Simd.broadcast(fill.doubleValue());
         for (int p : loop.offsets) {
             int i = 0;
@@ -178,7 +178,7 @@ public class UnaryOpFill<N extends Number> extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyStepDouble(StrideLoopDescriptor<Double> loop, Storage s) {
+    protected void applyStepDouble(StrideLoopDescriptor loop, Storage s) {
         var a = Simd.broadcast(fill.doubleValue());
         for (int p : loop.offsets) {
             int i = 0;
@@ -194,7 +194,7 @@ public class UnaryOpFill<N extends Number> extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyGenericDouble(StrideLoopDescriptor<Double> loop, Storage s) {
+    protected void applyGenericDouble(StrideLoopDescriptor loop, Storage s) {
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
                 s.setDouble(p, fill.doubleValue());

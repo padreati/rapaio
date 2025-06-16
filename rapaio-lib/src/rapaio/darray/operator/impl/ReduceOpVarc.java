@@ -47,37 +47,37 @@ public final class ReduceOpVarc extends DArrayReduceOp {
     }
 
     @Override
-    protected byte reduceByteVectorUnit(StrideLoopDescriptor<Byte> loop, Storage storage) {
+    protected byte reduceByteVectorUnit(StrideLoopDescriptor loop, Storage storage) {
         throw new OperationNotAvailableException();
     }
 
     @Override
-    protected byte reduceByteVectorStep(StrideLoopDescriptor<Byte> loop, Storage storage) {
+    protected byte reduceByteVectorStep(StrideLoopDescriptor loop, Storage storage) {
         throw new OperationNotAvailableException();
     }
 
     @Override
-    protected byte reduceByteDefault(StrideLoopDescriptor<Byte> loop, Storage storage) {
+    protected byte reduceByteDefault(StrideLoopDescriptor loop, Storage storage) {
         throw new OperationNotAvailableException();
     }
 
     @Override
-    protected int reduceIntVectorUnit(StrideLoopDescriptor<Integer> loop, Storage storage) {
+    protected int reduceIntVectorUnit(StrideLoopDescriptor loop, Storage storage) {
         throw new OperationNotAvailableException();
     }
 
     @Override
-    protected int reduceIntVectorStep(StrideLoopDescriptor<Integer> loop, Storage storage) {
+    protected int reduceIntVectorStep(StrideLoopDescriptor loop, Storage storage) {
         throw new OperationNotAvailableException();
     }
 
     @Override
-    protected int reduceIntDefault(StrideLoopDescriptor<Integer> loop, Storage storage) {
+    protected int reduceIntDefault(StrideLoopDescriptor loop, Storage storage) {
         throw new OperationNotAvailableException();
     }
 
     @Override
-    protected float reduceFloatVectorUnit(StrideLoopDescriptor<Float> loop, Storage storage) {
+    protected float reduceFloatVectorUnit(StrideLoopDescriptor loop, Storage storage) {
         float mean = Double.isFinite(initMean) ? (float) initMean : DArrayOp.reduceMean().reduceFloat(loop, storage);
         FloatVector vmean = Simd.broadcast(mean);
 
@@ -109,7 +109,7 @@ public final class ReduceOpVarc extends DArrayReduceOp {
     }
 
     @Override
-    protected float reduceFloatVectorStep(StrideLoopDescriptor<Float> loop, Storage storage) {
+    protected float reduceFloatVectorStep(StrideLoopDescriptor loop, Storage storage) {
         float mean = Double.isFinite(initMean) ? (float) initMean : DArrayOp.reduceMean().reduceFloat(loop, storage);
         FloatVector vmean = FloatVector.broadcast(Simd.vsFloat, mean);
 
@@ -141,7 +141,7 @@ public final class ReduceOpVarc extends DArrayReduceOp {
     }
 
     @Override
-    protected float reduceFloatDefault(StrideLoopDescriptor<Float> loop, Storage storage) {
+    protected float reduceFloatDefault(StrideLoopDescriptor loop, Storage storage) {
         float mean = Double.isFinite(initMean) ? (float) initMean : DArrayOp.reduceMean().reduceFloat(loop, storage);
         float sum2 = 0;
         float sum3 = 0;
@@ -159,7 +159,7 @@ public final class ReduceOpVarc extends DArrayReduceOp {
     }
 
     @Override
-    protected double reduceDoubleVectorUnit(StrideLoopDescriptor<Double> loop, Storage storage) {
+    protected double reduceDoubleVectorUnit(StrideLoopDescriptor loop, Storage storage) {
         double mean = Double.isFinite(initMean) ? initMean : DArrayOp.reduceMean().reduceDouble(loop, storage);
         DoubleVector vmean = Simd.broadcast(mean);
 
@@ -191,7 +191,7 @@ public final class ReduceOpVarc extends DArrayReduceOp {
     }
 
     @Override
-    protected double reduceDoubleVectorStep(StrideLoopDescriptor<Double> loop, Storage storage) {
+    protected double reduceDoubleVectorStep(StrideLoopDescriptor loop, Storage storage) {
         double mean = Double.isFinite(initMean) ? initMean : DArrayOp.reduceMean().reduceDouble(loop, storage);
         DoubleVector vmean = Simd.broadcast(mean);
 
@@ -223,7 +223,7 @@ public final class ReduceOpVarc extends DArrayReduceOp {
     }
 
     @Override
-    protected double reduceDoubleDefault(StrideLoopDescriptor<Double> loop, Storage storage) {
+    protected double reduceDoubleDefault(StrideLoopDescriptor loop, Storage storage) {
         double mean = Double.isFinite(initMean) ? initMean : DArrayOp.reduceMean().reduceDouble(loop, storage);
         double sum2 = 0;
         double sum3 = 0;

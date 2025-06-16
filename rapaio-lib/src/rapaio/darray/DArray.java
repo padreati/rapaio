@@ -53,7 +53,7 @@ import rapaio.util.function.IntIntBiFunction;
 
 /**
  * A {@link DArray} is a multidimensional array which contains elements of the same type.
- * Elements are indexed organized in zero, one or multiple dimensions.
+ * Elements are indexed and organized in zero, one or multiple dimensions.
  * <p>
  * DArrays with a low number of dimensions are known also under more specific names:
  * <ul>
@@ -70,7 +70,8 @@ import rapaio.util.function.IntIntBiFunction;
  * The elements are logically organized like a hyper cube with a given number of dimensions {@link #rank()}. The size of each
  * dimension is described by a {@link Shape} object and the {@link Layout} describes how the details related
  * with how the elements' indexing.
- * The implemented layout is a stride array layout provided by {@link StrideLayout}, but
+ *
+ * The default implemented layout is a stride array layout provided by {@link StrideLayout}, but
  * other layouts could be implemented (for example for special matrices or for sparse formats).
  *
  * @param <N> Generic data type which can be Byte, Integer, Float or Double.
@@ -1220,7 +1221,9 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
 
     public abstract DArray<N> apply_(Function<N, N> fun);
 
-    //--------- UNARY OPERATIONS ----------------//
+    //------------------
+    // UNARY OPERATIONS
+    //------------------
 
     public final DArray<N> unary(DArrayUnaryOp op) {
         return copy(Order.defaultOrder()).unary_(op);

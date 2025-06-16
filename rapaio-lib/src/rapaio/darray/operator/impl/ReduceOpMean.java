@@ -41,37 +41,37 @@ public final class ReduceOpMean extends DArrayReduceOp {
     private static final double initDouble = 0;
 
     @Override
-    protected byte reduceByteVectorUnit(StrideLoopDescriptor<Byte> loop, Storage storage) {
+    protected byte reduceByteVectorUnit(StrideLoopDescriptor loop, Storage storage) {
         throw new OperationNotAvailableException();
     }
 
     @Override
-    protected byte reduceByteVectorStep(StrideLoopDescriptor<Byte> loop, Storage storage) {
+    protected byte reduceByteVectorStep(StrideLoopDescriptor loop, Storage storage) {
         throw new OperationNotAvailableException();
     }
 
     @Override
-    protected byte reduceByteDefault(StrideLoopDescriptor<Byte> loop, Storage storage) {
+    protected byte reduceByteDefault(StrideLoopDescriptor loop, Storage storage) {
         throw new OperationNotAvailableException();
     }
 
     @Override
-    protected int reduceIntVectorUnit(StrideLoopDescriptor<Integer> loop, Storage storage) {
+    protected int reduceIntVectorUnit(StrideLoopDescriptor loop, Storage storage) {
         throw new OperationNotAvailableException();
     }
 
     @Override
-    protected int reduceIntVectorStep(StrideLoopDescriptor<Integer> loop, Storage storage) {
+    protected int reduceIntVectorStep(StrideLoopDescriptor loop, Storage storage) {
         throw new OperationNotAvailableException();
     }
 
     @Override
-    protected int reduceIntDefault(StrideLoopDescriptor<Integer> loop, Storage storage) {
+    protected int reduceIntDefault(StrideLoopDescriptor loop, Storage storage) {
         throw new OperationNotAvailableException();
     }
 
     @Override
-    protected float reduceFloatVectorUnit(StrideLoopDescriptor<Float> loop, Storage storage) {
+    protected float reduceFloatVectorUnit(StrideLoopDescriptor loop, Storage storage) {
         float sum = initFloat;
         for (int p : loop.offsets) {
             FloatVector a = Simd.broadcast(initFloat);
@@ -112,7 +112,7 @@ public final class ReduceOpMean extends DArrayReduceOp {
     }
 
     @Override
-    protected float reduceFloatVectorStep(StrideLoopDescriptor<Float> loop, Storage storage) {
+    protected float reduceFloatVectorStep(StrideLoopDescriptor loop, Storage storage) {
         float sum = initFloat;
         for (int p : loop.offsets) {
             FloatVector a = Simd.broadcast(initFloat);
@@ -152,7 +152,7 @@ public final class ReduceOpMean extends DArrayReduceOp {
     }
 
     @Override
-    protected float reduceFloatDefault(StrideLoopDescriptor<Float> loop, Storage storage) {
+    protected float reduceFloatDefault(StrideLoopDescriptor loop, Storage storage) {
         float sum = initFloat;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
@@ -176,7 +176,7 @@ public final class ReduceOpMean extends DArrayReduceOp {
     }
 
     @Override
-    protected double reduceDoubleVectorUnit(StrideLoopDescriptor<Double> loop, Storage storage) {
+    protected double reduceDoubleVectorUnit(StrideLoopDescriptor loop, Storage storage) {
         double sum = initDouble;
         for (int p : loop.offsets) {
             DoubleVector a = Simd.broadcast(initDouble);
@@ -216,7 +216,7 @@ public final class ReduceOpMean extends DArrayReduceOp {
     }
 
     @Override
-    protected double reduceDoubleVectorStep(StrideLoopDescriptor<Double> loop, Storage storage) {
+    protected double reduceDoubleVectorStep(StrideLoopDescriptor loop, Storage storage) {
         double sum = initDouble;
         for (int p : loop.offsets) {
             DoubleVector a = Simd.broadcast(initDouble);
@@ -256,7 +256,7 @@ public final class ReduceOpMean extends DArrayReduceOp {
     }
 
     @Override
-    protected double reduceDoubleDefault(StrideLoopDescriptor<Double> loop, Storage storage) {
+    protected double reduceDoubleDefault(StrideLoopDescriptor loop, Storage storage) {
         double sum = initDouble;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {

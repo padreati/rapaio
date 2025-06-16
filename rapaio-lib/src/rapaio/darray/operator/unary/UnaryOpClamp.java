@@ -57,7 +57,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyUnitByte(StrideLoopDescriptor<Byte> loop, Storage s) {
+    protected void applyUnitByte(StrideLoopDescriptor loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
@@ -86,7 +86,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyStepByte(StrideLoopDescriptor<Byte> loop, Storage s) {
+    protected void applyStepByte(StrideLoopDescriptor loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
@@ -115,7 +115,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyGenericByte(StrideLoopDescriptor<Byte> loop, Storage s) {
+    protected void applyGenericByte(StrideLoopDescriptor loop, Storage s) {
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
                 if (hasMin && s.getByte(p) < byteMin) {
@@ -130,7 +130,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyUnitInt(StrideLoopDescriptor<Integer> loop, Storage s) {
+    protected void applyUnitInt(StrideLoopDescriptor loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
@@ -159,7 +159,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyStepInt(StrideLoopDescriptor<Integer> loop, Storage s) {
+    protected void applyStepInt(StrideLoopDescriptor loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
@@ -188,7 +188,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyGenericInt(StrideLoopDescriptor<Integer> loop, Storage s) {
+    protected void applyGenericInt(StrideLoopDescriptor loop, Storage s) {
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
                 if (hasMin && s.getInt(p) < intMin) {
@@ -203,7 +203,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyUnitFloat(StrideLoopDescriptor<Float> loop, Storage s) {
+    protected void applyUnitFloat(StrideLoopDescriptor loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
@@ -232,7 +232,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyStepFloat(StrideLoopDescriptor<Float> loop, Storage s) {
+    protected void applyStepFloat(StrideLoopDescriptor loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
@@ -261,7 +261,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyGenericFloat(StrideLoopDescriptor<Float> loop, Storage s) {
+    protected void applyGenericFloat(StrideLoopDescriptor loop, Storage s) {
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
                 if (hasMin && s.getFloat(p) < floatMin) {
@@ -276,7 +276,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyUnitDouble(StrideLoopDescriptor<Double> loop, Storage s) {
+    protected void applyUnitDouble(StrideLoopDescriptor loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
@@ -305,7 +305,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyStepDouble(StrideLoopDescriptor<Double> loop, Storage s) {
+    protected void applyStepDouble(StrideLoopDescriptor loop, Storage s) {
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
@@ -334,7 +334,7 @@ public class UnaryOpClamp<N extends Number> extends DArrayUnaryOp {
     }
 
     @Override
-    protected void applyGenericDouble(StrideLoopDescriptor<Double> loop, Storage s) {
+    protected void applyGenericDouble(StrideLoopDescriptor loop, Storage s) {
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
                 if (hasMin && s.getDouble(p) < doubleMin) {

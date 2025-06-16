@@ -32,10 +32,10 @@ import rapaio.util.collection.Ints;
  * A loop stride descriptor contains the same information as a loop iterator, but in a precomputed form.
  * It is an alternative to loop iterator, when you want precomputed loop offsets.
  */
-public final class StrideLoopDescriptor<N extends Number> {
+public final class StrideLoopDescriptor {
 
-    public static <N extends Number> StrideLoopDescriptor<N> of(StrideLayout layout, Order askOrder, VectorSpecies<N> vs) {
-        return new StrideLoopDescriptor<>(layout, askOrder, vs);
+    public static StrideLoopDescriptor of(StrideLayout layout, Order askOrder, VectorSpecies<?> vs) {
+        return new StrideLoopDescriptor(layout, askOrder, vs);
     }
 
     public final int bound;
@@ -45,7 +45,7 @@ public final class StrideLoopDescriptor<N extends Number> {
     public final int simdBound;
     private int[] simdIdx;
 
-    private StrideLoopDescriptor(StrideLayout layout, Order askOrder, VectorSpecies<N> vs) {
+    private StrideLoopDescriptor(StrideLayout layout, Order askOrder, VectorSpecies<?> vs) {
         this.simdLen = vs.length();
 
         if (layout.rank() == 0) {
@@ -102,8 +102,8 @@ public final class StrideLoopDescriptor<N extends Number> {
     public int[] simdIdx() {
         if (simdIdx == null) {
             simdIdx = new int[simdLen];
-            for (int i = 0; i < simdIdx.length; i++) {
-                simdIdx[i] = i * step;
+            for (int i = 1; i < simdIdx.length; i++) {
+                simdIdx[i] = simdIdx[i - 1] + step;
             }
         }
         return simdIdx;

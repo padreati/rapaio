@@ -39,7 +39,7 @@ public final class ReduceOpSum extends DArrayReduceOp {
     }
 
     @Override
-    protected byte reduceByteVectorUnit(StrideLoopDescriptor<Byte> loop, Storage storage) {
+    protected byte reduceByteVectorUnit(StrideLoopDescriptor loop, Storage storage) {
         byte result = 0;
         for (int p : loop.offsets) {
             ByteVector a = Simd.zeroByte();
@@ -59,7 +59,7 @@ public final class ReduceOpSum extends DArrayReduceOp {
     }
 
     @Override
-    protected byte reduceByteVectorStep(StrideLoopDescriptor<Byte> loop, Storage storage) {
+    protected byte reduceByteVectorStep(StrideLoopDescriptor loop, Storage storage) {
         byte result = 0;
         for (int p : loop.offsets) {
             ByteVector a = Simd.zeroByte();
@@ -79,7 +79,7 @@ public final class ReduceOpSum extends DArrayReduceOp {
     }
 
     @Override
-    protected byte reduceByteDefault(StrideLoopDescriptor<Byte> loop, Storage storage) {
+    protected byte reduceByteDefault(StrideLoopDescriptor loop, Storage storage) {
         byte result = 0;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
@@ -91,7 +91,7 @@ public final class ReduceOpSum extends DArrayReduceOp {
     }
 
     @Override
-    protected int reduceIntVectorUnit(StrideLoopDescriptor<Integer> loop, Storage storage) {
+    protected int reduceIntVectorUnit(StrideLoopDescriptor loop, Storage storage) {
         int result = 0;
         for (int p : loop.offsets) {
             IntVector a = Simd.zeroInt();
@@ -111,7 +111,7 @@ public final class ReduceOpSum extends DArrayReduceOp {
     }
 
     @Override
-    protected int reduceIntVectorStep(StrideLoopDescriptor<Integer> loop, Storage storage) {
+    protected int reduceIntVectorStep(StrideLoopDescriptor loop, Storage storage) {
         int result = 0;
         for (int p : loop.offsets) {
             IntVector a = Simd.zeroInt();
@@ -131,7 +131,7 @@ public final class ReduceOpSum extends DArrayReduceOp {
     }
 
     @Override
-    protected int reduceIntDefault(StrideLoopDescriptor<Integer> loop, Storage storage) {
+    protected int reduceIntDefault(StrideLoopDescriptor loop, Storage storage) {
         int result = 0;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
@@ -143,7 +143,7 @@ public final class ReduceOpSum extends DArrayReduceOp {
     }
 
     @Override
-    protected float reduceFloatVectorUnit(StrideLoopDescriptor<Float> loop, Storage storage) {
+    protected float reduceFloatVectorUnit(StrideLoopDescriptor loop, Storage storage) {
         float result = 0;
         for (int p : loop.offsets) {
             FloatVector a = Simd.zeroFloat();
@@ -163,7 +163,7 @@ public final class ReduceOpSum extends DArrayReduceOp {
     }
 
     @Override
-    protected float reduceFloatVectorStep(StrideLoopDescriptor<Float> loop, Storage storage) {
+    protected float reduceFloatVectorStep(StrideLoopDescriptor loop, Storage storage) {
         float result = 0;
         for (int p : loop.offsets) {
             FloatVector a = Simd.zeroFloat();
@@ -183,7 +183,7 @@ public final class ReduceOpSum extends DArrayReduceOp {
     }
 
     @Override
-    protected float reduceFloatDefault(StrideLoopDescriptor<Float> loop, Storage storage) {
+    protected float reduceFloatDefault(StrideLoopDescriptor loop, Storage storage) {
         float result = 0;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
@@ -195,7 +195,7 @@ public final class ReduceOpSum extends DArrayReduceOp {
     }
 
     @Override
-    protected double reduceDoubleVectorUnit(StrideLoopDescriptor<Double> loop, Storage storage) {
+    protected double reduceDoubleVectorUnit(StrideLoopDescriptor loop, Storage storage) {
         double result = 0;
         for (int p : loop.offsets) {
             DoubleVector a = Simd.zeroDouble();
@@ -215,7 +215,7 @@ public final class ReduceOpSum extends DArrayReduceOp {
     }
 
     @Override
-    protected double reduceDoubleVectorStep(StrideLoopDescriptor<Double> loop, Storage storage) {
+    protected double reduceDoubleVectorStep(StrideLoopDescriptor loop, Storage storage) {
         double result = 0;
         for (int p : loop.offsets) {
             DoubleVector a = Simd.zeroDouble();
@@ -235,7 +235,7 @@ public final class ReduceOpSum extends DArrayReduceOp {
     }
 
     @Override
-    protected double reduceDoubleDefault(StrideLoopDescriptor<Double> loop, Storage storage) {
+    protected double reduceDoubleDefault(StrideLoopDescriptor loop, Storage storage) {
         double result = 0;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {

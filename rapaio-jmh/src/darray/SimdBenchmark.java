@@ -79,7 +79,7 @@ public class SimdBenchmark {
 
         double[] array;
         Storage storage;
-        StrideLoopDescriptor<Double> loop;
+        StrideLoopDescriptor loop;
 
         @Setup(Level.Invocation)
         public void setup() {
@@ -132,7 +132,7 @@ public class SimdBenchmark {
 
     @Benchmark
     public void sqrOpWithLoop(SimdBenchmarkState bs, Blackhole bh) {
-        StrideLoopDescriptor<Double> loop = StrideLoopDescriptor.of(
+        StrideLoopDescriptor loop = StrideLoopDescriptor.of(
                 StrideLayout.of(new int[] {bs.storage.size()}, 0, new int[] {1}), Order.C, Simd.vsDouble);
         DArrayOp.unarySqr().applyDouble(loop, bs.storage);
         bh.consume(bs.storage);

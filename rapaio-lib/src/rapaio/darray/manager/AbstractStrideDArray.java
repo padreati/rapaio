@@ -51,7 +51,7 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
         permits BaseDoubleDArrayStride, BaseFloatDArrayStride, BaseIntDArrayStride, BaseByteDArrayStride {
 
     protected final StrideLayout layout;
-    protected final StrideLoopDescriptor<N> loop;
+    protected final StrideLoopDescriptor loop;
 
     public AbstractStrideDArray(DArrayManager manager, DType<N> dt, StrideLayout layout, Storage storage) {
         super(manager, dt, storage);
