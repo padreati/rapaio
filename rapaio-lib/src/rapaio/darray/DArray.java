@@ -1093,6 +1093,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      *
      * @return value iterator
      */
+    @Override
     public final Iterator<N> iterator() {
         return iterator(Order.S);
     }
@@ -1215,10 +1216,23 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
         return apply(Order.defaultOrder(), fun);
     }
 
+    /**
+     * Creates a new darray with values transformed by function {@code fun} with specified order.
+     *
+     * @param askOrder asked order
+     * @param fun transform function
+     * @return new array with transformed values
+     */
     public final DArray<N> apply(Order askOrder, Function<N, N> fun) {
         return copy(askOrder).apply_(fun);
     }
 
+    /**
+     * Transforms in-place the tensor's values with function {@code fun}
+     *
+     * @param fun transform function
+     * @return same tensor instance
+     */
     public abstract DArray<N> apply_(Function<N, N> fun);
 
     //------------------
@@ -2664,14 +2678,10 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      */
     public abstract void externalSort(int[] indices, boolean asc);
 
-    //------- broadcast operations --------//
-
-
-    //------- SUMMARY OPERATIONS ----------//
 
     @SuppressWarnings("unchecked")
     public final <M extends Number> DArray<M> cast(DType<M> dt) {
-        if ((dt.id() == dt().id())) {
+        if (dt().equals(dt)) {
             return (DArray<M>) this;
         } else {
             return cast(dt, Order.A);
