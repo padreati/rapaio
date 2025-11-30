@@ -251,28 +251,28 @@ public class BinarySMOTest {
         assertEquals(smo.toSummary(), smo.toContent());
         assertEquals(smo.toSummary(), smo.toFullContent());
 
-        smo.kernel.set(new PolyKernel(1));
+        smo.kernel.set(new PolyKernel(1)).seed.set(42L);
         smo.fit(tts.trainDf(), "class");
 
         assertEquals(
-                "BinarySMO{c=100,eps=0.3,firstLabel=versicolor,kernel=PolyKernel(exp=1,bias=1,slope=1),maxRuns=10,secondLabel=setosa,seed=1}, "
+                "BinarySMO{c=100,eps=0.3,firstLabel=versicolor,kernel=PolyKernel(exp=1,bias=1,slope=1),maxRuns=10,secondLabel=setosa,seed=42}, "
                         +
                         "fitted=true, support vectors=4", smo.toString());
         assertEquals(
-                "BinarySMO{c=100,eps=0.3,firstLabel=versicolor,kernel=PolyKernel(exp=1,bias=1,slope=1),maxRuns=10,secondLabel=setosa,seed=1}",
+                "BinarySMO{c=100,eps=0.3,firstLabel=versicolor,kernel=PolyKernel(exp=1,bias=1,slope=1),maxRuns=10,secondLabel=setosa,seed=42}",
                 smo.fullName());
         assertEquals("""
                 BinarySMO model
                 ===============
-                BinarySMO{c=100,eps=0.3,firstLabel=versicolor,kernel=PolyKernel(exp=1,bias=1,slope=1),maxRuns=10,secondLabel=setosa,seed=1}
+                BinarySMO{c=100,eps=0.3,firstLabel=versicolor,kernel=PolyKernel(exp=1,bias=1,slope=1),maxRuns=10,secondLabel=setosa,seed=42}
                 fitted: true, support vectors=4
                 Decision function:
                 Linear support vector: use attribute weights folding.
-                   0.0393929 * [sepal-length]
-                 + 0.4876855 * [sepal-width]
-                 - 0.9204967 * [petal-length]
-                 - 0.5183925 * [petal-width]
-                 + 0.9250336""", smo.toSummary());
+                   0.0947671 * [sepal-length]
+                 + 0.3338149 * [sepal-width]
+                 - 0.8622883 * [petal-length]
+                 - 0.4004092 * [petal-width]
+                 + 1.861954""", smo.toSummary());
     }
 
     @Test
