@@ -405,6 +405,6 @@ public abstract class ClassifierModel<M extends ClassifierModel<M, R, H>, R exte
     }
 
     protected Random getRandom() {
-        return seed.get() == 0 ? new Random() : new Random(seed.get());
+        return seed.hasDefaultValue() ? new Random() : new Random(seed.get());
     }
 }

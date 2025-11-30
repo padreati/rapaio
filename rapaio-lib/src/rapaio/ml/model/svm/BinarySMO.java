@@ -231,7 +231,7 @@ public class BinarySMO extends ClassifierModel<BinarySMO, ClassifierResult, RunI
         state.close();
 
         if (prob.get() == true) {
-            logistic = BinaryLogistic.newModel();
+            logistic = BinaryLogistic.newModel().seed.set(seed.get());
 
             VarDouble score = VarDouble.empty(_vectors.dim(0)).name("score");
             VarBinary target = VarBinary.empty(_vectors.dim(0)).name("target");

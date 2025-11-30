@@ -22,6 +22,7 @@
 package rapaio.ml.model.svm.libsvm;
 
 import java.util.Arrays;
+import java.util.Random;
 import java.util.logging.Logger;
 
 import rapaio.darray.DArray;
@@ -449,6 +450,7 @@ public class Svm {
             int end = (i + 1) * prob.len / nr_fold;
             int j, k;
             SvmProblem subprob = new SvmProblem();
+            subprob.random = new Random(prob.random.nextLong());
 
             subprob.len = prob.len - (end - begin);
             subprob.xs = new DArray[subprob.len];
