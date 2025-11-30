@@ -27,51 +27,40 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 
-import rapaio.codegen.param.ListParam;
-import rapaio.codegen.param.ParamSet;
-import rapaio.codegen.param.ValueParam;
-
-public class CodeGenTemplate extends ParamSet<CodeGenTemplate> {
+public record CodeGenTemplate(String src, String dst, Replace[] replaces) {
 
     static final String START_FREEZE = "FREEZE";
     static final String END_FREEZE = "UNFREEZE";
 
-    ValueParam<String, CodeGenTemplate> src = new ValueParam<>(this, "", "src", s -> !s.isEmpty());
-    ValueParam<String, CodeGenTemplate> dst = new ValueParam<>(this, "", "dst", s -> !s.isEmpty());
-    ListParam<Replace, CodeGenTemplate> replaces =
-            new ListParam<>(this, new ArrayList<>(), "simpleReplaces", (__, ___) -> true);
-
     public void run(String root) throws IOException {
 
-        new File(root + dst.get()).delete();
+        new File(root + dst).delete();
 
         boolean freeze = false;
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(root + src.get()))) {
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(root + dst.get()))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(root + src));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(root + dst))) {
 
-                while (true) {
-                    String line = reader.readLine();
-                    if (line == null) {
-                        writer.flush();
-                        break;
-                    }
-                    if (line.contains(START_FREEZE)) {
-                        freeze = true;
-                    }
-                    if (line.contains(END_FREEZE)) {
-                        freeze = false;
-                        continue;
-                    }
+            while (true) {
+                String line = reader.readLine();
+                if (line == null) {
+                    writer.flush();
+                    break;
+                }
+                if (line.contains(START_FREEZE)) {
+                    freeze = true;
+                }
+                if (line.contains(END_FREEZE)) {
+                    freeze = false;
+                    continue;
+                }
 
-                    if (freeze) {
-                        writer.write(line);
-                        writer.newLine();
-                    } else {
-                        processLine(writer, line);
-                    }
+                if (freeze) {
+                    writer.write(line);
+                    writer.newLine();
+                } else {
+                    processLine(writer, line);
                 }
             }
         }
@@ -79,7 +68,7 @@ public class CodeGenTemplate extends ParamSet<CodeGenTemplate> {
 
     private void processLine(BufferedWriter writer, String line) throws IOException {
 
-        for (var replace : replaces.get()) {
+        for (var replace : replaces) {
             line = line.replace(replace.src(), replace.dst());
         }
 

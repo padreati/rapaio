@@ -27,7 +27,7 @@
     <groupId>io.github.padreati</groupId>
     <artifactId>rapaio</artifactId>
     <packaging>pom</packaging>
-    <version>8.0.0</version>
+    <version>8.1.0</version>
     <name>rapaio</name>
     <description>Rapaio Library</description>
     <url>https://github.com/padreati/rapaio</url>
@@ -57,7 +57,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>24</java.version>
+        <java.version>25</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.release>${java.version}</maven.compiler.release>

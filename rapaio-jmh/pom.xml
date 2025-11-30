@@ -26,11 +26,11 @@
     <parent>
         <artifactId>rapaio</artifactId>
         <groupId>io.github.padreati</groupId>
-        <version>8.0.0</version>
+        <version>8.1.0</version>
     </parent>
 
     <artifactId>rapaio-jmh</artifactId>
-    <version>8.0.0</version>
+    <version>8.1.0</version>
     <packaging>jar</packaging>
 
     <name>rapaio-jmh</name>
@@ -54,12 +54,12 @@
         <dependency>
             <groupId>io.github.padreati</groupId>
             <artifactId>rapaio-lib</artifactId>
-            <version>8.0.0</version>
+            <version>8.1.0</version>
         </dependency>
         <dependency>
             <groupId>io.github.padreati</groupId>
             <artifactId>rapaio-experiment</artifactId>
-            <version>8.0.0</version>
+            <version>8.1.0</version>
         </dependency>
         <dependency>
             <groupId>com.edwardraff</groupId>

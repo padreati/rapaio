@@ -50,12 +50,12 @@ KMeans. Additionally there is a fair share of graphical tools and linear algebra
 
 ## Installation
 
-Last published release on maven central is 7.0.1
+Last published release on maven central is 8.1.0
 
     <dependency>
         <groupId>io.github.padreati</groupId>
         <artifactId>rapaio-lib</artifactId>
-        <version>7.0.1</version>
+        <version>8.1.0</version>
     </dependency>
 
 The best way for exploration is through jupyter / jupyter-lab notebooks. This is excellent for experimenting with interactive notebooks or
@@ -63,11 +63,12 @@ to document the ideas you are working on. You have to install `jupyter` / `jupyt
 For more information you can follow the instruction from
 [Rapaio Jupyter Kernel](https://github.com/padreati/rapaio-jupyter-kernel#installation). 
 
-    %dependency /add io.github.padreati:rapaio-lib:7.0.1
+    %dependency /add io.github.padreati:rapaio-lib:8.1.0
     %dependency /resolve
 
 ## Acknowledgements
 
 Many thanks to **JetBrains** who provided open source licenses for their brilliant IDE 
-[![a](images/intellij-idea_logos/logo.svg)](https://www.jetbrains.com/?from=rapaio).
+[![a](images/intellij-idea_logos/logo.svg)](https://www.jetbrains.com/?from=rapaio). Update: unfortunately I was not able to receive open source licences for the current year (since September 2025).
+Still, 
 

@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import rapaio.codegen.st.ST4;
+
 public class CodeGenApp {
 
     private static final String DEFAULT_ROOT = "/home/ati/work/rapaio";
@@ -53,7 +55,7 @@ public class CodeGenApp {
                 Replace.of("initialDouble", "initialInt"),
                 Replace.of("applyDouble", "applyInt"),
                 Replace.of("VecDouble", "VecInt"),
-                Replace.of("DoubleTensor","IntTensor"),
+                Replace.of("DoubleTensor", "IntTensor"),
                 Replace.of("DoubleStorage", "IntStorage"),
                 Replace.of("DoubleArrayStorage", "IntArrayStorage"),
                 Replace.of("incDouble", "incInt"),
@@ -61,9 +63,9 @@ public class CodeGenApp {
                 Replace.of("ptrIncDouble", "ptrIncInt"),
                 Replace.of("ptrSetDouble", "ptrSetInt"),
                 Replace.of("fillDouble", "fillInt"),
-                Replace.of("aggDouble","aggInt"),
-                Replace.of("loadDouble","loadInt"),
-                Replace.of("saveDouble","saveInt"),
+                Replace.of("aggDouble", "aggInt"),
+                Replace.of("loadDouble", "loadInt"),
+                Replace.of("saveDouble", "saveInt"),
                 Replace.of("initDouble", "initInt"),
                 Replace.of("Double2DoubleFunction", "Int2IntFunction"),
                 Replace.of("opLoopDouble", "opLoopInt"),
@@ -79,24 +81,23 @@ public class CodeGenApp {
                 Replace.of("DOUBLE", "BYTE")
         };
 
-        templates.add(new CodeGenTemplate()
-                .src.set("rapaio/darray/manager/base/BaseDoubleDArrayStride.java")
-                .dst.set("rapaio/darray/manager/base/BaseFloatDArrayStride.java")
-                .replaces.set(floatReplaces)
+        templates.add(new CodeGenTemplate(
+                "rapaio/darray/manager/base/BaseDoubleDArrayStride.java",
+                "rapaio/darray/manager/base/BaseFloatDArrayStride.java",
+                floatReplaces)
         );
 
-        templates.add(new CodeGenTemplate()
-                .src.set("rapaio/darray/manager/base/BaseDoubleDArrayStride.java")
-                .dst.set("rapaio/darray/manager/base/BaseIntDArrayStride.java")
-                .replaces.set(intReplaces)
+        templates.add(new CodeGenTemplate(
+                "rapaio/darray/manager/base/BaseDoubleDArrayStride.java",
+                "rapaio/darray/manager/base/BaseIntDArrayStride.java",
+                intReplaces)
         );
 
-        templates.add(new CodeGenTemplate()
-                .src.set("rapaio/darray/manager/base/BaseDoubleDArrayStride.java")
-                .dst.set("rapaio/darray/manager/base/BaseByteDArrayStride.java")
-                .replaces.set(byteReplaces)
+        templates.add(new CodeGenTemplate(
+                "rapaio/darray/manager/base/BaseDoubleDArrayStride.java",
+                "rapaio/darray/manager/base/BaseByteDArrayStride.java",
+                byteReplaces)
         );
-
     }
 
     public static void main(String[] args) throws IOException {
