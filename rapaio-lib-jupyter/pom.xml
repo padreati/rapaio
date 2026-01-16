@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.github.padreati</groupId>
+        <artifactId>rapaio</artifactId>
+        <version>8.2.0</version>
+    </parent>
+
+    <artifactId>rapaio-lib-jupyter</artifactId>
+    <name>rapaio-display-extension</name>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>io.github.padreati</groupId>
+            <artifactId>rapaio-jupyter-kernel</artifactId>
+            <version>3.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.padreati</groupId>
+            <artifactId>rapaio-lib</artifactId>
+            <version>8.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>6.0.2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <sourceDirectory>src</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>src</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </resource>
+        </resources>
+        <testSourceDirectory>tst</testSourceDirectory>
+        <testResources>
+            <testResource>
+                <directory>tst</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </testResource>
+        </testResources>
+    </build>
+
+</project>

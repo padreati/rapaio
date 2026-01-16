@@ -27,10 +27,9 @@
     <parent>
         <groupId>io.github.padreati</groupId>
         <artifactId>rapaio</artifactId>
-        <version>8.1.0</version>
+        <version>8.2.0</version>
     </parent>
     <artifactId>rapaio-lib</artifactId>
-    <version>8.1.0</version>
     <name>rapaio-lib</name>
     <url>https://github.com/padreati/rapaio/tree/master/rapaio-lib</url>
     <licenses>
@@ -44,31 +43,31 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>6.0.1</version>
+            <version>6.0.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
-            <version>6.0.1</version>
+            <version>6.0.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>5.20.0</version>
+            <version>5.21.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>5.20.0</version>
+            <version>5.21.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.github.padreati</groupId>
             <artifactId>rapaio-datasets</artifactId>
-            <version>8.1.0</version>
+            <version>8.2.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -96,7 +95,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version>
+                <version>3.14.1</version>
                 <configuration>
                     <release>${maven.compiler.release}</release>
                     <compilerArgs>
@@ -195,13 +194,14 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.3.1</version>
                 <configuration>
                     <useReleaseProfile>false</useReleaseProfile>
                     <releaseProfiles>release</releaseProfiles>
                     <goals>deploy</goals>
                 </configuration>
             </plugin>
+            <!--
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -213,6 +213,7 @@
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
             </plugin>
+            -->
         </plugins>
     </build>
 

@@ -26,11 +26,10 @@
     <parent>
         <artifactId>rapaio</artifactId>
         <groupId>io.github.padreati</groupId>
-        <version>8.1.0</version>
+        <version>8.2.0</version>
     </parent>
 
     <artifactId>rapaio-jmh</artifactId>
-    <version>8.1.0</version>
     <packaging>jar</packaging>
 
     <name>rapaio-jmh</name>
@@ -54,12 +53,12 @@
         <dependency>
             <groupId>io.github.padreati</groupId>
             <artifactId>rapaio-lib</artifactId>
-            <version>8.1.0</version>
+            <version>8.2.0</version>
         </dependency>
         <dependency>
             <groupId>io.github.padreati</groupId>
             <artifactId>rapaio-experiment</artifactId>
-            <version>8.1.0</version>
+            <version>8.2.0</version>
         </dependency>
         <dependency>
             <groupId>com.edwardraff</groupId>
@@ -82,7 +81,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version>
+                <version>3.14.1</version>
                 <configuration>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
@@ -92,7 +91,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.6.0</version>
+                <version>3.6.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -128,7 +127,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.4.0</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -141,7 +140,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.10.1</version>
+                <version>3.12.0</version>
                 <configuration>
                     <show>private</show>
                     <additionalOptions>-Xdoclint:none</additionalOptions>
