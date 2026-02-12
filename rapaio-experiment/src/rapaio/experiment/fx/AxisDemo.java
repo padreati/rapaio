@@ -22,34 +22,30 @@
 package rapaio.experiment.fx;
 
 import java.util.Random;
+import java.util.stream.IntStream;
 
 import javafx.application.Application;
-import javafx.geometry.Point3D;
+import javafx.scene.Camera;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.PointLight;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
-import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.MeshView;
-import javafx.scene.shape.Sphere;
-import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 
 public class AxisDemo extends Application {
 
-    public static void main(String[] args) {
-        Application.launch(args);
+    static void main(String[] args) {
+        launch(args);
     }
 
-    PerspectiveCamera addCamera(Scene scene) {
-        PerspectiveCamera perspectiveCamera = new PerspectiveCamera(false);
-        scene.setCamera(perspectiveCamera);
-        return perspectiveCamera;
-    }
+    private Camera camera;
+    private Scene scene;
 
     PhongMaterial mkMaterial(Color color) {
         var boxMaterial = new PhongMaterial();
@@ -58,6 +54,47 @@ public class AxisDemo extends Application {
         return boxMaterial;
     }
 
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        primaryStage.setTitle("Axisdemo");
+
+        int aw = 1;
+
+        var xAxis = new Box(1000, aw, aw);
+        xAxis.setMaterial(mkMaterial(Color.GREEN));
+//        xAxis.setTranslateX(500);
+
+        var yAxis = new Box(aw, 1000, aw);
+        yAxis.setMaterial(mkMaterial(Color.RED));
+//        yAxis.setTranslateY(500);
+
+        var zAxis = new Box(aw, aw, 1000);
+        zAxis.setMaterial(mkMaterial(Color.BLUE));
+//        zAxis.setTranslateZ(500);
+
+        var parent = new Group(xAxis, yAxis, zAxis);
+        parent.getTransforms().add(new Scale(1, -1, 1));
+        parent.getChildren().addAll(IntStream.range(0, 100).mapToObj(i -> mkRandBox()).toList());
+
+        MeshView tetha = new Tetrahedron3D(10);
+        tetha.setMaterial(mkMaterial(Color.BLUE));
+        parent.getChildren().add(tetha);
+
+        var root = new Group(parent);
+        scene = new Scene(root, 1000, 1000, true, SceneAntialiasing.BALANCED);
+
+        MouseControl.central(scene, root);
+
+        var pointLight = new PointLight(Color.ANTIQUEWHITE);
+        pointLight.setTranslateZ(-100);
+
+        root.getChildren().add(pointLight);
+
+        setCamera(scene);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+
+    }
 
     Color mkRandColor() {
         Random random = new Random();
@@ -77,98 +114,14 @@ public class AxisDemo extends Application {
         return b;
     }
 
-    double anchorX;
-    double anchorY;
+    void setCamera(Scene scene) {
+        camera = new PerspectiveCamera(true);
+        camera.setTranslateZ(-1000);
+        camera.setNearClip(0.1);
+        camera.setFarClip(100_000);
 
-    double xAngle = 0;
-    double yAngle = 0;
-    double xAngleDelta = 0;
-    double yAngleDelta = 0;
-    Rotate xRotation = new Rotate(xAngle, new Point3D(1, 0, 0));
-    Rotate yRotation = new Rotate(yAngle, new Point3D(0, 1, 0));
+        scene.setCamera(camera);
 
-    Mode mode = Mode.NONE;
-
-    private enum Mode {
-        NONE,
-        ROTATE
-    }
-
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        primaryStage.setTitle("Axisdemo");
-
-        int aw = 3;
-
-        var xAxis = new Box(1000, aw, aw);
-        xAxis.setMaterial(mkMaterial(Color.GREEN));
-        xAxis.setTranslateX(500);
-
-        var yAxis = new Box(aw, 1000, aw);
-        yAxis.setMaterial(mkMaterial(Color.RED));
-        yAxis.setTranslateY(500);
-
-        var zAxis = new Box(aw, aw, 1000);
-        zAxis.setMaterial(mkMaterial(Color.BLUE));
-        zAxis.setTranslateZ(500);
-
-        var zero = new Sphere(10);
-        zero.setMaterial(mkMaterial(Color.BLACK));
-
-        var parent = new Group(zero, xAxis, yAxis, zAxis);
-        parent.setTranslateZ(1000);
-//        parent.getChildren().addAll(IntStream.range(0, 100).mapToObj(i -> mkRandBox()).toList());
-
-
-        MeshView tetha = new Tetrahedron3D(200);
-        tetha.setMaterial(mkMaterial(Color.BLUE));
-//        tetha.setTranslateX(500);
-//        tetha.setTranslateY(500);
-//        tetha.setTranslateZ(500);
-        parent.getChildren().add(tetha);
-
-        var root = new Group(parent);
-        var scene = new Scene(root, 1000, 1000, true, SceneAntialiasing.BALANCED);
-
-        scene.setOnKeyPressed(event -> mode = (event.getCode() == KeyCode.CONTROL) ? Mode.ROTATE : Mode.NONE);
-
-        scene.setOnKeyReleased(event -> mode = Mode.NONE);
-
-        scene.setOnMousePressed(event -> {
-
-            anchorX = event.getSceneX();
-            anchorY = event.getSceneY();
-
-            xAngleDelta = 0;
-            yAngleDelta = 0;
-        });
-
-        scene.setOnMouseDragged(event -> {
-            if (mode == Mode.ROTATE) {
-                xAngleDelta = -(anchorY - event.getSceneY()) / 10;
-                xRotation = new Rotate(xAngle + xAngleDelta, 500, 500, 500, new Point3D(1, 0, 0));
-                yAngleDelta = (anchorX - event.getSceneX()) / 10;
-                yRotation = new Rotate(yAngle + yAngleDelta, 500, 500, 500, new Point3D(0, 1, 0));
-                parent.getTransforms().clear();
-                parent.getTransforms().addAll(xRotation, yRotation);
-            }
-        });
-
-        scene.setOnMouseReleased(event -> {
-            xAngle += xAngleDelta;
-            yAngle += yAngleDelta;
-        });
-
-        var pointLight = new PointLight(Color.ANTIQUEWHITE);
-        pointLight.setTranslateX(15);
-        pointLight.setTranslateY(-10);
-        pointLight.setTranslateZ(-100);
-
-        root.getChildren().add(pointLight);
-
-        addCamera(scene);
-        primaryStage.setScene(scene);
-        primaryStage.show();
-
+        scene.setOnScroll(event -> camera.setTranslateZ(camera.getTranslateZ() + event.getDeltaY()));
     }
 }

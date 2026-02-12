@@ -31,7 +31,9 @@ import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
-import javafx.scene.input.KeyCode;
+import javafx.scene.image.PixelFormat;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
@@ -43,7 +45,6 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.graphics.opt.NColor;
 
 public class SampleScatterPlot extends Application {
 
@@ -51,10 +52,18 @@ public class SampleScatterPlot extends Application {
     public static final String Radio = "Radio";
     public static final String Sales = "Sales";
 
-    PhongMaterial material(java.awt.Color color) {
+    PhongMaterial material(Color color) {
         var boxMaterial = new PhongMaterial();
-        boxMaterial.setDiffuseColor(Color.rgb(color.getRed(), color.getGreen(), color.getBlue()));
-        boxMaterial.setSpecularColor(Color.WHITESMOKE);
+        boxMaterial.setDiffuseColor(color);
+        boxMaterial.setSpecularColor(Color.BLACK);
+
+        WritableImage img = new WritableImage(1, 1);
+        PixelWriter pw = img.getPixelWriter();
+        int[] pixels = new int[1];
+        pixels[0] = 0xFF7F7F7F;
+        pw.setPixels(0, 0, 1, 1, PixelFormat.getIntArgbInstance(), pixels, 0, 1);
+        boxMaterial.setSelfIlluminationMap(img);
+
         return boxMaterial;
     }
 
@@ -89,81 +98,60 @@ public class SampleScatterPlot extends Application {
 
         Frame df = Datasets.loadISLAdvertising();
 
-        int aw = 3;
+        double aw = 0.1;
 
         Point3D pmin = new Point3D(df.rvar(TV).darray_().amin(), df.rvar(Sales).darray_().amin(), df.rvar(Radio).darray_().amin());
         Point3D pmax = new Point3D(df.rvar(TV).darray_().amax(), df.rvar(Sales).darray_().amax(), df.rvar(Radio).darray_().amax());
 
-        Point3D plen = pmax.subtract(pmin);
+        Point3D psize = pmax.subtract(pmin);
 
         Point3D pmid = pmin.midpoint(pmax);
 
-        Point3D pminBound = pmin.subtract(plen.multiply(0.2));
-        Point3D pmaxBound = pmax.add(plen.multiply(0.2));
+        Point3D pminBound = pmin.subtract(psize.multiply(0.2));
+        Point3D pmaxBound = pmax.add(psize.multiply(0.2));
         Point3D plenBound = pmaxBound.subtract(pminBound);
         Point3D pmidBound = pminBound.midpoint(pmaxBound);
 
-        scale = Math.min(Screen.getPrimary().getBounds().getWidth()/plenBound.getX(),
-                Screen.getPrimary().getBounds().getHeight()/plenBound.getY());
+        scale = Math.min(Screen.getPrimary().getBounds().getWidth() / plenBound.getX(),
+                Screen.getPrimary().getBounds().getHeight() / plenBound.getY());
 
-        var xAxis = new Box(plen.getX(), aw, aw);
-        xAxis.setMaterial(material(NColor.green));
+        var xAxis = new Box(psize.getX(), aw, aw);
+        xAxis.setMaterial(material(Color.GREEN));
         xAxis.setTranslateX(pmid.getX());
 
-        var yAxis = new Box(aw, plen.getY(), aw);
-        yAxis.setMaterial(material(NColor.red));
+        var yAxis = new Box(aw, psize.getY(), aw);
+        yAxis.setMaterial(material(Color.RED));
         yAxis.setTranslateY(pmid.getY());
 
-        var zAxis = new Box(aw, aw, plen.getZ());
-        zAxis.setMaterial(material(NColor.blue));
+        var zAxis = new Box(aw, aw, psize.getZ());
+        zAxis.setMaterial(material(Color.BLUE));
         zAxis.setTranslateZ(pmid.getZ());
 
-        var zero = new Sphere(2);
-        zero.setMaterial(material(NColor.black));
+        var zero = new Sphere(1);
+        zero.setMaterial(material(Color.BLACK));
 
         Group root = new Group(zero, xAxis, yAxis, zAxis);
+        root.getChildren().add(new BoundingBox(100000, 0.));
         root.getChildren().addAll(loadPoints(df));
 
 
-        Scene scene = new Scene(root, plenBound.getX(), plenBound.getY(), true,
-                SceneAntialiasing.BALANCED);
+        Scene scene = new Scene(root, 1440, 900, true, SceneAntialiasing.BALANCED);
+
         PerspectiveCamera camera = addCamera(scene);
-        Translate camPosition = new Translate(pmid.getX(), pmin.getY(), -Math.max(plen.getX(), plen.getY()));
+        Translate camPosition = new Translate(pmid.getX(), pmin.getY(), -Math.max(psize.getX(), psize.getY()));
         camera.getTransforms().add(camPosition);
         camera.setFieldOfView(90);
         camera.setNearClip(0.01);
-        camera.setFarClip(1e3);
+        camera.setFarClip(1e10);
 
         primaryStage.setScene(scene);
         primaryStage.setTitle("3D Example");
 
-        scene.setOnKeyPressed(event -> mode = (event.getCode() == KeyCode.CONTROL) ? Mode.ROTATE : Mode.NONE);
-        scene.setOnKeyReleased(event -> mode = Mode.NONE);
-        scene.setOnMousePressed(event -> {
+        MouseControl.central(scene, root);
 
-            anchorX = event.getSceneX();
-            anchorY = event.getSceneY();
-
-            xAngleDelta = 0;
-            yAngleDelta = 0;
+        scene.setOnScroll(event -> {
+            camera.setTranslateZ(camera.getTranslateZ() + event.getDeltaY() / 4);
         });
-
-        scene.setOnMouseDragged(event -> {
-            if (mode == Mode.ROTATE) {
-                xAngleDelta = (anchorY - event.getSceneY()) / 10;
-                xRotation = new Rotate(xAngle + xAngleDelta, pmid.getX(), pmid.getY(), pmid.getZ(), new Point3D(1, 0, 0));
-                yAngleDelta = (anchorX - event.getSceneX()) / 10;
-                yRotation = new Rotate(yAngle + yAngleDelta, pmid.getX(), pmid.getY(), pmid.getZ(), new Point3D(0, 1, 0));
-                camera.getTransforms().clear();
-                camera.getTransforms().addAll(camPosition, xRotation, yRotation);
-            }
-        });
-
-        scene.setOnMouseReleased(event -> {
-            xAngle += xAngleDelta;
-            yAngle += yAngleDelta;
-        });
-
 
         primaryStage.show();
     }
@@ -172,7 +160,7 @@ public class SampleScatterPlot extends Application {
 
         List<Node> list = new ArrayList<>();
         for (int i = 0; i < df.rowCount(); i++) {
-            PhongMaterial material = material(NColor.steelblue);
+            PhongMaterial material = material(Color.STEELBLUE);
             Sphere sphere = new Sphere(3);
             sphere.setMaterial(material);
             sphere.setCullFace(CullFace.BACK);

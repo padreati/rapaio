@@ -54,10 +54,10 @@ public class Tetrahedron3D extends MeshView {
             3, 7, 4, 8, 5, 3,
             4, 3, 1, 8, 5, 4};
 
-    public Tetrahedron3D(double len) {
+    public Tetrahedron3D(double size) {
         float[] adjustedPoints = new float[points.length];
         for (int i = 0; i < points.length; i++) {
-            adjustedPoints[i] = (float) (points[i] * len);
+            adjustedPoints[i] = (float) (points[i] * size);
         }
         TriangleMesh mesh = new TriangleMesh();
         mesh.getPoints().addAll(adjustedPoints);
@@ -66,6 +66,4 @@ public class Tetrahedron3D extends MeshView {
 
         setMesh(mesh);
     }
-
-
 }

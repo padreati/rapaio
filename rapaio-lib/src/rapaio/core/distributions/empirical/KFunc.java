@@ -30,7 +30,7 @@ import rapaio.printer.opt.POpt;
 /**
  * Kernel function used in kernel density estimator
  * <p>
- * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public interface KFunc extends Printable, Serializable {
 

@@ -14,10 +14,13 @@ open module rapaio.experiment {
     requires javafx.graphics;
     requires javafx.swing;
     requires jdk.jdi;
+    requires jogl.all;
+    requires gluegen.rt;
 
     exports rapaio.experiment.fx;
     exports rapaio.experiment.math.linear;
     exports rapaio.experiment.math.linear.base;
     exports rapaio.experiment.math.linear.dense;
     exports rapaio.experiment.math.linear.decomposition;
+    exports rapaio.experiment.fx.snapshot;
 }
