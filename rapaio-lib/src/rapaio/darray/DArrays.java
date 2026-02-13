@@ -3,7 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 - 2025 Aurelian Tutuianu
+ *    Copyright 2013 - 2026 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -25,10 +25,10 @@ import java.util.Collection;
 import java.util.Random;
 
 /**
- * Starting point for working with NArrays in a default manner. All those methods are available also through
- * more customizable methods, working directly with NArray manager instances and types.
+ * Starting point for working with DArrays in a default manner. All those methods are available also through
+ * more customizable methods, working directly with DArray manager instances and types.
  * <p>
- * This class collects shortcut methods for working with default implementation of NArray manager, and it uses double
+ * This class collects shortcut methods for working with default implementation of DArray manager, and it uses double
  * as default type.
  */
 public final class DArrays {

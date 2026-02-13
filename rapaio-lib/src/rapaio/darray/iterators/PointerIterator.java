@@ -3,7 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 - 2025 Aurelian Tutuianu
+ *    Copyright 2013 - 2026 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -24,10 +24,11 @@ package rapaio.darray.iterators;
 import java.util.PrimitiveIterator;
 
 /**
- * Iterator over pointers. A pointer is a unidimensional index into the storage. Each NArray stores its data into
- * a contiguous block of memory.
+ * Iterator over storage pointers. A pointer is a unidimensional index into the storage. Each DArray stores its data into a block of memory
+ * and each stored element can be found at some position from that block of memory.
  * <p>
- * Pointers are used to access the tensor data in a more direct way.
+ * Pointers are used to access the tensor data in a more direct way, but there is no guarantee regarding the order provided by the iterator.
+ * This is also hard to be defined when an DArray has a complex layout.
  * <p>
  * The iterator is backed by a {@link PrimitiveIterator.OfInt}
  */

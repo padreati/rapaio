@@ -3,7 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 - 2025 Aurelian Tutuianu
+ *    Copyright 2013 - 2026 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ public final class EigenDecomposition<N extends Number> implements Serializable 
      */
     public EigenDecomposition(DArray<N> a) {
         if (a.nanCount() > 0) {
-            throw new IllegalArgumentException("NArrays cannot have NaN values.");
+            throw new IllegalArgumentException("DArrays cannot have NaN values.");
         }
         if (a.dim(0) != a.dim(1)) {
             throw new IllegalArgumentException("Only square matrices can have eigen decomposition.");

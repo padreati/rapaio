@@ -3,7 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 - 2025 Aurelian Tutuianu
+ *    Copyright 2013 - 2026 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -100,7 +100,7 @@ public final class Broadcast {
                     t = t.expand(index, shape.dim(-i));
                     continue;
                 }
-                throw new IllegalArgumentException("NArray not compatible for broadcasting.");
+                throw new IllegalArgumentException("DArray not compatible for broadcasting.");
             }
             return t;
         }

@@ -3,7 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 - 2025 Aurelian Tutuianu
+ *    Copyright 2013 - 2026 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -167,7 +167,7 @@ public class DArrayManagerTest {
         }
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> manager.cat(dt, 0, List.of(t1, t4)));
-        assertEquals("NArrays are not valid for concatenation", ex.getMessage());
+        assertEquals("DArrays are not valid for concatenation", ex.getMessage());
     }
 
     <N extends Number> void testStack(DArrayManager manager, DType<N> dt) {
@@ -190,7 +190,7 @@ public class DArrayManagerTest {
         }
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> manager.stack(dt, 0, List.of(t1, t2.t_())));
-        assertEquals("NArrays are not valid for stack, they have to have the same dimensions.", ex.getMessage());
+        assertEquals("DArrays are not valid for stack, they have to have the same dimensions.", ex.getMessage());
     }
 
     <N extends Number> void testSel(DArrayManager manager, DType<N> dt) {

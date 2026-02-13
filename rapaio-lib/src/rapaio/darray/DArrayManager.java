@@ -3,7 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 - 2025 Aurelian Tutuianu
+ *    Copyright 2013 - 2026 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -221,18 +221,18 @@ public abstract class DArrayManager {
     }
 
     /**
-     * Concatenates multiple NArrays along a new axis.
-     * All NArrays must have the same shape. The position of the new axis is between 0 (inclusive)
+     * Concatenates multiple DArrays along a new axis.
+     * All DArrays must have the same shape. The position of the new axis is between 0 (inclusive)
      * and the number of dimensions (inclusive).
      * <p>
-     * The new NArray will have an additional dimension, which is the dimension created during stacking and
+     * The new DArray will have an additional dimension, which is the dimension created during stacking and
      * will have size equal with the number of the stacked arrays.
      * <p>
-     * The new NArray with be stored with default order.
+     * The new DArray with be stored with default order.
      *
      * @param axis    index of the new dimension
-     * @param nArrays NArrays to concatenate
-     * @return new NArray with concatenated data
+     * @param nArrays DArrays to concatenate
+     * @return new DArray with concatenated data
      */
     public final <N extends Number> DArray<N> stack(DType<N> dt, int axis, Collection<? extends DArray<?>> nArrays) {
         return stack(dt, Order.defaultOrder(), axis, nArrays);
@@ -242,7 +242,7 @@ public abstract class DArrayManager {
         var nArrayList = nArrays.stream().toList();
         for (int i = 1; i < nArrayList.size(); i++) {
             if (!nArrayList.get(i - 1).shape().equals(nArrayList.get(i).shape())) {
-                throw new IllegalArgumentException("NArrays are not valid for stack, they have to have the same dimensions.");
+                throw new IllegalArgumentException("DArrays are not valid for stack, they have to have the same dimensions.");
             }
         }
         int[] newDims = new int[nArrayList.getFirst().rank() + 1];
@@ -303,7 +303,7 @@ public abstract class DArrayManager {
             int[] dimsNext = dims.get(i);
             for (int j = 0; j < dimsPrev.length; j++) {
                 if (j != axis && dimsNext[j] != dimsPrev[j]) {
-                    throw new IllegalArgumentException("NArrays are not valid for concatenation");
+                    throw new IllegalArgumentException("DArrays are not valid for concatenation");
                 }
             }
         }

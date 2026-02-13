@@ -3,7 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 - 2025 Aurelian Tutuianu
+ *    Copyright 2013 - 2026 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@
  *
  */
 ///
-/// NArrays are multi-dimensional arrays. A NArray contains indexed numerical data of the same type and is a generalization
+/// DArrays are multi-dimensional arrays. A DArray contains indexed numerical data of the same type and is a generalization
 /// of many linear algebra objects like scalars (arrays with no dimensionality), vectors (1 dimension), matrices (2 dimensions) and so on.
 ///
-/// NArray implementation uses some high level concepts which needs presentation.
+/// DArray implementation uses some high level concepts which needs presentation.
 ///
 /// * *Data type* - defined by [DType][rapaio.darray.DType], describes data types used by arrays and offers low level operations
 /// for working with values like casting, floating point flag, not a number check.
@@ -31,13 +31,13 @@
 /// creating storages from different sources
 /// * *Layout* - presented by [Layout][rapaio.darray.Layout] describes how arrays logically organizes data. The only implementation is
 /// [StrideLayout][rapaio.darray.layout.StrideLayout] which uses the concept of stride array to organize data
-/// * *NArray* - multi dimensional array which offers methods to compute various operations with them. A arrays uses a data storage as
+/// * *DArray* - multi dimensional array which offers methods to compute various operations with them. A arrays uses a data storage as
 /// data layer and encodes a way to perform computations (single vs multi threaded, scalar or vectorized instructions). There are
 /// available only a single implementation of stride array over data storages which uses Java arrays.
-/// * *NArrayManager* - presented by the interface [NArrayManager][rapaio.darray.DArrayManager] handles creation of arrays with a specific computation strategy.
+/// * *DArrayManager* - presented by the interface [DArrayManager][rapaio.darray.DArrayManager] handles creation of arrays with a specific computation strategy.
 /// It has associated a specific implementation of arrays, handles global parameters which customize array computations and it may
 /// also offer operations for array collections.
-/// * *NArrays* - offers a set of operations similar with a array manager, but simplifies access to a default array manager. This
+/// * *DArrays* - offers a set of operations similar with a array manager, but simplifies access to a default array manager. This
 /// can be used when the default array manager is enough, having double as default data type. For parametric usage one can use directly
 /// array managers where they can parametrize the used implementation. In other words this tool trade off the benefit of using a simpler
 /// friendlier API to less customizable behavior.
@@ -47,10 +47,10 @@
 ///
 /// The implementation uses Java generics for some numerical types. The implemented data types are:
 ///
-/// * `DType.BYTE` - `byte`, represented as `NArray<Byte>`
-/// * `DType.INTEGER` - `int`, represented as `NArray<Integer>`
-/// * `DType.FLOAT` - `float`, represented as `NArray<Float>`
-/// * `DType.DOUBLE` - `double`, represented as `NArray<Double>`
+/// * `DType.BYTE` - `byte`, represented as `DArray<Byte>`
+/// * `DType.INTEGER` - `int`, represented as `DArray<Integer>`
+/// * `DType.FLOAT` - `float`, represented as `DArray<Float>`
+/// * `DType.DOUBLE` - `double`, represented as `DArray<Double>`
 ///
 /// ## Storage
 ///
@@ -61,7 +61,7 @@
 /// There are present only two implementations. The base implementation uses natural language arrays for dense data.
 /// The second available implementation abstracts storage for data frames and data variables. This implementation was built in order
 /// to allow using data manipulation operations implemented for arrays directly over data frames and variables, avoiding code
-/// duplication and API. For example a `VarDouble` has a method called `narray()` which creates a `NArray<Double>` over the same data
+/// duplication and API. For example a `VarDouble` has a method called `narray()` which creates a `DArray<Double>` over the same data
 /// as the variable and in-place operations will operate directly on the data stored in the `VarDouble` variable.
 ///
 /// Example:
@@ -72,13 +72,13 @@
 ///     x.narray_().abs_();
 ///     // now all the values in x are positive
 ///
-/// ## NArray Manager
+/// ## DArray Manager
 ///
 /// A array manager encapsulates a strategy for creation of data arrays. Each array manager uses a specific storage factory and offers
-/// methods for creation of NArrays. Creation methods have two variants, one variant uses data type as parameter and the second one
+/// methods for creation of DArrays. Creation methods have two variants, one variant uses data type as parameter and the second one
 /// uses an interface for a specific type. For example a double array with a sequence can be created in two ways, the result being the same:
 ///
-///     NArrayManager manager = NArrayManager.base();
+///     DArrayManager manager = DArrayManager.base();
 ///     Tensor<Double> x = manager.seq(DType.DOUBLE, Shape.of(10, 10));
 ///     Tensor<Double> y = manager.ofDouble().seq(Shape.of(10, 10));
 ///     assert(x.deepEquals(y));

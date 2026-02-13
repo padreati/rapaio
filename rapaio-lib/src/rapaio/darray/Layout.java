@@ -3,7 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 - 2025 Aurelian Tutuianu
+ *    Copyright 2013 - 2026 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -25,14 +25,14 @@ import rapaio.darray.layout.StrideLayout;
 import rapaio.util.NotImplementedException;
 
 /**
- * A layout describes the dimensionality of a NArray and its related properties.
+ * A layout describes the dimensionality of a DArray and its related properties.
  * The interface {@link Layout} does not propose any constraints regarding how the
  * layout is described: dense or sparse, stride or other indexing method.
  */
 public interface Layout {
 
     /**
-     * NArray shape, external dimensions of the NArray.
+     * DArray shape, external dimensions of the DArray.
      *
      * @return shape
      */
@@ -47,15 +47,15 @@ public interface Layout {
     }
 
     /**
-     * Shortcut method for NArray rank obtained from shape. It provides the
+     * Shortcut method for DArray rank obtained from shape. It provides the
      * number of dimensions.
      *
-     * @return NArray rank.
+     * @return DArray rank.
      */
     int rank();
 
     /**
-     * Number of elements contained in NArray. Shortcut method obtained from shape. It is equal with the product of all dimension sizes.
+     * Number of elements contained in DArray. Shortcut method obtained from shape. It is equal with the product of all dimension sizes.
      *
      * @return number of elements
      */

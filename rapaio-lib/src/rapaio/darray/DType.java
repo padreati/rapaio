@@ -3,7 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 - 2025 Aurelian Tutuianu
+ *    Copyright 2013 - 2026 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -26,7 +26,8 @@ import java.util.Objects;
 
 import jdk.incubator.vector.VectorSpecies;
 
-public abstract class DType<N extends Number> {
+public sealed abstract class DType<N extends Number>
+        permits DType.DTypeByte, DType.DTypeInteger, DType.DTypeFloat, DType.DTypeDouble {
 
     public static final DType<Byte> BYTE = new DTypeByte();
     public static final DType<Integer> INTEGER = new DTypeInteger();
@@ -37,19 +38,13 @@ public abstract class DType<N extends Number> {
         if(id == null) {
             throw new IllegalArgumentException("id is null");
         }
-        if(id.equalsIgnoreCase("double")) {
-            return DOUBLE;
-        }
-        if(id.equalsIgnoreCase("float")) {
-            return FLOAT;
-        }
-        if(id.equalsIgnoreCase("int")) {
-            return INTEGER;
-        }
-        if(id.equalsIgnoreCase("byte")) {
-            return BYTE;
-        }
-        throw new IllegalArgumentException("Unknown dtype: " + id);
+        return switch (id.toLowerCase()) {
+            case "byte" -> BYTE;
+            case "int" -> INTEGER;
+            case "float" -> FLOAT;
+            case "double" -> DOUBLE;
+            default -> throw new IllegalArgumentException("Unknown dtype: " + id);
+        };
     }
 
     public enum Id {

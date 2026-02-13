@@ -3,7 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 - 2025 Aurelian Tutuianu
+ *    Copyright 2013 - 2026 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ public class AtomTest {
     public Path tempDir;
 
     @Test
-    void testSerializeNArray() throws IOException {
+    void testSerializeDArray() throws IOException {
 
         Shape shape1 = Shape.of(1, 2, 3);
 

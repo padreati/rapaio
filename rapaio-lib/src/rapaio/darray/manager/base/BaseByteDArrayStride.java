@@ -3,7 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 - 2025 Aurelian Tutuianu
+ *    Copyright 2013 - 2026 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -215,7 +215,7 @@ public final class BaseByteDArrayStride extends AbstractStrideDArray<Byte> {
     @Override
     public DArray<Byte> unary_(DArrayUnaryOp op) {
         if (op.floatingPointOnly() && !dt().floatingPoint()) {
-            throw new IllegalArgumentException("This operation is available only for floating point NArrays.");
+            throw new IllegalArgumentException("This operation is available only for floating point DArrays.");
         }
         op.applyByte(loop, storage);
         return this;
@@ -327,7 +327,7 @@ public final class BaseByteDArrayStride extends AbstractStrideDArray<Byte> {
             return add_((byte) (a * tVal));
         }
         if (!shape().equals(t.shape())) {
-            throw new IllegalArgumentException("NArrays does not have the same shape.");
+            throw new IllegalArgumentException("DArrays does not have the same shape.");
         }
         byte aVal = a;
         var order = layout.storageFastOrder();
@@ -917,7 +917,7 @@ public final class BaseByteDArrayStride extends AbstractStrideDArray<Byte> {
             return a.bmvInternal(b, askOrder);
         }
         throw new IllegalArgumentException(String.format(
-                "NArrays are not valid for batch matrix vector multiplication (bm : %s, bv = %s)", shape(), other.shape()));
+                "DArrays are not valid for batch matrix vector multiplication (bm : %s, bv = %s)", shape(), other.shape()));
     }
 
     private DArray<Byte> bmvInternal(DArray<?> other, Order askOrder) {
@@ -970,7 +970,7 @@ public final class BaseByteDArrayStride extends AbstractStrideDArray<Byte> {
             return a.bvtmInternal(b, askOrder);
         }
         throw new IllegalArgumentException(String.format(
-                "NArrays are not valid for batch vector transpose matrix multiplication (bv : %s, bm = %s)", shape(), other.shape()));
+                "DArrays are not valid for batch vector transpose matrix multiplication (bv : %s, bm = %s)", shape(), other.shape()));
     }
 
     private DArray<Byte> bvtmInternal(DArray<?> other, Order askOrder) {
@@ -1103,7 +1103,7 @@ public final class BaseByteDArrayStride extends AbstractStrideDArray<Byte> {
             return bmmInternal(other, askOrder);
         }
         throw new IllegalArgumentException(String.format(
-                "NArrays are not valid for batch matrix-matrix multiplication (bm1: %s, bm2: %s)", shape(), other.shape()));
+                "DArrays are not valid for batch matrix-matrix multiplication (bm1: %s, bm2: %s)", shape(), other.shape()));
     }
 
     private DArray<Byte> bmmInternal(DArray<?> other, Order askOrder) {

@@ -3,7 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 - 2025 Aurelian Tutuianu
+ *    Copyright 2013 - 2026 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -244,7 +244,7 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
     @Override
     public void externalSort(int[] indices, boolean asc) {
         if (layout.rank() != 1) {
-            throw new IllegalArgumentException("NArray must be flat (have a single dimension).");
+            throw new IllegalArgumentException("DArray must be flat (have a single dimension).");
         }
         for (int index : indices) {
             if (index < 0 || index >= layout.size()) {

@@ -3,7 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 - 2025 Aurelian Tutuianu
+ *    Copyright 2013 - 2026 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -270,7 +270,7 @@ public class DArrayTest {
 
         IllegalArgumentException e =
                 assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(10)).fma(2, g.seq(Shape.of(10, 2))));
-        assertEquals("NArrays does not have the same shape.", e.getMessage());
+        assertEquals("DArrays does not have the same shape.", e.getMessage());
 
         t1 = g.seq(Shape.of(10, 10));
         r = t1.fma(2, g.scalar(g.value(2)));
@@ -719,7 +719,7 @@ public class DArrayTest {
             assertTrue(t1.copy(Order.F).log_().deepEquals(t1.log(Order.F)));
         } else {
             var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).log_());
-            assertEquals("This operation is available only for floating point NArrays.", e.getMessage());
+            assertEquals("This operation is available only for floating point DArrays.", e.getMessage());
         }
 
         if (g.dt().floatingPoint()) {
@@ -730,7 +730,7 @@ public class DArrayTest {
             assertTrue(t1.copy(Order.F).log1p_().deepEquals(t1.log1p(Order.F)));
         } else {
             var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).log1p_());
-            assertEquals("This operation is available only for floating point NArrays.", e.getMessage());
+            assertEquals("This operation is available only for floating point DArrays.", e.getMessage());
         }
 
         if (g.dt().floatingPoint()) {
@@ -741,7 +741,7 @@ public class DArrayTest {
             assertTrue(t1.copy(Order.F).exp_().deepEquals(t1.exp(Order.F)));
         } else {
             var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).exp_());
-            assertEquals("This operation is available only for floating point NArrays.", e.getMessage());
+            assertEquals("This operation is available only for floating point DArrays.", e.getMessage());
         }
 
         if (g.dt().floatingPoint()) {
@@ -752,7 +752,7 @@ public class DArrayTest {
             assertTrue(t1.copy(Order.F).expm1_().deepEquals(t1.expm1(Order.F)));
         } else {
             var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).expm1_());
-            assertEquals("This operation is available only for floating point NArrays.", e.getMessage());
+            assertEquals("This operation is available only for floating point DArrays.", e.getMessage());
         }
 
         if (g.dt().floatingPoint()) {
@@ -764,7 +764,7 @@ public class DArrayTest {
             assertTrue(t1.copy(Order.F).sin_().deepEquals(t1.sin(Order.F)));
         } else {
             var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).sin_());
-            assertEquals("This operation is available only for floating point NArrays.", e.getMessage());
+            assertEquals("This operation is available only for floating point DArrays.", e.getMessage());
         }
 
         if (g.dt().floatingPoint()) {
@@ -775,7 +775,7 @@ public class DArrayTest {
             assertTrue(t1.copy(Order.F).asin_().deepEquals(t1.asin(Order.F)));
         } else {
             var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).asin_());
-            assertEquals("This operation is available only for floating point NArrays.", e.getMessage());
+            assertEquals("This operation is available only for floating point DArrays.", e.getMessage());
         }
 
         if (g.dt().floatingPoint()) {
@@ -786,7 +786,7 @@ public class DArrayTest {
             assertTrue(t1.copy(Order.F).sinh_().deepEquals(t1.sinh(Order.F)));
         } else {
             var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).sinh_());
-            assertEquals("This operation is available only for floating point NArrays.", e.getMessage());
+            assertEquals("This operation is available only for floating point DArrays.", e.getMessage());
         }
 
         if (g.dt().floatingPoint()) {
@@ -797,7 +797,7 @@ public class DArrayTest {
             assertTrue(t1.copy(Order.F).cos_().deepEquals(t1.cos(Order.F)));
         } else {
             var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).cos_());
-            assertEquals("This operation is available only for floating point NArrays.", e.getMessage());
+            assertEquals("This operation is available only for floating point DArrays.", e.getMessage());
         }
 
         if (g.dt().floatingPoint()) {
@@ -808,7 +808,7 @@ public class DArrayTest {
             assertTrue(t1.copy(Order.F).acos_().deepEquals(t1.acos(Order.F)));
         } else {
             var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).acos_());
-            assertEquals("This operation is available only for floating point NArrays.", e.getMessage());
+            assertEquals("This operation is available only for floating point DArrays.", e.getMessage());
         }
 
         if (g.dt().floatingPoint()) {
@@ -819,7 +819,7 @@ public class DArrayTest {
             assertTrue(t1.copy(Order.F).cosh_().deepEquals(t1.cosh(Order.F)));
         } else {
             var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).cosh_());
-            assertEquals("This operation is available only for floating point NArrays.", e.getMessage());
+            assertEquals("This operation is available only for floating point DArrays.", e.getMessage());
         }
 
         if (g.dt().floatingPoint()) {
@@ -830,7 +830,7 @@ public class DArrayTest {
             assertTrue(t1.copy(Order.F).tan_().deepEquals(t1.tan(Order.F)));
         } else {
             var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).tan_());
-            assertEquals("This operation is available only for floating point NArrays.", e.getMessage());
+            assertEquals("This operation is available only for floating point DArrays.", e.getMessage());
         }
 
         if (g.dt().floatingPoint()) {
@@ -841,7 +841,7 @@ public class DArrayTest {
             assertTrue(t1.copy(Order.F).atan_().deepEquals(t1.atan(Order.F)));
         } else {
             var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).atan_());
-            assertEquals("This operation is available only for floating point NArrays.", e.getMessage());
+            assertEquals("This operation is available only for floating point DArrays.", e.getMessage());
         }
 
         if (g.dt().floatingPoint()) {
@@ -852,7 +852,7 @@ public class DArrayTest {
             assertTrue(t1.copy(Order.F).tanh_().deepEquals(t1.tanh(Order.F)));
         } else {
             var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).tanh_());
-            assertEquals("This operation is available only for floating point NArrays.", e.getMessage());
+            assertEquals("This operation is available only for floating point DArrays.", e.getMessage());
         }
     }
 
@@ -1002,10 +1002,10 @@ public class DArrayTest {
     @MethodSource("dataFactorySource")
     <N extends Number> void testBmvInvalid(DataFactory<N> g) {
         var e = assertThrows(IllegalArgumentException.class, () -> g.zeros(Shape.of(3, 2, 1)).bmv(g.zeros(Shape.of(2))));
-        assertEquals("NArrays are not valid for batch matrix vector multiplication (bm : Shape: [3,2,1], bv = Shape: [2])", e.getMessage());
+        assertEquals("DArrays are not valid for batch matrix vector multiplication (bm : Shape: [3,2,1], bv = Shape: [2])", e.getMessage());
 
         e = assertThrows(IllegalArgumentException.class, () -> g.zeros(Shape.of(3, 4)).bmv(g.zeros(Shape.of(2, 2))));
-        assertEquals("NArrays are not valid for batch matrix vector multiplication (bm : Shape: [3,4], bv = Shape: [2,2])", e.getMessage());
+        assertEquals("DArrays are not valid for batch matrix vector multiplication (bm : Shape: [3,4], bv = Shape: [2,2])", e.getMessage());
     }
 
     @ParameterizedTest
@@ -1106,11 +1106,11 @@ public class DArrayTest {
     @MethodSource("dataFactorySource")
     <N extends Number> void testBvtmInvalid(DataFactory<N> g) {
         var e = assertThrows(IllegalArgumentException.class, () -> g.zeros(Shape.of(3, 2, 1)).bvtm(g.zeros(Shape.of(2))));
-        assertEquals("NArrays are not valid for batch vector transpose matrix multiplication (bv : Shape: [3,2,1], bm = Shape: [2])",
+        assertEquals("DArrays are not valid for batch vector transpose matrix multiplication (bv : Shape: [3,2,1], bm = Shape: [2])",
                 e.getMessage());
 
         e = assertThrows(IllegalArgumentException.class, () -> g.zeros(Shape.of(3, 4)).bvtm(g.zeros(Shape.of(2, 2))));
-        assertEquals("NArrays are not valid for batch vector transpose matrix multiplication (bv : Shape: [3,4], bm = Shape: [2,2])",
+        assertEquals("DArrays are not valid for batch vector transpose matrix multiplication (bv : Shape: [3,4], bm = Shape: [2,2])",
                 e.getMessage());
     }
 
@@ -1232,10 +1232,10 @@ public class DArrayTest {
     @MethodSource("dataFactorySource")
     <N extends Number> void testBmmInvalidInput(DataFactory<N> g) {
         var e = assertThrows(IllegalArgumentException.class, () -> g.zeros(Shape.of()).bmm(g.zeros(Shape.of())));
-        assertEquals("NArrays are not valid for batch matrix-matrix multiplication (bm1: Shape: [], bm2: Shape: [])", e.getMessage());
+        assertEquals("DArrays are not valid for batch matrix-matrix multiplication (bm1: Shape: [], bm2: Shape: [])", e.getMessage());
 
         e = assertThrows(IllegalArgumentException.class, () -> g.zeros(Shape.of(2, 3)).bmm(g.zeros(Shape.of(1))));
-        assertEquals("NArrays are not valid for batch matrix-matrix multiplication (bm1: Shape: [2,3], bm2: Shape: [1])", e.getMessage());
+        assertEquals("DArrays are not valid for batch matrix-matrix multiplication (bm1: Shape: [2,3], bm2: Shape: [1])", e.getMessage());
     }
 
     @ParameterizedTest
@@ -1754,7 +1754,7 @@ public class DArrayTest {
     <N extends Number> void softmaxTest(DataFactory<N> g) {
         if (!g.dt().floatingPoint()) {
             IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(2, 3, 4)).softmax());
-            assertEquals("This operation is available only for floating point NArrays.", ex.getMessage());
+            assertEquals("This operation is available only for floating point DArrays.", ex.getMessage());
             return;
         }
 
