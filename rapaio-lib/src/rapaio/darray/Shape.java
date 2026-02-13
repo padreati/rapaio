@@ -30,7 +30,7 @@ import rapaio.io.atom.SaveAtomHandler;
 import rapaio.util.collection.Ints;
 
 /**
- * Describes the shape of a NDArray. A NDArray is a multidimensional array which stores numbers of the same type.
+ * Describes the shape of a DArray. A DArray is a multidimensional array which stores numbers of the same type.
  * The shape has a number of dimensions described by {@link #rank()} and an array of integers of length
  * equal with the number of dimensions where each integer is a positive number describing the size
  * of that dimension. The size of a dimension must be a positive number.

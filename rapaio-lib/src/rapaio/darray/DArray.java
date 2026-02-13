@@ -70,7 +70,7 @@ import rapaio.util.function.IntIntBiFunction;
  * The elements are logically organized like a hyper cube with a given number of dimensions {@link #rank()}. The size of each
  * dimension is described by a {@link Shape} object and the {@link Layout} describes how the details related
  * with how the elements' indexing.
- *
+ * <p>
  * The default implemented layout is a stride array layout provided by {@link StrideLayout}, but
  * other layouts could be implemented (for example for special matrices or for sparse formats).
  *
@@ -147,6 +147,11 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
         return shape().dim(axis);
     }
 
+    /**
+     * Returns the stride array for the underlying storage. If the layout is not a stride layout, an exception is thrown.
+     *
+     * @return an integer vector which contains the strides
+     */
     public final int[] strides() {
         if (layout() instanceof StrideLayout l) {
             return l.strides();
@@ -154,6 +159,12 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
         throw new OperationNotAvailableException("Layout is not StrideLayout");
     }
 
+    /**
+     * Returns the stride value for the given dimension. If the layout is not a stride layout, an exception is thrown.
+     *
+     * @param axis the dimension for which to get the stride value
+     * @return the stride value for the given axis
+     */
     public final int stride(int axis) {
         if (layout() instanceof StrideLayout l) {
             return l.stride(axis);
@@ -181,7 +192,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     }
 
     /**
-     * A scalar is a darray with no dimensions.
+     * A scalar is a DArray with no dimensions.
      *
      * @return true if the rank is 0
      */
@@ -446,7 +457,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     /**
      * Slices the darray along a given axis. The resulting darrays are narrowed versions of the original one with size given by step.
      * <p>
-     * The last darray in list might have lesser dimension size if step does not divide dimension size exactly.
+     * The last darray in list might have smaller dimension size if step does not divide dimension size exactly.
      * <p>
      * It also may return fewer chunks if the number of requested chunks is greater than the dimension of the axis.
      * The resulting darrays are views over the original one.
@@ -1220,7 +1231,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      * Creates a new darray with values transformed by function {@code fun} with specified order.
      *
      * @param askOrder asked order
-     * @param fun transform function
+     * @param fun      transform function
      * @return new array with transformed values
      */
     public final DArray<N> apply(Order askOrder, Function<N, N> fun) {
@@ -1239,422 +1250,1056 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     // UNARY OPERATIONS
     //------------------
 
+    /**
+     * Applies unary operation to this darray and returns a new darray with result stored in the default ordering.
+     *
+     * @param op unary operator
+     * @return new darray with operation applied
+     */
     public final DArray<N> unary(DArrayUnaryOp op) {
         return copy(Order.defaultOrder()).unary_(op);
     }
 
+    /**
+     * Applies unary operation to this darray and returns a new darray with result stored in the specified ordering.
+     *
+     * @param op    unary operator
+     * @param order storage order
+     * @return new darray with operation applied
+     */
     public final DArray<N> unary(DArrayUnaryOp op, Order order) {
         return copy(order).unary_(op);
     }
 
+    /**
+     * Applies unary operation to this darray in place
+     *
+     * @param op unary operator
+     * @return this darray instance
+     */
     public abstract DArray<N> unary_(DArrayUnaryOp op);
 
+    /**
+     * Applies unary operation to 1d slices of darray, along the specified axis.
+     * Most unary operators has no effect for operations on 1d slices, except for softmax, logsoftmax
+     * and perhaps other. In general if a unary operator operates on 1d slices, it should be applied,
+     * for the other operators like abs or sign, which operate element wise, the result is the same,
+     * but the computation is less efficient.
+     * <p>
+     * The storage order is the default order.
+     *
+     * @param op   unary operator
+     * @param axis axis along which the operation is applied
+     * @return new darray with operation applied on 1d slices
+     */
     public final DArray<N> unary1d(DArrayUnaryOp op, int axis) {
         return copy(Order.defaultOrder()).unary1d_(op, axis);
     }
 
+    /**
+     * Applies unary operation to 1d slices of darray, along the specified axis.
+     * Most unary operators has no effect for operations on 1d slices, except for softmax, logsoftmax
+     * and perhaps other. In general if a unary operator operates on 1d slices, it should be applied,
+     * for the other operators like abs or sign, which operate element wise, the result is the same,
+     * but the computation is less efficient.
+     * <p>
+     * The storage order is the specified one.
+     *
+     * @param op    unary operator
+     * @param axis  axis along which the operator is applied
+     * @param order storage order
+     * @return new darray with operation applied on 1d slices
+     */
     public final DArray<N> unary1d(DArrayUnaryOp op, int axis, Order order) {
         return copy(order).unary1d_(op, axis);
     }
 
+    /**
+     *
+     * Applies in place the unary operation to 1d slices of darray, along the specified axis.
+     * Most unary operators has no effect for operations on 1d slices, except for softmax, logsoftmax
+     * and perhaps other. In general if a unary operator operates on 1d slices, it should be applied,
+     * for the other operators like abs or sign, which operate element wise, the result is the same,
+     * but the computation is less efficient.
+     *
+     * @param op   unary operator
+     * @param axis axis along which the operator is applied
+     * @return this darray instance
+     */
     public abstract DArray<N> unary1d_(DArrayUnaryOp op, int axis);
 
+    /**
+     * Fills all elements with a given value in place.
+     *
+     * @param value value used to fill
+     * @return this darray instance
+     */
     public final DArray<N> fill_(N value) {
         return unary_(DArrayOp.unaryFill(value));
     }
 
+    /**
+     * Fills all elements with a given value in place.
+     *
+     * @param value value used to fill
+     * @return this darray instance
+     */
     public final DArray<N> fill_(int value) {
         return unary_(DArrayOp.unaryFill(value));
     }
 
+    /**
+     * Fills all elements with a given value in place.
+     *
+     * @param value value used to fill
+     * @return this darray instance
+     */
     public final DArray<N> fill_(double value) {
         return unary_(DArrayOp.unaryFill(value));
     }
 
+    /**
+     * Replaces NaN values with the specified value in place.
+     *
+     * @param value replacement value
+     * @return this darray instance
+     */
     public final DArray<N> fillNan_(N value) {
         return unary_(DArrayOp.unaryFillNan(value));
     }
 
+    /**
+     * Replaces NaN values with the specified value in place.
+     *
+     * @param value replacement value
+     * @return this darray instance
+     */
     public final DArray<N> fillNan_(int value) {
         return unary_(DArrayOp.unaryFillNan(value));
     }
 
+    /**
+     * Replaces NaN values with the specified value in place.
+     *
+     * @param value replacement value
+     * @return this darray instance
+     */
     public final DArray<N> fillNan_(double value) {
         return unary_(DArrayOp.unaryFillNan(value));
     }
 
+    /**
+     * Replaces NaN, negative infinity, and positive infinity with the specified value in place.
+     *
+     * @param fill replacement value for all special values
+     * @return this darray instance
+     */
     public final DArray<N> nanToNum_(N fill) {
         return unary_(DArrayOp.unaryNanToNum(fill, fill, fill));
     }
 
+    /**
+     * Replaces NaN, negative infinity, and positive infinity with the specified value in place.
+     *
+     * @param fill replacement value for all special values
+     * @return this darray instance
+     */
     public final DArray<N> nanToNum_(int fill) {
         return unary_(DArrayOp.unaryNanToNum(fill, fill, fill));
     }
 
+    /**
+     * Replaces NaN, negative infinity, and positive infinity with the specified value in place.
+     *
+     * @param fill replacement value for all special values
+     * @return this darray instance
+     */
     public final DArray<N> nanToNum_(double fill) {
         return unary_(DArrayOp.unaryNanToNum(fill, fill, fill));
     }
 
+    /**
+     * Replaces NaN, negative infinity, and positive infinity with specified values in place.
+     *
+     * @param nan    replacement value for NaN
+     * @param negInf replacement value for negative infinity
+     * @param posInf replacement value for positive infinity
+     * @return this darray instance
+     */
     public final DArray<N> nanToNum_(N nan, N negInf, N posInf) {
         return unary_(DArrayOp.unaryNanToNum(nan, negInf, posInf));
     }
 
+    /**
+     * Replaces NaN, negative infinity, and positive infinity with specified values in place.
+     *
+     * @param nan    replacement value for NaN
+     * @param negInf replacement value for negative infinity
+     * @param posInf replacement value for positive infinity
+     * @return this darray instance
+     */
     public final DArray<N> nanToNum_(int nan, int negInf, int posInf) {
         return unary_(DArrayOp.unaryNanToNum(nan, negInf, posInf));
     }
 
+    /**
+     * Replaces NaN, negative infinity, and positive infinity with specified values in place.
+     *
+     * @param nan    replacement value for NaN
+     * @param negInf replacement value for negative infinity
+     * @param posInf replacement value for positive infinity
+     * @return this darray instance
+     */
     public final DArray<N> nanToNum_(double nan, double negInf, double posInf) {
         return unary_(DArrayOp.unaryNanToNum(nan, negInf, posInf));
     }
 
+    /**
+     * Creates a comparison mask in place where elements matching the comparison are set to 1, others to 0.
+     *
+     * @param cmp   comparison operator
+     * @param value comparison value
+     * @return this darray instance
+     */
     public final DArray<N> compareMask_(Compare cmp, N value) {
         return unary_(DArrayOp.unaryOpCompareMask(cmp, value));
     }
 
+    /**
+     * Creates a comparison mask in place where elements matching the comparison are set to 1, others to 0.
+     *
+     * @param cmp   comparison operator
+     * @param value comparison value
+     * @return this darray instance
+     */
     public final DArray<N> compareMask_(Compare cmp, int value) {
         return unary_(DArrayOp.unaryOpCompareMask(cmp, value));
     }
 
+    /**
+     * Creates a comparison mask in place where elements matching the comparison are set to 1, others to 0.
+     *
+     * @param cmp   comparison operator
+     * @param value comparison value
+     * @return this darray instance
+     */
     public final DArray<N> compareMask_(Compare cmp, double value) {
         return unary_(DArrayOp.unaryOpCompareMask(cmp, value));
     }
 
+    /**
+     * Clamps values between min and max with default order.
+     *
+     * @param min minimum value
+     * @param max maximum value
+     * @return new darray with clamped values
+     */
     public final DArray<N> clamp(N min, N max) {
         return unary(DArrayOp.unaryClamp(dt(), min, max));
     }
 
+    /**
+     * Clamps values between min and max with default order.
+     *
+     * @param min minimum value
+     * @param max maximum value
+     * @return new darray with clamped values
+     */
     public final DArray<N> clamp(int min, int max) {
         return unary(DArrayOp.unaryClamp(dt(), dt().cast(min), dt().cast(max)));
     }
 
+    /**
+     * Clamps values between min and max with default order.
+     *
+     * @param min minimum value
+     * @param max maximum value
+     * @return new darray with clamped values
+     */
     public final DArray<N> clamp(double min, double max) {
         return unary(DArrayOp.unaryClamp(dt(), dt().cast(min), dt().cast(max)));
     }
 
+    /**
+     * Clamps values between min and max with specified order.
+     *
+     * @param order storage order
+     * @param min   minimum value
+     * @param max   maximum value
+     * @return new darray with clamped values
+     */
     public final DArray<N> clamp(Order order, N min, N max) {
         return unary(DArrayOp.unaryClamp(dt(), min, max), order);
     }
 
+    /**
+     * Clamps values between min and max with specified order.
+     *
+     * @param order storage order
+     * @param min   minimum value
+     * @param max   maximum value
+     * @return new darray with clamped values
+     */
     public final DArray<N> clamp(Order order, int min, int max) {
         return unary(DArrayOp.unaryClamp(dt(), dt().cast(min), dt().cast(max)), order);
     }
 
+    /**
+     * Clamps values between min and max with specified order.
+     *
+     * @param order storage order
+     * @param min   minimum value
+     * @param max   maximum value
+     * @return new darray with clamped values
+     */
     public final DArray<N> clamp(Order order, double min, double max) {
         return unary(DArrayOp.unaryClamp(dt(), dt().cast(min), dt().cast(max)), order);
     }
 
+    /**
+     * Clamps values between min and max in place.
+     *
+     * @param min minimum value
+     * @param max maximum value
+     * @return this darray instance
+     */
     public final DArray<N> clamp_(N min, N max) {
         return unary_(DArrayOp.unaryClamp(dt(), min, max));
     }
 
+    /**
+     * Rounds values to nearest integer with default order.
+     *
+     * @return new darray with rounded values
+     */
     public final DArray<N> rint() {
         return unary(DArrayOp.unaryRint());
     }
 
+    /**
+     * Rounds values to nearest integer with specified order.
+     *
+     * @param order storage order
+     * @return new darray with rounded values
+     */
     public final DArray<N> rint(Order order) {
         return unary(DArrayOp.unaryRint(), order);
     }
 
+    /**
+     * Rounds values to nearest integer in place.
+     *
+     * @return this darray instance
+     */
     public final DArray<N> rint_() {
         return unary_(DArrayOp.unaryRint());
     }
 
+    /**
+     * Rounds values up to nearest integer bigger or equal than the value with default storage order.
+     *
+     * @return new darray with ceiling values
+     */
     public final DArray<N> ceil() {
         return unary(DArrayOp.unaryCeil());
     }
 
+    /**
+     * Rounds values up to nearest integer bigger or equal than the value with specified storage order.
+     *
+     * @param order storage order
+     * @return new darray with ceiling values
+     */
     public final DArray<N> ceil(Order order) {
         return unary(DArrayOp.unaryCeil(), order);
     }
 
+    /**
+     * Rounds values up to nearest integer bigger  in place.
+     *
+     * @return this darray instance
+     */
     public final DArray<N> ceil_() {
         return unary_(DArrayOp.unaryCeil());
     }
 
+    /**
+     * Rounds values down to nearest lesser integer with default order.
+     *
+     * @return new darray with floor values
+     */
     public final DArray<N> floor() {
         return unary(DArrayOp.unaryFloor());
     }
 
+    /**
+     * Rounds values down to nearest lesser integer with specified order.
+     *
+     * @param order storage order
+     * @return new darray with floor values
+     */
     public final DArray<N> floor(Order order) {
         return unary(DArrayOp.unaryFloor(), order);
     }
 
+    /**
+     * Rounds values down to nearest lesser integer in place.
+     *
+     * @return this darray instance
+     */
     public final DArray<N> floor_() {
         return unary_(DArrayOp.unaryFloor());
     }
 
+    /**
+     * Computes absolute values with default order.
+     *
+     * @return new darray with absolute values
+     */
     public final DArray<N> abs() {
         return unary(DArrayOp.unaryAbs());
     }
 
+    /**
+     * Computes absolute values with specified order.
+     *
+     * @param order storage order
+     * @return new darray with absolute values
+     */
     public final DArray<N> abs(Order order) {
         return unary(DArrayOp.unaryAbs(), order);
     }
 
+    /**
+     * Computes absolute values in place.
+     *
+     * @return this darray instance
+     */
     public final DArray<N> abs_() {
         return unary_(DArrayOp.unaryAbs());
     }
 
+    /**
+     * Negates values with default order.
+     *
+     * @return new darray with negated values
+     */
     public final DArray<N> neg() {
         return unary(DArrayOp.unaryNeg());
     }
 
+    /**
+     * Negates values with specified order.
+     *
+     * @param order storage order
+     * @return new darray with negated values
+     */
     public final DArray<N> neg(Order order) {
         return unary(DArrayOp.unaryNeg(), order);
     }
 
+    /**
+     * Negates values in place.
+     *
+     * @return this darray instance
+     */
     public final DArray<N> neg_() {
         return unary_(DArrayOp.unaryNeg());
     }
 
+    /**
+     * Computes natural logarithm with default order.
+     *
+     * @return new darray with logarithm values
+     */
     public final DArray<N> log() {
         return unary(DArrayOp.unaryLog());
     }
 
+    /**
+     * Computes natural logarithm with specified order.
+     *
+     * @param order storage order
+     * @return new darray with logarithm values
+     */
     public final DArray<N> log(Order order) {
         return unary(DArrayOp.unaryLog(), order);
     }
 
+    /**
+     * Computes natural logarithm in place.
+     *
+     * @return this darray instance
+     */
     public final DArray<N> log_() {
         return unary_(DArrayOp.unaryLog());
     }
 
+    /**
+     * Computes natural logarithm of (1 + x) with default order.
+     *
+     * @return new darray with log1p values
+     */
     public final DArray<N> log1p() {
         return unary(DArrayOp.unaryLog1p());
     }
 
+    /**
+     * Computes natural logarithm of (1 + x) with specified order.
+     *
+     * @param order storage order
+     * @return new darray with log1p values
+     */
     public final DArray<N> log1p(Order order) {
         return unary(DArrayOp.unaryLog1p(), order);
     }
 
+    /**
+     * Computes natural logarithm of (1 + x) in place.
+     *
+     * @return this darray instance
+     */
     public final DArray<N> log1p_() {
         return unary_(DArrayOp.unaryLog1p());
     }
 
+    /**
+     * Computes exponential with default order.
+     *
+     * @return new darray with exponential values
+     */
     public final DArray<N> exp() {
         return unary(DArrayOp.unaryExp());
     }
 
+    /**
+     * Computes exponential with specified order.
+     *
+     * @param order storage order
+     * @return new darray with exponential values
+     */
     public final DArray<N> exp(Order order) {
         return unary(DArrayOp.unaryExp(), order);
     }
 
+    /**
+     * Computes exponential in place.
+     *
+     * @return this darray instance
+     */
     public final DArray<N> exp_() {
         return unary_(DArrayOp.unaryExp());
     }
 
+    /**
+     * Computes exp(x) - 1 with default order.
+     *
+     * @return new darray with expm1 values
+     */
     public final DArray<N> expm1() {
         return unary(DArrayOp.unaryExpm1());
     }
 
+    /**
+     * Computes exp(x) - 1 with specified order.
+     *
+     * @param order storage order
+     * @return new darray with expm1 values
+     */
     public final DArray<N> expm1(Order order) {
         return unary(DArrayOp.unaryExpm1(), order);
     }
 
+    /**
+     * Computes exp(x) - 1 in place.
+     *
+     * @return this darray instance
+     */
     public final DArray<N> expm1_() {
         return unary_(DArrayOp.unaryExpm1());
     }
 
+    /**
+     * Computes sine with default order.
+     *
+     * @return new darray with sine values
+     */
     public final DArray<N> sin() {
         return unary(DArrayOp.unarySin());
     }
 
+    /**
+     * Computes sine with specified order.
+     *
+     * @param order storage order
+     * @return new darray with sine values
+     */
     public final DArray<N> sin(Order order) {
         return unary(DArrayOp.unarySin(), order);
     }
 
+    /**
+     * Computes sine in place.
+     *
+     * @return this darray instance
+     */
     public final DArray<N> sin_() {
         return unary_(DArrayOp.unarySin());
     }
 
+    /**
+     * Computes arcsine with default order.
+     *
+     * @return new darray with arcsine values
+     */
     public final DArray<N> asin() {
         return unary(DArrayOp.unaryAsin());
     }
 
+    /**
+     * Computes arcsine with specified order.
+     *
+     * @param order storage order
+     * @return new darray with arcsine values
+     */
     public final DArray<N> asin(Order order) {
         return unary(DArrayOp.unaryAsin(), order);
     }
 
+    /**
+     * Computes arcsine in place.
+     *
+     * @return this darray instance
+     */
     public final DArray<N> asin_() {
         return unary_(DArrayOp.unaryAsin());
     }
 
+    /**
+     * Computes hyperbolic sine with default order.
+     *
+     * @return new darray with hyperbolic sine values
+     */
     public final DArray<N> sinh() {
         return unary(DArrayOp.unarySinh());
     }
 
+    /**
+     * Computes hyperbolic sine with specified order.
+     *
+     * @param order storage order
+     * @return new darray with hyperbolic sine values
+     */
     public final DArray<N> sinh(Order order) {
         return unary(DArrayOp.unarySinh(), order);
     }
 
+    /**
+     * Computes hyperbolic sine in place.
+     *
+     * @return this darray instance
+     */
     public final DArray<N> sinh_() {
         return unary_(DArrayOp.unarySinh());
     }
 
+    /**
+     * Computes cosine with default order.
+     *
+     * @return new darray with cosine values
+     */
     public final DArray<N> cos() {
         return unary(DArrayOp.unaryCos());
     }
 
+    /**
+     * Computes cosine with specified order.
+     *
+     * @param order storage order
+     * @return new darray with cosine values
+     */
     public final DArray<N> cos(Order order) {
         return unary(DArrayOp.unaryCos(), order);
     }
 
+    /**
+     * Computes cosine in place.
+     *
+     * @return this darray instance
+     */
     public final DArray<N> cos_() {
         return unary_(DArrayOp.unaryCos());
     }
 
+    /**
+     * Computes arccosine with default order.
+     *
+     * @return new darray with arccosine values
+     */
     public final DArray<N> acos() {
         return unary(DArrayOp.unaryAcos());
     }
 
+    /**
+     * Computes arccosine with specified order.
+     *
+     * @param order storage order
+     * @return new darray with arccosine values
+     */
     public final DArray<N> acos(Order order) {
         return unary(DArrayOp.unaryAcos(), order);
     }
 
+    /**
+     * Computes arccosine in place.
+     *
+     * @return this darray instance
+     */
     public final DArray<N> acos_() {
         return unary_(DArrayOp.unaryAcos());
     }
 
+    /**
+     * Computes hyperbolic cosine with default order.
+     *
+     * @return new darray with hyperbolic cosine values
+     */
     public final DArray<N> cosh() {
         return unary(DArrayOp.unaryCosh());
     }
 
+    /**
+     * Computes hyperbolic cosine with specified order.
+     *
+     * @param order storage order
+     * @return new darray with hyperbolic cosine values
+     */
     public final DArray<N> cosh(Order order) {
         return unary(DArrayOp.unaryCosh(), order);
     }
 
+    /**
+     * Computes hyperbolic cosine in place.
+     *
+     * @return this darray instance
+     */
     public final DArray<N> cosh_() {
         return unary_(DArrayOp.unaryCosh());
     }
 
+    /**
+     * Computes tangent with default order.
+     *
+     * @return new darray with tangent values
+     */
     public final DArray<N> tan() {
         return unary(DArrayOp.unaryTan());
     }
 
+    /**
+     * Computes tangent with specified order.
+     *
+     * @param order storage order
+     * @return new darray with tangent values
+     */
     public final DArray<N> tan(Order order) {
         return unary(DArrayOp.unaryTan(), order);
     }
 
+    /**
+     * Computes tangent in place.
+     *
+     * @return this darray instance
+     */
     public final DArray<N> tan_() {
         return unary_(DArrayOp.unaryTan());
     }
 
+    /**
+     * Computes arctangent with default order.
+     *
+     * @return new darray with arctangent values
+     */
     public final DArray<N> atan() {
         return unary(DArrayOp.unaryAtan());
     }
 
+    /**
+     * Computes arctangent with specified order.
+     *
+     * @param order storage order
+     * @return new darray with arctangent values
+     */
     public final DArray<N> atan(Order order) {
         return unary(DArrayOp.unaryAtan(), order);
     }
 
+    /**
+     * Computes arctangent in place.
+     *
+     * @return this darray instance
+     */
     public final DArray<N> atan_() {
         return unary_(DArrayOp.unaryAtan());
     }
 
+    /**
+     * Computes hyperbolic tangent with default order.
+     *
+     * @return new darray with hyperbolic tangent values
+     */
     public final DArray<N> tanh() {
         return unary(DArrayOp.unaryTanh());
     }
 
+    /**
+     * Computes hyperbolic tangent with specified order.
+     *
+     * @param order storage order
+     * @return new darray with hyperbolic tangent values
+     */
     public final DArray<N> tanh(Order order) {
         return unary(DArrayOp.unaryTanh(), order);
     }
 
+    /**
+     * Computes hyperbolic tangent in place.
+     *
+     * @return this darray instance
+     */
     public final DArray<N> tanh_() {
         return unary_(DArrayOp.unaryTanh());
     }
 
+    /**
+     * Computes square with default order.
+     *
+     * @return new darray with squared values
+     */
     public final DArray<N> sqr() {
         return unary(DArrayOp.unarySqr());
     }
 
+    /**
+     * Computes square with specified order.
+     *
+     * @param order storage order
+     * @return new darray with squared values
+     */
     public final DArray<N> sqr(Order order) {
         return unary(DArrayOp.unarySqr(), order);
     }
 
+    /**
+     * Computes square in place.
+     *
+     * @return this darray instance
+     */
     public final DArray<N> sqr_() {
         return unary_(DArrayOp.unarySqr());
     }
 
+    /**
+     * Computes square root with default order.
+     *
+     * @return new darray with square root values
+     */
     public final DArray<N> sqrt() {
         return unary(DArrayOp.unarySqrt());
     }
 
+    /**
+     * Computes square root with specified order.
+     *
+     * @param order storage order
+     * @return new darray with square root values
+     */
     public final DArray<N> sqrt(Order order) {
         return unary(DArrayOp.unarySqrt(), order);
     }
 
+    /**
+     * Computes square root in place.
+     *
+     * @return this darray instance
+     */
     public final DArray<N> sqrt_() {
         return unary_(DArrayOp.unarySqrt());
     }
 
+    /**
+     * Raises values to specified power with default order.
+     *
+     * @param power exponent value
+     * @return new darray with power values
+     */
     public final DArray<N> pow(double power) {
         return unary(DArrayOp.unaryPow(power));
     }
 
+    /**
+     * Raises values to specified power with specified order.
+     *
+     * @param order storage order
+     * @param power exponent value
+     * @return new darray with power values
+     */
     public final DArray<N> pow(Order order, double power) {
         return unary(DArrayOp.unaryPow(power), order);
     }
 
+    /**
+     * Raises values to specified power in place.
+     *
+     * @param power exponent value
+     * @return this darray instance
+     */
     public final DArray<N> pow_(double power) {
         return unary_(DArrayOp.unaryPow(power));
     }
 
+    /**
+     * Applies sigmoid function with default order.
+     *
+     * @return new darray with sigmoid values
+     */
     public final DArray<N> sigmoid() {
         return unary(DArrayOp.unarySigmoid());
     }
 
+    /**
+     * Applies sigmoid function with specified order.
+     *
+     * @param order storage order
+     * @return new darray with sigmoid values
+     */
     public final DArray<N> sigmoid(Order order) {
         return unary(DArrayOp.unarySigmoid(), order);
     }
 
+    /**
+     * Applies sigmoid function in place.
+     *
+     * @return this darray instance
+     */
     public final DArray<N> sigmoid_() {
         return unary_(DArrayOp.unarySigmoid());
     }
 
+    /**
+     * Applies softmax function with default order.
+     *
+     * @return new darray with softmax values
+     */
     public final DArray<N> softmax() {
         return unary(DArrayOp.unarySoftmax());
     }
 
+    /**
+     * Applies softmax function with specified order.
+     *
+     * @param order storage order
+     * @return new darray with softmax values
+     */
     public final DArray<N> softmax(Order order) {
         return unary(DArrayOp.unarySoftmax(), order);
     }
 
+    /**
+     * Applies softmax function in place.
+     *
+     * @return this darray instance
+     */
     public final DArray<N> softmax_() {
         return unary_(DArrayOp.unarySoftmax());
     }
 
+    /**
+     * Applies softmax function along specified axis with default order.
+     *
+     * @param axis axis along which softmax is applied
+     * @return new darray with softmax values
+     */
     public final DArray<N> softmax1d(int axis) {
         return softmax1d(axis, Order.defaultOrder());
     }
 
+    /**
+     * Applies softmax function along specified axis with specified order.
+     *
+     * @param axis     axis along which softmax is applied
+     * @param askOrder storage order
+     * @return new darray with softmax values
+     */
     public final DArray<N> softmax1d(int axis, Order askOrder) {
         return copy(askOrder).softmax1d_(axis);
     }
 
+    /**
+     * Applies softmax function along specified axis in place.
+     *
+     * @param axis axis along which softmax is applied
+     * @return this darray instance
+     */
     public final DArray<N> softmax1d_(int axis) {
         return unary1d_(DArrayOp.unarySoftmax(), axis);
     }
 
+    /**
+     * Applies log-softmax function with default order.
+     *
+     * @return new darray with log-softmax values
+     */
     public final DArray<N> logsoftmax() {
         return unary(DArrayOp.unaryLogSoftmax());
     }
 
+    /**
+     * Applies log-softmax function with specified order.
+     *
+     * @param order storage order
+     * @return new darray with log-softmax values
+     */
     public final DArray<N> logsoftmax(Order order) {
         return unary(DArrayOp.unaryLogSoftmax(), order);
     }
 
+    /**
+     * Applies log-softmax function in place.
+     *
+     * @return this darray instance
+     */
     public final DArray<N> logsoftmax_() {
         return unary_(DArrayOp.unaryLogSoftmax());
     }
 
+    /**
+     * Applies log-softmax function along specified axis with default order.
+     *
+     * @param axis axis along which log-softmax is applied
+     * @return new darray with log-softmax values
+     */
     public final DArray<N> logsoftmax1d(int axis) {
         return logsoftmax1d(axis, Order.defaultOrder());
     }
 
+    /**
+     * Applies log-softmax function along specified axis with specified order.
+     *
+     * @param axis     axis along which log-softmax is applied
+     * @param askOrder storage order
+     * @return new darray with log-softmax values
+     */
     public final DArray<N> logsoftmax1d(int axis, Order askOrder) {
         return copy(askOrder).logsoftmax1d_(axis);
     }
 
+    /**
+     * Applies log-softmax function along specified axis in place.
+     *
+     * @param axis axis along which log-softmax is applied
+     * @return this darray instance
+     */
     public final DArray<N> logsoftmax1d_(int axis) {
         return unary1d_(DArrayOp.unaryLogSoftmax(), axis);
     }
@@ -1662,6 +2307,14 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
 
     //--------- BINARY OPERATIONS ----------------//
 
+    /**
+     * Applies binary operation element-wise with another darray and returns result with specified order.
+     *
+     * @param op    binary operator
+     * @param other second operand darray
+     * @param order storage order
+     * @return new darray with operation result
+     */
     public final DArray<N> binary(DArrayBinaryOp op, DArray<?> other, Order order) {
         // TODO: research optimization
         Broadcast.ElementWise broadcast = Broadcast.elementWise(List.of(this.shape(), other.shape()));
@@ -1673,242 +2326,636 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
         return copy.binary_(op, broadcast.transform(other));
     }
 
+    /**
+     * Applies binary operation element-wise with another darray in place.
+     *
+     * @param op    binary operator
+     * @param value second operand darray
+     * @return this darray instance
+     */
     public abstract DArray<N> binary_(DArrayBinaryOp op, DArray<?> value);
 
+    /**
+     * Applies binary operation element-wise with a scalar value and returns result with specified order.
+     *
+     * @param op    binary operator
+     * @param value scalar value
+     * @param order storage order
+     * @return new darray with operation result
+     */
     public final <M extends Number> DArray<N> binary(DArrayBinaryOp op, M value, Order order) {
         return copy(order).binary_(op, value);
     }
 
+    /**
+     * Applies binary operation element-wise with a scalar value in place.
+     *
+     * @param op    binary operator
+     * @param value scalar value
+     * @return this darray instance
+     */
     public abstract <M extends Number> DArray<N> binary_(DArrayBinaryOp op, M value);
 
+    /**
+     * Adds another darray element-wise with default order.
+     *
+     * @param array second operand
+     * @return new darray with sum
+     */
     public final DArray<N> add(DArray<?> array) {
         return binary(DArrayOp.binaryAdd(), array, Order.defaultOrder());
     }
 
+    /**
+     * Adds another darray element-wise with specified order.
+     *
+     * @param array second operand
+     * @param order storage order
+     * @return new darray with sum
+     */
     public final DArray<N> add(DArray<?> array, Order order) {
         return binary(DArrayOp.binaryAdd(), array, order);
     }
 
+    /**
+     * Adds another darray element-wise in place.
+     *
+     * @param array second operand
+     * @return this darray instance
+     */
     public final DArray<N> add_(DArray<?> array) {
         return binary_(DArrayOp.binaryAdd(), array);
     }
 
+    /**
+     * Subtracts another darray element-wise with default order.
+     *
+     * @param array second operand
+     * @return new darray with difference
+     */
     public final DArray<N> sub(DArray<?> array) {
         return binary(DArrayOp.binarySub(), array, Order.defaultOrder());
     }
 
+    /**
+     * Subtracts another darray element-wise with specified order.
+     *
+     * @param array second operand
+     * @param order storage order
+     * @return new darray with difference
+     */
     public final DArray<N> sub(DArray<?> array, Order order) {
         return binary(DArrayOp.binarySub(), array, order);
     }
 
+    /**
+     * Subtracts another darray element-wise in place.
+     *
+     * @param array second operand
+     * @return this darray instance
+     */
     public final DArray<N> sub_(DArray<?> array) {
         return binary_(DArrayOp.binarySub(), array);
     }
 
+    /**
+     * Multiplies with another darray element-wise with default order.
+     *
+     * @param array second operand
+     * @return new darray with product
+     */
     public final DArray<N> mul(DArray<?> array) {
         return binary(DArrayOp.binaryMul(), array, Order.defaultOrder());
     }
 
+    /**
+     * Multiplies with another darray element-wise with specified order.
+     *
+     * @param array second operand
+     * @param order storage order
+     * @return new darray with product
+     */
     public final DArray<N> mul(DArray<?> array, Order order) {
         return binary(DArrayOp.binaryMul(), array, order);
     }
 
+    /**
+     * Multiplies with another darray element-wise in place.
+     *
+     * @param array second operand
+     * @return this darray instance
+     */
     public final DArray<N> mul_(DArray<?> array) {
         return binary_(DArrayOp.binaryMul(), array);
     }
 
+    /**
+     * Divides by another darray element-wise with default order.
+     *
+     * @param array second operand
+     * @return new darray with quotient
+     */
     public final DArray<N> div(DArray<?> array) {
         return binary(DArrayOp.binaryDiv(), array, Order.defaultOrder());
     }
 
+    /**
+     * Divides by another darray element-wise with specified order.
+     *
+     * @param array second operand
+     * @param order storage order
+     * @return new darray with quotient
+     */
     public final DArray<N> div(DArray<?> array, Order order) {
         return binary(DArrayOp.binaryDiv(), array, order);
     }
 
+    /**
+     * Divides by another darray element-wise in place.
+     *
+     * @param array second operand
+     * @return this darray instance
+     */
     public final DArray<N> div_(DArray<?> array) {
         return binary_(DArrayOp.binaryDiv(), array);
     }
 
+    /**
+     * Computes element-wise minimum with another darray with default order.
+     *
+     * @param array second operand
+     * @return new darray with minimum values
+     */
     public final DArray<N> min(DArray<?> array) {
         return binary(DArrayOp.binaryMin(), array, Order.defaultOrder());
     }
 
+    /**
+     * Computes element-wise minimum with another darray with specified order.
+     *
+     * @param array second operand
+     * @param order storage order
+     * @return new darray with minimum values
+     */
     public final DArray<N> min(DArray<?> array, Order order) {
         return binary(DArrayOp.binaryMin(), array, order);
     }
 
+    /**
+     * Computes element-wise minimum with another darray in place.
+     *
+     * @param array second operand
+     * @return this darray instance
+     */
     public final DArray<N> min_(DArray<?> array) {
         return binary_(DArrayOp.binaryMin(), array);
     }
 
+    /**
+     * Computes element-wise maximum with another darray with default order.
+     *
+     * @param array second operand
+     * @return new darray with maximum values
+     */
     public final DArray<N> max(DArray<?> array) {
         return binary(DArrayOp.binaryMax(), array, Order.defaultOrder());
     }
 
+    /**
+     * Computes element-wise maximum with another darray with specified order.
+     *
+     * @param array second operand
+     * @param order storage order
+     * @return new darray with maximum values
+     */
     public final DArray<N> max(DArray<?> array, Order order) {
         return binary(DArrayOp.binaryMax(), array, order);
     }
 
+    /**
+     * Computes element-wise maximum with another darray in place.
+     *
+     * @param array second operand
+     * @return this darray instance
+     */
     public final DArray<N> max_(DArray<?> array) {
         return binary_(DArrayOp.binaryMax(), array);
     }
 
+    /**
+     * Adds a scalar value with default order.
+     *
+     * @param value scalar value
+     * @return new darray with sum
+     */
     public final DArray<N> add(int value) {
         return binary(DArrayOp.binaryAdd(), value, Order.defaultOrder());
     }
 
+    /**
+     * Adds a scalar value with default order.
+     *
+     * @param value scalar value
+     * @return new darray with sum
+     */
     public final DArray<N> add(double value) {
         return binary(DArrayOp.binaryAdd(), value, Order.defaultOrder());
     }
 
+    /**
+     * Adds a scalar value with specified order.
+     *
+     * @param value scalar value
+     * @param order storage order
+     * @return new darray with sum
+     */
     public final DArray<N> add(int value, Order order) {
         return binary(DArrayOp.binaryAdd(), value, order);
     }
 
+    /**
+     * Adds a scalar value with specified order.
+     *
+     * @param value scalar value
+     * @param order storage order
+     * @return new darray with sum
+     */
     public final DArray<N> add(double value, Order order) {
         return binary(DArrayOp.binaryAdd(), value, order);
     }
 
+    /**
+     * Adds a scalar value in place.
+     *
+     * @param value scalar value
+     * @return this darray instance
+     */
     public final DArray<N> add_(int value) {
         return binary_(DArrayOp.binaryAdd(), value);
     }
 
+    /**
+     * Adds a scalar value in place.
+     *
+     * @param value scalar value
+     * @return this darray instance
+     */
     public final DArray<N> add_(double value) {
         return binary_(DArrayOp.binaryAdd(), value);
     }
 
+    /**
+     * Subtracts a scalar value with default order.
+     *
+     * @param value scalar value
+     * @return new darray with difference
+     */
     public final DArray<N> sub(int value) {
         return binary(DArrayOp.binarySub(), value, Order.defaultOrder());
     }
 
+    /**
+     * Subtracts a scalar value with default order.
+     *
+     * @param value scalar value
+     * @return new darray with difference
+     */
     public final DArray<N> sub(double value) {
         return binary(DArrayOp.binarySub(), value, Order.defaultOrder());
     }
 
+    /**
+     * Subtracts a scalar value with specified order.
+     *
+     * @param value scalar value
+     * @param order storage order
+     * @return new darray with difference
+     */
     public final DArray<N> sub(int value, Order order) {
         return binary(DArrayOp.binarySub(), value, order);
     }
 
+    /**
+     * Subtracts a scalar value with specified order.
+     *
+     * @param value scalar value
+     * @param order storage order
+     * @return new darray with difference
+     */
     public final DArray<N> sub(double value, Order order) {
         return binary(DArrayOp.binarySub(), value, order);
     }
 
+    /**
+     * Subtracts a scalar value in place.
+     *
+     * @param value scalar value
+     * @return this darray instance
+     */
     public final DArray<N> sub_(int value) {
         return binary_(DArrayOp.binarySub(), value);
     }
 
+    /**
+     * Subtracts a scalar value in place.
+     *
+     * @param value scalar value
+     * @return this darray instance
+     */
     public final DArray<N> sub_(double value) {
         return binary_(DArrayOp.binarySub(), value);
     }
 
+    /**
+     * Multiplies by a scalar value with default order.
+     *
+     * @param value scalar value
+     * @return new darray with product
+     */
     public final DArray<N> mul(int value) {
         return binary(DArrayOp.binaryMul(), value, Order.defaultOrder());
     }
 
+    /**
+     * Multiplies by a scalar value with default order.
+     *
+     * @param value scalar value
+     * @return new darray with product
+     */
     public final DArray<N> mul(double value) {
         return binary(DArrayOp.binaryMul(), value, Order.defaultOrder());
     }
 
+    /**
+     * Multiplies by a scalar value with specified order.
+     *
+     * @param value scalar value
+     * @param order storage order
+     * @return new darray with product
+     */
     public final DArray<N> mul(int value, Order order) {
         return binary(DArrayOp.binaryMul(), value, order);
     }
 
+    /**
+     * Multiplies by a scalar value with specified order.
+     *
+     * @param value scalar value
+     * @param order storage order
+     * @return new darray with product
+     */
     public final DArray<N> mul(double value, Order order) {
         return binary(DArrayOp.binaryMul(), value, order);
     }
 
+    /**
+     * Multiplies by a scalar value in place.
+     *
+     * @param value scalar value
+     * @return this darray instance
+     */
     public final DArray<N> mul_(int value) {
         return binary_(DArrayOp.binaryMul(), value);
     }
 
+    /**
+     * Multiplies by a scalar value in place.
+     *
+     * @param value scalar value
+     * @return this darray instance
+     */
     public final DArray<N> mul_(double value) {
         return binary_(DArrayOp.binaryMul(), value);
     }
 
+    /**
+     * Divides by a scalar value with default order.
+     *
+     * @param value scalar value
+     * @return new darray with quotient
+     */
     public final DArray<N> div(int value) {
         return binary(DArrayOp.binaryDiv(), value, Order.defaultOrder());
     }
 
+    /**
+     * Divides by a scalar value with default order.
+     *
+     * @param value scalar value
+     * @return new darray with quotient
+     */
     public final DArray<N> div(double value) {
         return binary(DArrayOp.binaryDiv(), value, Order.defaultOrder());
     }
 
+    /**
+     * Divides by a scalar value with specified order.
+     *
+     * @param value scalar value
+     * @param order storage order
+     * @return new darray with quotient
+     */
     public final DArray<N> div(int value, Order order) {
         return binary(DArrayOp.binaryDiv(), value, order);
     }
 
+    /**
+     * Divides by a scalar value with specified order.
+     *
+     * @param value scalar value
+     * @param order storage order
+     * @return new darray with quotient
+     */
     public final DArray<N> div(double value, Order order) {
         return binary(DArrayOp.binaryDiv(), value, order);
     }
 
+    /**
+     * Divides by a scalar value in place.
+     *
+     * @param value scalar value
+     * @return this darray instance
+     */
     public final DArray<N> div_(int value) {
         return binary_(DArrayOp.binaryDiv(), value);
     }
 
+    /**
+     * Divides by a scalar value in place.
+     *
+     * @param value scalar value
+     * @return this darray instance
+     */
     public final DArray<N> div_(double value) {
         return binary_(DArrayOp.binaryDiv(), value);
     }
 
+    /**
+     * Computes element-wise minimum with a scalar value with default order.
+     *
+     * @param value scalar value
+     * @return new darray with minimum values
+     */
     public final DArray<N> min(int value) {
         return binary(DArrayOp.binaryMin(), value, Order.defaultOrder());
     }
 
+    /**
+     * Computes element-wise minimum with a scalar value with default order.
+     *
+     * @param value scalar value
+     * @return new darray with minimum values
+     */
     public final DArray<N> min(double value) {
         return binary(DArrayOp.binaryMin(), value, Order.defaultOrder());
     }
 
+    /**
+     * Computes element-wise minimum with a scalar value with specified order.
+     *
+     * @param value scalar value
+     * @param order storage order
+     * @return new darray with minimum values
+     */
     public final DArray<N> min(int value, Order order) {
         return binary(DArrayOp.binaryMin(), value, order);
     }
 
+    /**
+     * Computes element-wise minimum with a scalar value with specified order.
+     *
+     * @param value scalar value
+     * @param order storage order
+     * @return new darray with minimum values
+     */
     public final DArray<N> min(double value, Order order) {
         return binary(DArrayOp.binaryMin(), value, order);
     }
 
+    /**
+     * Computes element-wise minimum with a scalar value in place.
+     *
+     * @param value scalar value
+     * @return this darray instance
+     */
     public final DArray<N> min_(int value) {
         return binary_(DArrayOp.binaryMin(), value);
     }
 
+    /**
+     * Computes element-wise minimum with a scalar value in place.
+     *
+     * @param value scalar value
+     * @return this darray instance
+     */
     public final DArray<N> min_(double value) {
         return binary_(DArrayOp.binaryMin(), value);
     }
 
+    /**
+     * Computes element-wise maximum with a scalar value with default order.
+     *
+     * @param value scalar value
+     * @return new darray with maximum values
+     */
     public final DArray<N> max(int value) {
         return binary(DArrayOp.binaryMax(), value, Order.defaultOrder());
     }
 
+    /**
+     * Computes element-wise maximum with a scalar value with default order.
+     *
+     * @param value scalar value
+     * @return new darray with maximum values
+     */
     public final DArray<N> max(double value) {
         return binary(DArrayOp.binaryMax(), value, Order.defaultOrder());
     }
 
+    /**
+     * Computes element-wise maximum with a scalar value with specified order.
+     *
+     * @param value scalar value
+     * @param order storage order
+     * @return new darray with maximum values
+     */
     public final DArray<N> max(int value, Order order) {
         return binary(DArrayOp.binaryMax(), value, order);
     }
 
+    /**
+     * Computes element-wise maximum with a scalar value with specified order.
+     *
+     * @param value scalar value
+     * @param order storage order
+     * @return new darray with maximum values
+     */
     public final DArray<N> max(double value, Order order) {
         return binary(DArrayOp.binaryMax(), value, order);
     }
 
+    /**
+     * Computes element-wise maximum with a scalar value in place.
+     *
+     * @param value scalar value
+     * @return this darray instance
+     */
     public final DArray<N> max_(int value) {
         return binary_(DArrayOp.binaryMax(), value);
     }
 
+    /**
+     * Computes element-wise maximum with a scalar value in place.
+     *
+     * @param value scalar value
+     * @return this darray instance
+     */
     public final DArray<N> max_(double value) {
         return binary_(DArrayOp.binaryMax(), value);
     }
 
+    /**
+     * Fused multiply-add: multiplies by scalar and adds darray with default order.
+     *
+     * @param a multiplication factor
+     * @param t darray to add
+     * @return new darray with result
+     */
     public final DArray<N> fma(int a, DArray<?> t) {
         return fma(a, t, Order.defaultOrder());
     }
 
+    /**
+     * Fused multiply-add: multiplies by scalar and adds darray with default order.
+     *
+     * @param a multiplication factor
+     * @param t darray to add
+     * @return new darray with result
+     */
     public final DArray<N> fma(double a, DArray<?> t) {
         return fma(a, t, Order.defaultOrder());
     }
 
+    /**
+     * Fused multiply-add: multiplies by scalar and adds darray with specified order.
+     *
+     * @param a     multiplication factor
+     * @param t     darray to add
+     * @param order storage order
+     * @return new darray with result
+     */
     public final DArray<N> fma(int a, DArray<?> t, Order order) {
         return copy(order).fma_(a, t);
     }
 
+    /**
+     * Fused multiply-add: multiplies by scalar and adds darray with specified order.
+     *
+     * @param a     multiplication factor
+     * @param t     darray to add
+     * @param order storage order
+     * @return new darray with result
+     */
     public final DArray<N> fma(double a, DArray<?> t, Order order) {
         return copy(order).fma_(a, t);
     }
@@ -1922,18 +2969,44 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      */
     public abstract DArray<N> fma_(N factor, DArray<?> t);
 
+    /**
+     * Fused multiply-add in place: multiplies by scalar and adds darray.
+     *
+     * @param factor multiplication factor
+     * @return this darray instance
+     */
     public final DArray<N> fma_(int factor, DArray<?> t) {
         return fma_(dt().cast(factor), t);
     }
 
+    /**
+     * Fused multiply-add in place: multiplies by scalar and adds darray.
+     *
+     * @param factor multiplication factor
+     * @return this darray instance
+     */
     public final DArray<N> fma_(double factor, DArray<?> t) {
         return fma_(dt().cast(factor), t);
     }
 
     //--------- REDUCE OPERATIONS ----------------//
 
+    /**
+     * Applies reduce operation across all elements.
+     *
+     * @param op reduce operator
+     * @return scalar result
+     */
     public abstract N reduce(DArrayReduceOp op);
 
+    /**
+     * Applies reduce operation along specified axis.
+     *
+     * @param op    reduce operator
+     * @param axis  axis to reduce along
+     * @param order storage order
+     * @return darray with reduced dimension
+     */
     public abstract DArray<N> reduce1d(DArrayReduceOp op, int axis, Order order);
 
 
@@ -1961,143 +3034,372 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      */
     public abstract DArray<N> reduceTo(DArrayReduceOp op, Shape targetShape, boolean keepDim, Order order);
 
+    /**
+     * Computes sum of all elements.
+     *
+     * @return sum value
+     */
     public final N sum() {
         return reduce(DArrayOp.reduceSum());
     }
 
+    /**
+     * Computes sum along axis with default storage order.
+     *
+     * @param axis axis to sum along
+     * @return new darray with sums
+     */
     public final DArray<N> sum1d(int axis) {
         return reduce1d(DArrayOp.reduceSum(), axis, Order.defaultOrder());
     }
 
+    /**
+     * Computes sum along axis with specified order.
+     *
+     * @param axis  axis to sum along
+     * @param order storage order
+     * @return new darray with sums
+     */
     public final DArray<N> sum1d(int axis, Order order) {
         return reduce1d(DArrayOp.reduceSum(), axis, order);
     }
 
+    /**
+     * Reduces on specified shape dimensions with default order.
+     *
+     * @param shape   shape to reduce on
+     * @param keepDim keep dimensions if true
+     * @return darray with reduced values
+     */
     public final DArray<N> sumOn(Shape shape, boolean keepDim) {
         return reduceOn(DArrayOp.reduceSum(), shape, keepDim, Order.defaultOrder());
     }
 
+    /**
+     * Reduces on specified shape dimensions with specified order.
+     *
+     * @param shape   shape to reduce on
+     * @param keepDim keep dimensions if true
+     * @param order   storage order
+     * @return darray with reduced values
+     */
     public final DArray<N> sumOn(Shape shape, boolean keepDim, Order order) {
         return reduceOn(DArrayOp.reduceSum(), shape, keepDim, order);
     }
 
+    /**
+     * Reduces to specified target shape with default order.
+     *
+     * @param shape   target shape
+     * @param keepDim keep dimensions if true
+     * @return darray with reduced values
+     */
     public final DArray<N> sumTo(Shape shape, boolean keepDim) {
         return reduceTo(DArrayOp.reduceSum(), shape, keepDim, Order.defaultOrder());
     }
 
+    /**
+     * Reduces to specified target shape with specified order.
+     *
+     * @param shape   target shape
+     * @param keepDim keep dimensions if true
+     * @param order   storage order
+     * @return darray with reduced values
+     */
     public final DArray<N> sumTo(Shape shape, boolean keepDim, Order order) {
         return reduceTo(DArrayOp.reduceSum(), shape, keepDim, order);
     }
 
+    /**
+     * Computes sum ignoring NaN values.
+     *
+     * @return sum value
+     */
     public final N nanSum() {
         return reduce(DArrayOp.reduceNanSum());
     }
 
+    /**
+     * Computes sum along axis ignoring NaN values with default order.
+     *
+     * @param axis axis to sum along
+     * @return darray with sums
+     */
     public final DArray<N> nanSum1d(int axis) {
         return reduce1d(DArrayOp.reduceNanSum(), axis, Order.defaultOrder());
     }
 
+    /**
+     * Computes sum along axis ignoring NaN values with specified order.
+     *
+     * @param axis  axis to sum along
+     * @param order storage order
+     * @return darray with sums
+     */
     public final DArray<N> nanSum1d(int axis, Order order) {
         return reduce1d(DArrayOp.reduceNanSum(), axis, order);
     }
 
+    /**
+     * Computes product of all elements.
+     *
+     * @return product value
+     */
     public final N prod() {
         return reduce(DArrayOp.reduceProd());
     }
 
+    /**
+     * Computes product along specified axis with default order.
+     *
+     * @param axis axis to compute product along
+     * @return darray with products
+     */
     public final DArray<N> prod1d(int axis) {
         return reduce1d(DArrayOp.reduceProd(), axis, Order.defaultOrder());
     }
 
+    /**
+     * Computes product along specified axis with specified order.
+     *
+     * @param axis  axis to compute product along
+     * @param order storage order
+     * @return darray with products
+     */
     public final DArray<N> prod1d(int axis, Order order) {
         return reduce1d(DArrayOp.reduceProd(), axis, order);
     }
 
+    /**
+     * Computes product ignoring NaN values.
+     *
+     * @return product value
+     */
     public final N nanProd() {
         return reduce(DArrayOp.reduceNanProd());
     }
 
+    /**
+     * Computes product along axis ignoring NaN values with default order.
+     *
+     * @param axis axis to compute product along
+     * @return darray with products
+     */
     public final DArray<N> nanProd1d(int axis) {
         return reduce1d(DArrayOp.reduceNanProd(), axis, Order.defaultOrder());
     }
 
+    /**
+     * Computes product along axis ignoring NaN values with specified order.
+     *
+     * @param axis  axis to compute product along
+     * @param order storage order
+     * @return darray with products
+     */
     public final DArray<N> nanProd1d(int axis, Order order) {
         return reduce1d(DArrayOp.reduceNanProd(), axis, order);
     }
 
+    /**
+     * Finds maximum value.
+     *
+     * @return maximum value
+     */
     public final N amax() {
         return reduce(DArrayOp.reduceMax());
     }
 
+    /**
+     * Finds maximum along axis with default order.
+     *
+     * @param axis axis to find maximum along
+     * @return darray with maximum values
+     */
     public final DArray<N> amax1d(int axis) {
         return amax1d(axis, Order.defaultOrder());
     }
 
+    /**
+     * Finds maximum along axis with specified order.
+     *
+     * @param axis  axis to find maximum along
+     * @param order storage order
+     * @return darray with maximum values
+     */
     public final DArray<N> amax1d(int axis, Order order) {
         return reduce1d(DArrayOp.reduceMax(), axis, order);
     }
 
+    /**
+     * Finds maximum value ignoring NaN.
+     *
+     * @return maximum value
+     */
     public final N nanMax() {
         return reduce(DArrayOp.reduceNanMax());
     }
 
+    /**
+     * Finds maximum along axis ignoring NaN with default order.
+     *
+     * @param axis axis to find maximum along
+     * @return darray with maximum values
+     */
     public final DArray<N> nanMax1d(int axis) {
         return reduce1d(DArrayOp.reduceNanMax(), axis, Order.defaultOrder());
     }
 
+    /**
+     * Finds maximum along axis ignoring NaN with specified order.
+     *
+     * @param axis  axis to find maximum along
+     * @param order storage order
+     * @return darray with maximum values
+     */
     public final DArray<N> nanMax1d(int axis, Order order) {
         return reduce1d(DArrayOp.reduceNanMax(), axis, order);
     }
 
+    /**
+     * Finds minimum value.
+     *
+     * @return minimum value
+     */
     public final N amin() {
         return reduce(DArrayOp.reduceMin());
     }
 
+    /**
+     * Finds minimum along axis with default order.
+     *
+     * @param axis axis to find minimum along
+     * @return darray with minimum values
+     */
     public final DArray<N> amin1d(int axis) {
         return reduce1d(DArrayOp.reduceMin(), axis, Order.defaultOrder());
     }
 
+    /**
+     * Finds minimum along axis with specified order.
+     *
+     * @param axis  axis to find minimum along
+     * @param order storage order
+     * @return darray with minimum values
+     */
     public final DArray<N> amin1d(int axis, Order order) {
         return reduce1d(DArrayOp.reduceMin(), axis, order);
     }
 
+    /**
+     * Finds minimum value ignoring NaN.
+     *
+     * @return minimum value
+     */
     public final N nanMin() {
         return reduce(DArrayOp.reduceNanMin());
     }
 
+    /**
+     * Finds minimum along axis ignoring NaN with default order.
+     *
+     * @param axis axis to find minimum along
+     * @return darray with minimum values
+     */
     public final DArray<N> nanMin1d(int axis) {
         return reduce1d(DArrayOp.reduceNanMin(), axis, Order.defaultOrder());
     }
 
+    /**
+     * Finds minimum along axis ignoring NaN with specified order.
+     *
+     * @param axis  axis to find minimum along
+     * @param order storage order
+     * @return darray with minimum values
+     */
     public final DArray<N> nanMin1d(int axis, Order order) {
         return reduce1d(DArrayOp.reduceNanMin(), axis, order);
     }
 
+    /**
+     * Computes mean of all elements.
+     *
+     * @return mean value
+     */
     public final N mean() {
         return reduce(DArrayOp.reduceMean());
     }
 
+    /**
+     * Computes mean along axis with default order.
+     *
+     * @param axis axis to compute mean along
+     * @return darray with mean values
+     */
     public final DArray<N> mean1d(int axis) {
         return reduce1d(DArrayOp.reduceMean(), axis, Order.defaultOrder());
     }
 
+    /**
+     * Computes mean along axis with specified order.
+     *
+     * @param axis  axis to compute mean along
+     * @param order storage order
+     * @return darray with mean values
+     */
     public final DArray<N> mean1d(int axis, Order order) {
         return reduce1d(DArrayOp.reduceMean(), axis, order);
     }
 
+    /**
+     * Computes mean on specified shape with default order. The shape must match last dimensions
+     * of darray and the resulting shape will be the first dimensions of the original darray.
+     *
+     * @param shape   shape to reduce on
+     * @param keepDim keep dimensions if true
+     * @return darray with mean values
+     */
     public final DArray<N> meanOn(Shape shape, boolean keepDim) {
         return reduceOn(DArrayOp.reduceMean(), shape, keepDim, Order.defaultOrder());
     }
 
+    /**
+     * Computes mean on specified shape with specified order. The shape must match last dimensions
+     * of darray and the resulting shape will be the first dimensions of the original darray.
+     * The storage order is the default storage order.
+     *
+     * @param shape   shape to reduce on
+     * @param keepDim keep dimensions if true
+     * @param order   storage order
+     * @return darray with mean values
+     */
     public final DArray<N> meanOn(Shape shape, boolean keepDim, Order order) {
         return reduceOn(DArrayOp.reduceMean(), shape, keepDim, order);
     }
 
-    public final DArray<N> meanAt(Shape shape, boolean keepDim) {
+    /**
+     * Computes mean to a specified target shape with default order. The shape mus match the last dimensions
+     * of the array and the resulting shape will be the first dimensions of the original darray.
+     * The storage order is the default storage order.
+     *
+     * @param shape   shape to reduce to
+     * @param keepDim keep dimensions if true
+     * @return darray with mean values
+     */
+    public final DArray<N> meanTo(Shape shape, boolean keepDim) {
         return reduceTo(DArrayOp.reduceMean(), shape, keepDim, Order.defaultOrder());
     }
 
-    public final DArray<N> meanAt(Shape shape, boolean keepDim, Order order) {
+    /**
+     * Computes mean to a specified target shape with default order. The shape mus match the last dimensions
+     * of the array and the resulting shape will be the first dimensions of the original darray.
+     * The storage order is the specified storage order.
+     *
+     * @param shape   shape to reduce to
+     * @param keepDim keep dimensions if true
+     * @param order   storage order
+     * @return darray with mean values
+     */
+    public final DArray<N> meanTo(Shape shape, boolean keepDim, Order order) {
         return reduceTo(DArrayOp.reduceMean(), shape, keepDim, order);
     }
 
