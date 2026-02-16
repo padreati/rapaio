@@ -3403,55 +3403,181 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
         return reduceTo(DArrayOp.reduceMean(), shape, keepDim, order);
     }
 
+    /**
+     * Computes the mean on all elements ignoring NaN values.
+     *
+     * @return mean value
+     */
     public final N nanMean() {
         return reduce(DArrayOp.reduceNanMean());
     }
 
+    /**
+     * Computes the variance on all elements with the specified difference degree of freedom.
+     * The degree of freedom are computed as {@code N - ddof}, where {@code N} is the number of elements.
+     *
+     * @param ddof difference degree of freedom
+     * @return variance value
+     */
     public final N var(int ddof) {
         return reduce(DArrayOp.reduceVarc(ddof));
     }
 
+    /**
+     * Computes the variance along the given dimension with specified difference degree of freedom.
+     * The degree of freedom are computed as {@code N - ddof}, where {@code N} is the number of elements.
+     * The storage order is the default storage order.
+     *
+     * @param axis axis along which the variance will be computed
+     * @param ddof difference degree of freedom
+     * @return darray with variance values
+     */
     public final DArray<N> var1d(int axis, int ddof) {
         return reduce1d(DArrayOp.reduceVarc(ddof), axis, Order.defaultOrder());
     }
 
+    /**
+     * Computes the variance along the given dimension with specified difference degree of freedom.
+     * The degree of freedom are computed as {@code N - ddof}, where {@code N} is the number of elements.
+     * The storage order is the specified storage order.
+     *
+     * @param axis  axis along which the variance will be computed
+     * @param ddof  difference degree of freedom
+     * @param order storage order
+     * @return darray with variance values
+     */
     public final DArray<N> var1d(int axis, int ddof, Order order) {
         return reduce1d(DArrayOp.reduceVarc(ddof), axis, order);
     }
 
+    /**
+     * Computes the standard deviation over all elements with given difference degree of freedom.
+     * The degree of freedom are computed as {@code N - ddof}, where {@code N} is the number of elements.
+     *
+     * @param ddof difference degree of freedom
+     * @return computed standard deviation value
+     */
     public final N std(int ddof) {
         return dt().cast(Math.sqrt(var(ddof).doubleValue()));
     }
 
+    /**
+     * Computes the standard deviation along the given axis with the specified difference degree of freedom.
+     * The degree of freedom are computed as {@code N - ddof}, where {@code N} is the number of elements.
+     * The storage order is the default storage order.
+     *
+     * @param axis axis along which the standard deviation will be computed
+     * @param ddof difference degree of freedom
+     * @return darray with standard deviation values
+     */
     public final DArray<N> std1d(int axis, int ddof) {
         return var1d(axis, ddof).sqrt_();
     }
 
+    /**
+     * Computes the standard deviation along the given axis with the specified difference degree of freedom.
+     * The degree of freedom are computed as {@code N - ddof}, where {@code N} is the number of elements.
+     * The storage order is the specified storage order.
+     *
+     * @param axis  axis along which the standard deviation will be computed
+     * @param ddof  difference degree of freedom
+     * @param order storage order
+     * @return darray with standard deviation values
+     */
     public final DArray<N> std1d(int axis, int ddof, Order order) {
         return var1d(axis, ddof, order).sqrt_();
     }
 
+    /**
+     * Computes the variance over all elements using a precomputed mean and difference degree of freedom.
+     * The degree of freedom are computed as {@code N - ddof}, where {@code N} is the number of elements.
+     * The storage order is the default storage order.
+     *
+     * @param ddof difference degree of freedom
+     * @param mean precomputed mean
+     * @return variance value
+     */
     public final N var(int ddof, double mean) {
         return reduce(DArrayOp.reduceVarc(ddof, mean));
     }
 
+    /**
+     * Computes the variance along the given axis with the specified difference degree of freedom and darray of precomputed means.
+     * The degree of freedom are computed as {@code N - ddof}, where {@code N} is the number of elements.
+     * The storage order is the default storage order.
+     *
+     * @param axis axis along which the variance is computed
+     * @param ddof difference degree of freedom
+     * @param mean precomputed mean values
+     * @return darray with variance values
+     */
     public final DArray<N> var1d(int axis, int ddof, DArray<?> mean) {
         return var1d(axis, ddof, mean, Order.defaultOrder());
     }
 
+    /**
+     * Computes the variance along the given axis with the specified difference degree of freedom and darray of precomputed means.
+     * The degree of freedom are computed as {@code N - ddof}, where {@code N} is the number of elements.
+     * The storage order is the specified storage order.
+     *
+     * @param axis  axis along which the variance is computed
+     * @param ddof  difference degree of freedom
+     * @param mean  precomputed mean values
+     * @param order storage order
+     * @return darray with variance values
+     */
     public abstract DArray<N> var1d(int axis, int ddof, DArray<?> mean, Order order);
 
+    /**
+     * Compute variance on specified shape with default storage order. The specified shape must match the last dimensions
+     * of the darray and the result shape will be the first dimensions of the original darray.
+     * The degrees of freedom are computed as {@code N - ddof}, where {@code N} is the number of elements.
+     *
+     * @param shape   shape to compute variance on
+     * @param ddof    difference degrees of freedom
+     * @param keepDim keep dimensions if true
+     * @param mean    precomputed mean values
+     * @return darray with variance values
+     */
     public final DArray<N> varOn(Shape shape, int ddof, boolean keepDim, DArray<?> mean) {
         return varOn(shape, ddof, mean, keepDim, Order.defaultOrder());
     }
 
+    /**
+     * Compute variance on specified shape with specified storage order. The specified shape must match the last dimensions
+     * of the darray and the result shape will be the first dimensions of the original darray.
+     * The degrees of freedom are computed as {@code N - ddof}, where {@code N} is the number of elements.
+     *
+     * @param shape   shape to compute variance on
+     * @param ddof    difference degrees of freedom
+     * @param keepDim keep dimensions if true
+     * @param mean    precomputed mean values
+     * @param order   storage order of the result
+     * @return darray with variance values
+     */
     public abstract DArray<N> varOn(Shape shape, int ddof, DArray<?> mean, boolean keepDim, Order order);
 
-
+    /**
+     * Computes the position of the maximum value from the darray. The position of an element is
+     * relative to an ordering, and it is the position in a flat array ordered by the storage order.
+     * The position is also equivalent with the one obtained using an iterator for the corresponding ordering.
+     * <p>
+     * This uses the default ordering for the position computation.
+     *
+     * @return position of the maximum value from darray
+     */
     public final int argmax() {
         return argmax(Order.defaultOrder());
     }
 
+    /**
+     * Computes the position of the maximum value from the darray using the specified ordering. The position of
+     * the element is relative to an ordering, and it is the position in a flat array ordered by the storage order.
+     * The position is also equivalent with the one obtained using an iterator for the corresponding ordering.
+     *
+     * @param order specified ordering
+     * @return position of the maximum value
+     */
     public abstract int argmax(Order order);
 
     public final DArray<Integer> argmax1d(int axis, boolean keepDim) {
@@ -3460,10 +3586,27 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
 
     public abstract DArray<Integer> argmax1d(int axis, boolean keepDim, Order order);
 
+    /**
+     * Computes the position of the minimum value from the darray. The position of an element is
+     * relative to an ordering, and it is the position in a flat array ordered by the storage order.
+     * The position is also equivalent with the one obtained using an iterator for the corresponding ordering.
+     * <p>
+     * This uses the default ordering for the position computation.
+     *
+     * @return position of the minimum value from darray
+     */
     public final int argmin() {
         return argmin(Order.defaultOrder());
     }
 
+    /**
+     * Computes the position of the minimum value from the darray using the specified ordering. The position of
+     * the element is relative to an ordering, and it is the position in a flat array ordered by the storage order.
+     * The position is also equivalent with the one obtained using an iterator for the corresponding ordering.
+     *
+     * @param order specified ordering
+     * @return position of the minimum value
+     */
     public abstract int argmin(Order order);
 
     public final DArray<Integer> argmin1d(int axis, boolean keepDim) {
