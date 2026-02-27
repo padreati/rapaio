@@ -19,40 +19,30 @@
  *
  */
 
-package rapaio.experiment.darray;
+package rapaio.experiment;
 
+import java.util.Random;
+
+import org.junit.jupiter.api.Test;
+
+import rapaio.darray.DArray;
 import rapaio.darray.DArrayManager;
 import rapaio.darray.DType;
 import rapaio.darray.Shape;
 
-public class Conv1d {
+public class DArraySandbox {
 
-    public static void main(String[] args) {
-
+    @Test
+    void testArgmax() {
         DArrayManager dm = DArrayManager.base();
-        DType<?> dt = DType.FLOAT;
+        Random random = new Random();
+        DArray<Double> a = dm.random(DType.DOUBLE, Shape.of(4,4), random);
 
-        int n = 2;
-        int cIn = 2;
-        int l = 10;
-        int cOut = 3;
+        a.printContent();
+        System.out.println(a.trace());
+        System.out.println(a.diag());
 
-        var x = dm.seq(dt, Shape.of(n, cIn, l));
-        x.printString();
-
-        int k = 3;
-        int p = 0;
-        int s = 2;
-        int d = 1;
-
-        var xp = x.pad(2, p, 1);
-        xp.printString();
-
-        var xf = xp.unfold(2, k, s, d);
-        xf.printString();
-
-
-        var w = dm.seq(dt, Shape.of(k, cOut, cIn));
-        w.printString();
+        a.eig().d().printContent();
+        System.out.println(a.eig().d().diag().sum());
     }
 }

@@ -176,25 +176,19 @@ public class DArrayConvolutionsTest {
         var in = dm.seq(dt, Shape.of(p.n, p.inChannels, p.inLen)).add(1);
         var kernel = dm.seq(dt, Shape.of(p.outChannels, Math.floorDiv(p.inChannels, p.groups), p.k)).add(1);
         var y = in.conv1d(kernel, null, p.padding, p.stride, p.dilation, p.groups);
-        printPython("out", y);
 
         int outLen = Math.floorDiv(p.inLen + 2 * p.padding - (p.k - 1) * p.dilation, p.stride);
         var expected = dm.stride(dt, exp).reshape(Shape.of(p.n, p.outChannels, outLen));
-        printPython("exp", expected);
 
         assertEquals(Shape.of(p.n, p.outChannels, outLen), y.shape());
         assertTrue(expected.deepEquals(y));
 
         var out = y.convTranspose1d(kernel, null, p.padding, p.stride, p.dilation, p.groups, p.outputPadding);
-        printPython("tout", out);
-
         var texpected = dm.stride(dt, texp).reshape(in.shape());
-        printPython("texp", texpected);
 
         assertEquals(texpected.shape(), out.shape());
         assertTrue(texpected.deepEquals(out));
     }
-
 
     private void printPython(String name, DArray<?> array) {
         System.out.println(name + ":");
@@ -216,12 +210,95 @@ public class DArrayConvolutionsTest {
         System.out.println("]");
     }
 
+    @ParameterizedTest
+    @MethodSource("dtSource")
+    void testSimpleConv2d(DType<?> dt) {
+        var p = new ConvParams().inH(3).inW(3).kH(2).kW(2);
+        double[] exp = {37, 47, 67, 77};
+        double[] texp = {37, 121, 94, 178, 500, 342, 201, 499, 308};
+        testScenarioConv2D(dt, p, exp, texp);
+    }
+
+    @ParameterizedTest
+    @MethodSource("dtSource")
+    void testMultiChannelConv2d(DType<?> dt) {
+        var p = new ConvParams().inChannels(2).inH(3).inW(3).outChannels(2).kH(2).kW(2);
+        double[] exp = {356, 392, 464, 500, 836, 936, 1136, 1236};
+        double[] texp = {
+                7880, 17888, 10144, 20952, 46840, 26160, 13888, 30584, 16832,
+                12648, 27968, 15456, 32120, 70264, 38416, 20288, 43928, 23776
+        };
+        testScenarioConv2D(dt, p, exp, texp);
+    }
+
+    @ParameterizedTest
+    @MethodSource("dtSource")
+    void testPaddingConv2d(DType<?> dt) {
+        var p = new ConvParams().inH(3).inW(3).kH(3).kW(3).padding(1);
+        double[] exp = {94, 154, 106, 186, 285, 186, 106, 154, 94};
+        double[] texp = {1743, 3072, 2681, 4266, 6825, 5524, 4629, 7038, 5447};
+        testScenarioConv2D(dt, p, exp, texp);
+    }
+
+    @ParameterizedTest
+    @MethodSource("dtSource")
+    void testStrideConv2d(DType<?> dt) {
+        var p = new ConvParams().inH(4).inW(4).kH(2).kW(2).stride(2);
+        double[] exp = {44, 64, 124, 144};
+        double[] texp = {44, 88, 64, 128, 132, 176, 192, 256, 124, 248, 144, 288, 372, 496, 432, 576};
+        testScenarioConv2D(dt, p, exp, texp);
+    }
+
+    @ParameterizedTest
+    @MethodSource("dtSource")
+    void testDilationConv2d(DType<?> dt) {
+        var p = new ConvParams().inH(4).inW(4).kH(2).kW(2).dilation(2);
+        double[] exp = {78, 88, 118, 128};
+        double[] texp = {78, 88, 156, 176, 118, 128, 236, 256, 234, 264, 312, 352, 354, 384, 472, 512};
+        testScenarioConv2D(dt, p, exp, texp);
+    }
+
+    @ParameterizedTest
+    @MethodSource("dtSource")
+    void testGroupsConv2d(DType<?> dt) {
+        var p = new ConvParams().inChannels(4).inH(3).inW(3).outChannels(4).kH(2).kW(2).groups(2);
+        double[] exp = {356, 392, 464, 500, 836, 936, 1136, 1236, 4268, 4432, 4760, 4924, 5900, 6128, 6584, 6812};
+        double[] texp = {
+                7880, 17888, 10144, 20952, 46840, 26160, 13888, 30584, 16832,
+                12648, 27968, 15456, 32120, 70264, 38416, 20288, 43928, 23776,
+                220056, 458768, 239104, 485912, 1011096, 525968, 268208, 557032, 289216,
+                260728, 541680, 281344, 571960, 1186328, 615152, 313584, 649352, 336160
+        };
+        testScenarioConv2D(dt, p, exp, texp);
+    }
+
+    void testScenarioConv2D(DType<?> dt, ConvParams p, double[] exp, double[] texp) {
+        var in = dm.seq(dt, Shape.of(p.n, p.inChannels, p.inH, p.inW)).add(1);
+        var kernel = dm.seq(dt, Shape.of(p.outChannels, p.inChannels / p.groups, p.kH, p.kW)).add(1);
+        var y = in.conv2d(kernel, null, p.padding, p.stride, p.dilation, p.groups);
+
+        int outH = Math.floorDiv(p.inH + 2 * p.padding - p.dilation * (p.kH - 1) - 1, p.stride) + 1;
+        int outW = Math.floorDiv(p.inW + 2 * p.padding - p.dilation * (p.kW - 1) - 1, p.stride) + 1;
+        var expected = dm.stride(dt, exp).reshape(Shape.of(p.n, p.outChannels, outH, outW));
+        assertEquals(expected.shape(), y.shape());
+        assertTrue(expected.deepEquals(y));
+
+        var out = y.convTranspose2d(kernel, null, p.padding, p.stride, p.dilation, p.groups, p.outputPadding);
+        var texpected = dm.stride(dt, texp).reshape(in.shape());
+        assertEquals(texpected.shape(), out.shape());
+        assertTrue(texpected.deepEquals(out));
+    }
+
     static class ConvParams {
         public int n = 1;
         public int inChannels = 1;
         public int inLen = -1;
+        public int inH = -1;
+        public int inW = -1;
         public int outChannels = 1;
         public int k = -1;
+        public int kH = -1;
+        public int kW = -1;
         public int groups = 1;
         public int padding = 0;
         public int stride = 1;
@@ -243,6 +320,16 @@ public class DArrayConvolutionsTest {
             return this;
         }
 
+        ConvParams inH(int inH) {
+            this.inH = inH;
+            return this;
+        }
+
+        ConvParams inW(int inW) {
+            this.inW = inW;
+            return this;
+        }
+
         ConvParams outChannels(int outChannels) {
             this.outChannels = outChannels;
             return this;
@@ -250,6 +337,16 @@ public class DArrayConvolutionsTest {
 
         ConvParams k(int k) {
             this.k = k;
+            return this;
+        }
+
+        ConvParams kH(int kH) {
+            this.kH = kH;
+            return this;
+        }
+
+        ConvParams kW(int kW) {
+            this.kW = kW;
             return this;
         }
 

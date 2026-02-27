@@ -1117,9 +1117,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     @Override
     public DArray<Integer> conv1d(DArray<?> kernel, DArray<?> bias, int padding, int stride, int dilation, int groups) {
         DArray<Integer> input = this;
-        if (bias != null) {
-            throw new IllegalArgumentException("bias must be null for conv1d");
-        }
+
         // complete input shape
         if (input.rank() > 3) {
             throw new IllegalArgumentException("Input signal (this darray) must have at most 3 dimensions.");
@@ -1144,6 +1142,15 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         int outChannels = kernel.dim(0);
         int inDepth = kernel.dim(1);
         int k = kernel.dim(2);
+
+        if (bias != null) {
+            if (bias.rank() != 1) {
+                throw new IllegalArgumentException("Bias must be a 1D tensor.");
+            }
+            if (bias.dim(0) != outChannels) {
+                throw new IllegalArgumentException("Bias must have the same number of elements as output channels.");
+            }
+        }
 
         if (inChannels % groups != 0) {
             throw new IllegalArgumentException("Number of input channels must be a multiple of groups.");
@@ -1180,15 +1187,19 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
             }
         }
 
+        if (bias != null) {
+            for (int oc = 0; oc < outChannels; oc++) {
+                output.narrow(1, oc, oc + 1).add_(bias.getInt(oc));
+            }
+        }
         return output;
     }
 
     @Override
-    public DArray<Integer> convTranspose1d(DArray<?> weights, DArray<?> bias, int padding, int stride, int dilation, int groups, int outputPadding) {
+    public DArray<Integer> convTranspose1d(DArray<?> weights, DArray<?> bias, int padding, int stride, int dilation, int groups,
+            int outputPadding) {
         DArray<Integer> input = this;
-        if (bias != null) {
-            throw new IllegalArgumentException("bias must be null for convTranspose1d");
-        }
+
         if (input.rank() > 3) {
             throw new IllegalArgumentException("Input signal (this darray) must have at most 3 dimensions.");
         }
@@ -1210,10 +1221,18 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         int outChannels = outDepth * groups;
         int kLen = weights.dim(2);
 
+        if (bias != null) {
+            if (bias.rank() != 1) {
+                throw new IllegalArgumentException("Bias must be a 1D tensor.");
+            }
+            if (bias.dim(0) != outChannels) {
+                throw new IllegalArgumentException("Bias must have the same number of elements as output channels.");
+            }
+        }
+
         if (input.dim(1) != weights.dim(0)) {
             throw new IllegalArgumentException("Input channels and weight output channels do not match.");
         }
-
         if (inChannels % groups != 0) {
             throw new IllegalArgumentException("Number of input channels must be a multiple of groups.");
         }
@@ -1249,6 +1268,11 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
                 }
             }
         }
+        if (bias != null) {
+            for (int oc = 0; oc < outChannels; oc++) {
+                output.narrow(1, oc, oc + 1).add_(bias.getInt(oc));
+            }
+        }
         return output;
     }
 
@@ -1269,6 +1293,151 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         return res;
     }
 
+    @Override
+    public DArray<Integer> conv2d(DArray<?> kernel, DArray<?> bias, int padding, int stride, int dilation, int groups) {
+        DArray<Integer> input = this;
+        while (input.rank() < 4) {
+            input = input.stretch(0);
+        }
+        if (input.rank() != 4) {
+            throw new IllegalArgumentException("Input must have at most 4 dimensions.");
+        }
+        while (kernel.rank() < 4) {
+            kernel = kernel.stretch(0);
+        }
+
+        int n = input.dim(0);
+        int inChannels = input.dim(1);
+        int inH = input.dim(2);
+        int inW = input.dim(3);
+        int outChannels = kernel.dim(0);
+        int inDepth = kernel.dim(1);
+        int kH = kernel.dim(2);
+        int kW = kernel.dim(3);
+
+        if (inDepth * groups != inChannels) {
+            throw new IllegalArgumentException("inDepth * groups must equal inChannels.");
+        }
+        int outDepth = outChannels / groups;
+        int outH = Math.floorDiv(inH + 2 * padding - dilation * (kH - 1) - 1, stride) + 1;
+        int outW = Math.floorDiv(inW + 2 * padding - dilation * (kW - 1) - 1, stride) + 1;
+
+        DArray<Integer> output = dm.zeros(DType.INTEGER, Shape.of(n, outChannels, outH, outW));
+
+        for (int batch = 0; batch < n; batch++) {
+            DArray<?> inBatch = input.selsq(0, batch);   // (inChannels, inH, inW)
+            DArray<?> outBatch = output.selsq(0, batch); // (outChannels, outH, outW)
+
+            for (int group = 0; group < groups; group++) {
+                DArray<?> inSlice = inBatch.narrow(0, group * inDepth, (group + 1) * inDepth);
+                DArray<?> outSlice = outBatch.narrow(0, group * outDepth, (group + 1) * outDepth);
+                DArray<?> kernelSlice = kernel.narrow(0, group * outDepth, (group + 1) * outDepth);
+
+                // im2col: (inDepth * kH * kW, outH * outW)
+                DArray<?> col = im2col2d(inSlice, kH, kW, padding, stride, dilation, outH, outW);
+                col = col.reshape(Shape.of(inDepth * kH * kW, outH * outW));
+                DArray<?> kFlat = kernelSlice.reshape(Shape.of(outDepth, inDepth * kH * kW));
+                // (outDepth, outH*outW)
+                DArray<?> res = kFlat.mm(col);
+                outSlice.add_(res.reshape(Shape.of(outDepth, outH, outW)));
+            }
+        }
+
+        if (bias != null) {
+            for (int oc = 0; oc < outChannels; oc++) {
+                output.narrow(1, oc, oc + 1).add_(bias.getInt(oc));
+            }
+        }
+        return output;
+    }
+
+    @Override
+    public DArray<Integer> convTranspose2d(DArray<?> weights, DArray<?> bias, int padding, int stride, int dilation, int groups, int outputPadding) {
+        DArray<Integer> input = this;
+        while (input.rank() < 4) {
+            input = input.stretch(0);
+        }
+        while (weights.rank() < 4) {
+            weights = weights.stretch(0);
+        }
+
+        int n = input.dim(0);
+        int inChannels = input.dim(1);
+        int inH = input.dim(2);
+        int inW = input.dim(3);
+        int outDepth = weights.dim(1);
+        int inDepth = inChannels / groups;
+        int outChannels = outDepth * groups;
+        int kH = weights.dim(2);
+        int kW = weights.dim(3);
+
+        if (input.dim(1) != weights.dim(0)) {
+            throw new IllegalArgumentException("Input channels and weight output channels do not match.");
+        }
+
+        int outH = (inH - 1) * stride - 2 * padding + dilation * (kH - 1) + 1 + outputPadding;
+        int outW = (inW - 1) * stride - 2 * padding + dilation * (kW - 1) + 1 + outputPadding;
+
+        DArray<Integer> output = dm.zeros(DType.INTEGER, Shape.of(n, outChannels, outH, outW));
+
+        for (int batch = 0; batch < n; batch++) {
+            DArray<?> inBatch = input.selsq(0, batch);
+            DArray<?> outBatch = output.selsq(0, batch);
+
+            for (int group = 0; group < groups; group++) {
+                DArray<?> inSlice = inBatch.narrow(0, group * inDepth, (group + 1) * inDepth);
+                DArray<?> outSlice = outBatch.narrow(0, group * outDepth, (group + 1) * outDepth);
+                DArray<?> kernelSlice = weights.narrow(0, group * inDepth, (group + 1) * inDepth);
+
+                for (int ih = 0; ih < inH; ih++) {
+                    for (int iw = 0; iw < inW; iw++) {
+                        for (int c = 0; c < inDepth; c++) {
+                            int val = inSlice.getInt(c, ih, iw);
+                            for (int kh = 0; kh < kH; kh++) {
+                                for (int kw = 0; kw < kW; kw++) {
+                                    int oh = ih * stride + kh * dilation - padding;
+                                    int ow = iw * stride + kw * dilation - padding;
+                                    if (oh >= 0 && oh < outH && ow >= 0 && ow < outW) {
+                                        for (int oc = 0; oc < outDepth; oc++) {
+                                            outSlice.incInt((int)(val * kernelSlice.getInt(c, oc, kh, kw)), oc, oh, ow);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (bias != null) {
+            for (int oc = 0; oc < outChannels; oc++) {
+                output.narrow(1, oc, oc + 1).add_(bias.getInt(oc));
+            }
+        }
+        return output;
+    }
+
+    private DArray<Integer> im2col2d(DArray<?> inSlice, int kH, int kW, int padding, int stride, int dilation, int outH, int outW) {
+        int inDepth = inSlice.dim(0);
+        DArray<Integer> res = dm.zeros(DType.INTEGER, Shape.of(inDepth, kH, kW, outH, outW));
+        for (int c = 0; c < inDepth; c++) {
+            for (int kh = 0; kh < kH; kh++) {
+                for (int kw = 0; kw < kW; kw++) {
+                    for (int oh = 0; oh < outH; oh++) {
+                        for (int ow = 0; ow < outW; ow++) {
+                            int ih = oh * stride + kh * dilation - padding;
+                            int iw = ow * stride + kw * dilation - padding;
+                            if (ih >= 0 && ih < inSlice.dim(1) && iw >= 0 && iw < inSlice.dim(2)) {
+                                res.setInt(inSlice.getInt(c, ih, iw), c, kh, kw, oh, ow);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return res;
+    }
 
     @Override
     public Integer trace() {

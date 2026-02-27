@@ -3961,6 +3961,39 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     public abstract DArray<N> conv1d(DArray<?> weights, DArray<?> bias, int padding, int stride, int dilation, int groups);
 
     /**
+     * Applies a 2D convolution over this input signal.
+     * Input shape: {@code (N, C_in, H, W)}, kernel shape: {@code (C_out, C_in/groups, kH, kW)}.
+     * Output shape: {@code (N, C_out, H_out, W_out)} where
+     * {@code H_out = floor((H + 2*padding - dilation*(kH-1) - 1) / stride + 1)} and similarly for W.
+     *
+     * @param weights kernel of shape {@code (C_out, C_in/groups, kH, kW)}
+     * @param bias    optional bias of shape {@code (C_out)}, or {@code null}
+     * @param padding zero-padding added to both spatial sides
+     * @param stride  step between kernel applications
+     * @param dilation spacing between kernel elements
+     * @param groups  number of blocked connections
+     * @return output DArray of shape {@code (N, C_out, H_out, W_out)}
+     */
+    public abstract DArray<N> conv2d(DArray<?> weights, DArray<?> bias, int padding, int stride, int dilation, int groups);
+
+    /**
+     * Applies a 2D transposed convolution over this input signal.
+     * Input shape: {@code (N, C_in, H, W)}, kernel shape: {@code (C_in, C_out/groups, kH, kW)}.
+     * Output shape: {@code (N, C_out, H_out, W_out)} where
+     * {@code H_out = (H-1)*stride - 2*padding + dilation*(kH-1) + 1 + outputPadding} and similarly for W.
+     *
+     * @param weights       kernel of shape {@code (C_in, C_out/groups, kH, kW)}
+     * @param bias          optional bias of shape {@code (C_out)}, or {@code null}
+     * @param padding       implicit zero-padding
+     * @param stride        upsampling factor
+     * @param dilation      spacing between kernel elements
+     * @param groups        number of blocked connections
+     * @param outputPadding additional size added to one side of the output
+     * @return output DArray of shape {@code (N, C_out, H_out, W_out)}
+     */
+    public abstract DArray<N> convTranspose2d(DArray<?> weights, DArray<?> bias, int padding, int stride, int dilation, int groups, int outputPadding);
+
+    /**
      * Applies a 1D transposed convolution (also known as fractionally-strided convolution or
      * deconvolution) over this input signal. This is the gradient operation of {@link #conv1d}
      * with respect to its input, and can be used to upsample the signal.
