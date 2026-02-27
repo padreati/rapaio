@@ -37,9 +37,7 @@ public class CodeGenFakeTest {
      */
     @Test
     public void doChanges() throws IOException {
-
-
         Path path = Path.of(".").toAbsolutePath().getParent().getParent().resolve("rapaio-lib").resolve("src");
-        CodeGenApp.main(new String[] {path.toAbsolutePath().toString() + "/"});
+        CodeGenApp.main(new String[] {path.toAbsolutePath() + "/"});
     }
 }

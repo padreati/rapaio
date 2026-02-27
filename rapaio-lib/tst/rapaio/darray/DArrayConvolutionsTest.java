@@ -289,14 +289,128 @@ public class DArrayConvolutionsTest {
         assertTrue(texpected.deepEquals(out));
     }
 
+    @ParameterizedTest
+    @MethodSource("dtSource")
+    void testSimpleConv3d(DType<?> dt) {
+        var p = new ConvParams().inD(3).inH(3).inW(3).kD(2).kH(2).kW(2);
+        double[] exp = {356, 392, 464, 500,
+                680, 716, 788, 824};
+        double[] texp = {
+                356, 1104, 784, 1532, 4028, 2568, 1392, 3356,
+                2000, 2460, 6172, 3784, 7640, 18144, 10648, 5612, 12836, 7296,
+                3400, 7660, 4296, 8700, 19300, 10672, 5516, 12072, 6592};
+        testScenarioConv3D(dt, p, exp, texp);
+    }
+
+    @ParameterizedTest
+    @MethodSource("dtSource")
+    void testMultiChannelConv3d(DType<?> dt) {
+        var p = new ConvParams().inChannels(2).inD(3).inH(3).inW(3).outChannels(2).kD(2).kH(2).kW(2);
+        double[] exp = {
+                3892, 4028, 4300, 4436, 5116, 5252, 5524, 5660,
+                9268, 9660, 10444, 10836, 12796, 13188, 13972, 14364};
+        double[] texp = {
+                161448, 342856, 181936, 369616, 781792, 413232, 211336, 445272, 234464,
+                436736, 920256, 484576, 982752, 2064352, 1083712, 552352, 1156768, 605472,
+                294296, 615416, 321648, 651152, 1358592, 708496, 360024, 749512,
+                390016, 266728, 557640, 291440, 592848, 1236704, 644912, 329288,
+                685400, 356640, 685312, 1425856, 741600, 1505248, 3126240, 1623104,
+                826272, 1713056, 887840, 437592, 906232, 469168, 950416, 1965568,
+                1016208, 515992, 1065672, 550208};
+        testScenarioConv3D(dt, p, exp, texp);
+    }
+
+    @ParameterizedTest
+    @MethodSource("dtSource")
+    void testPaddingConv3d(DType<?> dt) {
+        var p = new ConvParams().inD(3).inH(3).inW(3).kD(3).kH(3).kW(3).padding(1);
+        double[] exp = {
+                1412, 2198, 1508, 2370, 3648, 2478, 1652, 2522, 1700, 2982, 4512, 3018,
+                4608, 6930, 4608, 3018, 4512, 2982, 1700, 2522, 1652, 2478, 3648, 2370, 1508, 2198, 1412};
+        double[] texp = {
+                159996, 249720, 197284, 299916, 456162, 352448, 273084, 408276, 310636, 445128, 658686,
+                496460, 726642, 1066044, 797062, 598116, 871290, 647096, 512004, 740508, 546196, 784800,
+                1130262, 830276, 611916, 877896, 642484};
+        testScenarioConv3D(dt, p, exp, texp);
+    }
+
+    @ParameterizedTest
+    @MethodSource("dtSource")
+    void testStrideConv3d(DType<?> dt) {
+        var p = new ConvParams().inD(4).inH(4).inW(4).kD(2).kH(2).kW(2).stride(2);
+        double[] exp = {560, 632, 848, 920, 1712, 1784, 2000, 2072};
+        double[] texp = {
+                560, 1120, 632, 1264, 1680, 2240, 1896, 2528, 848, 1696, 920, 1840, 2544, 3392, 2760, 3680,
+                2800, 3360, 3160, 3792, 3920, 4480, 4424, 5056, 4240, 5088, 4600, 5520, 5936, 6784, 6440,
+                7360, 1712, 3424, 1784, 3568, 5136, 6848, 5352, 7136, 2000, 4000, 2072, 4144, 6000, 8000,
+                6216, 8288, 8560, 10272, 8920, 10704, 11984, 13696, 12488, 14272, 10000, 12000, 10360, 12432,
+                14000, 16000, 14504, 16576};
+        testScenarioConv3D(dt, p, exp, texp);
+    }
+
+    @ParameterizedTest
+    @MethodSource("dtSource")
+    void testDilationConv3d(DType<?> dt) {
+        var p = new ConvParams().inD(4).inH(4).inW(4).kD(2).kH(2).kW(2).dilation(2);
+        double[] exp = {1084, 1120, 1228, 1264, 1660, 1696, 1804, 1840};
+        double[] texp = {
+                1084, 1120, 2168, 2240, 1228, 1264, 2456, 2528, 3252, 3360, 4336, 4480, 3684, 3792, 4912, 5056, 1660,
+                1696, 3320, 3392, 1804, 1840, 3608, 3680, 4980, 5088, 6640, 6784, 5412, 5520, 7216, 7360, 5420, 5600,
+                6504, 6720, 6140, 6320, 7368, 7584, 7588, 7840, 8672, 8960, 8596, 8848, 9824, 10112, 8300, 8480, 9960,
+                10176, 9020, 9200, 10824, 11040, 11620, 11872, 13280, 13568, 12628, 12880, 14432, 14720};
+        testScenarioConv3D(dt, p, exp, texp);
+    }
+
+    @ParameterizedTest
+    @MethodSource("dtSource")
+    void testGroupsConv3d(DType<?> dt) {
+        var p = new ConvParams().inChannels(4).inD(3).inH(3).inW(3).outChannels(4).kD(2).kH(2).kW(2).groups(2);
+        double[] exp = {
+                3892, 4028, 4300, 4436, 5116, 5252, 5524, 5660, 9268, 9660, 10444, 10836, 12796, 13188, 13972, 14364, 49636, 50284, 51580,
+                52228, 55468, 56116, 57412, 58060, 68836, 69740, 71548, 72452, 76972, 77876, 79684, 80588};
+        double[] texp = {
+                161448, 342856, 181936, 369616, 781792, 413232, 211336, 445272, 234464, 436736, 920256, 484576, 982752, 2064352, 1083712,
+                552352, 1156768, 605472, 294296, 615416, 321648, 651152, 1358592, 708496, 360024, 749512, 390016, 266728, 557640, 291440,
+                592848, 1236704, 644912, 329288, 685400, 356640, 685312, 1425856, 741600, 1505248, 3126240, 1623104, 826272, 1713056,
+                887840,
+                437592, 906232, 469168, 950416, 1965568, 1016208, 515992, 1065672, 550208, 5010952, 10206056, 5196656, 10455888, 21287840,
+                10835056, 5454248, 11100408, 5647712, 11086912, 22562304, 11478496, 23088352, 46969184, 23887040, 12020064, 24444128,
+                12427168,
+                6131832, 12467992, 6337712, 12744208, 25904832, 13163728, 6621688, 13455464, 6835328, 5958728, 12114024, 6156848, 12388688,
+                25178272, 12792688, 6439272, 13082872, 6645152, 13094208, 26601728, 13510624, 27177440, 55197024, 28025792, 14101856,
+                28632544,
+                14533792, 7191352, 14599448, 7409648, 14900496, 30242240, 15344848, 7718456, 15661416, 7944512};
+        testScenarioConv3D(dt, p, exp, texp);
+    }
+
+    void testScenarioConv3D(DType<?> dt, ConvParams p, double[] exp, double[] texp) {
+        var in = dm.seq(dt, Shape.of(p.n, p.inChannels, p.inD, p.inH, p.inW)).add(1);
+        var kernel = dm.seq(dt, Shape.of(p.outChannels, p.inChannels / p.groups, p.kD, p.kH, p.kW)).add(1);
+        var y = in.conv3d(kernel, null, p.padding, p.stride, p.dilation, p.groups);
+
+        int outD = Math.floorDiv(p.inD + 2 * p.padding - p.dilation * (p.kD - 1) - 1, p.stride) + 1;
+        int outH = Math.floorDiv(p.inH + 2 * p.padding - p.dilation * (p.kH - 1) - 1, p.stride) + 1;
+        int outW = Math.floorDiv(p.inW + 2 * p.padding - p.dilation * (p.kW - 1) - 1, p.stride) + 1;
+        var expected = dm.stride(dt, exp).reshape(Shape.of(p.n, p.outChannels, outD, outH, outW));
+        assertEquals(expected.shape(), y.shape());
+        assertTrue(expected.deepEquals(y));
+
+        var out = y.convTranspose3d(kernel, null, p.padding, p.stride, p.dilation, p.groups, p.outputPadding);
+        var texpected = dm.stride(dt, texp).reshape(in.shape());
+        assertEquals(texpected.shape(), out.shape());
+        assertTrue(texpected.deepEquals(out));
+    }
+
     static class ConvParams {
         public int n = 1;
         public int inChannels = 1;
         public int inLen = -1;
+        public int inD = -1;
         public int inH = -1;
         public int inW = -1;
         public int outChannels = 1;
         public int k = -1;
+        public int kD = -1;
         public int kH = -1;
         public int kW = -1;
         public int groups = 1;
@@ -320,6 +434,11 @@ public class DArrayConvolutionsTest {
             return this;
         }
 
+        ConvParams inD(int inD) {
+            this.inD = inD;
+            return this;
+        }
+
         ConvParams inH(int inH) {
             this.inH = inH;
             return this;
@@ -337,6 +456,11 @@ public class DArrayConvolutionsTest {
 
         ConvParams k(int k) {
             this.k = k;
+            return this;
+        }
+
+        ConvParams kD(int kD) {
+            this.kD = kD;
             return this;
         }
 
