@@ -3934,6 +3934,68 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     public abstract DArray<N> bmm(DArray<?> other, Order askOrder);
 
     /**
+     * Applies a 1D convolution over this input signal.
+     * <p>
+     * This DArray acts as the input and must have shape {@code (N, C_in, L)} or {@code (C_in, L)},
+     * where {@code N} is the batch size, {@code C_in} is the number of input channels, and {@code L}
+     * is the length of the signal. If rank is less than 3, leading dimensions of size 1 are prepended.
+     * <p>
+     * The {@code weights} tensor must have shape {@code (C_out, C_in/groups, kL)}, where {@code C_out}
+     * is the number of output channels and {@code kL} is the kernel length.
+     * <p>
+     * The output length is computed as:
+     * <pre>
+     *   L_out = floor((L + 2 * padding - dilation * (kL - 1) - 1) / stride + 1)
+     * </pre>
+     * The output has shape {@code (N, C_out, L_out)}.
+     *
+     * @param weights     convolution kernel of shape {@code (C_out, C_in/groups, kL)}
+     * @param bias        optional bias of shape {@code (C_out)}, or {@code null} if no bias
+     * @param padding     zero-padding added to both sides of the input
+     * @param stride      step between consecutive kernel applications
+     * @param dilation    spacing between kernel elements
+     * @param groups      number of blocked connections from input to output channels;
+     *                    {@code C_in} and {@code C_out} must both be divisible by {@code groups}
+     * @return output DArray of shape {@code (N, C_out, L_out)}
+     */
+    public abstract DArray<N> conv1d(DArray<?> weights, DArray<?> bias, int padding, int stride, int dilation, int groups);
+
+    /**
+     * Applies a 1D transposed convolution (also known as fractionally-strided convolution or
+     * deconvolution) over this input signal. This is the gradient operation of {@link #conv1d}
+     * with respect to its input, and can be used to upsample the signal.
+     * <p>
+     * This DArray acts as the input and must have shape {@code (N, C_in, L)} or {@code (C_in, L)},
+     * where {@code N} is the batch size, {@code C_in} is the number of input channels, and {@code L}
+     * is the length of the signal. If rank is less than 3, leading dimensions of size 1 are prepended.
+     * <p>
+     * The {@code weights} tensor must have shape {@code (C_in, C_out/groups, kL)}, where {@code C_out}
+     * is the number of output channels and {@code kL} is the kernel length. Note that the first
+     * dimension of the weight corresponds to the input channels of the transposed convolution
+     * (i.e. the output channels of the corresponding forward convolution).
+     * <p>
+     * The output length is computed as:
+     * <pre>
+     *   L_out = (L - 1) * stride - 2 * padding + dilation * (kL - 1) + 1 + outputPadding
+     * </pre>
+     * The output has shape {@code (N, C_out, L_out)}.
+     *
+     * @param weights       transposed convolution kernel of shape {@code (C_in, C_out/groups, kL)}
+     * @param bias          optional bias of shape {@code (C_out)}, or {@code null} if no bias
+     * @param padding       implicit zero-padding added to both sides of the input; reduces output size
+     * @param stride        step between consecutive kernel applications in the forward convolution;
+     *                      controls the upsampling factor
+     * @param dilation      spacing between kernel elements
+     * @param groups        number of blocked connections from input to output channels;
+     *                      {@code C_in} and {@code C_out} must both be divisible by {@code groups}
+     * @param outputPadding additional size added to one side of the output shape; must be less than
+     *                      {@code stride} and less than {@code dilation}; used to resolve ambiguity
+     *                      when multiple input sizes map to the same output size
+     * @return output DArray of shape {@code (N, C_out, L_out)}
+     */
+    public abstract DArray<N> convTranspose1d(DArray<?> weights, DArray<?> bias, int padding, int stride, int dilation, int groups, int outputPadding);
+
+    /**
      * Shortcut method for {@link #diag(int)} with parameter {@code 0}.
      *
      * @return matrix if input is a vector, vector if input is a matrix

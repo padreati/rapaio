@@ -1115,6 +1115,162 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     }
 
     @Override
+    public DArray<Integer> conv1d(DArray<?> kernel, DArray<?> bias, int padding, int stride, int dilation, int groups) {
+        DArray<Integer> input = this;
+        if (bias != null) {
+            throw new IllegalArgumentException("bias must be null for conv1d");
+        }
+        // complete input shape
+        if (input.rank() > 3) {
+            throw new IllegalArgumentException("Input signal (this darray) must have at most 3 dimensions.");
+        }
+        while (input.rank() < 3) {
+            // missing dimensions means sequence of length 1, a single channel and a batch of unit size
+            input = input.stretch(0);
+        }
+
+        // complete kernel shape
+        if (kernel.rank() > 3) {
+            throw new IllegalArgumentException("Weight must have at most 3 dimensions.");
+        }
+        while (kernel.rank() < 3) {
+            kernel = kernel.stretch(0);
+        }
+
+        int n = input.dim(0);
+        int inChannels = input.dim(1);
+        int inLen = input.dim(2);
+
+        int outChannels = kernel.dim(0);
+        int inDepth = kernel.dim(1);
+        int k = kernel.dim(2);
+
+        if (inChannels % groups != 0) {
+            throw new IllegalArgumentException("Number of input channels must be a multiple of groups.");
+        }
+        if (outChannels % groups != 0) {
+            throw new IllegalArgumentException("Number of output channels must be a multiple of groups.");
+        }
+        if (inDepth * groups != inChannels) {
+            throw new IllegalArgumentException("Number of input channels divided by groups must be equal to kernel input depth.");
+        }
+
+        int outDepth = outChannels / groups;
+        int outLen = Math.floorDiv(inLen + 2 * padding - (k - 1) * dilation, stride);
+
+        DArray<Integer> output = input.dm().zeros(DType.INTEGER, Shape.of(n, outChannels, outLen));
+
+        for (int batch = 0; batch < n; batch++) {
+
+            DArray<?> inBatch = input.selsq(0, batch); // shape: (inChannels, inLen)
+            DArray<?> outBatch = output.selsq(0, batch); // shape: (outChannels, outLen)
+
+            for (int group = 0; group < groups; group++) {
+
+                DArray<?> inSlice = inBatch.narrow(0, group * inDepth, (group + 1) * inDepth); // shape: (inDepth, inLen)
+                DArray<?> outSlice = outBatch.narrow(0, group * outDepth, (group + 1) * outDepth); // shape: (outDepth, outLen)
+
+                DArray<?> kernelSlice = kernel.narrow(0, group * outDepth, (group + 1) * outDepth); // shape: (outDepth, inDepth, k)
+
+                DArray<?> im2col = im2col1d(inSlice, k, padding, stride, dilation, outLen);
+
+                im2col = im2col.reshape(Shape.of(inDepth * k, outLen));
+                kernelSlice = kernelSlice.reshape(Shape.of(outDepth, inDepth * k));
+                outSlice.add_(kernelSlice.mm(im2col));
+            }
+        }
+
+        return output;
+    }
+
+    @Override
+    public DArray<Integer> convTranspose1d(DArray<?> weights, DArray<?> bias, int padding, int stride, int dilation, int groups, int outputPadding) {
+        DArray<Integer> input = this;
+        if (bias != null) {
+            throw new IllegalArgumentException("bias must be null for convTranspose1d");
+        }
+        if (input.rank() > 3) {
+            throw new IllegalArgumentException("Input signal (this darray) must have at most 3 dimensions.");
+        }
+        while (input.rank() < 3) {
+            input = input.stretch(0);
+        }
+        if (weights.rank() > 3) {
+            throw new IllegalArgumentException("Weight must have at most 3 dimensions.");
+        }
+        while (weights.rank() < 3) {
+            weights = weights.stretch(0);
+        }
+
+        int n = input.dim(0);
+        int inChannels = input.dim(1);
+        int inLen = input.dim(2);
+        int outDepth = weights.dim(1);
+        int inDepth = inChannels / groups;
+        int outChannels = outDepth * groups;
+        int kLen = weights.dim(2);
+
+        if (input.dim(1) != weights.dim(0)) {
+            throw new IllegalArgumentException("Input channels and weight output channels do not match.");
+        }
+
+        if (inChannels % groups != 0) {
+            throw new IllegalArgumentException("Number of input channels must be a multiple of groups.");
+        }
+        if (outChannels % groups != 0) {
+            throw new IllegalArgumentException("Number of output channels must be a multiple of groups.");
+        }
+
+        int outLen = (inLen - 1) * stride - 2 * padding + (kLen - 1) * dilation + 1 + outputPadding;
+
+        DArray<Integer> output = input.dm().zeros(DType.INTEGER, Shape.of(n, outChannels, outLen));
+
+        for (int batch = 0; batch < n; batch++) {
+            DArray<?> inBatch = input.selsq(0, batch);
+            DArray<?> outBatch = output.selsq(0, batch);
+
+            for (int group = 0; group < groups; group++) {
+                DArray<?> inSlice = inBatch.narrow(0, group * inDepth, (group + 1) * inDepth);
+                DArray<?> outSlice = outBatch.narrow(0, group * outDepth, (group + 1) * outDepth);
+                DArray<?> kernelSlice = weights.narrow(0, group * inDepth, (group + 1) * inDepth);
+
+                for (int i = 0; i < inLen; i++) {
+                    for (int c = 0; c < inDepth; c++) {
+                        int val = inSlice.getInt(c, i);
+                        for (int k = 0; k < kLen; k++) {
+                            int outPos = i * stride + k * dilation - padding;
+                            if (outPos >= 0 && outPos < outLen) {
+                                for (int oc = 0; oc < outDepth; oc++) {
+                                    outSlice.incInt((int) (val * kernelSlice.getInt(c, oc, k)), oc, outPos);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return output;
+    }
+
+    private DArray<Integer> im2col1d(DArray<?> inSlice, int kLen, int padding, int stride, int dilation, int outLen) {
+        int inDepth = inSlice.dim(0);
+        DArray<Integer> res = inSlice.dm().zeros(DType.INTEGER, Shape.of(inDepth, kLen, outLen));
+
+        for (int i = 0; i < inDepth; i++) {
+            for (int k = 0; k < kLen; k++) {
+                for (int o = 0; o < outLen; o++) {
+                    int delta = o * stride + k * dilation - padding;
+                    if (delta >= 0 && delta < inSlice.dim(1)) {
+                        res.setInt(inSlice.getInt(i, delta), i, k, o);
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
+
+    @Override
     public Integer trace() {
         if (!isMatrix()) {
             throw new OperationNotAvailableException("This operation is available only on matrix.");
