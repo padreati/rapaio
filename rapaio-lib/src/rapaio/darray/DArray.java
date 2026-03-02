@@ -688,62 +688,6 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     }
 
     /**
-     * Returns a view of the original darray which contains all slices of size {@code size} from this darray in the dimension {@code axis}.
-     * Step between two slices is given by {@code step}.
-     * <p>
-     * If dim is the size of the given axis, the new dimension in the returned view will be {@code (dim - size) / step + 1).
-     * An additional dimension of size size is appended to the returned darray.
-     * <p>
-     *
-     * @param newAxis  position of the new dimension
-     * @param axis     dimension which is unfolded
-     * @param size     size of each slice that is unfolded
-     * @param step     distance between each slice
-     * @param dilation distance between each element from each slice
-     * @return
-     */
-    public final DArray<N> unfold(int axis, int size, int step, int dilation) {
-        return unfold(rank(), axis, size, step, dilation);
-    }
-
-    /**
-     * Returns a view of the original darray which contains all slices of size {@code size} from this darray in the dimension {@code axis}.
-     * Step between two slices is given by {@code step}.
-     * <p>
-     * If dim is the size of the given axis, the new dimension in the returned view will be {@code (dim - size) / step + 1).
-     * An additional dimension of size size is added in the returned view at position {@code newAxis}.
-     * <p>
-     *
-     * @param newAxis  position of the new dimension
-     * @param axis     dimension which is unfolded
-     * @param size     size of each slice that is unfolded
-     * @param step     distance between each slice
-     * @param dilation distance between each element from each slice
-     * @return
-     */
-    public final DArray<N> unfold(int newAxis, int axis, int size, int step, int dilation) {
-
-        int kernel = (size - 1) * dilation + 1;
-
-        int oldDim = dim(axis);
-        int newDim = Math.floorDiv(oldDim - kernel, step) + 1;
-        int newStride = stride(axis) * step;
-
-        int[] newDims = Arrays.copyOf(dims(), dims().length + 1);
-        int[] newStrides = Arrays.copyOf(strides(), strides().length + 1);
-        newDims[axis] = newDim;
-        newStrides[axis] = newStride;
-
-        for (int i = newDims.length - 1; i > newAxis; i--) {
-            newDims[i] = newDims[i - 1];
-            newStrides[i] = newStrides[i - 1];
-        }
-        newDims[newAxis] = size;
-        newStrides[newAxis] = stride(axis) * dilation;
-        return dm.stride(dt, StrideLayout.of(newDims, ((StrideLayout) layout()).offset(), newStrides), storage);
-    }
-
-    /**
      * Gather values from this darray into a new one along an axis specified by {@code axis} at indexes found in {@code index}.
      * The index must have the same rank as this darray.
      * <p>
@@ -3995,6 +3939,8 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      */
     public abstract DArray<N> convTranspose1d(DArray<?> weights, DArray<?> bias, int padding, int stride, int dilation, int groups, int outputPadding);
 
+    public abstract DArray<N> unfold1d(int kLen, int padding, int stride, int dilation);
+
     /**
      * Applies a 2D convolution over this input signal.
      * Input shape: {@code (N, C_in, H, W)}, kernel shape: {@code (C_out, C_in/groups, kH, kW)}.
@@ -4011,6 +3957,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      */
     public abstract DArray<N> conv2d(DArray<?> weights, DArray<?> bias, int padding, int stride, int dilation, int groups);
 
+    public abstract DArray<N> unfold2d(int kH, int kW, int padding, int stride, int dilation);
     /**
      * Applies a 2D transposed convolution over this input signal.
      * Input shape: {@code (N, C_in, H, W)}, kernel shape: {@code (C_in, C_out/groups, kH, kW)}.
@@ -4042,6 +3989,8 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      * @return output DArray of shape {@code (N, C_out, D_out, H_out, W_out)}
      */
     public abstract DArray<N> conv3d(DArray<?> weights, DArray<?> bias, int padding, int stride, int dilation, int groups);
+
+    public abstract DArray<N> unfold3d(int kD, int kH, int kW, int padding, int stride, int dilation);
 
     /**
      * Applies a 3D transposed convolution over this input signal.

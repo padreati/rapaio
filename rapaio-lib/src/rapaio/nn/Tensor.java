@@ -34,6 +34,8 @@ import rapaio.darray.Shape;
 import rapaio.nn.tensors.BatchVtm;
 import rapaio.nn.tensors.CompareFalse;
 import rapaio.nn.tensors.CompareTrue;
+import rapaio.nn.tensors.Conv1d;
+import rapaio.nn.tensors.Conv2d;
 import rapaio.nn.tensors.Dropout;
 import rapaio.nn.tensors.Gather;
 import rapaio.nn.tensors.Identity;
@@ -64,15 +66,14 @@ import rapaio.nn.tensors.unary.Sqrt;
 import rapaio.nn.tensors.unary.Tanh;
 
 /**
- * Defines a tensor which is an multidimensional array with gradient computation.
+ * Defines a tensor which is a multidimensional array with gradient computation.
  * <p>
- * A tensor has a value and a gradient, both of them being DArrays. The values for a tensor
+ * A tensor has a value and a gradient, both of them being of type DArray. The values for a tensor
  * are created at initialization and the gradient values are computed during the backpropagation
  * phase.
  * <p>
- * For that purpose when a tensor can be seen as a computational node, and it also contains
- * traces in the computational graph. Those traces consist of backpropagation functions
- * which are called if needed to compute and collect gradients.
+ * Thus a tensor can be seen as a computational node, and it also contains traces in the computational graph.
+ * Those traces consist of backpropagation functions which are called if needed to compute and collect gradients.
  * <p>
  * A tensor can require its gradient to be computed. For that purpose it has to call
  * {@link #requiresGrad(boolean)} with {@code true} value. However, it is possible that even
@@ -460,5 +461,13 @@ public abstract class Tensor {
 
     public final Stretch stretch(int axis) {
         return new Stretch(this, axis);
+    }
+
+    public final Conv1d conv1d(Tensor weight, Tensor bias, int padding, int stride, int dilation, int groups) {
+        return new Conv1d(this, weight, bias, padding, stride, dilation, groups);
+    }
+
+    public final Conv2d conv2d(Tensor weight, Tensor bias, int padding, int stride, int dilation, int groups) {
+        return new Conv2d(this, weight, bias, padding, stride, dilation, groups);
     }
 }
