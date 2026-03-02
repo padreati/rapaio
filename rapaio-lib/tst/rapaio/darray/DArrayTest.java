@@ -571,7 +571,7 @@ public class DArrayTest {
         assertEquals(Shape.of(1, 24, 1, 1), t.reshape(Shape.of(1, 24, 1, 1)).shape());
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> t.reshape(Shape.of(3)));
-        assertEquals("Incompatible shape size.", ex.getMessage());
+        assertEquals("Incompatible shape size for reshape operation from Shape: [2,3,4] into Shape: [3].", ex.getMessage());
     }
 
     @ParameterizedTest

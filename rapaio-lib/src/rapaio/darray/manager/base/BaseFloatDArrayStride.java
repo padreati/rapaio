@@ -75,7 +75,8 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
     @Override
     public DArray<Float> reshape(Shape askShape, Order askOrder) {
         if (layout.shape().size() != askShape.size()) {
-            throw new IllegalArgumentException("Incompatible shape size.");
+            throw new IllegalArgumentException(String.format(
+                    "Incompatible shape size for reshape operation from %s into %s.", this.shape(), askShape));
         }
         if (Order.A == askOrder) {
             if (layout.isCOrdered()) {
@@ -1169,21 +1170,20 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
 
         for (int batch = 0; batch < n; batch++) {
 
-            DArray<?> inBatch = input.selsq(0, batch); // shape: (inChannels, inLen)
-            DArray<?> outBatch = output.selsq(0, batch); // shape: (outChannels, outLen)
+            DArray<Float> inBatch = input.selsq(0, batch); // shape: (inChannels, inLen)
+            DArray<Float> outBatch = output.selsq(0, batch); // shape: (outChannels, outLen)
 
             for (int group = 0; group < groups; group++) {
 
-                DArray<?> inSlice = inBatch.narrow(0, group * inDepth, (group + 1) * inDepth); // shape: (inDepth, inLen)
-                DArray<?> outSlice = outBatch.narrow(0, group * outDepth, (group + 1) * outDepth); // shape: (outDepth, outLen)
+                DArray<Float> inSlice = inBatch.narrow(0, group * inDepth, (group + 1) * inDepth); // shape: (inDepth, inLen)
+                DArray<Float> outSlice = outBatch.narrow(0, group * outDepth, (group + 1) * outDepth); // shape: (outDepth, outLen)
 
                 DArray<?> kernelSlice = kernel.narrow(0, group * outDepth, (group + 1) * outDepth); // shape: (outDepth, inDepth, k)
 
-                DArray<?> im2col = im2col1d(inSlice, k, padding, stride, dilation, outLen);
+                DArray<Float> unfold1d = inSlice.unfold1d(k, padding, stride, dilation);
 
-                im2col = im2col.reshape(Shape.of(inDepth * k, outLen));
                 kernelSlice = kernelSlice.reshape(Shape.of(outDepth, inDepth * k));
-                outSlice.add_(kernelSlice.mm(im2col));
+                outSlice.add_(kernelSlice.mm(unfold1d));
             }
         }
 
@@ -1276,21 +1276,42 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
         return output;
     }
 
-    private DArray<Float> im2col1d(DArray<?> inSlice, int kLen, int padding, int stride, int dilation, int outLen) {
-        int inDepth = inSlice.dim(0);
-        DArray<Float> res = inSlice.dm().zeros(DType.FLOAT, Shape.of(inDepth, kLen, outLen));
+    @Override
+    public DArray<Float> unfold1d(int kLen, int padding, int stride, int dilation) {
 
-        for (int i = 0; i < inDepth; i++) {
-            for (int k = 0; k < kLen; k++) {
-                for (int o = 0; o < outLen; o++) {
-                    int delta = o * stride + k * dilation - padding;
-                    if (delta >= 0 && delta < inSlice.dim(1)) {
-                        res.setFloat(inSlice.getFloat(i, delta), i, k, o);
+        boolean batched = this.rank() == 3;
+
+        DArray<Float> input = this;
+        if (!batched) {
+            if (this.rank() != 2) {
+                throw new IllegalArgumentException("Input must be a 2D or 3D array.");
+            }
+            input = this.stretch(0);
+        }
+
+        int n = input.dim(0);
+        int outLen = Math.floorDiv(input.dim(2) + 2 * padding - (kLen - 1) * dilation, stride);
+
+        int inC = input.dim(1);
+        DArray<Float> result = this.dm().zeros(DType.FLOAT, Shape.of(n, inC, kLen, outLen));
+
+        for (int b = 0; b < n; b++) {
+            for (int c = 0; c < inC; c++) {
+                for (int k = 0; k < kLen; k++) {
+                    for (int o = 0; o < outLen; o++) {
+                        int delta = o * stride + k * dilation - padding;
+                        if (delta >= 0 && delta < input.dim(2)) {
+                            result.setFloat(input.getFloat(b, c, delta), b, c, k, o);
+                        }
                     }
                 }
             }
         }
-        return res;
+        result = result.reshape(Shape.of(n, inC * kLen, outLen));
+        if (!batched) {
+            result = result.squeeze(0);
+        }
+        return result;
     }
 
     @Override
@@ -1316,7 +1337,8 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
         int kW = kernel.dim(3);
 
         if (inDepth * groups != inChannels) {
-            throw new IllegalArgumentException("inDepth * groups must equal inChannels.");
+            throw new IllegalArgumentException(
+                    String.format("inDepth x groups (%d x %d) must equal inChannels (%d).", inDepth, groups, inChannels));
         }
         int outDepth = outChannels / groups;
         int outH = Math.floorDiv(inH + 2 * padding - dilation * (kH - 1) - 1, stride) + 1;
@@ -1325,17 +1347,16 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
         DArray<Float> output = dm.zeros(DType.FLOAT, Shape.of(n, outChannels, outH, outW));
 
         for (int batch = 0; batch < n; batch++) {
-            DArray<?> inBatch = input.selsq(0, batch);   // (inChannels, inH, inW)
-            DArray<?> outBatch = output.selsq(0, batch); // (outChannels, outH, outW)
+            DArray<Float> inBatch = input.selsq(0, batch);   // (inChannels, inH, inW)
+            DArray<Float> outBatch = output.selsq(0, batch); // (outChannels, outH, outW)
 
             for (int group = 0; group < groups; group++) {
-                DArray<?> inSlice = inBatch.narrow(0, group * inDepth, (group + 1) * inDepth);
-                DArray<?> outSlice = outBatch.narrow(0, group * outDepth, (group + 1) * outDepth);
+                DArray<Float> inSlice = inBatch.narrow(0, group * inDepth, (group + 1) * inDepth);
+                DArray<Float> outSlice = outBatch.narrow(0, group * outDepth, (group + 1) * outDepth);
                 DArray<?> kernelSlice = kernel.narrow(0, group * outDepth, (group + 1) * outDepth);
 
                 // im2col: (inDepth * kH * kW, outH * outW)
-                DArray<?> col = im2col2d(inSlice, kH, kW, padding, stride, dilation, outH, outW);
-                col = col.reshape(Shape.of(inDepth * kH * kW, outH * outW));
+                DArray<Float> col = inSlice.unfold2d(kH, kW, padding, stride, dilation);
                 DArray<?> kFlat = kernelSlice.reshape(Shape.of(outDepth, inDepth * kH * kW));
                 // (outDepth, outH*outW)
                 DArray<?> res = kFlat.mm(col);
@@ -1352,7 +1373,53 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
     }
 
     @Override
-    public DArray<Float> convTranspose2d(DArray<?> weights, DArray<?> bias, int padding, int stride, int dilation, int groups, int outputPadding) {
+    public DArray<Float> unfold2d(int kH, int kW, int padding, int stride, int dilation) {
+        boolean batched = this.rank() == 4;
+
+        DArray<Float> input = this;
+        if (!batched) {
+            if (this.rank() != 3) {
+                throw new IllegalArgumentException("Input must be a 3D or 4D array.");
+            }
+            input = input.stretch(0);
+        }
+
+        int n = input.dim(0);
+        int inC = input.dim(1);
+
+        int inH = input.dim(2);
+        int inW = input.dim(3);
+        int outLenH = Math.floorDiv(inH + 2 * padding - dilation * (kH - 1) - 1, stride) + 1;
+        int outLenW = Math.floorDiv(inW + 2 * padding - dilation * (kW - 1) - 1, stride) + 1;
+
+        DArray<Float> result = dm.zeros(DType.FLOAT, Shape.of(n, inC, kH, kW, outLenH, outLenW));
+        for (int b = 0; b < n; b++) {
+            for (int c = 0; c < inC; c++) {
+                for (int kh = 0; kh < kH; kh++) {
+                    for (int kw = 0; kw < kW; kw++) {
+                        for (int oh = 0; oh < outLenH; oh++) {
+                            for (int ow = 0; ow < outLenW; ow++) {
+                                int ih = oh * stride + kh * dilation - padding;
+                                int iw = ow * stride + kw * dilation - padding;
+                                if (ih >= 0 && ih < inH && iw >= 0 && iw < inW) {
+                                    result.setFloat(input.getFloat(b, c, ih, iw), b, c, kh, kw, oh, ow);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        result = result.reshape(Shape.of(n, inC * kH * kW, outLenH * outLenW));
+        if (!batched) {
+            result = result.squeeze(0);
+        }
+        return result;
+    }
+
+    @Override
+    public DArray<Float> convTranspose2d(DArray<?> weights, DArray<?> bias, int padding, int stride, int dilation, int groups,
+            int outputPadding) {
         DArray<Float> input = this;
         while (input.rank() < 4) {
             input = input.stretch(0);
@@ -1399,7 +1466,7 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
                                     int ow = iw * stride + kw * dilation - padding;
                                     if (oh >= 0 && oh < outH && ow >= 0 && ow < outW) {
                                         for (int oc = 0; oc < outDepth; oc++) {
-                                            outSlice.incFloat((float)(val * kernelSlice.getFloat(c, oc, kh, kw)), oc, oh, ow);
+                                            outSlice.incFloat((float) (val * kernelSlice.getFloat(c, oc, kh, kw)), oc, oh, ow);
                                         }
                                     }
                                 }
@@ -1418,39 +1485,24 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
         return output;
     }
 
-    private DArray<Float> im2col2d(DArray<?> inSlice, int kH, int kW, int padding, int stride, int dilation, int outH, int outW) {
-        int inDepth = inSlice.dim(0);
-        DArray<Float> res = dm.zeros(DType.FLOAT, Shape.of(inDepth, kH, kW, outH, outW));
-        for (int c = 0; c < inDepth; c++) {
-            for (int kh = 0; kh < kH; kh++) {
-                for (int kw = 0; kw < kW; kw++) {
-                    for (int oh = 0; oh < outH; oh++) {
-                        for (int ow = 0; ow < outW; ow++) {
-                            int ih = oh * stride + kh * dilation - padding;
-                            int iw = ow * stride + kw * dilation - padding;
-                            if (ih >= 0 && ih < inSlice.dim(1) && iw >= 0 && iw < inSlice.dim(2)) {
-                                res.setFloat(inSlice.getFloat(c, ih, iw), c, kh, kw, oh, ow);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return res;
-    }
-
     @Override
     public DArray<Float> conv3d(DArray<?> kernel, DArray<?> bias, int padding, int stride, int dilation, int groups) {
         DArray<Float> input = this;
-        while (input.rank() < 5) input = input.stretch(0);
-        while (kernel.rank() < 5) kernel = kernel.stretch(0);
+        while (input.rank() < 5) {
+            input = input.stretch(0);
+        }
+        while (kernel.rank() < 5) {
+            kernel = kernel.stretch(0);
+        }
 
         int n = input.dim(0), inChannels = input.dim(1);
         int inD = input.dim(2), inH = input.dim(3), inW = input.dim(4);
         int outChannels = kernel.dim(0), inDepth = kernel.dim(1);
         int kD = kernel.dim(2), kH = kernel.dim(3), kW = kernel.dim(4);
 
-        if (inDepth * groups != inChannels) throw new IllegalArgumentException("inDepth * groups must equal inChannels.");
+        if (inDepth * groups != inChannels) {
+            throw new IllegalArgumentException("inDepth * groups must equal inChannels.");
+        }
         int outDepth = outChannels / groups;
         int outD = Math.floorDiv(inD + 2 * padding - dilation * (kD - 1) - 1, stride) + 1;
         int outH = Math.floorDiv(inH + 2 * padding - dilation * (kH - 1) - 1, stride) + 1;
@@ -1464,33 +1516,57 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
                 DArray<?> inSlice = inBatch.narrow(0, group * inDepth, (group + 1) * inDepth);
                 DArray<?> outSlice = outBatch.narrow(0, group * outDepth, (group + 1) * outDepth);
                 DArray<?> kernelSlice = kernel.narrow(0, group * outDepth, (group + 1) * outDepth);
-                DArray<?> col = im2col3d(inSlice, kD, kH, kW, padding, stride, dilation, outD, outH, outW)
-                        .reshape(Shape.of(inDepth * kD * kH * kW, outD * outH * outW));
-                outSlice.add_(kernelSlice.reshape(Shape.of(outDepth, inDepth * kD * kH * kW)).mm(col)
+                DArray<?> unfold = inSlice.unfold3d(kD, kH, kW, padding, stride, dilation);
+                outSlice.add_(kernelSlice.reshape(Shape.of(outDepth, inDepth * kD * kH * kW)).mm(unfold)
                         .reshape(Shape.of(outDepth, outD, outH, outW)));
             }
         }
         if (bias != null) {
-            for (int oc = 0; oc < outChannels; oc++) output.narrow(1, oc, oc + 1).add_(bias.getFloat(oc));
+            for (int oc = 0; oc < outChannels; oc++) {
+                output.narrow(1, oc, oc + 1).add_(bias.getFloat(oc));
+            }
         }
         return output;
     }
 
-    private DArray<Float> im2col3d(DArray<?> inSlice, int kD, int kH, int kW, int padding, int stride, int dilation, int outD, int outH, int outW) {
-        int inDepth = inSlice.dim(0);
-        DArray<Float> res = dm.zeros(DType.FLOAT, Shape.of(inDepth, kD, kH, kW, outD, outH, outW));
-        for (int c = 0; c < inDepth; c++) {
-            for (int kd = 0; kd < kD; kd++) {
-                for (int kh = 0; kh < kH; kh++) {
-                    for (int kw = 0; kw < kW; kw++) {
-                        for (int od = 0; od < outD; od++) {
-                            for (int oh = 0; oh < outH; oh++) {
-                                for (int ow = 0; ow < outW; ow++) {
-                                    int id = od * stride + kd * dilation - padding;
-                                    int ih = oh * stride + kh * dilation - padding;
-                                    int iw = ow * stride + kw * dilation - padding;
-                                    if (id >= 0 && id < inSlice.dim(1) && ih >= 0 && ih < inSlice.dim(2) && iw >= 0 && iw < inSlice.dim(3)) {
-                                        res.setFloat(inSlice.getFloat(c, id, ih, iw), c, kd, kh, kw, od, oh, ow);
+    @Override
+    public DArray<Float> unfold3d(int kD, int kH, int kW, int padding, int stride, int dilation) {
+
+        boolean batched = this.rank() == 5;
+        DArray<Float> input = this;
+        if (!batched) {
+            if (this.rank() != 4) {
+                throw new IllegalArgumentException("Input must be a 4D or 5D array.");
+            }
+            input = input.stretch(0);
+        }
+
+        int n = input.dim(0);
+        int inCh = input.dim(1);
+
+        int inD = input.dim(2);
+        int inH = input.dim(3);
+        int inW = input.dim(4);
+
+        int outD = Math.floorDiv(inD + 2 * padding - dilation * (kD - 1) - 1, stride) + 1;
+        int outH = Math.floorDiv(inH + 2 * padding - dilation * (kH - 1) - 1, stride) + 1;
+        int outW = Math.floorDiv(inW + 2 * padding - dilation * (kW - 1) - 1, stride) + 1;
+
+        DArray<Float> result = dm.zeros(DType.FLOAT, Shape.of(n, inCh, kD, kH, kW, outD, outH, outW));
+        for (int b = 0; b < n; b++) {
+            for (int c = 0; c < inCh; c++) {
+                for (int kd = 0; kd < kD; kd++) {
+                    for (int kh = 0; kh < kH; kh++) {
+                        for (int kw = 0; kw < kW; kw++) {
+                            for (int od = 0; od < outD; od++) {
+                                for (int oh = 0; oh < outH; oh++) {
+                                    for (int ow = 0; ow < outW; ow++) {
+                                        int id = od * stride + kd * dilation - padding;
+                                        int ih = oh * stride + kh * dilation - padding;
+                                        int iw = ow * stride + kw * dilation - padding;
+                                        if (id >= 0 && id < inD && ih >= 0 && ih < inH && iw >= 0 && iw < inW) {
+                                            result.setFloat(input.getFloat(b, c, id, ih, iw), b, c, kd, kh, kw, od, oh, ow);
+                                        }
                                     }
                                 }
                             }
@@ -1499,14 +1575,23 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
                 }
             }
         }
-        return res;
+        result = result.reshape(Shape.of(n, inCh * kD * kH * kW, outD * outH * outW));
+        if(!batched) {
+            result = result.squeeze(0);
+        }
+        return result;
     }
 
     @Override
-    public DArray<Float> convTranspose3d(DArray<?> weights, DArray<?> bias, int padding, int stride, int dilation, int groups, int outputPadding) {
+    public DArray<Float> convTranspose3d(DArray<?> weights, DArray<?> bias, int padding, int stride, int dilation, int groups,
+            int outputPadding) {
         DArray<Float> input = this;
-        while (input.rank() < 5) input = input.stretch(0);
-        while (weights.rank() < 5) weights = weights.stretch(0);
+        while (input.rank() < 5) {
+            input = input.stretch(0);
+        }
+        while (weights.rank() < 5) {
+            weights = weights.stretch(0);
+        }
 
         int n = input.dim(0), inChannels = input.dim(1);
         int inD = input.dim(2), inH = input.dim(3), inW = input.dim(4);
@@ -1514,7 +1599,9 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
         int outChannels = outDepth * groups;
         int kD = weights.dim(2), kH = weights.dim(3), kW = weights.dim(4);
 
-        if (input.dim(1) != weights.dim(0)) throw new IllegalArgumentException("Input channels and weight output channels do not match.");
+        if (input.dim(1) != weights.dim(0)) {
+            throw new IllegalArgumentException("Input channels and weight output channels do not match.");
+        }
 
         int outD = (inD - 1) * stride - 2 * padding + dilation * (kD - 1) + 1 + outputPadding;
         int outH = (inH - 1) * stride - 2 * padding + dilation * (kH - 1) + 1 + outputPadding;
@@ -1541,7 +1628,8 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
                                             int ow = iw * stride + kw * dilation - padding;
                                             if (od >= 0 && od < outD && oh >= 0 && oh < outH && ow >= 0 && ow < outW) {
                                                 for (int oc = 0; oc < outDepth; oc++) {
-                                                    outSlice.incFloat((float)(val * kernelSlice.getFloat(c, oc, kd, kh, kw)), oc, od, oh, ow);
+                                                    outSlice.incFloat((float) (val * kernelSlice.getFloat(c, oc, kd, kh, kw)), oc, od,
+                                                            oh, ow);
                                                 }
                                             }
                                         }
@@ -1554,7 +1642,9 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
             }
         }
         if (bias != null) {
-            for (int oc = 0; oc < outChannels; oc++) output.narrow(1, oc, oc + 1).add_(bias.getFloat(oc));
+            for (int oc = 0; oc < outChannels; oc++) {
+                output.narrow(1, oc, oc + 1).add_(bias.getFloat(oc));
+            }
         }
         return output;
     }

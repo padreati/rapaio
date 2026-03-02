@@ -42,6 +42,7 @@ import rapaio.nn.Optimizer;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
 import rapaio.nn.layer.AbstractNetwork;
+import rapaio.nn.layer.Conv2D;
 import rapaio.nn.layer.LayerNorm;
 import rapaio.nn.layer.Linear;
 import rapaio.nn.layer.LogSoftmax;
@@ -125,21 +126,6 @@ public class MNIST {
         }
 
         @Override
-        public List<Tensor> parameters() {
-            ArrayList<Tensor> params = new ArrayList<>();
-            params.addAll(norm1.parameters());
-            for (var lin : linears1) {
-                params.addAll(lin.parameters());
-            }
-            params.addAll(tanh.parameters());
-            params.addAll(norm2.parameters());
-            params.addAll(linear2.parameters());
-            params.addAll(softmax.parameters());
-            return params;
-        }
-
-
-        @Override
         public Tensor forward11(Tensor x) {
             x = norm1.forward11(x);
 
@@ -160,6 +146,38 @@ public class MNIST {
         }
     }
 
+    static class ConvNetwork extends AbstractNetwork {
+
+        private LayerNorm norm1;
+        private Conv2D conv2d1;
+        private Conv2D conv2d2;
+        private Linear linear2;
+        private LogSoftmax softmax;
+
+        private static final int linSize = 12*2*2;
+
+        public ConvNetwork(TensorManager tm) {
+            super(tm);
+
+            this.norm1 = new LayerNorm(tm, Shape.of(28,28));
+            this.conv2d1 = new Conv2D(tm, 1, 6, 5, 5, 2, 3, 1, 1, true);
+            this.conv2d2 = new Conv2D(tm, 6, 12, 5, 5, 0, 3, 1, 6, true);
+            this.linear2 = new Linear(tm, linSize, 10, true);
+            this.softmax = new LogSoftmax(tm, 0);
+        }
+
+        @Override
+        public Tensor forward11(Tensor x) {
+
+            x = norm1.forward11(x);
+            x = conv2d1.forward11(x.stretch(1));
+            x = conv2d2.forward11(x);
+            x = x.reshape(Shape.of(x.dim(0), linSize));
+            x = linear2.forward11(x);
+            x = softmax.forward11(x);
+            return x;
+        }
+    }
 
     public static void main(String[] args) throws IOException {
         TensorManager tm = TensorManager.ofFloat();
@@ -168,16 +186,19 @@ public class MNIST {
         MNISTDatasets mnist = new MNISTDatasets(tm);
         TabularDataset train1 = mnist.train();
         TabularDataset test1 = mnist.test();
-        TabularDataset train = new TabularDataset(tm,
-                train1.darray(0).reshape(Shape.of(train1.darray(0).dim(0), 28 * 28)), train1.darray(1));
-        TabularDataset test = new TabularDataset(tm,
-                test1.darray(0).reshape(Shape.of(test1.darray(0).dim(0), 28 * 28)), test1.darray(1));
+//        TabularDataset train = new TabularDataset(tm,
+//                train1.darray(0).reshape(Shape.of(train1.darray(0).dim(0), 28 * 28)), train1.darray(1));
+//        TabularDataset test = new TabularDataset(tm,
+//                test1.darray(0).reshape(Shape.of(test1.darray(0).dim(0), 28 * 28)), test1.darray(1));
+        TabularDataset train = new TabularDataset(tm, train1.darray(0), train1.darray(1));
+        TabularDataset test = new TabularDataset(tm, test1.darray(0), test1.darray(1));
 
         int epochs = 10;
         double lr = 1e-3;
-        int batchSize = 100;
+        int batchSize = 1000;
 
-        var nn = new SplitNetwork(tm, 7, 2);
+        var nn = new ConvNetwork(tm);
+//        var nn = new SplitNetwork(tm, 7, 2);
 
         var optimizer = Optimizer.Adam(tm, nn.parameters())
                 .lr.set(lr);
@@ -206,7 +227,9 @@ public class MNIST {
                 Autograd.backward(lossOut.tensor());
                 optimizer.step();
                 batchCount++;
+                System.out.print(".");
             }
+            System.out.println();
             trainLossValue /= batchCount;
 
             nn.eval();
