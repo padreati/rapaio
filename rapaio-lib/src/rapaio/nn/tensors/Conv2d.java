@@ -65,18 +65,21 @@ public final class Conv2d extends Tensor {
             int inDepth = w.value().dim(1);
             int outDepth = w.value().dim(0) / groups;
             DArray<?> gradW = tm.zerosArray(w.value().shape());
+
+            var xBatches = x.value().chunk(0, false, 1);    // (C_in, H, W)
+            var gyBatches = this.grad().chunk(0, false, 1); // (C_out, outH, outW)
+
             for (int batch = 0; batch < n; batch++) {
-                DArray<?> xBatch = x.value().selsq(0, batch);    // (C_in, H, W)
-                DArray<?> gyBatch = this.grad().selsq(0, batch); // (C_out, outH, outW)
-                for (int g = 0; g < groups; g++) {
-                    DArray<?> xSlice = xBatch.narrow(0, g * inDepth, (g + 1) * inDepth);
-                    DArray<?> gySlice = gyBatch.narrow(0, g * outDepth, (g + 1) * outDepth);
-                    // col: (inDepth*kH*kW, outH*outW)
-                    DArray<?> col = xSlice.unfold2d(kH, kW, padding, stride, dilation);
+                var xSlices = xBatches.get(batch).chunk(0, true, inDepth);
+                var gySlices = gyBatches.get(batch).chunk(0, true, outDepth);
+                for (int group = 0; group < groups; group++) {
+                    // unfold: (inDepth*kH*kW, outH*outW)
+                    DArray<?> unfold = xSlices.get(group).unfold2d(kH, kW, padding, stride, dilation);
                     // gyFlat: (outDepth, outH*outW)
-                    DArray<?> gyFlat = gySlice.reshape(Shape.of(outDepth, outH * outW));
-                    DArray<?> dw = gyFlat.mm(col.t()).reshape(Shape.of(outDepth, inDepth, kH, kW));
-                    gradW.narrow(0, g * outDepth, (g + 1) * outDepth).add_(dw);
+                    DArray<?> gyFlat = gySlices.get(group).reshape(Shape.of(outDepth, outH * outW));
+
+                    var gradWn = gradW.narrow(0, group * outDepth, (group + 1) * outDepth).reshape(Shape.of(outDepth, inDepth * kH * kW));
+                    gyFlat.mm(unfold.t_(), gradWn);
                 }
             }
             return gradW;

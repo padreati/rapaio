@@ -3804,6 +3804,10 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
         return mm(other, Order.defaultOrder());
     }
 
+    public final DArray<N> mm(DArray<?> other, DArray<?> to) {
+        return mm(other, Order.defaultOrder(), to);
+    }
+
     /**
      * Performs matrix multiplication between two DArrays. The two DArrays must both be matrices.
      * <p>
@@ -3817,6 +3821,8 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      * @return result of matrix multiplication.
      */
     public abstract DArray<N> mm(DArray<?> other, Order askOrder);
+
+    public abstract DArray<N> mm(DArray<?> other, Order askOrder, DArray<?> to);
 
     /**
      * Performs batch matrix-matrix multiplication. Batch index is the first parameter, if exists.

@@ -63,12 +63,14 @@ public final class Conv1d extends Tensor {
             for (int batch = 0; batch < n; batch++) {
                 DArray<?> xBatch = x.value().selsq(0, batch);       // (C_in, L_in)
                 DArray<?> gyBatch = this.grad().selsq(0, batch);    // (C_out, L_out)
-                for (int g = 0; g < groups; g++) {
-                    DArray<?> xSlice = xBatch.narrow(0, g * inDepth, (g + 1) * inDepth);  // (inDepth, L_in)
-                    DArray<?> gySlice = gyBatch.narrow(0, g * outDepth, (g + 1) * outDepth); // (outDepth, L_out)
-                    DArray<?> col = xSlice.unfold1d(k, padding, stride, dilation);          // (inDepth*k, L_out)
-                    DArray<?> dw = gySlice.mm(col.t()).reshape(Shape.of(outDepth, inDepth, k)); // (outDepth, inDepth, k)
-                    gradW.narrow(0, g * outDepth, (g + 1) * outDepth).add_(dw);
+
+                var xSlices = xBatch.chunk(0, true, inDepth);
+                var gySlices = gyBatch.chunk(0, true, outDepth);
+
+                for (int group = 0; group < groups; group++) {
+                    DArray<?> unfold = xSlices.get(group).unfold1d(k, padding, stride, dilation);          // (inDepth*k, L_out)
+                    var gradWn = gradW.narrow(0, group * outDepth, (group + 1) * outDepth).reshape(Shape.of(outDepth, inDepth * k));
+                    gySlices.get(group).mm(unfold.t_(), gradWn); // (outDepth, inDepth, k)
                 }
             }
             return gradW;

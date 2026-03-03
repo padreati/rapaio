@@ -995,6 +995,21 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
         return mmInternalParallel(other, ret);
     }
 
+    @Override
+    public DArray<Double> mm(DArray<?> other, Order askOrder, DArray<?> to) {
+        if (shape().rank() != 2 || other.shape().rank() != 2 || shape().dim(1) != other.shape().dim(0)) {
+            throw new IllegalArgumentException(
+                    String.format("Operands are not valid for matrix-matrix multiplication (m = %s, v = %s).", shape(), other.shape()));
+        }
+        if (askOrder == Order.S) {
+            throw new IllegalArgumentException("Illegal askOrder value, must be Order.C or Order.F");
+        }
+        if(to.dt() != dt()) {
+            throw new IllegalArgumentException("Target array has different data type than operation result.");
+        }
+        return mmInternalParallel(other, to.cast(dt));
+    }
+
     private DArray<Double> mmInternalParallel(DArray<?> other, DArray<Double> to) {
         int m = shape().dim(0);
         int n = shape().dim(1);
@@ -1007,28 +1022,11 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
         int iStride = ((StrideLayout) to.layout()).stride(0);
         int jStride = ((StrideLayout) to.layout()).stride(1);
 
-        CountDownLatch latch = new CountDownLatch(m * p);
-//        try (ExecutorService service = Executors.newFixedThreadPool(8)) {
-
         for (int r = 0; r < m; r++) {
-            int rr = r;
             for (int c = 0; c < p; c++) {
-                int cc = c;
-//                    service.submit(() -> {
-                var krow = (BaseDoubleDArrayStride) rows.get(rr);
-                to.ptrIncDouble(off + rr * iStride + cc * jStride, (double) (krow.innerUnchecked(cols.get(cc), 0, n)));
-//                        latch.countDown();
-//                    });
+                var krow = (BaseDoubleDArrayStride) rows.get(r);
+                to.ptrIncDouble(off + r * iStride + c * jStride, (double) (krow.innerUnchecked(cols.get(c), 0, n)));
             }
-//            }
-
-//            try {
-//                latch.await();
-//                service.shutdown();
-//                service.shutdownNow();
-//            } catch (InterruptedException e) {
-//                throw new RuntimeException(e);
-//            }
         }
         return to;
     }
@@ -1316,16 +1314,19 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
 
     @Override
     public DArray<Double> conv2d(DArray<?> kernel, DArray<?> bias, int padding, int stride, int dilation, int groups) {
-        DArray<Double> input = this;
-        while (input.rank() < 4) {
-            input = input.stretch(0);
+        DArray<Double> in = this;
+        while (in.rank() < 4) {
+            in = in.stretch(0);
         }
-        if (input.rank() != 4) {
+        if (in.rank() != 4) {
             throw new IllegalArgumentException("Input must have at most 4 dimensions.");
         }
         while (kernel.rank() < 4) {
             kernel = kernel.stretch(0);
         }
+
+        var input = in;
+        var kk = kernel;
 
         int n = input.dim(0);
         int inChannels = input.dim(1);
@@ -1346,21 +1347,32 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
 
         DArray<Double> output = dm.zeros(DType.DOUBLE, Shape.of(n, outChannels, outH, outW));
 
-        for (int batch = 0; batch < n; batch++) {
-            DArray<Double> inBatch = input.selsq(0, batch);   // (inChannels, inH, inW)
-            DArray<Double> outBatch = output.selsq(0, batch); // (outChannels, outH, outW)
+        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            CountDownLatch latch = new CountDownLatch(n);
+            for (int batch = 0; batch < n; batch++) {
+                int b = batch;
+                executor.submit(() -> {
+                    DArray<Double> inBatch = input.selsq(0, b);   // (inChannels, inH, inW)
+                    DArray<Double> outBatch = output.selsq(0, b); // (outChannels, outH, outW)
 
-            for (int group = 0; group < groups; group++) {
-                DArray<Double> inSlice = inBatch.narrow(0, group * inDepth, (group + 1) * inDepth);
-                DArray<Double> outSlice = outBatch.narrow(0, group * outDepth, (group + 1) * outDepth);
-                DArray<?> kernelSlice = kernel.narrow(0, group * outDepth, (group + 1) * outDepth);
+                    var inSlices = inBatch.chunk(0, true, inDepth);
+                    var outSlices = outBatch.chunk(0, true, outDepth);
+                    var kernelSlices = kk.chunk(0, true, outDepth);
+                    for (int group = 0; group < groups; group++) {
 
-                // im2col: (inDepth * kH * kW, outH * outW)
-                DArray<Double> col = inSlice.unfold2d(kH, kW, padding, stride, dilation);
-                DArray<?> kFlat = kernelSlice.reshape(Shape.of(outDepth, inDepth * kH * kW));
-                // (outDepth, outH*outW)
-                DArray<?> res = kFlat.mm(col);
-                outSlice.add_(res.reshape(Shape.of(outDepth, outH, outW)));
+                        // im2col: (inDepth * kH * kW, outH * outW)
+                        DArray<Double> col = inSlices.get(group).unfold2d(kH, kW, padding, stride, dilation);
+                        DArray<?> kFlat = kernelSlices.get(group).reshape(Shape.of(outDepth, inDepth * kH * kW));
+                        // (outDepth, outH*outW)
+                        DArray<?> res = kFlat.mm(col);
+                        outSlices.get(group).add_(res.reshape(Shape.of(outDepth, outH, outW)));
+                    }
+                    latch.countDown();
+                });
+            }
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
             }
         }
 
@@ -1375,14 +1387,10 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
     @Override
     public DArray<Double> unfold2d(int kH, int kW, int padding, int stride, int dilation) {
         boolean batched = this.rank() == 4;
-
-        DArray<Double> input = this;
-        if (!batched) {
-            if (this.rank() != 3) {
-                throw new IllegalArgumentException("Input must be a 3D or 4D array.");
-            }
-            input = input.stretch(0);
+        if (this.rank() != 3 && rank() != 4) {
+            throw new IllegalArgumentException("Input must be a 3D or 4D array.");
         }
+        DArray<Double> input = batched ? this : this.stretch(0);
 
         int n = input.dim(0);
         int inC = input.dim(1);
@@ -1410,23 +1418,24 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
                 }
             }
         }
-        result = result.reshape(Shape.of(n, inC * kH * kW, outLenH * outLenW));
+        var ret = result.reshape(Shape.of(n, inC * kH * kW, outLenH * outLenW));
         if (!batched) {
-            result = result.squeeze(0);
+            ret = ret.squeeze(0);
         }
-        return result;
+        return ret;
     }
 
     @Override
-    public DArray<Double> convTranspose2d(DArray<?> weights, DArray<?> bias, int padding, int stride, int dilation, int groups,
+    public DArray<Double> convTranspose2d(DArray<?> w, DArray<?> bias, int padding, int stride, int dilation, int groups,
             int outputPadding) {
         DArray<Double> input = this;
         while (input.rank() < 4) {
             input = input.stretch(0);
         }
-        while (weights.rank() < 4) {
-            weights = weights.stretch(0);
+        while (w.rank() < 4) {
+            w = w.stretch(0);
         }
+        var weights = w;
 
         int n = input.dim(0);
         int inChannels = input.dim(1);
@@ -1447,33 +1456,44 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
 
         DArray<Double> output = dm.zeros(DType.DOUBLE, Shape.of(n, outChannels, outH, outW));
 
-        for (int batch = 0; batch < n; batch++) {
-            DArray<?> inBatch = input.selsq(0, batch);
-            DArray<?> outBatch = output.selsq(0, batch);
+        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            CountDownLatch latch = new CountDownLatch(n);
+            for (int batch = 0; batch < n; batch++) {
+                DArray<?> inBatch = input.selsq(0, batch);
+                DArray<?> outBatch = output.selsq(0, batch);
 
-            for (int group = 0; group < groups; group++) {
-                DArray<?> inSlice = inBatch.narrow(0, group * inDepth, (group + 1) * inDepth);
-                DArray<?> outSlice = outBatch.narrow(0, group * outDepth, (group + 1) * outDepth);
-                DArray<?> kernelSlice = weights.narrow(0, group * inDepth, (group + 1) * inDepth);
+                executor.submit(() -> {
+                    for (int group = 0; group < groups; group++) {
+                        DArray<?> inSlice = inBatch.narrow(0, group * inDepth, (group + 1) * inDepth);
+                        DArray<?> outSlice = outBatch.narrow(0, group * outDepth, (group + 1) * outDepth);
+                        DArray<?> kernelSlice = weights.narrow(0, group * inDepth, (group + 1) * inDepth);
 
-                for (int ih = 0; ih < inH; ih++) {
-                    for (int iw = 0; iw < inW; iw++) {
-                        for (int c = 0; c < inDepth; c++) {
-                            double val = inSlice.getDouble(c, ih, iw);
-                            for (int kh = 0; kh < kH; kh++) {
-                                for (int kw = 0; kw < kW; kw++) {
-                                    int oh = ih * stride + kh * dilation - padding;
-                                    int ow = iw * stride + kw * dilation - padding;
-                                    if (oh >= 0 && oh < outH && ow >= 0 && ow < outW) {
-                                        for (int oc = 0; oc < outDepth; oc++) {
-                                            outSlice.incDouble((double) (val * kernelSlice.getDouble(c, oc, kh, kw)), oc, oh, ow);
+                        for (int ih = 0; ih < inH; ih++) {
+                            for (int iw = 0; iw < inW; iw++) {
+                                for (int c = 0; c < inDepth; c++) {
+                                    double val = inSlice.getDouble(c, ih, iw);
+                                    for (int kh = 0; kh < kH; kh++) {
+                                        int oh = ih * stride + kh * dilation - padding;
+                                        int ow = iw * stride - padding;
+                                        for (int kw = 0; kw < kW; kw++) {
+                                            if (oh >= 0 && oh < outH && ow >= 0 && ow < outW) {
+                                                for (int oc = 0; oc < outDepth; oc++) {
+                                                    outSlice.incDouble((double) (val * kernelSlice.getDouble(c, oc, kh, kw)), oc, oh, ow);
+                                                }
+                                            }
+                                            ow += dilation;
                                         }
                                     }
                                 }
                             }
                         }
                     }
-                }
+                    latch.countDown();
+                });
+            }
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
             }
         }
 
@@ -1576,7 +1596,7 @@ public final class BaseDoubleDArrayStride extends AbstractStrideDArray<Double> {
             }
         }
         result = result.reshape(Shape.of(n, inCh * kD * kH * kW, outD * outH * outW));
-        if(!batched) {
+        if (!batched) {
             result = result.squeeze(0);
         }
         return result;
