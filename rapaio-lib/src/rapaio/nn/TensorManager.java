@@ -33,7 +33,7 @@ import rapaio.darray.DType;
 import rapaio.darray.Order;
 import rapaio.darray.Shape;
 import rapaio.nn.tensors.Variable;
-import rapaio.nn.tensors.shape.Cat;
+import rapaio.nn.tensors.shape.CatNode;
 
 /**
  * Context manager for tensor computations. This class allows one to create tensors and DArrays which
@@ -230,6 +230,6 @@ public final class TensorManager implements AutoCloseable {
     }
 
     public Tensor cat(int axis, Tensor... tensors) {
-        return new Cat(this, axis, tensors);
+        return new CatNode(this, axis, tensors);
     }
 }

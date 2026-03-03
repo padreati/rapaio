@@ -43,6 +43,7 @@ import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
 import rapaio.nn.layer.AbstractNetwork;
 import rapaio.nn.layer.Conv2D;
+import rapaio.nn.layer.Dropout;
 import rapaio.nn.layer.LayerNorm;
 import rapaio.nn.layer.Linear;
 import rapaio.nn.layer.LogSoftmax;
@@ -150,19 +151,25 @@ public class MNIST {
 
         private LayerNorm norm1;
         private Conv2D conv2d1;
+        private Dropout dropout1;
         private Conv2D conv2d2;
+        private LayerNorm norm2;
+        private Linear linear1;
         private Linear linear2;
         private LogSoftmax softmax;
 
-        private static final int linSize = 12*2*2;
+        private static final int linSize = 32*3*3;
 
         public ConvNetwork(TensorManager tm) {
             super(tm);
 
             this.norm1 = new LayerNorm(tm, Shape.of(28,28));
-            this.conv2d1 = new Conv2D(tm, 1, 6, 5, 5, 2, 3, 1, 1, true);
-            this.conv2d2 = new Conv2D(tm, 6, 12, 5, 5, 0, 3, 1, 6, true);
-            this.linear2 = new Linear(tm, linSize, 10, true);
+            this.conv2d1 = new Conv2D(tm, 1, 16, 4, 4, 0, 4, 1, 1, true);
+            this.dropout1 = new Dropout(tm, 0.25);
+            this.conv2d2 = new Conv2D(tm, 16, 32, 3, 3, 0, 2, 1, 2, true);
+            this.norm2 = new LayerNorm(tm, Shape.of(32,3,3));
+            this.linear1 = new Linear(tm, linSize, 32, true);
+            this.linear2 = new Linear(tm, 32, 10, true);
             this.softmax = new LogSoftmax(tm, 0);
         }
 
@@ -171,8 +178,11 @@ public class MNIST {
 
             x = norm1.forward11(x);
             x = conv2d1.forward11(x.stretch(1));
+            x = dropout1.forward11(x);
             x = conv2d2.forward11(x);
+            x = norm2.forward11(x);
             x = x.reshape(Shape.of(x.dim(0), linSize));
+            x = linear1.forward11(x);
             x = linear2.forward11(x);
             x = softmax.forward11(x);
             return x;
@@ -200,8 +210,7 @@ public class MNIST {
         var nn = new ConvNetwork(tm);
 //        var nn = new SplitNetwork(tm, 7, 2);
 
-        var optimizer = Optimizer.Adam(tm, nn.parameters())
-                .lr.set(lr);
+        var optimizer = Optimizer.Adam(tm, nn.parameters()).lr.set(lr);
 
         var trainLoss = VarDouble.empty().name("trainLoss");
         var testLoss = VarDouble.empty().name("trainLoss");

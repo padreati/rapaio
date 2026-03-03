@@ -27,7 +27,7 @@ import rapaio.darray.Shape;
 import rapaio.nn.NetworkState;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
-import rapaio.nn.tensors.Standardize1d;
+import rapaio.nn.tensors.Standardize1dNode;
 
 public class BatchNorm1D extends AbstractNetwork {
 
@@ -79,7 +79,7 @@ public class BatchNorm1D extends AbstractNetwork {
             throw new IllegalArgumentException("Input has an invalid shape: " + x.value().shape());
         }
         if (train) {
-            Standardize1d s = x.standardize1d(0, 0, epsValue);
+            Standardize1dNode s = x.standardize1d(0, 0, epsValue);
 
             if (sampleMean == null || sampleStd == null) {
                 sampleMean = s.outputMean();

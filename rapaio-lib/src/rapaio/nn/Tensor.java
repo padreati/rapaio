@@ -31,39 +31,39 @@ import rapaio.darray.Compare;
 import rapaio.darray.DArray;
 import rapaio.darray.Order;
 import rapaio.darray.Shape;
-import rapaio.nn.tensors.BatchVtm;
-import rapaio.nn.tensors.CompareFalse;
-import rapaio.nn.tensors.CompareTrue;
-import rapaio.nn.tensors.Conv1d;
-import rapaio.nn.tensors.Conv2d;
-import rapaio.nn.tensors.Dropout;
-import rapaio.nn.tensors.Gather;
-import rapaio.nn.tensors.Identity;
-import rapaio.nn.tensors.LogSoftmax;
-import rapaio.nn.tensors.Softmax;
-import rapaio.nn.tensors.Standardize1d;
-import rapaio.nn.tensors.StandardizeOn;
-import rapaio.nn.tensors.Std1d;
-import rapaio.nn.tensors.StdOn;
-import rapaio.nn.tensors.Stretch;
-import rapaio.nn.tensors.binary.Add;
-import rapaio.nn.tensors.binary.Div;
-import rapaio.nn.tensors.binary.Mul;
-import rapaio.nn.tensors.binary.Sub;
-import rapaio.nn.tensors.reduce.Max;
-import rapaio.nn.tensors.reduce.Mean1d;
-import rapaio.nn.tensors.reduce.MeanOn;
-import rapaio.nn.tensors.reduce.Sum;
-import rapaio.nn.tensors.reduce.Sum1d;
-import rapaio.nn.tensors.shape.Narrow;
-import rapaio.nn.tensors.shape.Reshape;
-import rapaio.nn.tensors.unary.Exp;
-import rapaio.nn.tensors.unary.Log;
-import rapaio.nn.tensors.unary.Neg;
-import rapaio.nn.tensors.unary.Sigmoid;
-import rapaio.nn.tensors.unary.Sqr;
-import rapaio.nn.tensors.unary.Sqrt;
-import rapaio.nn.tensors.unary.Tanh;
+import rapaio.nn.tensors.BatchVtmNode;
+import rapaio.nn.tensors.CompareFalseNode;
+import rapaio.nn.tensors.CompareTrueNode;
+import rapaio.nn.tensors.Conv1dNode;
+import rapaio.nn.tensors.Conv2dNode;
+import rapaio.nn.tensors.DropoutNode;
+import rapaio.nn.tensors.GatherNode;
+import rapaio.nn.tensors.IdentityNode;
+import rapaio.nn.tensors.LogSoftmaxNode;
+import rapaio.nn.tensors.SoftmaxNode;
+import rapaio.nn.tensors.Standardize1dNode;
+import rapaio.nn.tensors.StandardizeOnNode;
+import rapaio.nn.tensors.Std1dNode;
+import rapaio.nn.tensors.StdOnNode;
+import rapaio.nn.tensors.StretchNode;
+import rapaio.nn.tensors.binary.AddNode;
+import rapaio.nn.tensors.binary.DivNode;
+import rapaio.nn.tensors.binary.MulNode;
+import rapaio.nn.tensors.binary.SubNode;
+import rapaio.nn.tensors.reduce.MaxNode;
+import rapaio.nn.tensors.reduce.Mean1dNode;
+import rapaio.nn.tensors.reduce.MeanOnNode;
+import rapaio.nn.tensors.reduce.SumNode;
+import rapaio.nn.tensors.reduce.Sum1dNode;
+import rapaio.nn.tensors.shape.NarrowNode;
+import rapaio.nn.tensors.shape.ReshapeNode;
+import rapaio.nn.tensors.unary.ExpNode;
+import rapaio.nn.tensors.unary.LogNode;
+import rapaio.nn.tensors.unary.NegNode;
+import rapaio.nn.tensors.unary.SigmoidNode;
+import rapaio.nn.tensors.unary.SqrNode;
+import rapaio.nn.tensors.unary.SqrtNode;
+import rapaio.nn.tensors.unary.TanhNode;
 
 /**
  * Defines a tensor which is a multidimensional array with gradient computation.
@@ -267,20 +267,20 @@ public abstract class Tensor {
      *
      * @return new tensor instance copy
      */
-    public final Identity identity() {
-        return new Identity(this);
+    public final IdentityNode identity() {
+        return new IdentityNode(this);
     }
 
-    public final Reshape reshape(Shape shape) {
-        return new Reshape(this, shape, Order.defaultOrder());
+    public final ReshapeNode reshape(Shape shape) {
+        return new ReshapeNode(this, shape, Order.defaultOrder());
     }
 
-    public final Reshape reshape(Shape shape, Order askOrder) {
-        return new Reshape(this, shape, askOrder);
+    public final ReshapeNode reshape(Shape shape, Order askOrder) {
+        return new ReshapeNode(this, shape, askOrder);
     }
 
-    public final Narrow narrow(int axis, int start, int end) {
-        return new Narrow(this, axis, start, end);
+    public final NarrowNode narrow(int axis, int start, int end) {
+        return new NarrowNode(this, axis, start, end);
     }
 
     public final List<Tensor> split(int axis, int... indices) {
@@ -297,8 +297,8 @@ public abstract class Tensor {
      * @param other tensor to be added with the current one
      * @return new tensor which is the sum
      */
-    public final Add add(Tensor other) {
-        return new Add(this, other);
+    public final AddNode add(Tensor other) {
+        return new AddNode(this, other);
     }
 
     /**
@@ -307,167 +307,167 @@ public abstract class Tensor {
      * @param value value to be added
      * @return new tensor which contains the sum
      */
-    public final Add add(double value) {
-        return new Add(this, tm.scalarTensor(value));
+    public final AddNode add(double value) {
+        return new AddNode(this, tm.scalarTensor(value));
     }
 
-    public final Sub sub(Tensor other) {
-        return new Sub(this, other);
+    public final SubNode sub(Tensor other) {
+        return new SubNode(this, other);
     }
 
-    public final Sub sub(double value) {
-        return new Sub(this, tm.scalarTensor(value));
+    public final SubNode sub(double value) {
+        return new SubNode(this, tm.scalarTensor(value));
     }
 
-    public final Mul mul(Tensor other) {
-        return new Mul(this, other);
+    public final MulNode mul(Tensor other) {
+        return new MulNode(this, other);
     }
 
-    public final Mul mul(double value) {
-        return new Mul(this, tm.scalarTensor(value));
+    public final MulNode mul(double value) {
+        return new MulNode(this, tm.scalarTensor(value));
     }
 
-    public final Div div(Tensor other) {
-        return new Div(this, other);
+    public final DivNode div(Tensor other) {
+        return new DivNode(this, other);
     }
 
-    public final Div div(double value) {
-        return new Div(this, tm.scalarTensor(value));
+    public final DivNode div(double value) {
+        return new DivNode(this, tm.scalarTensor(value));
     }
 
-    public final Sum sum() {
-        return new Sum(this);
+    public final SumNode sum() {
+        return new SumNode(this);
     }
 
-    public final Sum1d sum1d(int axis) {
-        return new Sum1d(this, axis);
+    public final Sum1dNode sum1d(int axis) {
+        return new Sum1dNode(this, axis);
     }
 
-    public final Mean1d mean1d(int axis) {
-        return new Mean1d(this, axis);
+    public final Mean1dNode mean1d(int axis) {
+        return new Mean1dNode(this, axis);
     }
 
-    public final MeanOn meanOn(Shape shape) {
-        return new MeanOn(this, shape);
+    public final MeanOnNode meanOn(Shape shape) {
+        return new MeanOnNode(this, shape);
     }
 
-    public final Std1d std1d(int axis) {
-        return new Std1d(this, axis, 0, 1e-3, null);
+    public final Std1dNode std1d(int axis) {
+        return new Std1dNode(this, axis, 0, 1e-3, null);
     }
 
-    public final Std1d std1d(int axis, int ddof) {
-        return new Std1d(this, axis, ddof, 1e-3, null);
+    public final Std1dNode std1d(int axis, int ddof) {
+        return new Std1dNode(this, axis, ddof, 1e-3, null);
     }
 
-    public final Std1d std1d(int axis, int ddof, Tensor mean) {
-        return new Std1d(this, axis, ddof, 1e-3, mean);
+    public final Std1dNode std1d(int axis, int ddof, Tensor mean) {
+        return new Std1dNode(this, axis, ddof, 1e-3, mean);
     }
 
-    public final Std1d std1d(int axis, int ddof, double epsilon, Tensor mean) {
-        return new Std1d(this, axis, ddof, epsilon, mean);
+    public final Std1dNode std1d(int axis, int ddof, double epsilon, Tensor mean) {
+        return new Std1dNode(this, axis, ddof, epsilon, mean);
     }
 
-    public final StdOn stdOn(Shape shape) {
-        return new StdOn(this, shape, 0, 1e-3, null);
+    public final StdOnNode stdOn(Shape shape) {
+        return new StdOnNode(this, shape, 0, 1e-3, null);
     }
 
-    public final StdOn stdOn(Shape shape, int ddof) {
-        return new StdOn(this, shape, ddof, 1e-3, null);
+    public final StdOnNode stdOn(Shape shape, int ddof) {
+        return new StdOnNode(this, shape, ddof, 1e-3, null);
     }
 
-    public final StdOn stdOn(Shape shape, int ddof, Tensor mean) {
-        return new StdOn(this, shape, ddof, 1e-3, mean);
+    public final StdOnNode stdOn(Shape shape, int ddof, Tensor mean) {
+        return new StdOnNode(this, shape, ddof, 1e-3, mean);
     }
 
-    public final StdOn stdOn(Shape shape, int ddof, double epsilon, Tensor mean) {
-        return new StdOn(this, shape, ddof, epsilon, mean);
+    public final StdOnNode stdOn(Shape shape, int ddof, double epsilon, Tensor mean) {
+        return new StdOnNode(this, shape, ddof, epsilon, mean);
     }
 
-    public final Standardize1d standardize1d(int axis, int ddof, double eps) {
-        return new Standardize1d(this, axis, ddof, eps);
+    public final Standardize1dNode standardize1d(int axis, int ddof, double eps) {
+        return new Standardize1dNode(this, axis, ddof, eps);
     }
 
-    public final StandardizeOn standardizeOn(Shape shape, int ddof, double eps) {
-        return new StandardizeOn(this, shape, ddof, eps);
+    public final StandardizeOnNode standardizeOn(Shape shape, int ddof, double eps) {
+        return new StandardizeOnNode(this, shape, ddof, eps);
     }
 
-    public final Sqr sqr() {
-        return new Sqr(this);
+    public final SqrNode sqr() {
+        return new SqrNode(this);
     }
 
-    public final Sqrt sqrt() {
-        return new Sqrt(this);
+    public final SqrtNode sqrt() {
+        return new SqrtNode(this);
     }
 
-    public final BatchVtm bvtm(Tensor other) {
-        return new BatchVtm(this, other);
+    public final BatchVtmNode bvtm(Tensor other) {
+        return new BatchVtmNode(this, other);
     }
 
-    public final Dropout dropout(double p, Random random) {
+    public final DropoutNode dropout(double p, Random random) {
         return dropout(p, random, false);
     }
 
-    public final Dropout dropout(double p, Random random, boolean inplace) {
-        return new Dropout(this, p, random, inplace);
+    public final DropoutNode dropout(double p, Random random, boolean inplace) {
+        return new DropoutNode(this, p, random, inplace);
     }
 
-    public final Sigmoid sigmoid() {
-        return new Sigmoid(this);
+    public final SigmoidNode sigmoid() {
+        return new SigmoidNode(this);
     }
 
-    public final Tanh tanh() {
-        return new Tanh(this);
+    public final TanhNode tanh() {
+        return new TanhNode(this);
     }
 
-    public final Max max(double threshold) {
-        return new Max(this, threshold);
+    public final MaxNode max(double threshold) {
+        return new MaxNode(this, threshold);
     }
 
-    public final Neg neg() {
-        return new Neg(this);
+    public final NegNode neg() {
+        return new NegNode(this);
     }
 
-    public final Exp exp() {
-        return new Exp(this);
+    public final ExpNode exp() {
+        return new ExpNode(this);
     }
 
-    public final Log log() {
-        return new Log(this, -1);
+    public final LogNode log() {
+        return new LogNode(this, -1);
     }
 
-    public final Log log(double eps) {
-        return new Log(this, eps);
+    public final LogNode log(double eps) {
+        return new LogNode(this, eps);
     }
 
-    public final Softmax softmax(int axis) {
-        return new Softmax(this, axis);
+    public final SoftmaxNode softmax(int axis) {
+        return new SoftmaxNode(this, axis);
     }
 
-    public final LogSoftmax logsoftmax(int axis) {
-        return new LogSoftmax(this, axis);
+    public final LogSoftmaxNode logsoftmax(int axis) {
+        return new LogSoftmaxNode(this, axis);
     }
 
-    public final CompareTrue compareTrue(Compare cmp, double threshold) {
-        return new CompareTrue(this, cmp, threshold);
+    public final CompareTrueNode compareTrue(Compare cmp, double threshold) {
+        return new CompareTrueNode(this, cmp, threshold);
     }
 
-    public final CompareFalse compareFalse(Compare cmp, double threshold) {
-        return new CompareFalse(this, cmp, threshold);
+    public final CompareFalseNode compareFalse(Compare cmp, double threshold) {
+        return new CompareFalseNode(this, cmp, threshold);
     }
 
-    public final Gather gather(int axis, Tensor index) {
-        return new Gather(this, axis, index);
+    public final GatherNode gather(int axis, Tensor index) {
+        return new GatherNode(this, axis, index);
     }
 
-    public final Stretch stretch(int axis) {
-        return new Stretch(this, axis);
+    public final StretchNode stretch(int axis) {
+        return new StretchNode(this, axis);
     }
 
-    public final Conv1d conv1d(Tensor weight, Tensor bias, int padding, int stride, int dilation, int groups) {
-        return new Conv1d(this, weight, bias, padding, stride, dilation, groups);
+    public final Conv1dNode conv1d(Tensor weight, Tensor bias, int padding, int stride, int dilation, int groups) {
+        return new Conv1dNode(this, weight, bias, padding, stride, dilation, groups);
     }
 
-    public final Conv2d conv2d(Tensor weight, Tensor bias, int padding, int stride, int dilation, int groups) {
-        return new Conv2d(this, weight, bias, padding, stride, dilation, groups);
+    public final Conv2dNode conv2d(Tensor weight, Tensor bias, int padding, int stride, int dilation, int groups) {
+        return new Conv2dNode(this, weight, bias, padding, stride, dilation, groups);
     }
 }
