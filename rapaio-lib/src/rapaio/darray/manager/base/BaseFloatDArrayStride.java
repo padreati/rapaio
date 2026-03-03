@@ -21,6 +21,7 @@
 
 package rapaio.darray.manager.base;
 
+import static rapaio.util.Hardware.CORES;
 import static rapaio.util.Hardware.L2_CACHE_SIZE;
 
 import java.util.ArrayList;
@@ -984,33 +985,25 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
 
     @Override
     public DArray<Float> mm(DArray<?> other, Order askOrder) {
-        if (shape().rank() != 2 || other.shape().rank() != 2 || shape().dim(1) != other.shape().dim(0)) {
-            throw new IllegalArgumentException(
-                    String.format("Operands are not valid for matrix-matrix multiplication (m = %s, v = %s).", shape(), other.shape()));
-        }
         if (askOrder == Order.S) {
             throw new IllegalArgumentException("Illegal askOrder value, must be Order.C or Order.F");
         }
-        var ret = dm.zeros(dt, Shape.of(shape().dim(0), other.shape().dim(1)), askOrder);
-        return mmInternalParallel(other, ret);
+        return mm(other, dm.zeros(dt, Shape.of(shape().dim(0), other.shape().dim(1)), askOrder));
     }
 
     @Override
-    public DArray<Float> mm(DArray<?> other, Order askOrder, DArray<?> to) {
+    public DArray<Float> mm(DArray<?> other, DArray<?> to) {
         if (shape().rank() != 2 || other.shape().rank() != 2 || shape().dim(1) != other.shape().dim(0)) {
             throw new IllegalArgumentException(
                     String.format("Operands are not valid for matrix-matrix multiplication (m = %s, v = %s).", shape(), other.shape()));
         }
-        if (askOrder == Order.S) {
-            throw new IllegalArgumentException("Illegal askOrder value, must be Order.C or Order.F");
-        }
-        if(to.dt() != dt()) {
+        if (to.dt() != dt) {
             throw new IllegalArgumentException("Target array has different data type than operation result.");
         }
-        return mmInternalParallel(other, to.cast(dt));
+        return mmInternalNonParallel(other, to.cast(dt));
     }
 
-    private DArray<Float> mmInternalParallel(DArray<?> other, DArray<Float> to) {
+    private DArray<Float> mmInternalNonParallel(DArray<?> other, DArray<Float> to) {
         int m = shape().dim(0);
         int n = shape().dim(1);
         int p = other.shape().dim(1);
@@ -1031,61 +1024,61 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
         return to;
     }
 
-//    private DArray<Float> mmInternalParallel(DArray<?> other, DArray<Float> to) {
-//        int m = shape().dim(0);
-//        int n = shape().dim(1);
-//        int p = other.shape().dim(1);
-//
-//        List<DArray<Float>> rows = unbind(0, false);
-//        List<DArray<Float>> cols = other.cast(dt()).unbind(1, false);
-//
-//        int chunk = (int) Math.floor(Math.sqrt(L2_CACHE_SIZE / 2. / CORES / dt().byteCount()));
-//        chunk = chunk >= 8 ? chunk - chunk % 8 : chunk;
-//
-//        int vectorChunk = chunk > 64 ? chunk * 4 : chunk;
-//        int innerChunk = chunk > 64 ? (int) Math.ceil(Math.sqrt(chunk / 4.)) : (int) Math.ceil(Math.sqrt(chunk));
-//
-//        int off = ((StrideLayout) to.layout()).offset();
-//        int iStride = ((StrideLayout) to.layout()).stride(0);
-//        int jStride = ((StrideLayout) to.layout()).stride(1);
-//
-//        CountDownLatch latch = new CountDownLatch(Math.ceilDiv(m, innerChunk) * Math.ceilDiv(p, innerChunk));
-//        try (ExecutorService service = Executors.newVirtualThreadPerTaskExecutor()) {
-//
-//            for (int r = 0; r < m; r += innerChunk) {
-//                int rs = r;
-//                int re = Math.min(m, r + innerChunk);
-//
-//                for (int c = 0; c < p; c += innerChunk) {
-//                    int cs = c;
-//                    int ce = Math.min(p, c + innerChunk);
-//
-//                    service.submit(() -> {
-//                        for (int k = 0; k < n; k += vectorChunk) {
-//                            int end = Math.min(n, k + vectorChunk);
-//                            for (int i = rs; i < re; i++) {
-//                                var krow = (BaseFloatDArrayStride) rows.get(i);
-//                                int offset = off + i * iStride;
-//                                for (int j = cs; j < ce; j++) {
-//                                    to.ptrIncFloat(offset + j * jStride, (float) (krow.innerUnchecked(cols.get(j), k, end)));
-//                                }
-//                            }
-//                        }
-//                        latch.countDown();
-//                    });
-//                }
-//            }
-//
-//            try {
-//                latch.await();
-//                service.shutdown();
-//                service.shutdownNow();
-//            } catch (InterruptedException e) {
-//                throw new RuntimeException(e);
-//            }
-//        }
-//        return to;
-//    }
+    private DArray<Float> mmInternalParallel(DArray<?> other, DArray<Float> to) {
+        int m = shape().dim(0);
+        int n = shape().dim(1);
+        int p = other.shape().dim(1);
+
+        List<DArray<Float>> rows = unbind(0, false);
+        List<DArray<Float>> cols = other.cast(dt()).unbind(1, false);
+
+        int chunk = (int) Math.floor(Math.sqrt(L2_CACHE_SIZE / 2. / CORES / dt().byteCount()));
+        chunk = chunk >= 8 ? chunk - chunk % 8 : chunk;
+
+        int vectorChunk = chunk > 64 ? chunk * 4 : chunk;
+        int innerChunk = chunk > 64 ? (int) Math.ceil(Math.sqrt(chunk / 4.)) : (int) Math.ceil(Math.sqrt(chunk));
+
+        int off = ((StrideLayout) to.layout()).offset();
+        int iStride = ((StrideLayout) to.layout()).stride(0);
+        int jStride = ((StrideLayout) to.layout()).stride(1);
+
+        CountDownLatch latch = new CountDownLatch(Math.ceilDiv(m, innerChunk) * Math.ceilDiv(p, innerChunk));
+        try (ExecutorService service = Executors.newVirtualThreadPerTaskExecutor()) {
+
+            for (int r = 0; r < m; r += innerChunk) {
+                int rs = r;
+                int re = Math.min(m, r + innerChunk);
+
+                for (int c = 0; c < p; c += innerChunk) {
+                    int cs = c;
+                    int ce = Math.min(p, c + innerChunk);
+
+                    service.submit(() -> {
+                        for (int k = 0; k < n; k += vectorChunk) {
+                            int end = Math.min(n, k + vectorChunk);
+                            for (int i = rs; i < re; i++) {
+                                var krow = (BaseFloatDArrayStride) rows.get(i);
+                                int offset = off + i * iStride;
+                                for (int j = cs; j < ce; j++) {
+                                    to.ptrIncFloat(offset + j * jStride, (float) (krow.innerUnchecked(cols.get(j), k, end)));
+                                }
+                            }
+                        }
+                        latch.countDown();
+                    });
+                }
+            }
+
+            try {
+                latch.await();
+                service.shutdown();
+                service.shutdownNow();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return to;
+    }
 
     @Override
     public DArray<Float> bmm(DArray<?> other, Order askOrder) {
@@ -1115,12 +1108,12 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
 
     @Override
     public DArray<Float> conv1d(DArray<?> kernel, DArray<?> bias, int padding, int stride, int dilation, int groups) {
-        DArray<Float> input = this;
 
         // complete input shape
-        if (input.rank() > 3) {
+        if (this.rank() > 3) {
             throw new IllegalArgumentException("Input signal (this darray) must have at most 3 dimensions.");
         }
+        DArray<Float> input = this;
         while (input.rank() < 3) {
             // missing dimensions means sequence of length 1, a single channel and a batch of unit size
             input = input.stretch(0);
@@ -1277,24 +1270,22 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
     @Override
     public DArray<Float> unfold1d(int kLen, int padding, int stride, int dilation) {
 
-        boolean batched = this.rank() == 3;
-
-        DArray<Float> input = this;
-        if (!batched) {
-            if (this.rank() != 2) {
-                throw new IllegalArgumentException("Input must be a 2D or 3D array.");
-            }
-            input = this.stretch(0);
+        if (this.rank() != 2 && this.rank() != 3) {
+            throw new IllegalArgumentException("Input must be a 2D or 3D array.");
         }
 
+        boolean batched = this.rank() == 3;
+        DArray<Float> input = batched ? this : this.stretch(0);
+
         int n = input.dim(0);
+        int inCh = input.dim(1);
+
         int outLen = Math.floorDiv(input.dim(2) + 2 * padding - (kLen - 1) * dilation, stride);
 
-        int inC = input.dim(1);
-        DArray<Float> result = this.dm().zeros(DType.FLOAT, Shape.of(n, inC, kLen, outLen));
+        DArray<Float> result = this.dm().zeros(DType.FLOAT, Shape.of(n, inCh, kLen, outLen));
 
         for (int b = 0; b < n; b++) {
-            for (int c = 0; c < inC; c++) {
+            for (int c = 0; c < inCh; c++) {
                 for (int k = 0; k < kLen; k++) {
                     for (int o = 0; o < outLen; o++) {
                         int delta = o * stride + k * dilation - padding;
@@ -1305,7 +1296,7 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
                 }
             }
         }
-        result = result.reshape(Shape.of(n, inC * kLen, outLen));
+        result = result.reshape(Shape.of(n, inCh * kLen, outLen));
         if (!batched) {
             result = result.squeeze(0);
         }
@@ -1314,12 +1305,13 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
 
     @Override
     public DArray<Float> conv2d(DArray<?> kernel, DArray<?> bias, int padding, int stride, int dilation, int groups) {
+        if (this.rank() > 4) {
+            throw new IllegalArgumentException(String.format(
+                    "Input must have at most 4 dimensions, but it has %d.", this.rank()));
+        }
         DArray<Float> in = this;
         while (in.rank() < 4) {
             in = in.stretch(0);
-        }
-        if (in.rank() != 4) {
-            throw new IllegalArgumentException("Input must have at most 4 dimensions.");
         }
         while (kernel.rank() < 4) {
             kernel = kernel.stretch(0);
@@ -1372,7 +1364,7 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
             }
             try {
                 latch.await();
-            } catch (InterruptedException e) {
+            } catch (InterruptedException _) {
             }
         }
 
@@ -1493,7 +1485,7 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
             }
             try {
                 latch.await();
-            } catch (InterruptedException e) {
+            } catch (InterruptedException _) {
             }
         }
 
@@ -1641,10 +1633,10 @@ public final class BaseFloatDArrayStride extends AbstractStrideDArray<Float> {
                             for (int c = 0; c < inDepth; c++) {
                                 float val = inSlice.getFloat(c, id, ih, iw);
                                 for (int kd = 0; kd < kD; kd++) {
+                                    int od = id * stride + kd * dilation - padding;
                                     for (int kh = 0; kh < kH; kh++) {
+                                        int oh = ih * stride + kh * dilation - padding;
                                         for (int kw = 0; kw < kW; kw++) {
-                                            int od = id * stride + kd * dilation - padding;
-                                            int oh = ih * stride + kh * dilation - padding;
                                             int ow = iw * stride + kw * dilation - padding;
                                             if (od >= 0 && od < outD && oh >= 0 && oh < outH && ow >= 0 && ow < outW) {
                                                 for (int oc = 0; oc < outDepth; oc++) {
