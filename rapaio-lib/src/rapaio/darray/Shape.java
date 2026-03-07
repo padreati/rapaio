@@ -54,6 +54,9 @@ public final class Shape {
     private int[] fStrides = null;
 
     private Shape(int[] dims) {
+        if(dims==null || dims.length > 8) {
+            throw new IllegalArgumentException("Maximum number of dimensions is 8.");
+        }
         for (int dim : dims) {
             if (dim <= 0) {
                 throw new IllegalArgumentException("Invalid shape dimensions: [" + Arrays.stream(dims)

@@ -895,7 +895,7 @@ public final class BaseIntStrideDArray extends AbstractStrideDArray<Integer> {
         int p2 = dts.loop.offsets[0] + start;
         int sum = 0;
 
-        if(storage.supportSimd() && dts.storage.supportSimd()) {
+        if (storage.supportSimd() && dts.storage.supportSimd()) {
             int simdBound = Simd.vsInt.loopBound(end - start);
             if (simdBound > 0) {
                 IntVector vsum = Simd.zeroInt();
@@ -1277,19 +1277,21 @@ public final class BaseIntStrideDArray extends AbstractStrideDArray<Integer> {
             DArray<?> outBatch = output.selsq(0, batch);
 
             for (int group = 0; group < groups; group++) {
-                DArray<?> inSlice = inBatch.narrow(0, group * inDepth, (group + 1) * inDepth);
-                DArray<?> outSlice = outBatch.narrow(0, group * outDepth, (group + 1) * outDepth);
-                DArray<?> kernelSlice = weights.narrow(0, group * inDepth, (group + 1) * inDepth);
+                DArray<?> inSlice = inBatch.narrow(0, group * inDepth, (group + 1) * inDepth); // (inDepth, inLen)
+                DArray<?> outSlice = outBatch.narrow(0, group * outDepth, (group + 1) * outDepth); // (outDepth, outLen)
+                DArray<?> kernelSlice = weights.narrow(0, group * inDepth, (group + 1) * inDepth); // (inDepth, outDepth, kLen)
 
-                for (int i = 0; i < inLen; i++) {
-                    for (int c = 0; c < inDepth; c++) {
-                        int val = inSlice.getInt(c, i);
-                        for (int k = 0; k < kLen; k++) {
+                // col = kernelFlat^T @ inSlice: (outDepth*kLen, inDepth) @ (inDepth, inLen) = (outDepth*kLen, inLen)
+                DArray<?> kernelFlat = kernelSlice.reshape(Shape.of(inDepth, outDepth * kLen)); // (inDepth, outDepth*kLen)
+                DArray<?> col = kernelFlat.t().mm(inSlice); // (outDepth*kLen, inLen)
+
+                // fold col (outDepth, kLen, inLen) -> outSlice (outDepth, outLen)
+                for (int oc = 0; oc < outDepth; oc++) {
+                    for (int k = 0; k < kLen; k++) {
+                        for (int i = 0; i < inLen; i++) {
                             int outPos = i * stride + k * dilation - padding;
                             if (outPos >= 0 && outPos < outLen) {
-                                for (int oc = 0; oc < outDepth; oc++) {
-                                    outSlice.incInt((int) (val * kernelSlice.getInt(c, oc, k)), oc, outPos);
-                                }
+                                outSlice.incInt(col.getInt(oc * kLen + k, i), oc, outPos);
                             }
                         }
                     }
@@ -1492,23 +1494,26 @@ public final class BaseIntStrideDArray extends AbstractStrideDArray<Integer> {
                 DArray<?> outBatch = output.selsq(0, batch);
 
                 executor.submit(() -> {
+                    var inSlices = inBatch.chunk(0, true, inDepth);
+                    var outSlices = outBatch.chunk(0, true, outDepth);
+                    var kernelSlices = weights.chunk(0, true, inDepth);
                     for (int group = 0; group < groups; group++) {
-                        DArray<?> inSlice = inBatch.narrow(0, group * inDepth, (group + 1) * inDepth);
-                        DArray<?> outSlice = outBatch.narrow(0, group * outDepth, (group + 1) * outDepth);
-                        DArray<?> kernelSlice = weights.narrow(0, group * inDepth, (group + 1) * inDepth);
-
+                        var inSlice = inSlices.get(group);
+                        var outSlice = outSlices.get(group);
+                        var kernelSlice = kernelSlices.get(group);
                         for (int ih = 0; ih < inH; ih++) {
                             for (int iw = 0; iw < inW; iw++) {
                                 for (int c = 0; c < inDepth; c++) {
                                     int val = inSlice.getInt(c, ih, iw);
                                     for (int kh = 0; kh < kH; kh++) {
                                         int oh = ih * stride + kh * dilation - padding;
-                                        if(oh >= 0 && oh < outH) {
+                                        if (oh >= 0 && oh < outH) {
                                             int ow = iw * stride - padding;
                                             for (int kw = 0; kw < kW; kw++) {
                                                 if (ow >= 0 && ow < outW) {
                                                     for (int oc = 0; oc < outDepth; oc++) {
-                                                        outSlice.incInt((int) (val * kernelSlice.getInt(c, oc, kh, kw)), oc, oh, ow);
+                                                        outSlice.incInt((int) (val * kernelSlice.getInt(c, oc, kh, kw)), oc, oh,
+                                                                ow);
                                                     }
                                                 }
                                                 ow += dilation;
@@ -1663,24 +1668,32 @@ public final class BaseIntStrideDArray extends AbstractStrideDArray<Integer> {
             DArray<?> inBatch = input.selsq(0, batch);
             DArray<?> outBatch = output.selsq(0, batch);
             for (int group = 0; group < groups; group++) {
-                DArray<?> inSlice = inBatch.narrow(0, group * inDepth, (group + 1) * inDepth);
-                DArray<?> outSlice = outBatch.narrow(0, group * outDepth, (group + 1) * outDepth);
-                DArray<?> kernelSlice = weights.narrow(0, group * inDepth, (group + 1) * inDepth);
-                for (int id = 0; id < inD; id++) {
-                    for (int ih = 0; ih < inH; ih++) {
-                        for (int iw = 0; iw < inW; iw++) {
-                            for (int c = 0; c < inDepth; c++) {
-                                int val = inSlice.getInt(c, id, ih, iw);
-                                for (int kd = 0; kd < kD; kd++) {
+                DArray<?> inSlice = inBatch.narrow(0, group * inDepth, (group + 1) * inDepth); // (inDepth, inD, inH, inW)
+                DArray<?> outSlice = outBatch.narrow(0, group * outDepth, (group + 1) * outDepth); // (outDepth, outD, outH, outW)
+                DArray<?> kernelSlice = weights.narrow(0, group * inDepth, (group + 1) * inDepth); // (inDepth, outDepth, kD, kH, kW)
+
+                // col = kernelFlat^T @ inSlice_flat: (outDepth*kD*kH*kW, inDepth) @ (inDepth, inD*inH*inW) = (outDepth*kD*kH*kW, inD*inH*inW)
+                DArray<?> kernelFlat = kernelSlice.reshape(Shape.of(inDepth, outDepth * kD * kH * kW));
+                DArray<?> col = kernelFlat.t().mm(inSlice.reshape(Shape.of(inDepth, inD * inH * inW)));
+
+                // fold col -> outSlice
+                for (int oc = 0; oc < outDepth; oc++) {
+                    for (int kd = 0; kd < kD; kd++) {
+                        for (int kh = 0; kh < kH; kh++) {
+                            for (int kw = 0; kw < kW; kw++) {
+                                int colRow = oc * kD * kH * kW + kd * kH * kW + kh * kW + kw;
+                                for (int id = 0; id < inD; id++) {
                                     int od = id * stride + kd * dilation - padding;
-                                    for (int kh = 0; kh < kH; kh++) {
-                                        int oh = ih * stride + kh * dilation - padding;
-                                        for (int kw = 0; kw < kW; kw++) {
-                                            int ow = iw * stride + kw * dilation - padding;
-                                            if (od >= 0 && od < outD && oh >= 0 && oh < outH && ow >= 0 && ow < outW) {
-                                                for (int oc = 0; oc < outDepth; oc++) {
-                                                    outSlice.incInt((int) (val * kernelSlice.getInt(c, oc, kd, kh, kw)), oc, od,
-                                                            oh, ow);
+                                    if (od >= 0 && od < outD) {
+                                        for (int ih = 0; ih < inH; ih++) {
+                                            int oh = ih * stride + kh * dilation - padding;
+                                            if (oh >= 0 && oh < outH) {
+                                                for (int iw = 0; iw < inW; iw++) {
+                                                    int ow = iw * stride + kw * dilation - padding;
+                                                    if (ow >= 0 && ow < outW) {
+                                                        outSlice.incInt(col.getInt(colRow, id * inH * inW + ih * inW + iw), oc, od,
+                                                                oh, ow);
+                                                    }
                                                 }
                                             }
                                         }

@@ -28,7 +28,9 @@ import rapaio.darray.layout.StrideLayout;
 
 public final class StridePointerIterator implements PointerIterator {
 
-    private final StrideLayout c;
+    private final int size;
+    private final int[] dims;
+    private final int[] strides;
     private final int[] index;
     private int position = 0;
     private int ptr;
@@ -38,36 +40,39 @@ public final class StridePointerIterator implements PointerIterator {
     }
 
     public StridePointerIterator(StrideLayout layout, Order askOrder, boolean compact) {
-        c = layout.computeFortranLayout(askOrder, compact);
+        var c = layout.computeFortranLayout(askOrder, compact);
 
+        this.size = c.size();
         this.index = new int[c.rank()];
+        this.dims = c.dims();
+        this.strides = c.strides();
         this.ptr = c.offset();
     }
 
     @Override
     public boolean hasNext() {
-        return position < c.size();
+        return position < size;
     }
 
     @Override
     public int nextInt() {
-        if (position >= c.size()) {
+        if (position >= size) {
             throw new NoSuchElementException();
         }
         int currentPtr = ptr;
         position++;
         int i = 0;
-        if (c.rank() > 0) {
+        if (dims.length > 0) {
             index[i]++;
-            ptr += c.stride(i);
+            ptr += strides[i];
         }
-        while (i < c.strides().length) {
-            if (index[i] == c.dim(i)) {
+        while (i < dims.length) {
+            if (index[i] == dims[i]) {
                 index[i] = 0;
-                ptr -= c.dim(i) * c.stride(i);
-                if (i < c.rank() - 1) {
+                ptr -= dims[i] * strides[i];
+                if (i < dims.length - 1) {
                     index[i + 1]++;
-                    ptr += c.stride(i + 1);
+                    ptr += strides[i + 1];
                 }
                 i++;
                 continue;
@@ -84,6 +89,6 @@ public final class StridePointerIterator implements PointerIterator {
 
     @Override
     public int size() {
-        return c.size();
+        return size;
     }
 }

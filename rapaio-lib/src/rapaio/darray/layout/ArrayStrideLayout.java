@@ -159,10 +159,25 @@ public class ArrayStrideLayout extends AbstractStrideLayout {
     }
 
     @Override
-    public int pointer(int... index) {
+    public final int pointer(int... index) {
         int pointer = offset;
-        for (int i = 0; i < index.length; i++) {
-            pointer += index[i] * strides[i];
+        switch (index.length) {
+            case 8:
+                pointer += index[7] * strides[7];
+            case 7:
+                pointer += index[6] * strides[6];
+            case 6:
+                pointer += index[5] * strides[5];
+            case 5:
+                pointer += index[4] * strides[4];
+            case 4:
+                pointer += index[3] * strides[3];
+            case 3:
+                pointer += index[2] * strides[2];
+            case 2:
+                pointer += index[1] * strides[1];
+            case 1:
+                pointer += index[0] * strides[0];
         }
         return pointer;
     }
