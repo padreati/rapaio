@@ -37,10 +37,10 @@ import rapaio.darray.iterators.StrideLoopDescriptor;
 import rapaio.darray.iterators.StridePointerIterator;
 import rapaio.darray.layout.StrideLayout;
 import rapaio.darray.layout.StrideWrapper;
-import rapaio.darray.manager.base.BaseByteDArrayStride;
-import rapaio.darray.manager.base.BaseDoubleDArrayStride;
-import rapaio.darray.manager.base.BaseFloatDArrayStride;
-import rapaio.darray.manager.base.BaseIntDArrayStride;
+import rapaio.darray.manager.base.BaseByteStrideDArray;
+import rapaio.darray.manager.base.BaseDoubleStrideDArray;
+import rapaio.darray.manager.base.BaseFloatStrideDArray;
+import rapaio.darray.manager.base.BaseIntStrideDArray;
 import rapaio.darray.storage.array.DoubleArrayStorage;
 import rapaio.data.VarDouble;
 import rapaio.printer.Printer;
@@ -48,7 +48,7 @@ import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
 
 public abstract sealed class AbstractStrideDArray<N extends Number> extends DArray<N>
-        permits BaseDoubleDArrayStride, BaseFloatDArrayStride, BaseIntDArrayStride, BaseByteDArrayStride {
+        permits BaseDoubleStrideDArray, BaseFloatStrideDArray, BaseIntStrideDArray, BaseByteStrideDArray {
 
     protected final StrideLayout layout;
     protected final StrideLoopDescriptor loop;
@@ -289,7 +289,7 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
         if (layout().rank() != 1) {
             throw new IllegalArgumentException("Only one dimensional tensors can be converted to VarDouble.");
         }
-        if (this instanceof BaseDoubleDArrayStride bs) {
+        if (this instanceof BaseDoubleStrideDArray bs) {
             if (bs.layout().offset() == 0 && bs.layout().stride(0) == 1) {
                 return VarDouble.wrap(bs.asDoubleArray());
             }

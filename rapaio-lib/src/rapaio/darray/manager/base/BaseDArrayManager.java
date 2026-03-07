@@ -43,10 +43,10 @@ public class BaseDArrayManager extends DArrayManager {
     @SuppressWarnings("unchecked")
     public <N extends Number> DArray<N> stride(DType<N> dt, StrideLayout layout, Storage storage) {
         return (DArray<N>) switch (dt.id()) {
-            case DOUBLE -> new BaseDoubleDArrayStride(this, layout, storage);
-            case FLOAT -> new BaseFloatDArrayStride(this, layout, storage);
-            case INTEGER -> new BaseIntDArrayStride(this, layout, storage);
-            case BYTE -> new BaseByteDArrayStride(this, layout, storage);
+            case DOUBLE -> new BaseDoubleStrideDArray(this, layout, storage);
+            case FLOAT -> new BaseFloatStrideDArray(this, layout, storage);
+            case INTEGER -> new BaseIntStrideDArray(this, layout, storage);
+            case BYTE -> new BaseByteStrideDArray(this, layout, storage);
         };
     }
 

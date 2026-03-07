@@ -39,7 +39,7 @@ import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.stream.StreamSupport;
 
-import jdk.incubator.vector.IntVector;
+import jdk.incubator.vector.ByteVector;
 import jdk.incubator.vector.VectorOperators;
 import rapaio.darray.DArray;
 import rapaio.darray.DArrayManager;
@@ -67,14 +67,14 @@ import rapaio.printer.Format;
 import rapaio.util.collection.Ints;
 import rapaio.util.function.IntIntBiFunction;
 
-public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
+public final class BaseByteStrideDArray extends AbstractStrideDArray<Byte> {
 
-    public BaseIntDArrayStride(DArrayManager dm, StrideLayout layout, Storage storage) {
-        super(dm, DType.INTEGER, layout, storage);
+    public BaseByteStrideDArray(DArrayManager dm, StrideLayout layout, Storage storage) {
+        super(dm, DType.BYTE, layout, storage);
     }
 
     @Override
-    public DArray<Integer> reshape(Shape askShape, Order askOrder) {
+    public DArray<Byte> reshape(Shape askShape, Order askOrder) {
         if (layout.shape().size() != askShape.size()) {
             throw new IllegalArgumentException(String.format(
                     "Incompatible shape size for reshape operation from %s into %s.", this.shape(), askShape));
@@ -96,16 +96,16 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
             return dm.stride(dt, newLayout, storage);
         }
         var it = new StridePointerIterator(layout, askOrder);
-        DArray<Integer> copy = dm.zeros(dt, askShape, askOrder);
+        DArray<Byte> copy = dm.zeros(dt, askShape, askOrder);
         var copyIt = copy.ptrIterator(askOrder);
         while (it.hasNext()) {
-            copy.ptrSetInt(copyIt.nextInt(), storage.getInt(it.nextInt()));
+            copy.ptrSetByte(copyIt.nextInt(), storage.getByte(it.nextInt()));
         }
         return copy;
     }
 
     @Override
-    public DArray<Integer> flatten(Order askOrder) {
+    public DArray<Byte> flatten(Order askOrder) {
         askOrder = Order.autoFC(askOrder);
         var result = dm.zeros(dt, Shape.of(layout.size()), askOrder);
         var out = result.storage();
@@ -113,7 +113,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         var loop = StrideLoopDescriptor.of(layout, askOrder, dt().vs());
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
-                out.setInt(ptr++, storage.getInt(p));
+                out.setByte(ptr++, storage.getByte(p));
                 p += loop.step;
             }
         }
@@ -121,7 +121,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     }
 
     @Override
-    public DArray<Integer> gather_(int axis, DArray<?> index, DArray<?> input) {
+    public DArray<Byte> gather_(int axis, DArray<?> index, DArray<?> input) {
         if (index.shape() != this.shape()) {
             throw new IllegalArgumentException("Index must have the same shape as destination.");
         }
@@ -136,13 +136,13 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
             int[] indexNext = indexIt.next();
             System.arraycopy(indexNext, 0, idx, 0, idx.length);
             idx[axis] = index.ptrGetInt(ptrIdxIt.nextInt());
-            storage.setInt(ptrDstIt.next(), input.getInt(idx));
+            storage.setByte(ptrDstIt.next(), input.getByte(idx));
         }
         return this;
     }
 
     @Override
-    public DArray<Integer> scatter_(int axis, DArray<?> index, DArray<?> input) {
+    public DArray<Byte> scatter_(int axis, DArray<?> index, DArray<?> input) {
         if (index.rank() != input.rank()) {
             throw new IllegalArgumentException("Index must have the same rank as input.");
         }
@@ -157,74 +157,74 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
             int[] indexNext = indexIt.next();
             System.arraycopy(indexNext, 0, idx, 0, idx.length);
             idx[axis] = index.ptrGetInt(ptrIdxIt.nextInt());
-            setInt(input.ptrGetInt(ptrSrcIt.nextInt()), idx);
+            setByte(input.ptrGetByte(ptrSrcIt.nextInt()), idx);
         }
         return this;
     }
 
     @Override
-    public Integer get(int... indices) {
-        return storage.getInt(layout.pointer(indices));
+    public Byte get(int... indices) {
+        return storage.getByte(layout.pointer(indices));
     }
 
     @Override
-    public void set(Integer value, int... indices) {
-        storage.setInt(layout.pointer(indices), value);
+    public void set(Byte value, int... indices) {
+        storage.setByte(layout.pointer(indices), value);
     }
 
     @Override
-    public void inc(Integer value, int... indices) {
-        storage.incInt(layout.pointer(indices), value);
+    public void inc(Byte value, int... indices) {
+        storage.incByte(layout.pointer(indices), value);
     }
 
     @Override
-    public Integer ptrGet(int ptr) {
-        return storage.getInt(ptr);
+    public Byte ptrGet(int ptr) {
+        return storage.getByte(ptr);
     }
 
     @Override
-    public void ptrSet(int ptr, Integer value) {
-        storage.setInt(ptr, value);
+    public void ptrSet(int ptr, Byte value) {
+        storage.setByte(ptr, value);
     }
 
-    public final Iterator<Integer> iterator(Order askOrder) {
+    public final Iterator<Byte> iterator(Order askOrder) {
         return StreamSupport.stream(
                         Spliterators.spliteratorUnknownSize(ptrIterator(askOrder), Spliterator.ORDERED | Spliterator.IMMUTABLE), false)
-                .map(storage::getInt).iterator();
+                .map(storage::getByte).iterator();
     }
 
     @Override
-    public BaseIntDArrayStride apply_(Order askOrder, IntIntBiFunction<Integer> apply) {
+    public BaseByteStrideDArray apply_(Order askOrder, IntIntBiFunction<Byte> apply) {
         var it = ptrIterator(askOrder);
         int i = 0;
         while (it.hasNext()) {
             int p = it.nextInt();
-            storage.setInt(p, apply.applyAsInt(i++, p));
+            storage.setByte(p, apply.applyAsInt(i++, p));
         }
         return this;
     }
 
     @Override
-    public DArray<Integer> apply_(Function<Integer, Integer> fun) {
+    public DArray<Byte> apply_(Function<Byte, Byte> fun) {
         var ptrIter = ptrIterator(Order.S);
         while (ptrIter.hasNext()) {
             int ptr = ptrIter.nextInt();
-            storage.setInt(ptr, fun.apply(storage.getInt(ptr)));
+            storage.setByte(ptr, fun.apply(storage.getByte(ptr)));
         }
         return this;
     }
 
     @Override
-    public DArray<Integer> unary_(DArrayUnaryOp op) {
+    public DArray<Byte> unary_(DArrayUnaryOp op) {
         if (op.floatingPointOnly() && !dt().floatingPoint()) {
             throw new IllegalArgumentException("This operation is available only for floating point DArrays.");
         }
-        op.applyInt(loop, storage);
+        op.applyByte(loop, storage);
         return this;
     }
 
     @Override
-    public DArray<Integer> unary1d_(DArrayUnaryOp op, int axis) {
+    public DArray<Byte> unary1d_(DArrayUnaryOp op, int axis) {
         int ax = axis < 0 ? axis + shape().rank() : axis;
 
         int[] newDims = layout.shape().narrowDims(axis);
@@ -237,7 +237,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
 
         int chunk = 64;
         int tasks = Math.ceilDiv(dim(ax), chunk);
-        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+        try (ExecutorService executor = Executors.newFixedThreadPool(dm.cpuThreads())) {
             CountDownLatch latch = new CountDownLatch(tasks);
             for (int i = 0; i < tasks; i++) {
                 List<Runnable> taskList = new ArrayList<>();
@@ -264,9 +264,9 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     }
 
     @Override
-    public DArray<Integer> binary_(DArrayBinaryOp op, DArray<?> other) {
+    public DArray<Byte> binary_(DArrayBinaryOp op, DArray<?> other) {
         if (other.isScalar()) {
-            return binary_(op, other.getInt());
+            return binary_(op, other.getByte());
         }
         Broadcast.ElementWise broadcast = Broadcast.elementWise(List.of(this.shape(), other.shape()));
         if (!broadcast.valid()) {
@@ -286,36 +286,36 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         var refIt = other.ptrIterator(order);
         while (it.hasNext()) {
             int next = it.nextInt();
-            storage.setInt(next, op.applyInt(storage.getInt(next), other.ptrGetInt(refIt.nextInt())));
+            storage.setByte(next, op.applyByte(storage.getByte(next), other.ptrGetByte(refIt.nextInt())));
         }
         return this;
     }
 
     @Override
-    public <M extends Number> DArray<Integer> binary_(DArrayBinaryOp op, M value) {
-        int v = value.intValue();
-        IntVector m = IntVector.broadcast(dt.vs(), v);
+    public <M extends Number> DArray<Byte> binary_(DArrayBinaryOp op, M value) {
+        byte v = value.byteValue();
+        ByteVector m = ByteVector.broadcast(dt.vs(), v);
         for (int p : loop.offsets) {
             int i = 0;
             if (storage.supportSimd()) {
                 if (loop.step == 1) {
                     for (; i < loop.simdBound; i += loop.simdLen) {
-                        IntVector a = storage.getIntVector(p);
-                        a = op.applyInt(a, m);
-                        storage.setIntVector(a, p);
+                        ByteVector a = storage.getByteVector(p);
+                        a = op.applyByte(a, m);
+                        storage.setByteVector(a, p);
                         p += loop.simdLen;
                     }
                 } else {
                     for (; i < loop.simdBound; i += loop.simdLen) {
-                        IntVector a = storage.getIntVector(p, loop.simdIdx(), 0);
-                        a = op.applyInt(a, m);
-                        storage.setIntVector(a, p, loop.simdIdx(), 0);
+                        ByteVector a = storage.getByteVector(p, loop.simdIdx(), 0);
+                        a = op.applyByte(a, m);
+                        storage.setByteVector(a, p, loop.simdIdx(), 0);
                         p += loop.simdLen * loop.step;
                     }
                 }
             }
             for (; i < loop.bound; i++) {
-                storage.setInt(p, op.applyInt(storage.getInt(p), v));
+                storage.setByte(p, op.applyByte(storage.getByte(p), v));
                 p += loop.step;
             }
         }
@@ -323,15 +323,15 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     }
 
     @Override
-    public DArray<Integer> fma_(Integer a, DArray<?> t) {
+    public DArray<Byte> fma_(Byte a, DArray<?> t) {
         if (t.isScalar()) {
-            int tVal = t.getInt();
-            return add_((int) (a * tVal));
+            byte tVal = t.getByte();
+            return add_((byte) (a * tVal));
         }
         if (!shape().equals(t.shape())) {
             throw new IllegalArgumentException("DArrays does not have the same shape.");
         }
-        int aVal = a;
+        byte aVal = a;
         var order = layout.storageFastOrder();
         order = order == Order.S ? Order.defaultOrder() : order;
 
@@ -339,7 +339,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         var refIt = t.ptrIterator(order);
         while (it.hasNext()) {
             int next = it.nextInt();
-            storage.setInt(next, (int) Math.fma(t.ptrGetInt(refIt.nextInt()), aVal, storage.getInt(next)));
+            storage.setByte(next, (byte) Math.fma(t.ptrGetByte(refIt.nextInt()), aVal, storage.getByte(next)));
         }
         return this;
     }
@@ -347,12 +347,12 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     // REDUCE OPERATIONS
 
     @Override
-    public Integer reduce(DArrayReduceOp op) {
-        return op.reduceInt(loop, storage);
+    public Byte reduce(DArrayReduceOp op) {
+        return op.reduceByte(loop, storage);
     }
 
     @Override
-    public DArray<Integer> reduce1d(DArrayReduceOp op, int axis, Order order) {
+    public DArray<Byte> reduce1d(DArrayReduceOp op, int axis, Order order) {
         if (axis < 0) {
             axis += shape().rank();
         }
@@ -361,13 +361,13 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         int selDim = layout.dim(axis);
         int selStride = layout.stride(axis);
 
-        DArray<Integer> res = dm.zeros(dt, Shape.of(newDims), Order.autoFC(order));
+        DArray<Byte> res = dm.zeros(dt, Shape.of(newDims), Order.autoFC(order));
         var resIt = res.ptrIterator(Order.C);
         var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
 
         int chunk = 128;
         int tasks = (it.size() % chunk == 0) ? it.size() / chunk : it.size() / chunk + 1;
-        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+        try (ExecutorService executor = Executors.newFixedThreadPool(dm.cpuThreads())) {
             CountDownLatch latch = new CountDownLatch(tasks);
             for (int i = 0; i < tasks; i++) {
                 List<Runnable> taskList = new ArrayList<>();
@@ -376,8 +376,8 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
                     int resPtr = resIt.next();
                     taskList.add(() -> {
                         StrideLayout strideLayout = StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride});
-                        int value = dm.stride(dt, strideLayout, storage).reduce(op);
-                        res.ptrSetInt(resPtr, value);
+                        byte value = dm.stride(dt, strideLayout, storage).reduce(op);
+                        res.ptrSetByte(resPtr, value);
                     });
                 }
                 executor.submit(() -> {
@@ -397,7 +397,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     }
 
     @Override
-    public DArray<Integer> reduceOn(DArrayReduceOp op, Shape shape, boolean keepDim, Order order) {
+    public DArray<Byte> reduceOn(DArrayReduceOp op, Shape shape, boolean keepDim, Order order) {
         if (shape.rank() == 0) {
             if (Order.C == order && layout.isCOrdered()) {
                 return this;
@@ -427,14 +427,14 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         int[] lastStrides = Arrays.copyOfRange(layout.strides(), rank() - shape.rank(), rank());
 
         StrideLayout firstLayout = StrideLayout.of(firstDims, layout().offset(), firstStrides);
-        DArray<Integer> result = dm.zeros(dt, Shape.of(firstDims), order);
+        DArray<Byte> result = dm.zeros(dt, Shape.of(firstDims), order);
         PointerIterator resIt = result.ptrIterator(Order.C);
         PointerIterator firstIt = new StridePointerIterator(firstLayout, Order.C);
 
         while (resIt.hasNext()) {
             int ptr = resIt.nextInt();
             int offset = firstIt.nextInt();
-            int value = dm.stride(dt, StrideLayout.of(lastDims, offset, lastStrides), storage).reduce(op);
+            byte value = dm.stride(dt, StrideLayout.of(lastDims, offset, lastStrides), storage).reduce(op);
             result.ptrSet(ptr, value);
         }
         if (keepDim) {
@@ -446,14 +446,14 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     }
 
     @Override
-    public DArray<Integer> reduceTo(DArrayReduceOp op, Shape targetShape, boolean keepDim, Order order) {
+    public DArray<Byte> reduceTo(DArrayReduceOp op, Shape targetShape, boolean keepDim, Order order) {
         if (targetShape.rank() == 0) {
             return dm.scalar(dt, reduce(op));
         }
         Broadcast.ElementWise broadcast = Broadcast.elementWise(this.shape(), targetShape);
         if (!broadcast.valid() || !broadcast.shape().equals(this.shape())) {
-            throw new IllegalArgumentException(String.format(
-                    "Target shape is not broadcastable to this tensor or the broadcast change the shape of current tensor."));
+            throw new IllegalArgumentException(
+                    "Target shape is not broadcastable to this tensor or the broadcast change the shape of current tensor.");
         }
         if (targetShape.equals(layout.shape())) {
             if (Order.C == order && layout.isCOrdered()) {
@@ -508,14 +508,14 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
             }
         }
 
-        DArray<Integer> result = dm.zeros(dt, Shape.of(lastDims), order);
+        DArray<Byte> result = dm.zeros(dt, Shape.of(lastDims), order);
         PointerIterator resIt = result.ptrIterator(Order.C);
         PointerIterator lastIt = StrideLayout.of(lastDims, layout().offset(), lastStrides).ptrIterator(Order.C);
 
         int chunk = 128;
         int tasks = Math.ceilDiv(resIt.size(), chunk);
 
-        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+        try (ExecutorService executor = Executors.newFixedThreadPool(dm.cpuThreads())) {
             CountDownLatch latch = new CountDownLatch(tasks);
             for (int i = 0; i < tasks; i++) {
                 List<Runnable> taskList = new ArrayList<>();
@@ -523,7 +523,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
                     int ptr = resIt.nextInt();
                     int offset = lastIt.nextInt();
                     taskList.add(() -> {
-                        int value = dm.stride(dt, StrideLayout.of(firstDims, offset, firstStrides), storage).reduce(op);
+                        byte value = dm.stride(dt, StrideLayout.of(firstDims, offset, firstStrides), storage).reduce(op);
                         result.ptrSet(ptr, value);
                     });
                 }
@@ -541,7 +541,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
             }
         }
 
-        DArray<Integer> lastResult = result;
+        DArray<Byte> lastResult = result;
         if (keepDim) {
             for (int i = 0; i < layout.rank() - targetShape.rank(); i++) {
                 lastResult = lastResult.stretch(0);
@@ -552,7 +552,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     }
 
     @Override
-    public DArray<Integer> var1d(int axis, int ddof, DArray<?> mean, Order order) {
+    public DArray<Byte> var1d(int axis, int ddof, DArray<?> mean, Order order) {
         if (axis < 0) {
             axis += shape().rank();
         }
@@ -561,7 +561,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         int selDim = layout.dim(axis);
         int selStride = layout.stride(axis);
 
-        DArray<Integer> res = dm.zeros(dt, Shape.of(newDims), Order.autoFC(order));
+        DArray<Byte> res = dm.zeros(dt, Shape.of(newDims), Order.autoFC(order));
         if (!res.shape().equals(mean.shape())) {
             throw new IllegalArgumentException(String.format(
                     "Mean array %s must have the same shape as the result array %s.", mean.shape(), res.shape()));
@@ -573,7 +573,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
 
         int chunk = 128;
         int tasks = (it.size() % chunk == 0) ? it.size() / chunk : it.size() / chunk + 1;
-        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+        try (ExecutorService executor = Executors.newFixedThreadPool(dm.cpuThreads())) {
             CountDownLatch latch = new CountDownLatch(tasks);
             for (int i = 0; i < tasks; i++) {
                 List<Runnable> taskList = new ArrayList<>();
@@ -582,8 +582,8 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
                     int resPtr = resIt.next();
                     taskList.add(() -> {
                         StrideLayout strideLayout = StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride});
-                        int m = mean.ptrGetInt(meanIt.next());
-                        int value = dm.stride(dt, strideLayout, storage).reduce(DArrayOp.reduceVarc(ddof, m));
+                        byte m = mean.ptrGetByte(meanIt.next());
+                        byte value = dm.stride(dt, strideLayout, storage).reduce(DArrayOp.reduceVarc(ddof, m));
                         res.ptrSet(resPtr, value);
                     });
                 }
@@ -604,7 +604,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     }
 
     @Override
-    public DArray<Integer> varOn(Shape shape, int ddof, DArray<?> mean, boolean keepDim, Order order) {
+    public DArray<Byte> varOn(Shape shape, int ddof, DArray<?> mean, boolean keepDim, Order order) {
 
         if (shape.rank() == 0) {
             throw new IllegalArgumentException("Shape must not be of rank zero.");
@@ -620,7 +620,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
             }
         }
         if (rank() == shape.rank()) {
-            return dm.scalar(dt, var(ddof, mean.getInt()));
+            return dm.scalar(dt, var(ddof, mean.getByte()));
         }
 
         int[] firstDims = Arrays.copyOfRange(layout.dims(), 0, rank() - shape.rank());
@@ -632,7 +632,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         if (mean.shape().equals(firstLayout.shape())) {
             throw new IllegalArgumentException("Mean darray must have the same shape as the result array.");
         }
-        DArray<Integer> result = dm.zeros(dt, Shape.of(firstDims), order);
+        DArray<Byte> result = dm.zeros(dt, Shape.of(firstDims), order);
         PointerIterator resIt = result.ptrIterator(Order.C);
         PointerIterator firstIt = new StridePointerIterator(firstLayout, Order.C);
         PointerIterator meanIt = mean.ptrIterator(Order.C);
@@ -640,8 +640,8 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         while (resIt.hasNext()) {
             int ptr = resIt.nextInt();
             int offset = firstIt.nextInt();
-            int value =
-                    dm.stride(dt, StrideLayout.of(lastDims, offset, lastStrides), storage).var(ddof, mean.ptrGetInt(meanIt.next()));
+            byte value =
+                    dm.stride(dt, StrideLayout.of(lastDims, offset, lastStrides), storage).var(ddof, mean.ptrGetByte(meanIt.next()));
             result.ptrSet(ptr, value);
         }
         if (keepDim) {
@@ -655,12 +655,12 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     @Override
     public int argmax(Order order) {
         int argmax = -1;
-        int argvalue = ReduceOpMax.initInt;
+        byte argvalue = ReduceOpMax.initByte;
         var i = 0;
         var loop = StrideLoopDescriptor.of(layout, order, dt().vs());
         for (int p : loop.offsets) {
             for (int j = 0; j < loop.bound; j++) {
-                int value = storage.getInt(p);
+                byte value = storage.getByte(p);
                 p += loop.step;
                 if (value > argvalue) {
                     argvalue = value;
@@ -694,7 +694,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
 
         int chunk = 128;
         int tasks = (it.size() % chunk == 0) ? it.size() / chunk : it.size() / chunk + 1;
-        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+        try (ExecutorService executor = Executors.newFixedThreadPool(dm.cpuThreads())) {
             CountDownLatch latch = new CountDownLatch(tasks);
             for (int i = 0; i < tasks; i++) {
                 List<Runnable> taskList = new ArrayList<>();
@@ -745,7 +745,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
 
         int chunk = 128;
         int tasks = (it.size() % chunk == 0) ? it.size() / chunk : it.size() / chunk + 1;
-        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+        try (ExecutorService executor = Executors.newFixedThreadPool(dm.cpuThreads())) {
             CountDownLatch latch = new CountDownLatch(tasks);
             for (int i = 0; i < tasks; i++) {
                 List<Runnable> taskList = new ArrayList<>();
@@ -777,12 +777,12 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     @Override
     public int argmin(Order order) {
         int argmin = -1;
-        int argvalue = ReduceOpMin.initInt;
+        byte argvalue = ReduceOpMin.initByte;
         var i = 0;
         var loop = StrideLoopDescriptor.of(layout, order, dt().vs());
         for (int p : loop.offsets) {
             for (int j = 0; j < loop.bound; j++) {
-                int value = storage.getInt(p);
+                byte value = storage.getByte(p);
                 p += loop.step;
                 if (value < argvalue) {
                     argvalue = value;
@@ -799,7 +799,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         int count = 0;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
-                if (dt().isNaN(storage.getInt(p))) {
+                if (dt().isNaN(storage.getByte(p))) {
                     count++;
                 }
                 p += loop.step;
@@ -813,7 +813,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         int count = 0;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
-                if (storage.getInt(p) == 0) {
+                if (storage.getByte(p) == 0) {
                     count++;
                 }
                 p += loop.step;
@@ -826,43 +826,54 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     // LINEAR ALGEBRA OPERATIONS
 
     @Override
-    public Integer inner(DArray<?> other) {
-        return inner(other, 0, shape().dim(0));
-    }
-
-    @Override
-    public Integer inner(DArray<?> other, int start, int end) {
-        if (shape().rank() != 1 || other.shape().rank() != 1 || shape().dim(0) != other.shape().dim(0)) {
+    public Byte inner(DArray<?> other) {
+        if (dim(0) != other.dim(0)) {
             throw new IllegalArgumentException(
                     "Operands are not valid for vector dot product (v = %s, v = %s)."
                             .formatted(shape().toString(), other.shape().toString()));
         }
+        return inner(other, 0, shape().dim(0));
+    }
+
+    @Override
+    public Byte inner(DArray<?> other, int start, int end) {
+        if (rank() != 1 || other.rank() != 1) {
+            throw new IllegalArgumentException(
+                    "Operands are not valid for vector dot product (v = %s, v = %s)."
+                            .formatted(shape().toString(), other.shape().toString()));
+        }
+        if (start > end || start < 0 || end > other.dim(0) || end > dim(0)) {
+            throw new IllegalArgumentException("Start and end indexes are invalid (start: %d, end: %s).".formatted(start, end));
+        }
         return innerUnchecked(other, start, end);
     }
 
-    private Integer innerUnchecked(DArray<?> other, int start, int end) {
-        if (start > end || start < 0 || end > other.shape().dim(0)) {
-            throw new IllegalArgumentException("Start and end indexes are invalid (start: %d, end: %s).".formatted(start, end));
-        }
-        BaseIntDArrayStride dts = (BaseIntDArrayStride) other;
+    private Byte innerUnchecked(DArray<?> other, int start, int end) {
+        BaseByteStrideDArray dts = (BaseByteStrideDArray) other;
 
         int step1 = loop.step;
         int step2 = dts.loop.step;
 
+        if (step1 == 1 && step2 == 1) {
+            return innerUncheckedUnit(dts, start, end);
+        }
+
         int i = 0;
         int p1 = loop.offsets[0] + start * step1;
         int p2 = dts.loop.offsets[0] + start * step2;
-        int sum = 0;
+        byte sum = 0;
 
         if (storage.supportSimd() && dts.storage.supportSimd()) {
-            int simdBound = Simd.vsInt.loopBound(end - start);
+            int simdBound = Simd.vsByte.loopBound(end - start);
             if (simdBound > 0) {
-                IntVector vsum = Simd.zeroInt();
+                ByteVector vsum = Simd.zeroByte();
                 for (; i < simdBound; i += loop.simdLen) {
-                    IntVector v1 = step1 == 1 ?
-                            storage.getIntVector(p1) : storage.getIntVector(p1, loop.simdIdx(), 0);
-                    IntVector v2 = step2 == 1 ?
-                            dts.storage.getIntVector(p2) : dts.storage.getIntVector(p2, dts.loop.simdIdx(), 0);
+                    ByteVector v1 = step1 == 1 ?
+                            storage.getByteVector(p1) :
+                            storage.getByteVector(p1, loop.simdIdx(), 0);
+                    ByteVector v2 = step2 == 1 ?
+                            dts.storage.getByteVector(p2) :
+                            dts.storage.getByteVector(p2, dts.loop.simdIdx(), 0);
                     vsum = vsum.add(v1.mul(v2));
                     p1 += loop.simdLen * step1;
                     p2 += dts.loop.simdLen * step2;
@@ -871,15 +882,41 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
             }
         }
         for (; i < end - start; i++) {
-            sum += (int) (storage.getInt(p1) * dts.storage.getInt(p2));
+            sum += (byte) (storage.getByte(p1) * dts.storage.getByte(p2));
             p1 += step1;
             p2 += step2;
         }
         return sum;
     }
 
+    private byte innerUncheckedUnit(BaseByteStrideDArray dts, int start, int end) {
+        int i = 0;
+        int p1 = loop.offsets[0] + start;
+        int p2 = dts.loop.offsets[0] + start;
+        byte sum = 0;
+
+        if(storage.supportSimd() && dts.storage.supportSimd()) {
+            int simdBound = Simd.vsByte.loopBound(end - start);
+            if (simdBound > 0) {
+                ByteVector vsum = Simd.zeroByte();
+                for (; i < simdBound; i += loop.simdLen) {
+                    ByteVector v1 = storage.getByteVector(p1);
+                    ByteVector v2 = dts.storage.getByteVector(p2);
+                    vsum = vsum.add(v1.mul(v2));
+                    p1 += loop.simdLen;
+                    p2 += dts.loop.simdLen;
+                }
+                sum += vsum.reduceLanes(VectorOperators.ADD);
+            }
+        }
+        for (; i < end - start; i++) {
+            sum += (byte) (storage.getByte(p1++) * dts.storage.getByte(p2++));
+        }
+        return sum;
+    }
+
     @Override
-    public DArray<Integer> mv(DArray<?> other, Order askOrder) {
+    public DArray<Byte> mv(DArray<?> other, Order askOrder) {
         if (shape().rank() != 2 || other.shape().rank() != 1 || shape().dim(1) != other.shape().dim(0)) {
             throw new IllegalArgumentException(
                     String.format("Operands are not valid for matrix-vector multiplication (m = %s, v = %s).",
@@ -887,24 +924,24 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         }
         var result = dm.zeros(dt, Shape.of(shape().dim(0)), askOrder);
         for (int i = 0; i < shape().dim(0); i++) {
-            result.ptrSetInt(i, selsq(0, i).inner(other));
+            result.ptrSetByte(i, selsq(0, i).inner(other));
         }
         return result;
     }
 
     @Override
-    public DArray<Integer> bmv(DArray<?> other, Order askOrder) {
-        BaseIntDArrayStride a = this;
+    public DArray<Byte> bmv(DArray<?> other, Order askOrder) {
+        BaseByteStrideDArray a = this;
         DArray<?> b = other;
         if (a.isScalar()) {
-            a = (BaseIntDArrayStride) a.strexp(0, 1).strexp(1, 1);
+            a = (BaseByteStrideDArray) a.strexp(0, 1).strexp(1, 1);
         }
         if (other.isScalar()) {
             b = b.strexp(0, 1);
         }
         if (a.rank() == 2 && b.rank() == 1 && a.dim(1) == b.dim(0)) {
             // simple case, create a batch of 1 for each element
-            return ((BaseIntDArrayStride) a.stretch(0)).bmvInternal(b.stretch(0), askOrder);
+            return ((BaseByteStrideDArray) a.stretch(0)).bmvInternal(b.stretch(0), askOrder);
         }
         if (a.rank() == 3 && b.rank() == 1 && a.dim(2) == b.dim(0)) {
             // batch on matrix, add batch to vector
@@ -912,7 +949,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         }
         if (a.rank() == 2 && b.rank() == 2 && a.dim(1) == b.dim(1)) {
             // batch on vector, add batch to matrix
-            return ((BaseIntDArrayStride) a.strexp(0, b.dim(0))).bmvInternal(b, askOrder);
+            return ((BaseByteStrideDArray) a.strexp(0, b.dim(0))).bmvInternal(b, askOrder);
         }
         if (a.rank() == 3 && b.rank() == 2 && a.dim(2) == b.dim(1) && a.dim(0) == b.dim(0)) {
             // no need of batching
@@ -922,8 +959,8 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
                 "DArrays are not valid for batch matrix vector multiplication (bm : %s, bv = %s)", shape(), other.shape()));
     }
 
-    private DArray<Integer> bmvInternal(DArray<?> other, Order askOrder) {
-        DArray<Integer> res = dm.zeros(dt, Shape.of(dim(0), dim(1)), askOrder);
+    private DArray<Byte> bmvInternal(DArray<?> other, Order askOrder) {
+        DArray<Byte> res = dm.zeros(dt, Shape.of(dim(0), dim(1)), askOrder);
         for (int b = 0; b < dim(0); b++) {
             selsq(0, b).mv(other.selsq(0, b)).copyTo(res.selsq(0, b));
         }
@@ -931,7 +968,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     }
 
     @Override
-    public DArray<Integer> vtm(DArray<?> other, Order askOrder) {
+    public DArray<Byte> vtm(DArray<?> other, Order askOrder) {
         if (shape().rank() != 1 || other.rank() != 2 || shape().dim(0) != other.dim(0)) {
             throw new IllegalArgumentException(
                     String.format("Operands are not valid for vector transpose matrix multiplication (v = %s, m = %s).",
@@ -940,24 +977,24 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         }
         var result = dm.zeros(dt, Shape.of(other.dim(1)), askOrder);
         for (int i = 0; i < other.dim(1); i++) {
-            result.ptrSetInt(i, this.inner(other.selsq(1, i)));
+            result.ptrSetByte(i, this.inner(other.selsq(1, i)));
         }
         return result;
     }
 
     @Override
     public DArray<?> bvtm(DArray<?> other, Order askOrder) {
-        BaseIntDArrayStride a = this;
+        BaseByteStrideDArray a = this;
         DArray<?> b = other;
         if (a.isScalar()) {
-            a = (BaseIntDArrayStride) a.stretch(0);
+            a = (BaseByteStrideDArray) a.stretch(0);
         }
         if (other.isScalar()) {
             b = b.stretch(0, 1);
         }
         if (a.rank() == 1 && b.rank() == 2 && a.dim(0) == b.dim(0)) {
             // simple case, create a batch of 1 for each element
-            return ((BaseIntDArrayStride) a.stretch(0)).bvtmInternal(b.stretch(0), askOrder);
+            return ((BaseByteStrideDArray) a.stretch(0)).bvtmInternal(b.stretch(0), askOrder);
         }
         if (a.rank() == 2 && b.rank() == 2 && a.dim(1) == b.dim(0)) {
             // batch on vector, add batch to matrix
@@ -965,7 +1002,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         }
         if (a.rank() == 1 && b.rank() == 3 && a.dim(0) == b.dim(1)) {
             // batch on matrix, add batch to vector
-            return ((BaseIntDArrayStride) a.strexp(0, b.dim(0))).bvtmInternal(b, askOrder);
+            return ((BaseByteStrideDArray) a.strexp(0, b.dim(0))).bvtmInternal(b, askOrder);
         }
         if (a.rank() == 2 && b.rank() == 3 && a.dim(1) == b.dim(1) && a.dim(0) == b.dim(0)) {
             // no need of batching
@@ -975,8 +1012,8 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
                 "DArrays are not valid for batch vector transpose matrix multiplication (bv : %s, bm = %s)", shape(), other.shape()));
     }
 
-    private DArray<Integer> bvtmInternal(DArray<?> other, Order askOrder) {
-        DArray<Integer> res = dm.zeros(dt, Shape.of(dim(0), other.dim(2)), askOrder);
+    private DArray<Byte> bvtmInternal(DArray<?> other, Order askOrder) {
+        DArray<Byte> res = dm.zeros(dt, Shape.of(dim(0), other.dim(2)), askOrder);
         for (int b = 0; b < dim(0); b++) {
             selsq(0, b).vtm(other.selsq(0, b)).copyTo(res.selsq(0, b));
         }
@@ -984,7 +1021,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     }
 
     @Override
-    public DArray<Integer> mm(DArray<?> other, Order askOrder) {
+    public DArray<Byte> mm(DArray<?> other, Order askOrder) {
         if (askOrder == Order.S) {
             throw new IllegalArgumentException("Illegal askOrder value, must be Order.C or Order.F");
         }
@@ -992,7 +1029,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     }
 
     @Override
-    public DArray<Integer> mm(DArray<?> other, DArray<?> to) {
+    public DArray<Byte> mm(DArray<?> other, DArray<?> to) {
         if (shape().rank() != 2 || other.shape().rank() != 2 || shape().dim(1) != other.shape().dim(0)) {
             throw new IllegalArgumentException(
                     String.format("Operands are not valid for matrix-matrix multiplication (m = %s, v = %s).", shape(), other.shape()));
@@ -1003,13 +1040,13 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         return mmInternalNonParallel(other, to.cast(dt));
     }
 
-    private DArray<Integer> mmInternalNonParallel(DArray<?> other, DArray<Integer> to) {
+    private DArray<Byte> mmInternalNonParallel(DArray<?> other, DArray<Byte> to) {
         int m = shape().dim(0);
         int n = shape().dim(1);
         int p = other.shape().dim(1);
 
-        List<DArray<Integer>> rows = unbind(0, false);
-        List<DArray<Integer>> cols = other.cast(dt()).unbind(1, false);
+        List<DArray<Byte>> rows = unbind(0, false);
+        List<DArray<Byte>> cols = other.cast(dt()).unbind(1, false);
 
         int off = ((StrideLayout) to.layout()).offset();
         int iStride = ((StrideLayout) to.layout()).stride(0);
@@ -1017,20 +1054,20 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
 
         for (int r = 0; r < m; r++) {
             for (int c = 0; c < p; c++) {
-                var krow = (BaseIntDArrayStride) rows.get(r);
-                to.ptrIncInt(off + r * iStride + c * jStride, (int) (krow.innerUnchecked(cols.get(c), 0, n)));
+                var krow = (BaseByteStrideDArray) rows.get(r);
+                to.ptrIncByte(off + r * iStride + c * jStride, (byte) (krow.innerUnchecked(cols.get(c), 0, n)));
             }
         }
         return to;
     }
 
-    private DArray<Integer> mmInternalParallel(DArray<?> other, DArray<Integer> to) {
+    private DArray<Byte> mmInternalParallel(DArray<?> other, DArray<Byte> to) {
         int m = shape().dim(0);
         int n = shape().dim(1);
         int p = other.shape().dim(1);
 
-        List<DArray<Integer>> rows = unbind(0, false);
-        List<DArray<Integer>> cols = other.cast(dt()).unbind(1, false);
+        List<DArray<Byte>> rows = unbind(0, false);
+        List<DArray<Byte>> cols = other.cast(dt()).unbind(1, false);
 
         int chunk = (int) Math.floor(Math.sqrt(L2_CACHE_SIZE / 2. / CORES / dt().byteCount()));
         chunk = chunk >= 8 ? chunk - chunk % 8 : chunk;
@@ -1043,7 +1080,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         int jStride = ((StrideLayout) to.layout()).stride(1);
 
         CountDownLatch latch = new CountDownLatch(Math.ceilDiv(m, innerChunk) * Math.ceilDiv(p, innerChunk));
-        try (ExecutorService service = Executors.newVirtualThreadPerTaskExecutor()) {
+        try (ExecutorService service = Executors.newFixedThreadPool(dm.cpuThreads())) {
 
             for (int r = 0; r < m; r += innerChunk) {
                 int rs = r;
@@ -1057,10 +1094,10 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
                         for (int k = 0; k < n; k += vectorChunk) {
                             int end = Math.min(n, k + vectorChunk);
                             for (int i = rs; i < re; i++) {
-                                var krow = (BaseIntDArrayStride) rows.get(i);
+                                var krow = (BaseByteStrideDArray) rows.get(i);
                                 int offset = off + i * iStride;
                                 for (int j = cs; j < ce; j++) {
-                                    to.ptrIncInt(offset + j * jStride, (int) (krow.innerUnchecked(cols.get(j), k, end)));
+                                    to.ptrIncByte(offset + j * jStride, (byte) (krow.innerUnchecked(cols.get(j), k, end)));
                                 }
                             }
                         }
@@ -1081,15 +1118,15 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     }
 
     @Override
-    public DArray<Integer> bmm(DArray<?> other, Order askOrder) {
+    public DArray<Byte> bmm(DArray<?> other, Order askOrder) {
         if (rank() == 2 && other.rank() == 2 && dim(1) == other.dim(0)) {
-            return ((BaseIntDArrayStride) stretch(0)).bmmInternal(other.stretch(0), askOrder);
+            return ((BaseByteStrideDArray) stretch(0)).bmmInternal(other.stretch(0), askOrder);
         }
         if (rank() == 3 && other.rank() == 2 && dim(2) == other.dim(0)) {
             return bmmInternal(other.strexp(0, dim(0)), askOrder);
         }
         if (rank() == 2 && other.rank() == 3 && dim(1) == other.dim(1)) {
-            return ((BaseIntDArrayStride) strexp(0, other.dim(0))).bmmInternal(other, askOrder);
+            return ((BaseByteStrideDArray) strexp(0, other.dim(0))).bmmInternal(other, askOrder);
         }
         if (rank() == 3 && other.rank() == 3 && dim(0) == other.dim(0) && dim(2) == other.dim(1)) {
             return bmmInternal(other, askOrder);
@@ -1098,22 +1135,22 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
                 "DArrays are not valid for batch matrix-matrix multiplication (bm1: %s, bm2: %s)", shape(), other.shape()));
     }
 
-    private DArray<Integer> bmmInternal(DArray<?> other, Order askOrder) {
-        DArray<Integer> res = dm.zeros(dt, Shape.of(dim(0), dim(1), other.dim(2)), askOrder);
+    private DArray<Byte> bmmInternal(DArray<?> other, Order askOrder) {
+        DArray<Byte> res = dm.zeros(dt, Shape.of(dim(0), dim(1), other.dim(2)), askOrder);
         for (int b = 0; b < dim(0); b++) {
-            ((BaseIntDArrayStride) selsq(0, b)).mmInternalParallel(other.selsq(0, b), res.selsq(0, b));
+            ((BaseByteStrideDArray) selsq(0, b)).mmInternalParallel(other.selsq(0, b), res.selsq(0, b));
         }
         return res;
     }
 
     @Override
-    public DArray<Integer> conv1d(DArray<?> kernel, DArray<?> bias, int padding, int stride, int dilation, int groups) {
+    public DArray<Byte> conv1d(DArray<?> kernel, DArray<?> bias, int padding, int stride, int dilation, int groups) {
 
         // complete input shape
         if (this.rank() > 3) {
             throw new IllegalArgumentException("Input signal (this darray) must have at most 3 dimensions.");
         }
-        DArray<Integer> input = this;
+        DArray<Byte> input = this;
         while (input.rank() < 3) {
             // missing dimensions means sequence of length 1, a single channel and a batch of unit size
             input = input.stretch(0);
@@ -1157,21 +1194,21 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         int outDepth = outChannels / groups;
         int outLen = Math.floorDiv(inLen + 2 * padding - (k - 1) * dilation, stride);
 
-        DArray<Integer> output = input.dm().zeros(DType.INTEGER, Shape.of(n, outChannels, outLen));
+        DArray<Byte> output = input.dm().zeros(DType.BYTE, Shape.of(n, outChannels, outLen));
 
         for (int batch = 0; batch < n; batch++) {
 
-            DArray<Integer> inBatch = input.selsq(0, batch); // shape: (inChannels, inLen)
-            DArray<Integer> outBatch = output.selsq(0, batch); // shape: (outChannels, outLen)
+            DArray<Byte> inBatch = input.selsq(0, batch); // shape: (inChannels, inLen)
+            DArray<Byte> outBatch = output.selsq(0, batch); // shape: (outChannels, outLen)
 
             for (int group = 0; group < groups; group++) {
 
-                DArray<Integer> inSlice = inBatch.narrow(0, group * inDepth, (group + 1) * inDepth); // shape: (inDepth, inLen)
-                DArray<Integer> outSlice = outBatch.narrow(0, group * outDepth, (group + 1) * outDepth); // shape: (outDepth, outLen)
+                DArray<Byte> inSlice = inBatch.narrow(0, group * inDepth, (group + 1) * inDepth); // shape: (inDepth, inLen)
+                DArray<Byte> outSlice = outBatch.narrow(0, group * outDepth, (group + 1) * outDepth); // shape: (outDepth, outLen)
 
                 DArray<?> kernelSlice = kernel.narrow(0, group * outDepth, (group + 1) * outDepth); // shape: (outDepth, inDepth, k)
 
-                DArray<Integer> unfold1d = inSlice.unfold1d(k, padding, stride, dilation);
+                DArray<Byte> unfold1d = inSlice.unfold1d(k, padding, stride, dilation);
 
                 kernelSlice = kernelSlice.reshape(Shape.of(outDepth, inDepth * k));
                 outSlice.add_(kernelSlice.mm(unfold1d));
@@ -1180,16 +1217,16 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
 
         if (bias != null) {
             for (int oc = 0; oc < outChannels; oc++) {
-                output.narrow(1, oc, oc + 1).add_(bias.getInt(oc));
+                output.narrow(1, oc, oc + 1).add_(bias.getByte(oc));
             }
         }
         return output;
     }
 
     @Override
-    public DArray<Integer> convTranspose1d(DArray<?> weights, DArray<?> bias, int padding, int stride, int dilation, int groups,
+    public DArray<Byte> convTranspose1d(DArray<?> weights, DArray<?> bias, int padding, int stride, int dilation, int groups,
             int outputPadding) {
-        DArray<Integer> input = this;
+        DArray<Byte> input = this;
 
         if (input.rank() > 3) {
             throw new IllegalArgumentException("Input signal (this darray) must have at most 3 dimensions.");
@@ -1233,7 +1270,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
 
         int outLen = (inLen - 1) * stride - 2 * padding + (kLen - 1) * dilation + 1 + outputPadding;
 
-        DArray<Integer> output = input.dm().zeros(DType.INTEGER, Shape.of(n, outChannels, outLen));
+        DArray<Byte> output = input.dm().zeros(DType.BYTE, Shape.of(n, outChannels, outLen));
 
         for (int batch = 0; batch < n; batch++) {
             DArray<?> inBatch = input.selsq(0, batch);
@@ -1246,12 +1283,12 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
 
                 for (int i = 0; i < inLen; i++) {
                     for (int c = 0; c < inDepth; c++) {
-                        int val = inSlice.getInt(c, i);
+                        byte val = inSlice.getByte(c, i);
                         for (int k = 0; k < kLen; k++) {
                             int outPos = i * stride + k * dilation - padding;
                             if (outPos >= 0 && outPos < outLen) {
                                 for (int oc = 0; oc < outDepth; oc++) {
-                                    outSlice.incInt((int) (val * kernelSlice.getInt(c, oc, k)), oc, outPos);
+                                    outSlice.incByte((byte) (val * kernelSlice.getByte(c, oc, k)), oc, outPos);
                                 }
                             }
                         }
@@ -1261,28 +1298,28 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         }
         if (bias != null) {
             for (int oc = 0; oc < outChannels; oc++) {
-                output.narrow(1, oc, oc + 1).add_(bias.getInt(oc));
+                output.narrow(1, oc, oc + 1).add_(bias.getByte(oc));
             }
         }
         return output;
     }
 
     @Override
-    public DArray<Integer> unfold1d(int kLen, int padding, int stride, int dilation) {
+    public DArray<Byte> unfold1d(int kLen, int padding, int stride, int dilation) {
 
         if (this.rank() != 2 && this.rank() != 3) {
             throw new IllegalArgumentException("Input must be a 2D or 3D array.");
         }
 
         boolean batched = this.rank() == 3;
-        DArray<Integer> input = batched ? this : this.stretch(0);
+        DArray<Byte> input = batched ? this : this.stretch(0);
 
         int n = input.dim(0);
         int inCh = input.dim(1);
 
         int outLen = Math.floorDiv(input.dim(2) + 2 * padding - (kLen - 1) * dilation, stride);
 
-        DArray<Integer> result = this.dm().zeros(DType.INTEGER, Shape.of(n, inCh, kLen, outLen));
+        DArray<Byte> result = this.dm().zeros(DType.BYTE, Shape.of(n, inCh, kLen, outLen));
 
         for (int b = 0; b < n; b++) {
             for (int c = 0; c < inCh; c++) {
@@ -1290,7 +1327,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
                     for (int o = 0; o < outLen; o++) {
                         int delta = o * stride + k * dilation - padding;
                         if (delta >= 0 && delta < input.dim(2)) {
-                            result.setInt(input.getInt(b, c, delta), b, c, k, o);
+                            result.setByte(input.getByte(b, c, delta), b, c, k, o);
                         }
                     }
                 }
@@ -1304,12 +1341,12 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     }
 
     @Override
-    public DArray<Integer> conv2d(DArray<?> kernel, DArray<?> bias, int padding, int stride, int dilation, int groups) {
+    public DArray<Byte> conv2d(DArray<?> kernel, DArray<?> bias, int padding, int stride, int dilation, int groups) {
         if (this.rank() > 4) {
             throw new IllegalArgumentException(String.format(
                     "Input must have at most 4 dimensions, but it has %d.", this.rank()));
         }
-        DArray<Integer> in = this;
+        DArray<Byte> in = this;
         while (in.rank() < 4) {
             in = in.stretch(0);
         }
@@ -1337,15 +1374,15 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         int outH = Math.floorDiv(inH + 2 * padding - dilation * (kH - 1) - 1, stride) + 1;
         int outW = Math.floorDiv(inW + 2 * padding - dilation * (kW - 1) - 1, stride) + 1;
 
-        DArray<Integer> output = dm.zeros(DType.INTEGER, Shape.of(n, outChannels, outH, outW));
+        DArray<Byte> output = dm.zeros(DType.BYTE, Shape.of(n, outChannels, outH, outW));
 
-        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+        try (ExecutorService executor = Executors.newFixedThreadPool(dm.cpuThreads())) {
             CountDownLatch latch = new CountDownLatch(n);
             for (int batch = 0; batch < n; batch++) {
                 int b = batch;
                 executor.submit(() -> {
-                    DArray<Integer> inBatch = input.selsq(0, b);   // (inChannels, inH, inW)
-                    DArray<Integer> outBatch = output.selsq(0, b); // (outChannels, outH, outW)
+                    DArray<Byte> inBatch = input.selsq(0, b);   // (inChannels, inH, inW)
+                    DArray<Byte> outBatch = output.selsq(0, b); // (outChannels, outH, outW)
 
                     var inSlices = inBatch.chunk(0, true, inDepth);
                     var outSlices = outBatch.chunk(0, true, outDepth);
@@ -1353,11 +1390,11 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
                     for (int group = 0; group < groups; group++) {
 
                         // im2col: (inDepth * kH * kW, outH * outW)
-                        DArray<Integer> col = inSlices.get(group).unfold2d(kH, kW, padding, stride, dilation);
-                        DArray<?> kFlat = kernelSlices.get(group).reshape(Shape.of(outDepth, inDepth * kH * kW));
+                        DArray<Byte> col = inSlices.get(group).unfold2d(kH, kW, padding, stride, dilation);
+                        DArray<?> kernelSlice = kernelSlices.get(group);
+                        DArray<?> kFlat = kernelSlice.reshape(Shape.of(outDepth, inDepth * kH * kW), Order.C);
                         // (outDepth, outH*outW)
-                        DArray<?> res = kFlat.mm(col);
-                        outSlices.get(group).add_(res.reshape(Shape.of(outDepth, outH, outW)));
+                        kFlat.mm(col, outSlices.get(group).reshape(Shape.of(outDepth, outH * outW)));
                     }
                     latch.countDown();
                 });
@@ -1370,19 +1407,19 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
 
         if (bias != null) {
             for (int oc = 0; oc < outChannels; oc++) {
-                output.narrow(1, oc, oc + 1).add_(bias.getInt(oc));
+                output.narrow(1, oc, oc + 1).add_(bias.getByte(oc));
             }
         }
         return output;
     }
 
     @Override
-    public DArray<Integer> unfold2d(int kH, int kW, int padding, int stride, int dilation) {
+    public DArray<Byte> unfold2d(int kH, int kW, int padding, int stride, int dilation) {
         boolean batched = this.rank() == 4;
         if (this.rank() != 3 && rank() != 4) {
             throw new IllegalArgumentException("Input must be a 3D or 4D array.");
         }
-        DArray<Integer> input = batched ? this : this.stretch(0);
+        DArray<Byte> input = batched ? this : this.stretch(0);
 
         int n = input.dim(0);
         int inC = input.dim(1);
@@ -1392,7 +1429,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         int outLenH = Math.floorDiv(inH + 2 * padding - dilation * (kH - 1) - 1, stride) + 1;
         int outLenW = Math.floorDiv(inW + 2 * padding - dilation * (kW - 1) - 1, stride) + 1;
 
-        DArray<Integer> result = dm.zeros(DType.INTEGER, Shape.of(n, inC, kH, kW, outLenH, outLenW));
+        DArray<Byte> result = dm.zeros(DType.BYTE, Shape.of(n, inC, kH, kW, outLenH, outLenW));
         for (int b = 0; b < n; b++) {
             for (int c = 0; c < inC; c++) {
                 for (int kh = 0; kh < kH; kh++) {
@@ -1402,7 +1439,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
                                 int ih = oh * stride + kh * dilation - padding;
                                 int iw = ow * stride + kw * dilation - padding;
                                 if (ih >= 0 && ih < inH && iw >= 0 && iw < inW) {
-                                    result.setInt(input.getInt(b, c, ih, iw), b, c, kh, kw, oh, ow);
+                                    result.setByte(input.getByte(b, c, ih, iw), b, c, kh, kw, oh, ow);
                                 }
                             }
                         }
@@ -1418,9 +1455,9 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     }
 
     @Override
-    public DArray<Integer> convTranspose2d(DArray<?> w, DArray<?> bias, int padding, int stride, int dilation, int groups,
+    public DArray<Byte> convTranspose2d(DArray<?> w, DArray<?> bias, int padding, int stride, int dilation, int groups,
             int outputPadding) {
-        DArray<Integer> input = this;
+        DArray<Byte> input = this;
         while (input.rank() < 4) {
             input = input.stretch(0);
         }
@@ -1446,9 +1483,9 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         int outH = (inH - 1) * stride - 2 * padding + dilation * (kH - 1) + 1 + outputPadding;
         int outW = (inW - 1) * stride - 2 * padding + dilation * (kW - 1) + 1 + outputPadding;
 
-        DArray<Integer> output = dm.zeros(DType.INTEGER, Shape.of(n, outChannels, outH, outW));
+        DArray<Byte> output = dm.zeros(DType.BYTE, Shape.of(n, outChannels, outH, outW));
 
-        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+        try (ExecutorService executor = Executors.newFixedThreadPool(dm.cpuThreads())) {
             CountDownLatch latch = new CountDownLatch(n);
             for (int batch = 0; batch < n; batch++) {
                 DArray<?> inBatch = input.selsq(0, batch);
@@ -1463,17 +1500,19 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
                         for (int ih = 0; ih < inH; ih++) {
                             for (int iw = 0; iw < inW; iw++) {
                                 for (int c = 0; c < inDepth; c++) {
-                                    int val = inSlice.getInt(c, ih, iw);
+                                    byte val = inSlice.getByte(c, ih, iw);
                                     for (int kh = 0; kh < kH; kh++) {
                                         int oh = ih * stride + kh * dilation - padding;
-                                        int ow = iw * stride - padding;
-                                        for (int kw = 0; kw < kW; kw++) {
-                                            if (oh >= 0 && oh < outH && ow >= 0 && ow < outW) {
-                                                for (int oc = 0; oc < outDepth; oc++) {
-                                                    outSlice.incInt((int) (val * kernelSlice.getInt(c, oc, kh, kw)), oc, oh, ow);
+                                        if(oh >= 0 && oh < outH) {
+                                            int ow = iw * stride - padding;
+                                            for (int kw = 0; kw < kW; kw++) {
+                                                if (ow >= 0 && ow < outW) {
+                                                    for (int oc = 0; oc < outDepth; oc++) {
+                                                        outSlice.incByte((byte) (val * kernelSlice.getByte(c, oc, kh, kw)), oc, oh, ow);
+                                                    }
                                                 }
+                                                ow += dilation;
                                             }
-                                            ow += dilation;
                                         }
                                     }
                                 }
@@ -1491,15 +1530,15 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
 
         if (bias != null) {
             for (int oc = 0; oc < outChannels; oc++) {
-                output.narrow(1, oc, oc + 1).add_(bias.getInt(oc));
+                output.narrow(1, oc, oc + 1).add_(bias.getByte(oc));
             }
         }
         return output;
     }
 
     @Override
-    public DArray<Integer> conv3d(DArray<?> kernel, DArray<?> bias, int padding, int stride, int dilation, int groups) {
-        DArray<Integer> input = this;
+    public DArray<Byte> conv3d(DArray<?> kernel, DArray<?> bias, int padding, int stride, int dilation, int groups) {
+        DArray<Byte> input = this;
         while (input.rank() < 5) {
             input = input.stretch(0);
         }
@@ -1520,7 +1559,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         int outH = Math.floorDiv(inH + 2 * padding - dilation * (kH - 1) - 1, stride) + 1;
         int outW = Math.floorDiv(inW + 2 * padding - dilation * (kW - 1) - 1, stride) + 1;
 
-        DArray<Integer> output = dm.zeros(DType.INTEGER, Shape.of(n, outChannels, outD, outH, outW));
+        DArray<Byte> output = dm.zeros(DType.BYTE, Shape.of(n, outChannels, outD, outH, outW));
         for (int batch = 0; batch < n; batch++) {
             DArray<?> inBatch = input.selsq(0, batch);
             DArray<?> outBatch = output.selsq(0, batch);
@@ -1535,17 +1574,17 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         }
         if (bias != null) {
             for (int oc = 0; oc < outChannels; oc++) {
-                output.narrow(1, oc, oc + 1).add_(bias.getInt(oc));
+                output.narrow(1, oc, oc + 1).add_(bias.getByte(oc));
             }
         }
         return output;
     }
 
     @Override
-    public DArray<Integer> unfold3d(int kD, int kH, int kW, int padding, int stride, int dilation) {
+    public DArray<Byte> unfold3d(int kD, int kH, int kW, int padding, int stride, int dilation) {
 
         boolean batched = this.rank() == 5;
-        DArray<Integer> input = this;
+        DArray<Byte> input = this;
         if (!batched) {
             if (this.rank() != 4) {
                 throw new IllegalArgumentException("Input must be a 4D or 5D array.");
@@ -1564,7 +1603,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         int outH = Math.floorDiv(inH + 2 * padding - dilation * (kH - 1) - 1, stride) + 1;
         int outW = Math.floorDiv(inW + 2 * padding - dilation * (kW - 1) - 1, stride) + 1;
 
-        DArray<Integer> result = dm.zeros(DType.INTEGER, Shape.of(n, inCh, kD, kH, kW, outD, outH, outW));
+        DArray<Byte> result = dm.zeros(DType.BYTE, Shape.of(n, inCh, kD, kH, kW, outD, outH, outW));
         for (int b = 0; b < n; b++) {
             for (int c = 0; c < inCh; c++) {
                 for (int kd = 0; kd < kD; kd++) {
@@ -1577,7 +1616,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
                                         int ih = oh * stride + kh * dilation - padding;
                                         int iw = ow * stride + kw * dilation - padding;
                                         if (id >= 0 && id < inD && ih >= 0 && ih < inH && iw >= 0 && iw < inW) {
-                                            result.setInt(input.getInt(b, c, id, ih, iw), b, c, kd, kh, kw, od, oh, ow);
+                                            result.setByte(input.getByte(b, c, id, ih, iw), b, c, kd, kh, kw, od, oh, ow);
                                         }
                                     }
                                 }
@@ -1595,9 +1634,9 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     }
 
     @Override
-    public DArray<Integer> convTranspose3d(DArray<?> weights, DArray<?> bias, int padding, int stride, int dilation, int groups,
+    public DArray<Byte> convTranspose3d(DArray<?> weights, DArray<?> bias, int padding, int stride, int dilation, int groups,
             int outputPadding) {
-        DArray<Integer> input = this;
+        DArray<Byte> input = this;
         while (input.rank() < 5) {
             input = input.stretch(0);
         }
@@ -1619,7 +1658,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         int outH = (inH - 1) * stride - 2 * padding + dilation * (kH - 1) + 1 + outputPadding;
         int outW = (inW - 1) * stride - 2 * padding + dilation * (kW - 1) + 1 + outputPadding;
 
-        DArray<Integer> output = dm.zeros(DType.INTEGER, Shape.of(n, outChannels, outD, outH, outW));
+        DArray<Byte> output = dm.zeros(DType.BYTE, Shape.of(n, outChannels, outD, outH, outW));
         for (int batch = 0; batch < n; batch++) {
             DArray<?> inBatch = input.selsq(0, batch);
             DArray<?> outBatch = output.selsq(0, batch);
@@ -1631,7 +1670,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
                     for (int ih = 0; ih < inH; ih++) {
                         for (int iw = 0; iw < inW; iw++) {
                             for (int c = 0; c < inDepth; c++) {
-                                int val = inSlice.getInt(c, id, ih, iw);
+                                byte val = inSlice.getByte(c, id, ih, iw);
                                 for (int kd = 0; kd < kD; kd++) {
                                     int od = id * stride + kd * dilation - padding;
                                     for (int kh = 0; kh < kH; kh++) {
@@ -1640,7 +1679,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
                                             int ow = iw * stride + kw * dilation - padding;
                                             if (od >= 0 && od < outD && oh >= 0 && oh < outH && ow >= 0 && ow < outW) {
                                                 for (int oc = 0; oc < outDepth; oc++) {
-                                                    outSlice.incInt((int) (val * kernelSlice.getInt(c, oc, kd, kh, kw)), oc, od,
+                                                    outSlice.incByte((byte) (val * kernelSlice.getByte(c, oc, kd, kh, kw)), oc, od,
                                                             oh, ow);
                                                 }
                                             }
@@ -1655,7 +1694,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         }
         if (bias != null) {
             for (int oc = 0; oc < outChannels; oc++) {
-                output.narrow(1, oc, oc + 1).add_(bias.getInt(oc));
+                output.narrow(1, oc, oc + 1).add_(bias.getByte(oc));
             }
         }
         return output;
@@ -1663,30 +1702,30 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
 
 
     @Override
-    public Integer trace() {
+    public Byte trace() {
         if (!isMatrix()) {
             throw new OperationNotAvailableException("This operation is available only on matrix.");
         }
         if (dim(0) != dim(1)) {
             throw new OperationNotAvailableException("This operation is available only on a square matrix.");
         }
-        int trace = 0;
+        byte trace = 0;
         for (int i = 0; i < dim(0); i++) {
-            trace += getInt(i, i);
+            trace += getByte(i, i);
         }
         return trace;
     }
 
     @Override
-    public DArray<Integer> diag(int diagonal) {
+    public DArray<Byte> diag(int diagonal) {
         if (isScalar() && diagonal == 0) {
             return this;
         }
         if (isVector()) {
             int n = dim(0) + Math.abs(diagonal);
-            DArray<Integer> m = dm.zeros(dt, Shape.of(n, n));
+            DArray<Byte> m = dm.zeros(dt, Shape.of(n, n));
             for (int i = 0; i < dim(0); i++) {
-                m.setInt(getInt(i), i + Math.abs(Math.min(diagonal, 0)), i + Math.max(diagonal, 0));
+                m.setByte(getByte(i), i + Math.abs(Math.min(diagonal, 0)), i + Math.max(diagonal, 0));
             }
             return m;
         }
@@ -1696,9 +1735,9 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
             if (len <= 0) {
                 throw new IllegalArgumentException("Diagonal " + diagonal + " does not exists for shape " + shape() + ".");
             }
-            int[] diag = new int[len];
+            byte[] diag = new byte[len];
             for (int i = 0; i < len; i++) {
-                diag[i] = getInt(i + Math.abs(Math.min(diagonal, 0)), i + Math.max(diagonal, 0));
+                diag[i] = getByte(i + Math.abs(Math.min(diagonal, 0)), i + Math.max(diagonal, 0));
             }
             return dm.stride(dt, Shape.of(len), Order.defaultOrder(), diag);
         }
@@ -1706,7 +1745,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     }
 
     @Override
-    public Integer norm(
+    public Byte norm(
             // FREEZE
             double pow
     ) {
@@ -1717,26 +1756,26 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
             throw new IllegalArgumentException(String.format("Norm power p=%s must be greater or equal with 0.", Format.floatFlex(pow)));
         }
         if (pow == 0) {
-            return (int) shape().size();
+            return (byte) shape().size();
         }
         if (pow == 1) {
             return abs().sum();
         }
         if (pow == 2) {
-            return (int) Math.sqrt(sqr().sum());
+            return (byte) Math.sqrt(sqr().sum());
         }
-        int sum = (int) 0;
+        byte sum = (byte) 0;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
-                sum += (int) Math.pow(Math.abs(storage.getInt(p)), pow);
+                sum += (byte) Math.pow(Math.abs(storage.getByte(p)), pow);
                 p += loop.step;
             }
         }
-        return (int) Math.pow(sum, 1. / pow);
+        return (byte) Math.pow(sum, 1. / pow);
     }
 
     @Override
-    public DArray<Integer> normalize_(
+    public DArray<Byte> normalize_(
             // FREEZE
             double pow
     ) {
@@ -1744,7 +1783,7 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
     }
 
     @Override
-    public DArray<Integer> copy(Order askOrder) {
+    public DArray<Byte> copy(Order askOrder) {
         askOrder = Order.autoFC(askOrder);
 
         var copy = dm.storageManager().zeros(dt, size());
@@ -1763,18 +1802,18 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         var last = 0;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
-                copy.setInt(last++, storage.getInt(p));
+                copy.setByte(last++, storage.getByte(p));
                 p += loop.step;
             }
         }
     }
 
     @Override
-    public DArray<Integer> copyTo(DArray<Integer> to) {
+    public DArray<Byte> copyTo(DArray<Byte> to) {
 
         Order askOrder = Layout.storageFastTandemOrder(layout, to.layout());
 
-        if (to instanceof BaseIntDArrayStride dst) {
+        if (to instanceof BaseByteStrideDArray dst) {
 
             int limit = Math.floorDiv(L2_CACHE_SIZE, dt().byteCount() * 2 * dm.cpuThreads() * 8);
 
@@ -1807,8 +1846,8 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
                                 int[] ss = Ints.copy(starts);
                                 int[] es = Ints.copy(ends);
                                 futures.add(executor.submit(() -> {
-                                    BaseIntDArrayStride s = (BaseIntDArrayStride) this.narrowAll(false, ss, es);
-                                    BaseIntDArrayStride d = (BaseIntDArrayStride) dst.narrowAll(false, ss, es);
+                                    BaseByteStrideDArray s = (BaseByteStrideDArray) this.narrowAll(false, ss, es);
+                                    BaseByteStrideDArray d = (BaseByteStrideDArray) dst.narrowAll(false, ss, es);
                                     directCopyTo(s, d, askOrder);
                                     return null;
                                 }));
@@ -1846,12 +1885,12 @@ public final class BaseIntDArrayStride extends AbstractStrideDArray<Integer> {
         throw new IllegalArgumentException("Not implemented for this tensor type.");
     }
 
-    private void directCopyTo(BaseIntDArrayStride src, BaseIntDArrayStride dst, Order askOrder) {
+    private void directCopyTo(BaseByteStrideDArray src, BaseByteStrideDArray dst, Order askOrder) {
         var loop = StrideLoopDescriptor.of(src.layout, askOrder, dt().vs());
         var it2 = dst.ptrIterator(askOrder);
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
-                dst.storage.setInt(it2.nextInt(), src.storage.getInt(p));
+                dst.storage.setByte(it2.nextInt(), src.storage.getByte(p));
                 p += loop.step;
             }
         }

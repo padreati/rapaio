@@ -45,7 +45,7 @@ public class CodeGenApp {
         Replace[] intReplaces = new Replace[] {
                 Replace.of("vsDouble", "vsInt"),
                 Replace.of("Simd.zeroDouble", "Simd.zeroInt"),
-                Replace.of("BaseDoubleDArrayStride", "BaseIntDArrayStride"),
+                Replace.of("BaseDoubleStrideDArray", "BaseIntStrideDArray"),
                 Replace.of("reduceDouble", "reduceInt"),
                 Replace.of("DoubleVector", "IntVector"),
                 Replace.of("ofDouble", "ofInt"),
@@ -82,20 +82,20 @@ public class CodeGenApp {
         };
 
         templates.add(new CodeGenTemplate(
-                "rapaio/darray/manager/base/BaseDoubleDArrayStride.java",
-                "rapaio/darray/manager/base/BaseFloatDArrayStride.java",
+                "rapaio/darray/manager/base/BaseDoubleStrideDArray.java",
+                "rapaio/darray/manager/base/BaseFloatStrideDArray.java",
                 floatReplaces)
         );
 
         templates.add(new CodeGenTemplate(
-                "rapaio/darray/manager/base/BaseDoubleDArrayStride.java",
-                "rapaio/darray/manager/base/BaseIntDArrayStride.java",
+                "rapaio/darray/manager/base/BaseDoubleStrideDArray.java",
+                "rapaio/darray/manager/base/BaseIntStrideDArray.java",
                 intReplaces)
         );
 
         templates.add(new CodeGenTemplate(
-                "rapaio/darray/manager/base/BaseDoubleDArrayStride.java",
-                "rapaio/darray/manager/base/BaseByteDArrayStride.java",
+                "rapaio/darray/manager/base/BaseDoubleStrideDArray.java",
+                "rapaio/darray/manager/base/BaseByteStrideDArray.java",
                 byteReplaces)
         );
     }
