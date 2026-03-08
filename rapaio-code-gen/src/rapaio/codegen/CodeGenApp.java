@@ -98,6 +98,24 @@ public class CodeGenApp {
                 "rapaio/darray/manager/base/BaseByteStrideDArray.java",
                 byteReplaces)
         );
+
+        templates.add(new CodeGenTemplate(
+                "rapaio/darray/manager/base/BaseDoubleStrideDArrayConvolutions.java",
+                "rapaio/darray/manager/base/BaseFloatStrideDArrayConvolutions.java",
+                floatReplaces)
+        );
+
+        templates.add(new CodeGenTemplate(
+                "rapaio/darray/manager/base/BaseDoubleStrideDArrayConvolutions.java",
+                "rapaio/darray/manager/base/BaseIntStrideDArrayConvolutions.java",
+                intReplaces)
+        );
+
+        templates.add(new CodeGenTemplate(
+                "rapaio/darray/manager/base/BaseDoubleStrideDArrayConvolutions.java",
+                "rapaio/darray/manager/base/BaseByteStrideDArrayConvolutions.java",
+                byteReplaces)
+        );
     }
 
     public static void main(String[] args) throws IOException {
