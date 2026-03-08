@@ -32,6 +32,7 @@ import rapaio.darray.Layout;
 import rapaio.darray.Order;
 import rapaio.darray.Shape;
 import rapaio.darray.Storage;
+import rapaio.darray.iterators.IndexIterator;
 import rapaio.darray.iterators.PointerIterator;
 import rapaio.darray.iterators.StrideLoopDescriptor;
 import rapaio.darray.iterators.StridePointerIterator;
@@ -65,8 +66,55 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
     }
 
     @Override
+    public final DArray<N> reshape(Shape askShape, Order askOrder) {
+        if (layout.shape().size() != askShape.size()) {
+            throw new IllegalArgumentException(String.format(
+                    "Incompatible shape size for reshape operation from %s into %s.", this.shape(), askShape));
+        }
+        if (Order.A == askOrder) {
+            if (layout.isCOrdered()) {
+                askOrder = Order.C;
+            } else if (layout.isFOrdered()) {
+                askOrder = Order.F;
+            } else {
+                askOrder = Order.defaultOrder();
+            }
+        }
+        if (Order.S == askOrder) {
+            throw new IllegalArgumentException("Illegal order specification.");
+        }
+        StrideLayout newLayout = layout.attemptReshape(askShape, askOrder);
+        if (newLayout != null) {
+            return dm.stride(dt, newLayout, storage);
+        }
+        var it = new StridePointerIterator(layout, askOrder);
+        DArray<N> copy = dm.zeros(dt, askShape, askOrder);
+        var copyIt = copy.ptrIterator(askOrder);
+        while (it.hasNext()) {
+            copy.ptrSetDouble(copyIt.nextInt(), storage.getDouble(it.nextInt()));
+        }
+        return copy;
+    }
+
+    @Override
     public final DArray<N> t_() {
         return dm.stride(dt(), layout.revert(), storage);
+    }
+
+    @Override
+    public final DArray<N> flatten(Order askOrder) {
+        askOrder = Order.autoFC(askOrder);
+        var result = dm.zeros(dt, Shape.of(layout.size()), askOrder);
+        var out = result.storage();
+        int ptr = 0;
+        var loop = StrideLoopDescriptor.of(layout, askOrder, dt().vs());
+        for (int p : loop.offsets) {
+            for (int i = 0; i < loop.bound; i++) {
+                out.setDouble(ptr++, storage.getDouble(p));
+                p += loop.step;
+            }
+        }
+        return result;
     }
 
     @Override
@@ -167,6 +215,48 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
     @Override
     public final DArray<N> expand(int axis, int size) {
         return dm.stride(dt(), layout.expand(axis, size), storage);
+    }
+
+    @Override
+    public final DArray<N> gather_(int axis, DArray<?> index, DArray<?> input) {
+        if (index.shape() != this.shape()) {
+            throw new IllegalArgumentException("Index must have the same shape as destination.");
+        }
+        if (index.rank() != input.rank()) {
+            throw new IllegalArgumentException("Index must have the same rank as input.");
+        }
+        var ptrDstIt = ptrIterator(Order.C);
+        var ptrIdxIt = index.ptrIterator(Order.C);
+        var indexIt = new IndexIterator(shape(), Order.C);
+        int[] idx = new int[rank()];
+        while (indexIt.hasNext()) {
+            int[] indexNext = indexIt.next();
+            System.arraycopy(indexNext, 0, idx, 0, idx.length);
+            idx[axis] = index.ptrGetInt(ptrIdxIt.nextInt());
+            storage.setDouble(ptrDstIt.next(), input.getDouble(idx));
+        }
+        return this;
+    }
+
+    @Override
+    public final DArray<N> scatter_(int axis, DArray<?> index, DArray<?> input) {
+        if (index.rank() != input.rank()) {
+            throw new IllegalArgumentException("Index must have the same rank as input.");
+        }
+        if (index.rank() != this.rank()) {
+            throw new IllegalArgumentException("Index must have the same rank as self tensor.");
+        }
+        var ptrSrcIt = input.ptrIterator(Order.C);
+        var ptrIdxIt = index.ptrIterator(Order.C);
+        var indexIt = new IndexIterator(index.shape(), Order.C);
+        int[] idx = new int[rank()];
+        while (indexIt.hasNext()) {
+            int[] indexNext = indexIt.next();
+            System.arraycopy(indexNext, 0, idx, 0, idx.length);
+            idx[axis] = index.ptrGetInt(ptrIdxIt.nextInt());
+            setDouble(input.ptrGetDouble(ptrSrcIt.nextInt()), idx);
+        }
+        return this;
     }
 
     @Override
