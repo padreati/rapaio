@@ -95,7 +95,7 @@ public class Conv2dNodeTest {
         int stride = 1;
         int dilation = 1;
         int groups = 1;
-        Tensor y = new Conv2dNode(x, w, b, padding, stride, dilation, groups);
+        Tensor y = new Conv2dNode(x, w, b, stride, padding, dilation, groups);
 
         // Forward: y shape (2, 2, 2, 2)
         // PyTorch: y = F.conv2d(x, w, b)
@@ -152,13 +152,13 @@ public class Conv2dNodeTest {
         ).requiresGrad(true).name("w");
 
         // padding=1, stride=2
-        Tensor y = new Conv2dNode(x, w, null, 1, 2, 1, 1);
+        Tensor y = new Conv2dNode(x, w, null, 2, 1, 1, 1);
 
         // PyTorch: F.conv2d(x, w, padding=1, stride=2) -> shape (1,1,2,2)
         assertTrue(y.value().deepEquals(
                 tm.strideArray(Shape.of(1, 1, 2, 2),
                         1., 5., 11., 28.),
-                TOL), "forward no-bias padding=1 stride=2 mismatch");
+                TOL), "forward no-bias stride=2 padding=1 mismatch");
 
         y.setGrad(tm.fullArray(y.value().shape(), 1.));
         var graph = Autograd.backward(y);

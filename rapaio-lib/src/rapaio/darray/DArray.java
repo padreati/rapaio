@@ -3911,14 +3911,14 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      *
      * @param weights  convolution kernel of shape {@code (C_out, C_in/groups, kL)}
      * @param bias     optional bias of shape {@code (C_out)}, or {@code null} if no bias
-     * @param padding  zero-padding added to both sides of the input
      * @param stride   step between consecutive kernel applications
+     * @param padding  zero-padding added to both sides of the input
      * @param dilation spacing between kernel elements
      * @param groups   number of blocked connections from input to output channels;
      *                 {@code C_in} and {@code C_out} must both be divisible by {@code groups}
      * @return output DArray of shape {@code (N, C_out, L_out)}
      */
-    public abstract DArray<N> conv1d(DArray<?> weights, DArray<?> bias, int padding, int stride, int dilation, int groups);
+    public abstract DArray<N> conv1d(DArray<?> weights, DArray<?> bias, int stride, int padding, int dilation, int groups);
 
     /**
      * Applies a 1D transposed convolution (also known as fractionally-strided convolution or
@@ -3942,8 +3942,8 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      *
      * @param weights       transposed convolution kernel of shape {@code (C_in, C_out/groups, kL)}
      * @param bias          optional bias of shape {@code (C_out)}, or {@code null} if no bias
-     * @param padding       implicit zero-padding added to both sides of the input; reduces output size
      * @param stride        step between consecutive kernel applications in the forward convolution;
+     * @param padding       implicit zero-padding added to both sides of the input; reduces output size
      *                      controls the upsampling factor
      * @param dilation      spacing between kernel elements
      * @param groups        number of blocked connections from input to output channels;
@@ -3953,10 +3953,10 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      *                      when multiple input sizes map to the same output size
      * @return output DArray of shape {@code (N, C_out, L_out)}
      */
-    public abstract DArray<N> convTranspose1d(DArray<?> weights, DArray<?> bias, int padding, int stride, int dilation, int groups,
+    public abstract DArray<N> convTranspose1d(DArray<?> weights, DArray<?> bias, int stride, int padding, int dilation, int groups,
             int outputPadding);
 
-    public abstract DArray<N> unfold1d(int kLen, int padding, int stride, int dilation);
+    public abstract DArray<N> unfold1d(int kLen, int stride, int padding, int dilation);
 
     /**
      * Applies a 2D convolution over this input signal.
@@ -3966,15 +3966,15 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      *
      * @param weights  kernel of shape {@code (C_out, C_in/groups, kH, kW)}
      * @param bias     optional bias of shape {@code (C_out)}, or {@code null}
-     * @param padding  zero-padding added to both spatial sides
      * @param stride   step between kernel applications
+     * @param padding  zero-padding added to both spatial sides
      * @param dilation spacing between kernel elements
      * @param groups   number of blocked connections
      * @return output DArray of shape {@code (N, C_out, H_out, W_out)}
      */
-    public abstract DArray<N> conv2d(DArray<?> weights, DArray<?> bias, int padding, int stride, int dilation, int groups);
+    public abstract DArray<N> conv2d(DArray<?> weights, DArray<?> bias, int stride, int padding, int dilation, int groups);
 
-    public abstract DArray<N> unfold2d(int kH, int kW, int padding, int stride, int dilation);
+    public abstract DArray<N> unfold2d(int kH, int kW, int stride, int padding, int dilation);
 
     /**
      * Applies a 2D transposed convolution over this input signal.
@@ -3984,14 +3984,14 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      *
      * @param weights       kernel of shape {@code (C_in, C_out/groups, kH, kW)}
      * @param bias          optional bias of shape {@code (C_out)}, or {@code null}
-     * @param padding       implicit zero-padding
      * @param stride        upsampling factor
+     * @param padding       implicit zero-padding
      * @param dilation      spacing between kernel elements
      * @param groups        number of blocked connections
      * @param outputPadding additional size added to one side of the output
      * @return output DArray of shape {@code (N, C_out, H_out, W_out)}
      */
-    public abstract DArray<N> convTranspose2d(DArray<?> weights, DArray<?> bias, int padding, int stride, int dilation, int groups,
+    public abstract DArray<N> convTranspose2d(DArray<?> weights, DArray<?> bias, int stride, int padding, int dilation, int groups,
             int outputPadding);
 
     /**
@@ -4001,15 +4001,15 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      *
      * @param weights  kernel of shape {@code (C_out, C_in/groups, kD, kH, kW)}
      * @param bias     optional bias of shape {@code (C_out)}, or {@code null}
-     * @param padding  zero-padding added to all spatial sides
      * @param stride   step between kernel applications
+     * @param padding  zero-padding added to all spatial sides
      * @param dilation spacing between kernel elements
      * @param groups   number of blocked connections
      * @return output DArray of shape {@code (N, C_out, D_out, H_out, W_out)}
      */
-    public abstract DArray<N> conv3d(DArray<?> weights, DArray<?> bias, int padding, int stride, int dilation, int groups);
+    public abstract DArray<N> conv3d(DArray<?> weights, DArray<?> bias, int stride, int padding, int dilation, int groups);
 
-    public abstract DArray<N> unfold3d(int kD, int kH, int kW, int padding, int stride, int dilation);
+    public abstract DArray<N> unfold3d(int kD, int kH, int kW, int stride, int padding, int dilation);
 
     /**
      * Applies a 3D transposed convolution over this input signal.
@@ -4018,14 +4018,14 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      *
      * @param weights       kernel of shape {@code (C_in, C_out/groups, kD, kH, kW)}
      * @param bias          optional bias of shape {@code (C_out)}, or {@code null}
-     * @param padding       implicit zero-padding
      * @param stride        upsampling factor
+     * @param padding       implicit zero-padding
      * @param dilation      spacing between kernel elements
      * @param groups        number of blocked connections
      * @param outputPadding additional size added to one side of the output
      * @return output DArray of shape {@code (N, C_out, D_out, H_out, W_out)}
      */
-    public abstract DArray<N> convTranspose3d(DArray<?> weights, DArray<?> bias, int padding, int stride, int dilation, int groups,
+    public abstract DArray<N> convTranspose3d(DArray<?> weights, DArray<?> bias, int stride, int padding, int dilation, int groups,
             int outputPadding);
 
     /**

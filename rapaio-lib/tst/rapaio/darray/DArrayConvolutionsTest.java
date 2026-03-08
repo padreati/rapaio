@@ -175,7 +175,7 @@ public class DArrayConvolutionsTest {
 
         var in = dm.seq(dt, Shape.of(p.n, p.inChannels, p.inLen)).add(1);
         var kernel = dm.seq(dt, Shape.of(p.outChannels, Math.floorDiv(p.inChannels, p.groups), p.k)).add(1);
-        var y = in.conv1d(kernel, null, p.padding, p.stride, p.dilation, p.groups);
+        var y = in.conv1d(kernel, null, p.stride, p.padding, p.dilation, p.groups);
 
         int outLen = Math.floorDiv(p.inLen + 2 * p.padding - (p.k - 1) * p.dilation, p.stride);
         var expected = dm.stride(dt, exp).reshape(Shape.of(p.n, p.outChannels, outLen));
@@ -183,31 +183,11 @@ public class DArrayConvolutionsTest {
         assertEquals(Shape.of(p.n, p.outChannels, outLen), y.shape());
         assertTrue(expected.deepEquals(y));
 
-        var out = y.convTranspose1d(kernel, null, p.padding, p.stride, p.dilation, p.groups, p.outputPadding);
+        var out = y.convTranspose1d(kernel, null, p.stride, p.padding, p.dilation, p.groups, p.outputPadding);
         var texpected = dm.stride(dt, texp).reshape(in.shape());
 
         assertEquals(texpected.shape(), out.shape());
         assertTrue(texpected.deepEquals(out));
-    }
-
-    private void printPython(String name, DArray<?> array) {
-        System.out.println(name + ":");
-        System.out.print("[");
-        for (int i = 0; i < array.dim(0); i++) {
-            System.out.print("[");
-            for (int j = 0; j < array.dim(1); j++) {
-                System.out.print("[");
-                for (int k = 0; k < array.dim(2); k++) {
-                    System.out.print(array.get(i, j, k));
-                    if (k < array.dim(2) - 1) {
-                        System.out.print(", ");
-                    }
-                }
-                System.out.println("],");
-            }
-            System.out.print("],");
-        }
-        System.out.println("]");
     }
 
     @ParameterizedTest
@@ -275,7 +255,7 @@ public class DArrayConvolutionsTest {
     void testScenarioConv2D(DType<?> dt, ConvParams p, double[] exp, double[] texp) {
         var in = dm.seq(dt, Shape.of(p.n, p.inChannels, p.inH, p.inW)).add(1);
         var kernel = dm.seq(dt, Shape.of(p.outChannels, p.inChannels / p.groups, p.kH, p.kW)).add(1);
-        var y = in.conv2d(kernel, null, p.padding, p.stride, p.dilation, p.groups);
+        var y = in.conv2d(kernel, null, p.stride, p.padding, p.dilation, p.groups);
 
         int outH = Math.floorDiv(p.inH + 2 * p.padding - p.dilation * (p.kH - 1) - 1, p.stride) + 1;
         int outW = Math.floorDiv(p.inW + 2 * p.padding - p.dilation * (p.kW - 1) - 1, p.stride) + 1;
@@ -283,7 +263,7 @@ public class DArrayConvolutionsTest {
         assertEquals(expected.shape(), y.shape());
         assertTrue(expected.deepEquals(y));
 
-        var out = y.convTranspose2d(kernel, null, p.padding, p.stride, p.dilation, p.groups, p.outputPadding);
+        var out = y.convTranspose2d(kernel, null, p.stride, p.padding, p.dilation, p.groups, p.outputPadding);
         var texpected = dm.stride(dt, texp).reshape(in.shape());
         assertEquals(texpected.shape(), out.shape());
         assertTrue(texpected.deepEquals(out));
@@ -386,7 +366,7 @@ public class DArrayConvolutionsTest {
     void testScenarioConv3D(DType<?> dt, ConvParams p, double[] exp, double[] texp) {
         var in = dm.seq(dt, Shape.of(p.n, p.inChannels, p.inD, p.inH, p.inW)).add(1);
         var kernel = dm.seq(dt, Shape.of(p.outChannels, p.inChannels / p.groups, p.kD, p.kH, p.kW)).add(1);
-        var y = in.conv3d(kernel, null, p.padding, p.stride, p.dilation, p.groups);
+        var y = in.conv3d(kernel, null, p.stride, p.padding, p.dilation, p.groups);
 
         int outD = Math.floorDiv(p.inD + 2 * p.padding - p.dilation * (p.kD - 1) - 1, p.stride) + 1;
         int outH = Math.floorDiv(p.inH + 2 * p.padding - p.dilation * (p.kH - 1) - 1, p.stride) + 1;
@@ -395,7 +375,7 @@ public class DArrayConvolutionsTest {
         assertEquals(expected.shape(), y.shape());
         assertTrue(expected.deepEquals(y));
 
-        var out = y.convTranspose3d(kernel, null, p.padding, p.stride, p.dilation, p.groups, p.outputPadding);
+        var out = y.convTranspose3d(kernel, null, p.stride, p.padding, p.dilation, p.groups, p.outputPadding);
         var texpected = dm.stride(dt, texp).reshape(in.shape());
         assertEquals(texpected.shape(), out.shape());
         assertTrue(texpected.deepEquals(out));

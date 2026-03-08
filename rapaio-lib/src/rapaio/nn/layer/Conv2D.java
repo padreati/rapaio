@@ -37,8 +37,8 @@ public class Conv2D extends AbstractNetwork {
 
     private final int kH;
     private final int kW;
-    private final int padding;
     private final int stride;
+    private final int padding;
     private final int dilation;
     private final int groups;
     private final boolean bias;
@@ -47,7 +47,7 @@ public class Conv2D extends AbstractNetwork {
     private final Tensor b;
 
     public Conv2D(TensorManager tm, int inChannels, int outChannels,
-            int kH, int kW, int padding, int stride, int dilation, int groups, boolean bias) {
+            int kH, int kW, int stride, int padding, int dilation, int groups, boolean bias) {
         super(tm);
 
         this.inChannels = inChannels;
@@ -55,8 +55,8 @@ public class Conv2D extends AbstractNetwork {
 
         this.kH = kH;
         this.kW = kW;
-        this.padding = padding;
         this.stride = stride;
+        this.padding = padding;
         this.dilation = dilation;
         this.groups = groups;
         this.bias = bias;
@@ -87,6 +87,6 @@ public class Conv2D extends AbstractNetwork {
 
     @Override
     public Tensor forward11(Tensor x) {
-        return x.conv2d(w, b, padding, stride, dilation, groups);
+        return x.conv2d(w, b, stride, padding, dilation, groups);
     }
 }

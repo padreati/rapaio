@@ -24,10 +24,8 @@ package rapaio.experiment.nn;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 
 import rapaio.darray.Shape;
 import rapaio.data.VarDouble;
@@ -38,114 +36,23 @@ import rapaio.datasets.TabularDataset;
 import rapaio.ml.eval.metric.Confusion;
 import rapaio.nn.Autograd;
 import rapaio.nn.Loss;
+import rapaio.nn.Network;
 import rapaio.nn.Optimizer;
 import rapaio.nn.Tensor;
 import rapaio.nn.TensorManager;
 import rapaio.nn.layer.AbstractNetwork;
 import rapaio.nn.layer.Conv2D;
 import rapaio.nn.layer.Dropout;
+import rapaio.nn.layer.Flatten;
 import rapaio.nn.layer.LayerNorm;
 import rapaio.nn.layer.Linear;
 import rapaio.nn.layer.LogSoftmax;
-import rapaio.nn.layer.Tanh;
+import rapaio.nn.layer.Sequential;
+import rapaio.nn.layer.Sigmoid;
 import rapaio.nn.loss.NegativeLikelihoodLoss;
 import rapaio.printer.Format;
 
 public class MNIST {
-
-    static class DenseNetwork extends AbstractNetwork {
-
-        private LayerNorm norm1;
-        private Linear linear1;
-        private Tanh tanh;
-        private LayerNorm norm2;
-        private Linear linear2;
-        private LogSoftmax softmax;
-
-        private final int h;
-
-        public DenseNetwork(TensorManager tm, int h) {
-            super(tm);
-            this.h = h;
-            this.norm1 = new LayerNorm(tm, Shape.of(784));
-            this.linear1 = new Linear(tm, 784, h, true);
-            this.tanh = new Tanh(tm);
-            this.norm2 = new LayerNorm(tm, Shape.of(h));
-            this.linear2 = new Linear(tm, h, 10, true);
-            this.softmax = new LogSoftmax(tm, 0);
-        }
-
-        @Override
-        public Tensor forward11(Tensor x) {
-            x = norm1.forward11(x);
-            x = linear1.forward11(x);
-            x = tanh.forward11(x);
-            x = norm2.forward11(x);
-            x = linear2.forward11(x);
-            x = softmax.forward11(x);
-            return x;
-        }
-    }
-
-    static class SplitNetwork extends AbstractNetwork {
-
-        private LayerNorm norm1;
-        private Linear[] linears1;
-        private Tanh tanh;
-        private LayerNorm norm2;
-        private Linear linear2;
-        private LogSoftmax softmax;
-
-        private final int h;
-        private final int split;
-
-        int[] indices;
-
-        public SplitNetwork(TensorManager tm, int split, int h) {
-            super(tm);
-            this.h = h;
-            this.split = split;
-
-            if (784 % split != 0) {
-                throw new IllegalArgumentException("Number of hidden units must be divisible by split");
-            }
-            this.indices = new int[784 / split];
-            for (int i = 1; i < indices.length; i++) {
-                indices[i] = indices[i - 1] + split;
-            }
-
-            this.norm1 = new LayerNorm(tm, Shape.of(784));
-
-            this.linears1 = new Linear[indices.length];
-            for (int i = 0; i < indices.length; i++) {
-                linears1[i] = new Linear(tm, split, h, true);
-            }
-            this.tanh = new Tanh(tm);
-            this.norm2 = new LayerNorm(tm, Shape.of(h * indices.length));
-            this.linear2 = new Linear(tm, h * indices.length, 10, true);
-            this.softmax = new LogSoftmax(tm, 0);
-        }
-
-        @Override
-        public Tensor forward11(Tensor x) {
-            x = norm1.forward11(x);
-
-            List<Tensor> splits = x.split(1, indices);
-            List<Tensor> after = new ArrayList<>();
-            for (int i = 0; i < splits.size(); i++) {
-                var a = linears1[i].forward11(splits.get(i));
-                a = tanh.forward11(a);
-                after.add(a);
-            }
-
-            x = tm.cat(1, after.toArray(Tensor[]::new));
-
-            x = norm2.forward11(x);
-            x = linear2.forward11(x);
-            x = softmax.forward11(x);
-            return x;
-        }
-    }
 
     static class ConvNetwork extends AbstractNetwork {
 
@@ -158,16 +65,16 @@ public class MNIST {
         private Linear linear2;
         private LogSoftmax softmax;
 
-        private static final int linSize = 32*3*3;
+        private static final int linSize = 32 * 3 * 3;
 
         public ConvNetwork(TensorManager tm) {
             super(tm);
 
-            this.norm1 = new LayerNorm(tm, Shape.of(28,28));
-            this.conv2d1 = new Conv2D(tm, 1, 16, 4, 4, 0, 4, 1, 1, true);
+            this.norm1 = new LayerNorm(tm, Shape.of(28, 28));
+            this.conv2d1 = new Conv2D(tm, 1, 16, 4, 4, 4, 0, 1, 1, true);
             this.dropout1 = new Dropout(tm, 0.25);
-            this.conv2d2 = new Conv2D(tm, 16, 32, 3, 3, 0, 2, 1, 2, true);
-            this.norm2 = new LayerNorm(tm, Shape.of(32,3,3));
+            this.conv2d2 = new Conv2D(tm, 16, 32, 3, 3, 2, 0, 1, 2, true);
+            this.norm2 = new LayerNorm(tm, Shape.of(32, 3, 3));
             this.linear1 = new Linear(tm, linSize, 32, true);
             this.linear2 = new Linear(tm, 32, 10, true);
             this.softmax = new LogSoftmax(tm, 0);
@@ -189,26 +96,54 @@ public class MNIST {
         }
     }
 
-    public static void main(String[] args) throws IOException {
+    public static Network createLeNet1(TensorManager tm) {
+        return new Sequential(tm,
+                new Flatten(tm),
+                new Linear(tm, 28 * 28, 10, true),
+                new LogSoftmax(tm, 0)
+        );
+    }
+
+    public static Network createLeNet2(TensorManager tm) {
+        return new Sequential(tm,
+                new Flatten(tm),
+                new Linear(tm, 28 * 28, 16, true),
+                new Linear(tm, 16, 10, true),
+                new LogSoftmax(tm, 0)
+        );
+    }
+
+    public static Network createLeNet3(TensorManager tm) {
+        return new Sequential(tm,
+                new Conv2D(tm, 1, 1, 3, 3, 2, 0, 1, 1, true),
+                new Sigmoid(tm),
+                new Conv2D(tm, 1, 1, 3, 3, 2, 0, 2, 1, true),
+                new Sigmoid(tm),
+                new Flatten(tm),
+                new Linear(tm, 25, 10, true),
+                new LogSoftmax(tm, 0)
+        );
+    }
+
+    static void main() throws IOException {
         TensorManager tm = TensorManager.ofFloat();
         tm.seed(42);
 
         MNISTDatasets mnist = new MNISTDatasets(tm);
-        TabularDataset train1 = mnist.train();
-        TabularDataset test1 = mnist.test();
-//        TabularDataset train = new TabularDataset(tm,
-//                train1.darray(0).reshape(Shape.of(train1.darray(0).dim(0), 28 * 28)), train1.darray(1));
-//        TabularDataset test = new TabularDataset(tm,
-//                test1.darray(0).reshape(Shape.of(test1.darray(0).dim(0), 28 * 28)), test1.darray(1));
-        TabularDataset train = new TabularDataset(tm, train1.darray(0), train1.darray(1));
-        TabularDataset test = new TabularDataset(tm, test1.darray(0), test1.darray(1));
+        TabularDataset train = new TabularDataset(tm,
+                mnist.train().darray(0).stretch(1),
+                mnist.train().darray(1));
+        TabularDataset test = new TabularDataset(tm,
+                mnist.test().darray(0).stretch(1),
+                mnist.test().darray(1));
 
-        int epochs = 10;
+        int epochs = 100;
         double lr = 1e-3;
         int batchSize = 1000;
 
-        var nn = new ConvNetwork(tm);
+//        var nn = new ConvNetwork(tm);
 //        var nn = new SplitNetwork(tm, 7, 2);
+        var nn = createLeNet3(tm);
 
         var optimizer = Optimizer.Adam(tm, nn.parameters()).lr.set(lr);
 

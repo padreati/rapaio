@@ -39,10 +39,10 @@ import rapaio.nn.Tensor;
  */
 public final class Conv1dNode extends Tensor {
 
-    public Conv1dNode(Tensor x, Tensor w, Tensor b, int padding, int stride, int dilation, int groups) {
+    public Conv1dNode(Tensor x, Tensor w, Tensor b, int stride, int padding, int dilation, int groups) {
         super(x.tm(), Conv1dNode.class.getSimpleName());
 
-        this.setValue(x.value().conv1d(w.value(), b != null ? b.value() : null, padding, stride, dilation, groups));
+        this.setValue(x.value().conv1d(w.value(), b != null ? b.value() : null, stride, padding, dilation, groups));
 
         // grad w.r.t. input: transposed convolution
         int lIn = x.value().dim(2);
@@ -50,7 +50,7 @@ public final class Conv1dNode extends Tensor {
         int lOut = this.value().dim(2);
         int outputPadding = lIn - ((lOut - 1) * stride - 2 * padding + dilation * (k - 1) + 1);
         backEdge(x, () ->
-                this.grad().convTranspose1d(w.value(), null, padding, stride, dilation, groups, outputPadding)
+                this.grad().convTranspose1d(w.value(), null, stride, padding, dilation, groups, outputPadding)
         );
 
         // grad w.r.t. weight via im2col: grad_w[g] = sum_batch( grad_y[g] @ unfold(x[g]).T )
@@ -68,7 +68,7 @@ public final class Conv1dNode extends Tensor {
                 var gySlices = gyBatch.chunk(0, true, outDepth);
 
                 for (int group = 0; group < groups; group++) {
-                    DArray<?> unfold = xSlices.get(group).unfold1d(k, padding, stride, dilation);          // (inDepth*k, L_out)
+                    DArray<?> unfold = xSlices.get(group).unfold1d(k, stride, padding, dilation);          // (inDepth*k, L_out)
                     var gradWn = gradW.narrow(0, group * outDepth, (group + 1) * outDepth).reshape(Shape.of(outDepth, inDepth * k));
                     gySlices.get(group).mm(unfold.t_(), gradWn); // (outDepth, inDepth, k)
                 }

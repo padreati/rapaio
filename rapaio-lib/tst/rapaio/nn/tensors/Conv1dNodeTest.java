@@ -69,7 +69,7 @@ public class Conv1dNodeTest {
         int dilation = 1;
         int groups = 1;
 
-        Tensor y = new Conv1dNode(x, w, b, padding, stride, dilation, groups);
+        Tensor y = new Conv1dNode(x, w, b, stride, padding, dilation, groups);
 
         // Forward: y shape (2, 2, 3)
         assertTrue(y.value().deepEquals(
@@ -122,12 +122,12 @@ public class Conv1dNodeTest {
                         1., 2., 1.)
                 .requiresGrad(true).name("w");
 
-        int padding = 1;
         int stride = 2;
+        int padding = 1;
         int dilation = 1;
         int groups = 1;
 
-        Tensor y = new Conv1dNode(x, w, null, padding, stride, dilation, groups);
+        Tensor y = new Conv1dNode(x, w, null, stride, padding, dilation, groups);
 
         assertTrue(y.value().deepEquals(
                 tm.strideArray(Shape.of(1, 1, 3),

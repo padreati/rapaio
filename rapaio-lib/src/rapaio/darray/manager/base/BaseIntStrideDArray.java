@@ -1144,7 +1144,7 @@ public final class BaseIntStrideDArray extends AbstractStrideDArray<Integer> {
     }
 
     @Override
-    public DArray<Integer> conv1d(DArray<?> kernel, DArray<?> bias, int padding, int stride, int dilation, int groups) {
+    public DArray<Integer> conv1d(DArray<?> kernel, DArray<?> bias, int stride, int padding, int dilation, int groups) {
 
         // complete input shape
         if (this.rank() > 3) {
@@ -1208,7 +1208,7 @@ public final class BaseIntStrideDArray extends AbstractStrideDArray<Integer> {
 
                 DArray<?> kernelSlice = kernel.narrow(0, group * outDepth, (group + 1) * outDepth); // shape: (outDepth, inDepth, k)
 
-                DArray<Integer> unfold1d = inSlice.unfold1d(k, padding, stride, dilation);
+                DArray<Integer> unfold1d = inSlice.unfold1d(k, stride, padding, dilation);
 
                 kernelSlice = kernelSlice.reshape(Shape.of(outDepth, inDepth * k));
                 outSlice.add_(kernelSlice.mm(unfold1d));
@@ -1224,7 +1224,7 @@ public final class BaseIntStrideDArray extends AbstractStrideDArray<Integer> {
     }
 
     @Override
-    public DArray<Integer> convTranspose1d(DArray<?> weights, DArray<?> bias, int padding, int stride, int dilation, int groups,
+    public DArray<Integer> convTranspose1d(DArray<?> weights, DArray<?> bias, int stride, int padding, int dilation, int groups,
             int outputPadding) {
         DArray<Integer> input = this;
 
@@ -1307,7 +1307,7 @@ public final class BaseIntStrideDArray extends AbstractStrideDArray<Integer> {
     }
 
     @Override
-    public DArray<Integer> unfold1d(int kLen, int padding, int stride, int dilation) {
+    public DArray<Integer> unfold1d(int kLen, int stride, int padding, int dilation) {
 
         if (this.rank() != 2 && this.rank() != 3) {
             throw new IllegalArgumentException("Input must be a 2D or 3D array.");
@@ -1343,7 +1343,7 @@ public final class BaseIntStrideDArray extends AbstractStrideDArray<Integer> {
     }
 
     @Override
-    public DArray<Integer> conv2d(DArray<?> kernel, DArray<?> bias, int padding, int stride, int dilation, int groups) {
+    public DArray<Integer> conv2d(DArray<?> kernel, DArray<?> bias, int stride, int padding, int dilation, int groups) {
         if (this.rank() > 4) {
             throw new IllegalArgumentException(String.format(
                     "Input must have at most 4 dimensions, but it has %d.", this.rank()));
@@ -1392,7 +1392,7 @@ public final class BaseIntStrideDArray extends AbstractStrideDArray<Integer> {
                     for (int group = 0; group < groups; group++) {
 
                         // im2col: (inDepth * kH * kW, outH * outW)
-                        DArray<Integer> col = inSlices.get(group).unfold2d(kH, kW, padding, stride, dilation);
+                        DArray<Integer> col = inSlices.get(group).unfold2d(kH, kW, stride, padding, dilation);
                         DArray<?> kernelSlice = kernelSlices.get(group);
                         DArray<?> kFlat = kernelSlice.reshape(Shape.of(outDepth, inDepth * kH * kW), Order.C);
                         // (outDepth, outH*outW)
@@ -1416,7 +1416,7 @@ public final class BaseIntStrideDArray extends AbstractStrideDArray<Integer> {
     }
 
     @Override
-    public DArray<Integer> unfold2d(int kH, int kW, int padding, int stride, int dilation) {
+    public DArray<Integer> unfold2d(int kH, int kW, int stride, int padding, int dilation) {
         boolean batched = this.rank() == 4;
         if (this.rank() != 3 && rank() != 4) {
             throw new IllegalArgumentException("Input must be a 3D or 4D array.");
@@ -1457,7 +1457,7 @@ public final class BaseIntStrideDArray extends AbstractStrideDArray<Integer> {
     }
 
     @Override
-    public DArray<Integer> convTranspose2d(DArray<?> w, DArray<?> bias, int padding, int stride, int dilation, int groups,
+    public DArray<Integer> convTranspose2d(DArray<?> w, DArray<?> bias, int stride, int padding, int dilation, int groups,
             int outputPadding) {
         DArray<Integer> input = this;
         while (input.rank() < 4) {
@@ -1542,7 +1542,7 @@ public final class BaseIntStrideDArray extends AbstractStrideDArray<Integer> {
     }
 
     @Override
-    public DArray<Integer> conv3d(DArray<?> kernel, DArray<?> bias, int padding, int stride, int dilation, int groups) {
+    public DArray<Integer> conv3d(DArray<?> kernel, DArray<?> bias, int stride, int padding, int dilation, int groups) {
         DArray<Integer> input = this;
         while (input.rank() < 5) {
             input = input.stretch(0);
@@ -1572,7 +1572,7 @@ public final class BaseIntStrideDArray extends AbstractStrideDArray<Integer> {
                 DArray<?> inSlice = inBatch.narrow(0, group * inDepth, (group + 1) * inDepth);
                 DArray<?> outSlice = outBatch.narrow(0, group * outDepth, (group + 1) * outDepth);
                 DArray<?> kernelSlice = kernel.narrow(0, group * outDepth, (group + 1) * outDepth);
-                DArray<?> unfold = inSlice.unfold3d(kD, kH, kW, padding, stride, dilation);
+                DArray<?> unfold = inSlice.unfold3d(kD, kH, kW, stride, padding, dilation);
                 outSlice.add_(kernelSlice.reshape(Shape.of(outDepth, inDepth * kD * kH * kW)).mm(unfold)
                         .reshape(Shape.of(outDepth, outD, outH, outW)));
             }
@@ -1586,7 +1586,7 @@ public final class BaseIntStrideDArray extends AbstractStrideDArray<Integer> {
     }
 
     @Override
-    public DArray<Integer> unfold3d(int kD, int kH, int kW, int padding, int stride, int dilation) {
+    public DArray<Integer> unfold3d(int kD, int kH, int kW, int stride, int padding, int dilation) {
 
         boolean batched = this.rank() == 5;
         DArray<Integer> input = this;
@@ -1639,7 +1639,7 @@ public final class BaseIntStrideDArray extends AbstractStrideDArray<Integer> {
     }
 
     @Override
-    public DArray<Integer> convTranspose3d(DArray<?> weights, DArray<?> bias, int padding, int stride, int dilation, int groups,
+    public DArray<Integer> convTranspose3d(DArray<?> weights, DArray<?> bias, int stride, int padding, int dilation, int groups,
             int outputPadding) {
         DArray<Integer> input = this;
         while (input.rank() < 5) {

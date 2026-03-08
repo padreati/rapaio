@@ -463,11 +463,11 @@ public abstract class Tensor {
         return new StretchNode(this, axis);
     }
 
-    public final Conv1dNode conv1d(Tensor weight, Tensor bias, int padding, int stride, int dilation, int groups) {
-        return new Conv1dNode(this, weight, bias, padding, stride, dilation, groups);
+    public final Conv1dNode conv1d(Tensor weight, Tensor bias, int stride, int padding, int dilation, int groups) {
+        return new Conv1dNode(this, weight, bias, stride, padding, dilation, groups);
     }
 
-    public final Conv2dNode conv2d(Tensor weight, Tensor bias, int padding, int stride, int dilation, int groups) {
-        return new Conv2dNode(this, weight, bias, padding, stride, dilation, groups);
+    public final Conv2dNode conv2d(Tensor weight, Tensor bias, int stride, int padding, int dilation, int groups) {
+        return new Conv2dNode(this, weight, bias, stride, padding, dilation, groups);
     }
 }

@@ -48,7 +48,7 @@ public class Conv1D extends AbstractNetwork {
     private final Tensor b;
 
     public Conv1D(TensorManager tm, int inChannels, int outChannels,
-            int k, int padding, int stride, int dilation, int groups, boolean bias) {
+            int k, int stride, int padding, int dilation, int groups, boolean bias) {
         super(tm);
 
         this.inChannels = inChannels;
@@ -85,6 +85,6 @@ public class Conv1D extends AbstractNetwork {
 
     @Override
     public Tensor forward11(Tensor x) {
-        return x.conv1d(w, b, padding, stride, dilation, groups);
+        return x.conv1d(w, b, stride, padding, dilation, groups);
     }
 }

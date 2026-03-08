@@ -39,10 +39,10 @@ import rapaio.nn.Tensor;
  */
 public final class Conv2dNode extends Tensor {
 
-    public Conv2dNode(Tensor x, Tensor w, Tensor b, int padding, int stride, int dilation, int groups) {
+    public Conv2dNode(Tensor x, Tensor w, Tensor b, int stride, int padding, int dilation, int groups) {
         super(x.tm(), Conv2dNode.class.getSimpleName());
 
-        this.setValue(x.value().conv2d(w.value(), b != null ? b.value() : null, padding, stride, dilation, groups));
+        this.setValue(x.value().conv2d(w.value(), b != null ? b.value() : null, stride, padding, dilation, groups));
 
         // grad w.r.t. input: transposed convolution
         int inH = x.value().dim(2);
@@ -56,7 +56,7 @@ public final class Conv2dNode extends Tensor {
         // convTranspose2d uses a single outputPadding; use max to be safe (typically both are equal)
         int outputPadding = Math.max(outputPaddingH, outputPaddingW);
         backEdge(x, () ->
-                this.grad().convTranspose2d(w.value(), null, padding, stride, dilation, groups, outputPadding)
+                this.grad().convTranspose2d(w.value(), null, stride, padding, dilation, groups, outputPadding)
         );
 
         // grad w.r.t. weight via im2col
@@ -74,7 +74,7 @@ public final class Conv2dNode extends Tensor {
                 var gySlices = gyBatches.get(batch).chunk(0, true, outDepth);
                 for (int group = 0; group < groups; group++) {
                     // unfold: (inDepth*kH*kW, outH*outW)
-                    DArray<?> unfold = xSlices.get(group).unfold2d(kH, kW, padding, stride, dilation);
+                    DArray<?> unfold = xSlices.get(group).unfold2d(kH, kW, stride, padding, dilation);
                     // gyFlat: (outDepth, outH*outW)
                     DArray<?> gyFlat = gySlices.get(group).reshape(Shape.of(outDepth, outH * outW));
 
