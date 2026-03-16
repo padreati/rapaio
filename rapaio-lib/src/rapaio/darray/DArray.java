@@ -49,6 +49,7 @@ import rapaio.darray.operator.DArrayUnaryOp;
 import rapaio.data.OperationNotAvailableException;
 import rapaio.data.VarDouble;
 import rapaio.printer.Printable;
+import rapaio.util.Pair;
 import rapaio.util.function.IntIntBiFunction;
 
 /**
@@ -4027,6 +4028,20 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      */
     public abstract DArray<N> convTranspose3d(DArray<?> weights, DArray<?> bias, int stride, int padding, int dilation, int groups,
             int outputPadding);
+
+    public abstract Pair<DArray<N>, DArray<Integer>> maxPool1d(int kW, int stride, int padding, int dilation, boolean ceilMode);
+
+    public abstract DArray<N> maxUnpool1d(DArray<N> input, DArray<Integer> indices, int kSize, int stride, int padding, int outputSize);
+
+    public abstract Pair<DArray<N>, DArray<Integer>> maxPool2d(int kH, int kW, int stride, int padding, int dilation, boolean ceilMode);
+
+    public abstract DArray<N> maxUnpool2d(DArray<N> input, DArray<Integer> indices, int kH, int kW, int stride, int padding, int outputH,
+            int outputW);
+
+    public abstract Pair<DArray<N>, DArray<Integer>> maxPool3d(int kD, int kH, int kW, int stride, int padding, int dilation, boolean ceilMode);
+
+    public abstract DArray<N> maxUnpool3d(DArray<N> input, DArray<Integer> indices, int kD, int kH, int kW, int stride, int padding,
+            int outputD, int outputH, int outputW);
 
     /**
      * Shortcut method for {@link #diag(int)} with parameter {@code 0}.

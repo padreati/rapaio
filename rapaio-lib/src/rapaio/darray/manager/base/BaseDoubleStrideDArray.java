@@ -63,6 +63,7 @@ import rapaio.darray.operator.impl.ReduceOpMax;
 import rapaio.darray.operator.impl.ReduceOpMin;
 import rapaio.data.OperationNotAvailableException;
 import rapaio.printer.Format;
+import rapaio.util.Pair;
 import rapaio.util.collection.Ints;
 import rapaio.util.function.IntIntBiFunction;
 
@@ -1099,6 +1100,41 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
     public DArray<Double> convTranspose3d(DArray<?> weights, DArray<?> bias, int stride, int padding, int dilation, int groups,
             int outputPadding) {
         return BaseDoubleStrideDArrayConvolutions.convTranspose3d(this, weights, bias, stride, padding, dilation, groups, outputPadding);
+    }
+
+    @Override
+    public Pair<DArray<Double>, DArray<Integer>> maxPool1d(int kW, int stride, int padding, int dilation, boolean ceilMode) {
+        return BaseDoubleStrideDArrayConvolutions.maxPool1d(this, kW, stride, padding, dilation, ceilMode);
+    }
+
+    @Override
+    public DArray<Double> maxUnpool1d(DArray<Double> input, DArray<Integer> indices, int kSize, int stride, int padding, int outputSize) {
+        return BaseDoubleStrideDArrayConvolutions.maxUnpool1d(input, indices, kSize, stride, padding, outputSize);
+    }
+
+    @Override
+    public Pair<DArray<Double>, DArray<Integer>> maxPool2d(int kH, int kW, int stride, int padding, int dilation, boolean ceilMode) {
+        return BaseDoubleStrideDArrayConvolutions.maxPool2d(this, kH, kW, stride, padding, dilation, ceilMode);
+    }
+
+    @Override
+    public DArray<Double> maxUnpool2d(DArray<Double> input, DArray<Integer> indices, int kH, int kW, int stride, int padding,
+            int outputSizeH,
+            int outputSizeW) {
+        return BaseDoubleStrideDArrayConvolutions.maxUnpool2d(input, indices, kH, kW, stride, padding, outputSizeH, outputSizeW);
+    }
+
+    @Override
+    public Pair<DArray<Double>, DArray<Integer>> maxPool3d(int kD, int kH, int kW, int stride, int padding, int dilation,
+            boolean ceilMode) {
+        return BaseDoubleStrideDArrayConvolutions.maxPool3d(this, kD, kH, kW, stride, padding, dilation, ceilMode);
+    }
+
+    @Override
+    public DArray<Double> maxUnpool3d(DArray<Double> input, DArray<Integer> indices, int kD, int kH, int kW, int stride, int padding,
+            int outputSizeD, int outputSizeH, int outputSizeW) {
+        return BaseDoubleStrideDArrayConvolutions.maxUnpool3d(input, indices, kD, kH, kW, stride, padding, outputSizeD, outputSizeH,
+                outputSizeW);
     }
 
     @Override

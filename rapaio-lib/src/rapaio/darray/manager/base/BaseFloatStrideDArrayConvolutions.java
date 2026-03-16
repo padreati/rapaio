@@ -29,6 +29,7 @@ import rapaio.darray.DArray;
 import rapaio.darray.DType;
 import rapaio.darray.Order;
 import rapaio.darray.Shape;
+import rapaio.util.Pair;
 
 public final class BaseFloatStrideDArrayConvolutions {
 
@@ -583,6 +584,315 @@ public final class BaseFloatStrideDArrayConvolutions {
             for (int oc = 0; oc < outChannels; oc++) {
                 output.narrow(1, oc, oc + 1).add_(bias.getFloat(oc));
             }
+        }
+        return output;
+    }
+
+    public static Pair<DArray<Float>, DArray<Integer>> maxPool1d(DArray<Float> input, int kSize, int stride, int padding, int dilation, boolean ceilMode) {
+        boolean batched = input.rank() == 3;
+        if (input.rank() != 2 && input.rank() != 3) {
+            throw new IllegalArgumentException("Input must be a 2D or 3D array.");
+        }
+        if (!batched) {
+            input = input.stretch(0);
+        }
+
+        int n = input.dim(0);
+        int channels = input.dim(1);
+        int inLen = input.dim(2);
+
+        int outLen;
+        if (ceilMode) {
+            outLen = (int) Math.ceil((inLen + 2.0 * padding - dilation * (kSize - 1) - 1) / stride + 1);
+        } else {
+            outLen = Math.floorDiv(inLen + 2 * padding - dilation * (kSize - 1) - 1, stride) + 1;
+        }
+
+        DArray<Float> output = input.dm().zeros(DType.FLOAT, Shape.of(n, channels, outLen));
+        DArray<Integer> indices = input.dm().zeros(DType.INTEGER, Shape.of(n, channels, outLen));
+
+        for (int b = 0; b < n; b++) {
+            for (int c = 0; c < channels; c++) {
+                for (int o = 0; o < outLen; o++) {
+                    float maxVal = Float.NEGATIVE_INFINITY;
+                    int maxIdx = -1;
+                    for (int k = 0; k < kSize; k++) {
+                        int inPos = o * stride + k * dilation - padding;
+                        if (inPos >= 0 && inPos < inLen) {
+                            float val = input.getFloat(b, c, inPos);
+                            if (val > maxVal) {
+                                maxVal = val;
+                                maxIdx = inPos;
+                            }
+                        }
+                    }
+                    output.setFloat(maxVal, b, c, o);
+                    indices.setInt(maxIdx, b, c, o);
+                }
+            }
+        }
+
+        if (!batched) {
+            output = output.squeeze(0);
+            indices = indices.squeeze(0);
+        }
+        return Pair.from(output, indices);
+    }
+
+    public static DArray<Float> maxUnpool1d(DArray<Float> input, DArray<Integer> indices, int kSize, int stride, int padding, int outputSize) {
+        boolean batched = input.rank() == 3;
+        if (input.rank() != 2 && input.rank() != 3) {
+            throw new IllegalArgumentException("Input must be a 2D or 3D array.");
+        }
+        if (!batched) {
+            input = input.stretch(0);
+            indices = indices.stretch(0);
+        }
+
+        int n = input.dim(0);
+        int channels = input.dim(1);
+        int inLen = input.dim(2);
+
+        int outLen = outputSize > 0 ? outputSize : (inLen - 1) * stride - 2 * padding + kSize;
+
+        DArray<Float> output = input.dm().zeros(DType.FLOAT, Shape.of(n, channels, outLen));
+
+        for (int b = 0; b < n; b++) {
+            for (int c = 0; c < channels; c++) {
+                for (int i = 0; i < inLen; i++) {
+                    int idx = indices.getInt(b, c, i);
+                    if (idx >= 0 && idx < outLen) {
+                        output.setFloat(input.getFloat(b, c, i), b, c, idx);
+                    }
+                }
+            }
+        }
+
+        if (!batched) {
+            output = output.squeeze(0);
+        }
+        return output;
+    }
+
+    public static Pair<DArray<Float>, DArray<Integer>> maxPool2d(DArray<Float> input, int kH, int kW, int stride, int padding, int dilation, boolean ceilMode) {
+        boolean batched = input.rank() == 4;
+        if (input.rank() != 3 && input.rank() != 4) {
+            throw new IllegalArgumentException("Input must be a 3D or 4D array.");
+        }
+        if (!batched) {
+            input = input.stretch(0);
+        }
+
+        int n = input.dim(0);
+        int channels = input.dim(1);
+        int inH = input.dim(2);
+        int inW = input.dim(3);
+
+        int outH, outW;
+        if (ceilMode) {
+            outH = (int) Math.ceil((inH + 2.0 * padding - dilation * (kH - 1) - 1) / stride + 1);
+            outW = (int) Math.ceil((inW + 2.0 * padding - dilation * (kW - 1) - 1) / stride + 1);
+        } else {
+            outH = Math.floorDiv(inH + 2 * padding - dilation * (kH - 1) - 1, stride) + 1;
+            outW = Math.floorDiv(inW + 2 * padding - dilation * (kW - 1) - 1, stride) + 1;
+        }
+
+        DArray<Float> output = input.dm().zeros(DType.FLOAT, Shape.of(n, channels, outH, outW));
+        DArray<Integer> indices = input.dm().zeros(DType.INTEGER, Shape.of(n, channels, outH, outW));
+
+        for (int b = 0; b < n; b++) {
+            for (int c = 0; c < channels; c++) {
+                for (int oh = 0; oh < outH; oh++) {
+                    for (int ow = 0; ow < outW; ow++) {
+                        float maxVal = Float.NEGATIVE_INFINITY;
+                        int maxIdx = -1;
+                        for (int kh = 0; kh < kH; kh++) {
+                            int ih = oh * stride + kh * dilation - padding;
+                            if (ih >= 0 && ih < inH) {
+                                for (int kw = 0; kw < kW; kw++) {
+                                    int iw = ow * stride + kw * dilation - padding;
+                                    if (iw >= 0 && iw < inW) {
+                                        float val = input.getFloat(b, c, ih, iw);
+                                        if (val > maxVal) {
+                                            maxVal = val;
+                                            maxIdx = ih * inW + iw;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        output.setFloat(maxVal, b, c, oh, ow);
+                        indices.setInt(maxIdx, b, c, oh, ow);
+                    }
+                }
+            }
+        }
+
+        if (!batched) {
+            output = output.squeeze(0);
+            indices = indices.squeeze(0);
+        }
+        return Pair.from(output, indices);
+    }
+
+    public static DArray<Float> maxUnpool2d(DArray<Float> input, DArray<Integer> indices, int kH, int kW, int stride, int padding, int outH, int outW) {
+        boolean batched = input.rank() == 4;
+        if (input.rank() != 3 && input.rank() != 4) {
+            throw new IllegalArgumentException("Input must be a 3D or 4D array.");
+        }
+        if (!batched) {
+            input = input.stretch(0);
+            indices = indices.stretch(0);
+        }
+
+        int n = input.dim(0);
+        int channels = input.dim(1);
+        int inH = input.dim(2);
+        int inW = input.dim(3);
+
+        int outputH = outH > 0 ? outH : (inH - 1) * stride - 2 * padding + kH;
+        int outputW = outW > 0 ? outW : (inW - 1) * stride - 2 * padding + kW;
+
+        DArray<Float> output = input.dm().zeros(DType.FLOAT, Shape.of(n, channels, outputH, outputW));
+
+        for (int b = 0; b < n; b++) {
+            for (int c = 0; c < channels; c++) {
+                for (int ih = 0; ih < inH; ih++) {
+                    for (int iw = 0; iw < inW; iw++) {
+                        int idx = indices.getInt(b, c, ih, iw);
+                        if (idx >= 0) {
+                            int oh = idx / outputW;
+                            int ow = idx % outputW;
+                            if (oh < outputH && ow < outputW) {
+                                output.setFloat(input.getFloat(b, c, ih, iw), b, c, oh, ow);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!batched) {
+            output = output.squeeze(0);
+        }
+        return output;
+    }
+
+    public static Pair<DArray<Float>, DArray<Integer>> maxPool3d(DArray<Float> input, int kD, int kH, int kW, int stride, int padding, int dilation, boolean ceilMode) {
+        boolean batched = input.rank() == 5;
+        if (input.rank() != 4 && input.rank() != 5) {
+            throw new IllegalArgumentException("Input must be a 4D or 5D array.");
+        }
+        if (!batched) {
+            input = input.stretch(0);
+        }
+
+        int n = input.dim(0);
+        int channels = input.dim(1);
+        int inD = input.dim(2);
+        int inH = input.dim(3);
+        int inW = input.dim(4);
+
+        int outD, outH, outW;
+        if (ceilMode) {
+            outD = (int) Math.ceil((inD + 2.0 * padding - dilation * (kD - 1) - 1) / stride + 1);
+            outH = (int) Math.ceil((inH + 2.0 * padding - dilation * (kH - 1) - 1) / stride + 1);
+            outW = (int) Math.ceil((inW + 2.0 * padding - dilation * (kW - 1) - 1) / stride + 1);
+        } else {
+            outD = Math.floorDiv(inD + 2 * padding - dilation * (kD - 1) - 1, stride) + 1;
+            outH = Math.floorDiv(inH + 2 * padding - dilation * (kH - 1) - 1, stride) + 1;
+            outW = Math.floorDiv(inW + 2 * padding - dilation * (kW - 1) - 1, stride) + 1;
+        }
+
+        DArray<Float> output = input.dm().zeros(DType.FLOAT, Shape.of(n, channels, outD, outH, outW));
+        DArray<Integer> indices = input.dm().zeros(DType.INTEGER, Shape.of(n, channels, outD, outH, outW));
+
+        for (int b = 0; b < n; b++) {
+            for (int c = 0; c < channels; c++) {
+                for (int od = 0; od < outD; od++) {
+                    for (int oh = 0; oh < outH; oh++) {
+                        for (int ow = 0; ow < outW; ow++) {
+                            float maxVal = Float.NEGATIVE_INFINITY;
+                            int maxIdx = -1;
+                            for (int kd = 0; kd < kD; kd++) {
+                                int id = od * stride + kd * dilation - padding;
+                                if (id >= 0 && id < inD) {
+                                    for (int kh = 0; kh < kH; kh++) {
+                                        int ih = oh * stride + kh * dilation - padding;
+                                        if (ih >= 0 && ih < inH) {
+                                            for (int kw = 0; kw < kW; kw++) {
+                                                int iw = ow * stride + kw * dilation - padding;
+                                                if (iw >= 0 && iw < inW) {
+                                                    float val = input.getFloat(b, c, id, ih, iw);
+                                                    if (val > maxVal) {
+                                                        maxVal = val;
+                                                        maxIdx = id * inH * inW + ih * inW + iw;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            output.setFloat(maxVal, b, c, od, oh, ow);
+                            indices.setInt(maxIdx, b, c, od, oh, ow);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!batched) {
+            output = output.squeeze(0);
+            indices = indices.squeeze(0);
+        }
+        return Pair.from(output, indices);
+    }
+
+    public static DArray<Float> maxUnpool3d(DArray<Float> input, DArray<Integer> indices, int kD, int kH, int kW, int stride, int padding, int outD, int outH, int outW) {
+        boolean batched = input.rank() == 5;
+        if (input.rank() != 4 && input.rank() != 5) {
+            throw new IllegalArgumentException("Input must be a 4D or 5D array.");
+        }
+        if (!batched) {
+            input = input.stretch(0);
+            indices = indices.stretch(0);
+        }
+
+        int n = input.dim(0);
+        int channels = input.dim(1);
+        int inD = input.dim(2);
+        int inH = input.dim(3);
+        int inW = input.dim(4);
+
+        int outputD = outD > 0 ? outD : (inD - 1) * stride - 2 * padding + kD;
+        int outputH = outH > 0 ? outH : (inH - 1) * stride - 2 * padding + kH;
+        int outputW = outW > 0 ? outW : (inW - 1) * stride - 2 * padding + kW;
+
+        DArray<Float> output = input.dm().zeros(DType.FLOAT, Shape.of(n, channels, outputD, outputH, outputW));
+
+        for (int b = 0; b < n; b++) {
+            for (int c = 0; c < channels; c++) {
+                for (int id = 0; id < inD; id++) {
+                    for (int ih = 0; ih < inH; ih++) {
+                        for (int iw = 0; iw < inW; iw++) {
+                            int idx = indices.getInt(b, c, id, ih, iw);
+                            if (idx >= 0) {
+                                int od = idx / (outputH * outputW);
+                                int oh = (idx % (outputH * outputW)) / outputW;
+                                int ow = idx % outputW;
+                                if (od < outputD && oh < outputH && ow < outputW) {
+                                    output.setFloat(input.getFloat(b, c, id, ih, iw), b, c, od, oh, ow);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!batched) {
+            output = output.squeeze(0);
         }
         return output;
     }

@@ -479,4 +479,166 @@ public class DArrayConvolutionsTest {
             return this;
         }
     }
+
+    @ParameterizedTest
+    @MethodSource("dtSource")
+    void testMaxPool1d(DType<?> dt) {
+
+        var input = dm.seq(dt, Shape.of(1, 9));
+
+        var r1 = input.maxPool1d(2, 2, 0, 1, true);
+        testMaxPool1dMethod(dt, input, r1.v1, r1.v2,
+                new int[] {1, 3, 5, 7, 8},
+                new int[] {1, 3, 5, 7, 8},
+                Shape.of(1, 5));
+
+        var r2 = input.maxPool1d(2, 2, 0, 1, false);
+        testMaxPool1dMethod(dt, input, r2.v1, r2.v2,
+                new int[] {1, 3, 5, 7},
+                new int[] {1, 3, 5, 7},
+                Shape.of(1, 4));
+
+        var r3 = input.maxPool1d(3, 1, 1, 1, true);
+        testMaxPool1dMethod(dt, input, r3.v1, r3.v2,
+                new int[] {1, 2, 3, 4, 5, 6, 7, 8, 8},
+                new int[] {1, 2, 3, 4, 5, 6, 7, 8, 8},
+                Shape.of(1, 9));
+
+        var r4 = input.maxPool1d(2, 1, 0, 2, false);
+        testMaxPool1dMethod(dt, input, r4.v1, r4.v2,
+                new int[] {2, 3, 4, 5, 6, 7, 8},
+                new int[] {2, 3, 4, 5, 6, 7, 8},
+                Shape.of(1, 7));
+
+        input = dm.seq(dt, Shape.of(3, 2, 5));
+
+        var r5 = input.maxPool1d(2, 2, 0, 1, false);
+        testMaxPool1dMethod(dt, input, r5.v1, r5.v2,
+                new int[] {1, 3, 6, 8, 11, 13, 16, 18, 21, 23, 26, 28},
+                new int[] {1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3},
+                Shape.of(3, 2, 2));
+    }
+
+    void testMaxPool1dMethod(DType<?> dt, DArray<?> input,
+            DArray<?> poolValue, DArray<Integer> poolIndex,
+            int[] expectedValues, int[] expectedIndices,
+            Shape expectedShape) {
+
+        var expValues = dm.stride(dt, expectedValues).reshape(expectedShape);
+        var expIndices = dm.stride(DType.INTEGER, expectedIndices).reshape(expectedShape);
+
+        assertTrue(expValues.deepEquals(poolValue));
+        assertTrue(expIndices.deepEquals(poolIndex));
+
+    }
+
+    @ParameterizedTest
+    @MethodSource("dtSource")
+    void testMaxPool2d(DType<?> dt) {
+        // Basic 2x2 pooling with stride 2
+        var input = dm.seq(dt, Shape.of(1, 1, 4, 4));
+        var r1 = input.maxPool2d(2, 2, 2, 0, 1, false);
+        testMaxPool2dMethod(dt, r1.v1, r1.v2,
+                new int[] {5, 7, 13, 15},
+                new int[] {5, 7, 13, 15},
+                Shape.of(1, 1, 2, 2));
+
+        // 3x3 pooling with stride 1, padding 1
+        var r2 = input.maxPool2d(3, 3, 1, 1, 1, false);
+        testMaxPool2dMethod(dt, r2.v1, r2.v2,
+                new int[] {5, 6, 7, 7, 9, 10, 11, 11, 13, 14, 15, 15, 13, 14, 15, 15},
+                new int[] {5, 6, 7, 7, 9, 10, 11, 11, 13, 14, 15, 15, 13, 14, 15, 15},
+                Shape.of(1, 1, 4, 4));
+
+        // 2x2 pooling with dilation 2
+        var r3 = input.maxPool2d(2, 2, 1, 0, 2, false);
+        testMaxPool2dMethod(dt, r3.v1, r3.v2,
+                new int[] {10, 11, 14, 15},
+                new int[] {10, 11, 14, 15},
+                Shape.of(1, 1, 2, 2));
+
+        // Multi-channel input
+        input = dm.seq(dt, Shape.of(2, 3, 4, 4));
+        var r4 = input.maxPool2d(2, 2, 2, 0, 1, false);
+        testMaxPool2dMethod(dt, r4.v1, r4.v2,
+                new int[] {5, 7, 13, 15, 21, 23, 29, 31, 37, 39, 45, 47,
+                        53, 55, 61, 63, 69, 71, 77, 79, 85, 87, 93, 95},
+                new int[] {5, 7, 13, 15, 5, 7, 13, 15, 5, 7, 13, 15,
+                        5, 7, 13, 15, 5, 7, 13, 15, 5, 7, 13, 15},
+                Shape.of(2, 3, 2, 2));
+
+        // ceil_mode=true
+        input = dm.seq(dt, Shape.of(1, 1, 5, 5));
+        var r5 = input.maxPool2d(2, 2, 2, 0, 1, true);
+        testMaxPool2dMethod(dt, r5.v1, r5.v2,
+                new int[] {6, 8, 9, 16, 18, 19, 21, 23, 24},
+                new int[] {6, 8, 9, 16, 18, 19, 21, 23, 24},
+                Shape.of(1, 1, 3, 3));
+    }
+
+    void testMaxPool2dMethod(DType<?> dt, DArray<?> poolValue, DArray<Integer> poolIndex,
+            int[] expectedValues, int[] expectedIndices, Shape expectedShape) {
+        var expValues = dm.stride(dt, expectedValues).reshape(expectedShape);
+        var expIndices = dm.stride(DType.INTEGER, expectedIndices).reshape(expectedShape);
+        assertTrue(expValues.deepEquals(poolValue));
+        assertTrue(expIndices.deepEquals(poolIndex));
+    }
+
+    @ParameterizedTest
+    @MethodSource("dtSource")
+    void testMaxPool3d(DType<?> dt) {
+        // Basic 2x2x2 pooling with stride 1
+        var input = dm.seq(dt, Shape.of(1, 1, 3, 3, 3));
+        var r1 = input.maxPool3d(2, 2, 2, 1, 0, 1, false);
+        testMaxPool3dMethod(dt, r1.v1, r1.v2,
+                new int[] {13, 14, 16, 17, 22, 23, 25, 26},
+                new int[] {13, 14, 16, 17, 22, 23, 25, 26},
+                Shape.of(1, 1, 2, 2, 2));
+
+        // 2x2x2 pooling with stride 2
+        input = dm.seq(dt, Shape.of(1, 1, 4, 4, 4));
+        var r2 = input.maxPool3d(2, 2, 2, 2, 0, 1, false);
+        testMaxPool3dMethod(dt, r2.v1, r2.v2,
+                new int[] {21, 23, 29, 31, 53, 55, 61, 63},
+                new int[] {21, 23, 29, 31, 53, 55, 61, 63},
+                Shape.of(1, 1, 2, 2, 2));
+
+        // 2x2x2 pooling with padding 1
+        input = dm.seq(dt, Shape.of(1, 1, 3, 3, 3));
+        var r3 = input.maxPool3d(2, 2, 2, 2, 1, 1, false);
+        testMaxPool3dMethod(dt, r3.v1, r3.v2,
+                new int[] {0, 2, 6, 8, 18, 20, 24, 26},
+                new int[] {0, 2, 6, 8, 18, 20, 24, 26},
+                Shape.of(1, 1, 2, 2, 2));
+
+        // Multi-channel input
+        input = dm.seq(dt, Shape.of(2, 2, 4, 4, 4));
+        var r4 = input.maxPool3d(2, 2, 2, 2, 0, 1, false);
+        testMaxPool3dMethod(dt, r4.v1, r4.v2,
+                new int[] {21, 23, 29, 31, 53, 55, 61, 63, 85, 87, 93, 95, 117, 119, 125, 127,
+                        149, 151, 157, 159, 181, 183, 189, 191, 213, 215, 221, 223, 245, 247, 253, 255},
+                new int[] {21, 23, 29, 31, 53, 55, 61, 63, 21, 23, 29, 31, 53, 55, 61, 63,
+                        21, 23, 29, 31, 53, 55, 61, 63, 21, 23, 29, 31, 53, 55, 61, 63},
+                Shape.of(2, 2, 2, 2, 2));
+
+        // ceil_mode=true
+        input = dm.seq(dt, Shape.of(1, 1, 5, 5, 5));
+        var r5 = input.maxPool3d(2, 2, 2, 2, 0, 1, true);
+        testMaxPool3dMethod(dt, r5.v1, r5.v2,
+                new int[] {31, 33, 34, 41, 43, 44, 46, 48, 49,
+                        81, 83, 84, 91, 93, 94, 96, 98, 99,
+                        106, 108, 109, 116, 118, 119, 121, 123, 124},
+                new int[] {31, 33, 34, 41, 43, 44, 46, 48, 49,
+                        81, 83, 84, 91, 93, 94, 96, 98, 99,
+                        106, 108, 109, 116, 118, 119, 121, 123, 124},
+                Shape.of(1, 1, 3, 3, 3));
+    }
+
+    void testMaxPool3dMethod(DType<?> dt, DArray<?> poolValue, DArray<Integer> poolIndex,
+            int[] expectedValues, int[] expectedIndices, Shape expectedShape) {
+        var expValues = dm.stride(dt, expectedValues).reshape(expectedShape);
+        var expIndices = dm.stride(DType.INTEGER, expectedIndices).reshape(expectedShape);
+        assertTrue(expValues.deepEquals(poolValue));
+        assertTrue(expIndices.deepEquals(poolIndex));
+    }
 }

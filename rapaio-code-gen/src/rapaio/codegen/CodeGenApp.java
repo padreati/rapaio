@@ -43,6 +43,7 @@ public class CodeGenApp {
         };
 
         Replace[] intReplaces = new Replace[] {
+                Replace.of("Double.NEGATIVE_INFINITY", "Integer.MIN_VALUE"),
                 Replace.of("vsDouble", "vsInt"),
                 Replace.of("Simd.zeroDouble", "Simd.zeroInt"),
                 Replace.of("BaseDoubleStrideDArray", "BaseIntStrideDArray"),
@@ -75,6 +76,7 @@ public class CodeGenApp {
         };
 
         Replace[] byteReplaces = new Replace[] {
+                Replace.of("Double.NEGATIVE_INFINITY", "Byte.MIN_VALUE"),
                 Replace.of("vsDouble", "vsByte"),
                 Replace.of("double", "byte"),
                 Replace.of("Double", "Byte"),
