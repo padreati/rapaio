@@ -21,10 +21,15 @@
 
 package rapaio.darray;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import rapaio.core.distributions.Distribution;
@@ -34,6 +39,13 @@ import rapaio.util.Hardware;
 
 public abstract class DArrayManager {
 
+    /**
+     * Default number of scalar operations below which an operation runs on the calling thread instead of
+     * being split across the manager's thread pool. Handing work to another thread costs tens of microseconds,
+     * which is about the time needed to process this many elements with a vectorized kernel.
+     */
+    public static final int DEFAULT_PARALLEL_THRESHOLD = 1 << 16;
+
     public static DArrayManager base() {
         return new BaseDArrayManager(Hardware.CORES);
     }
@@ -42,16 +54,116 @@ public abstract class DArrayManager {
         return new BaseDArrayManager(cpuThreads);
     }
 
+    public static DArrayManager base(int cpuThreads, int parallelThreshold) {
+        return new BaseDArrayManager(cpuThreads, parallelThreshold);
+    }
+
     protected final int cpuThreads;
+    protected final int parallelThreshold;
     protected final StorageManager storageManager;
+    private volatile ExecutorService executor;
 
     protected DArrayManager(int cpuThreads, StorageManager storageManager) {
+        this(cpuThreads, DEFAULT_PARALLEL_THRESHOLD, storageManager);
+    }
+
+    protected DArrayManager(int cpuThreads, int parallelThreshold, StorageManager storageManager) {
+        if (cpuThreads < 1) {
+            throw new IllegalArgumentException("Number of cpu threads must be at least 1 (given: " + cpuThreads + ").");
+        }
+        if (parallelThreshold < 0) {
+            throw new IllegalArgumentException("Parallel threshold must be non-negative (given: " + parallelThreshold + ").");
+        }
         this.cpuThreads = cpuThreads;
+        this.parallelThreshold = parallelThreshold;
         this.storageManager = storageManager;
     }
 
     public final int cpuThreads() {
         return cpuThreads;
+    }
+
+    /**
+     * @return minimum amount of work (in scalar operations) from which operations are executed on multiple threads
+     */
+    public final int parallelThreshold() {
+        return parallelThreshold;
+    }
+
+    /**
+     * Tells whether an operation involving the given amount of work should be split across threads.
+     *
+     * @param workSize amount of work, usually the number of elements touched by the operation
+     * @return true if the manager has more than one thread and the work reaches the parallel threshold
+     */
+    public final boolean runParallel(long workSize) {
+        return cpuThreads > 1 && workSize >= parallelThreshold;
+    }
+
+    /**
+     * Runs the given independent tasks and returns after all of them completed.
+     * <p>
+     * When the amount of work is below {@link #parallelThreshold()}, the manager has a single thread, or there is
+     * a single task, the tasks run sequentially on the calling thread. Otherwise they are submitted to the
+     * manager's shared thread pool, which is created lazily and uses daemon threads so it never keeps the JVM alive.
+     * The pool is a {@link ForkJoinPool}, so a task may itself call this method (nested parallel operations)
+     * without risking pool exhaustion.
+     * <p>
+     * Any exception thrown by a task is propagated to the caller after the remaining tasks finished.
+     *
+     * @param workSize amount of work, usually the number of elements touched by the whole operation
+     * @param tasks    independent units of work
+     */
+    public final void execute(long workSize, List<? extends Runnable> tasks) {
+        if (tasks.isEmpty()) {
+            return;
+        }
+        if (tasks.size() == 1 || !runParallel(workSize)) {
+            for (Runnable task : tasks) {
+                task.run();
+            }
+            return;
+        }
+        ExecutorService pool = executor();
+        List<Future<?>> futures = new ArrayList<>(tasks.size());
+        for (Runnable task : tasks) {
+            futures.add(pool.submit(task));
+        }
+        RuntimeException failure = null;
+        for (Future<?> future : futures) {
+            try {
+                future.get();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException("Interrupted while waiting for parallel tasks.", e);
+            } catch (ExecutionException e) {
+                Throwable cause = e.getCause();
+                if (failure == null) {
+                    failure = switch (cause) {
+                        case RuntimeException re -> re;
+                        case Error err -> throw err;
+                        default -> new RuntimeException(cause);
+                    };
+                }
+            }
+        }
+        if (failure != null) {
+            throw failure;
+        }
+    }
+
+    private ExecutorService executor() {
+        ExecutorService pool = executor;
+        if (pool == null) {
+            synchronized (this) {
+                pool = executor;
+                if (pool == null) {
+                    pool = new ForkJoinPool(cpuThreads);
+                    executor = pool;
+                }
+            }
+        }
+        return pool;
     }
 
     public final StorageManager storageManager() {

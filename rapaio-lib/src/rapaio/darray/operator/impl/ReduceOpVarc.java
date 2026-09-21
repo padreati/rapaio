@@ -180,7 +180,7 @@ public final class ReduceOpVarc extends DArrayReduceOp {
             sum2 += vsum2.reduceLanes(VectorOperators.ADD);
             sum3 += vsum3.reduceLanes(VectorOperators.ADD);
             for (; i < loop.bound; i++) {
-                double centered = storage.getFloat(p) - mean;
+                double centered = storage.getDouble(p) - mean;
                 sum2 += centered * centered;
                 sum3 += centered;
                 p++;

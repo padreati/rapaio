@@ -36,6 +36,10 @@ import rapaio.darray.Shape;
  * <p>
  * If the matrix is not symmetric or positive definite, the constructor returns a partial decomposition and sets an internal
  * flag that may be queried by the {@code #isSPD()} method.
+ * <p>
+ * The algorithm is derived from the corresponding class of JAMA, the public domain Java Matrix Package by
+ * NIST and MathWorks (<a href="https://math.nist.gov/javanumerics/jama/">math.nist.gov/javanumerics/jama</a>),
+ * adapted to {@code DArray} storage and generic numeric types.
  */
 public class CholeskyDecomposition<N extends Number> implements Serializable {
 

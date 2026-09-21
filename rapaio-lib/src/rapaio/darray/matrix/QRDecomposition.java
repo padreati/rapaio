@@ -29,6 +29,20 @@ import rapaio.darray.DArrayManager;
 import rapaio.darray.DType;
 import rapaio.darray.Shape;
 
+/**
+ * QR Decomposition.
+ * <p>
+ * For an m-by-n matrix A with m >= n, the QR decomposition is an m-by-n orthogonal matrix Q and an n-by-n upper
+ * triangular matrix R so that A = Q*R.
+ * <p>
+ * The QR decomposition always exists, even if the matrix does not have full rank, so the constructor will never
+ * fail. The primary use of the QR decomposition is in the least squares solution of non-square systems of
+ * simultaneous linear equations. This will fail if {@code isFullRank()} returns false.
+ * <p>
+ * The algorithm is derived from the corresponding class of JAMA, the public domain Java Matrix Package by
+ * NIST and MathWorks (<a href="https://math.nist.gov/javanumerics/jama/">math.nist.gov/javanumerics/jama</a>),
+ * adapted to {@code DArray} storage and generic numeric types.
+ */
 public class QRDecomposition<N extends Number> implements Serializable {
 
     @Serial

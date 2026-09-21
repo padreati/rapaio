@@ -42,6 +42,10 @@ import rapaio.darray.Shape;
  * the eigenvectors in the sense that A*V = V*D, i.e. A.dot(V) equals
  * V.dot(D). The matrix V may be badly conditioned, or even singular, so the
  * validity of the equation A = V*D*inverse(V) depends upon V.cond().
+ * <p>
+ * The algorithm is derived from the corresponding class of JAMA, the public domain Java Matrix Package by
+ * NIST and MathWorks (<a href="https://math.nist.gov/javanumerics/jama/">math.nist.gov/javanumerics/jama</a>),
+ * adapted to {@code DArray} storage and generic numeric types.
  */
 public final class EigenDecomposition<N extends Number> implements Serializable {
 

@@ -51,6 +51,10 @@ import rapaio.math.MathTools;
  *
  * @see <a href="http://mathworld.wolfram.com/SingularValueDecomposition.html">MathWorld</a>
  * @see <a href="http://en.wikipedia.org/wiki/Singular_value_decomposition">Wikipedia</a>
+ * <p>
+ * The algorithm is derived from the corresponding class of JAMA, the public domain Java Matrix Package by
+ * NIST and MathWorks (<a href="https://math.nist.gov/javanumerics/jama/">math.nist.gov/javanumerics/jama</a>),
+ * adapted to {@code DArray} storage and generic numeric types.
  */
 public class SVDecomposition<N extends Number> implements java.io.Serializable {
 

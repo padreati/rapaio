@@ -42,13 +42,17 @@ import rapaio.util.collection.Ints;
  * <p>
  * For an m-by-n matrix A with m >= n, the LU decomposition is an m-by-n unit
  * lower triangular matrix L, an n-by-n upper triangular matrix U, and a
- * permutation var piv of length m so that A.mapRows(piv) = L*U. If m < n, then L
+ * permutation var piv of length m so that A.mapRows(piv) = L*U. If m &lt; n, then L
  * is m-by-m and U is m-by-n.
  * <p>
  * The LU decompostion with pivoting always exists, even if the matrix is
  * singular, so the constructor will never fail. The primary use of the LU
  * decomposition is in the solution of square systems of simultaneous linear
  * equations. This will fail if isNonSingular() returns false.
+ * <p>
+ * The algorithm is derived from the corresponding class of JAMA, the public domain Java Matrix Package by
+ * NIST and MathWorks (<a href="https://math.nist.gov/javanumerics/jama/">math.nist.gov/javanumerics/jama</a>),
+ * adapted to {@code DArray} storage and generic numeric types.
  */
 public class LUDecomposition<N extends Number> implements Serializable, Printable {
 

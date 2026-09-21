@@ -69,10 +69,11 @@ public class SandboxIris {
         TabularDataset train = split[0];
         TabularDataset test = split[1];
 
-        int n = 12;
+        int n = 64;
+        int m = 32;
         int epochs = 2_000;
-        double lr = 1e-3;
-        int batchSize = 40;
+        double lr = 1e-4;
+        int batchSize = 100;
 
         boolean separateBatches = true;
 
@@ -81,7 +82,10 @@ public class SandboxIris {
                 new Linear(tm, 4, n, true),
                 new ELU(tm),
                 new LayerNorm(tm, Shape.of(n)),
-                new Linear(tm, n, 3, true),
+                new Linear(tm, n, m, true),
+                new ELU(tm),
+                new LayerNorm(tm, Shape.of(m)),
+                new Linear(tm, m, 3, true),
                 new ELU(tm),
                 new LogSoftmax(tm, 1)
         );

@@ -39,6 +39,10 @@ public class BaseDArrayManager extends DArrayManager {
         super(cpuThreads, StorageManager.array());
     }
 
+    public BaseDArrayManager(int cpuThreads, int parallelThreshold) {
+        super(cpuThreads, parallelThreshold, StorageManager.array());
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public <N extends Number> DArray<N> stride(DType<N> dt, StrideLayout layout, Storage storage) {

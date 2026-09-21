@@ -52,12 +52,29 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
         permits BaseDoubleStrideDArray, BaseFloatStrideDArray, BaseIntStrideDArray, BaseByteStrideDArray {
 
     protected final StrideLayout layout;
-    protected final StrideLoopDescriptor loop;
+    /**
+     * Loop descriptor over the whole array in its storage-fast order. Computed on first use: building it
+     * allocates an offsets array with one entry per collapsed outer row, which is wasted work for the many
+     * short-lived views (rows, slices, transposes) that are only ever read element-wise.
+     */
+    private volatile StrideLoopDescriptor loop;
 
     public AbstractStrideDArray(DArrayManager manager, DType<N> dt, StrideLayout layout, Storage storage) {
         super(manager, dt, storage);
         this.layout = layout;
-        this.loop = StrideLoopDescriptor.of(layout, layout.storageFastOrder(), dt().vs());
+    }
+
+    /**
+     * @return loop descriptor of this array in its storage-fast order, built lazily and cached
+     */
+    protected final StrideLoopDescriptor loop() {
+        StrideLoopDescriptor ld = loop;
+        if (ld == null) {
+            // benign race: concurrent callers may build the same immutable descriptor twice
+            ld = StrideLoopDescriptor.of(layout, layout.storageFastOrder(), dt().vs());
+            loop = ld;
+        }
+        return ld;
     }
 
     @Override

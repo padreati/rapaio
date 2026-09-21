@@ -117,7 +117,7 @@ public sealed abstract class DType<N extends Number>
     private static final class DTypeByte extends DType<Byte> {
 
         public DTypeByte() {
-            super(Id.BYTE, (byte) 4, true);
+            super(Id.BYTE, (byte) 1, true);
         }
 
         @Override

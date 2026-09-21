@@ -58,9 +58,9 @@ import rapaio.util.function.IntIntBiFunction;
  * <p>
  * DArrays with a low number of dimensions are known also under more specific names:
  * <ul>
- *     <li>scalar</li> a darray with zero dimensions which contains a single element
- *     <li>vector</li> a darray with one dimension
- *     <li>matrix</li> a darray with two dimensions
+ *     <li>scalar: a darray with zero dimensions which contains a single element</li>
+ *     <li>vector: a darray with one dimension</li>
+ *     <li>matrix: a darray with two dimensions</li>
  * </ul>
  * <p>
  * The type of data elements from a {@link DArray} is marked as a generic data type and also described by {@link #dt()}.
@@ -242,11 +242,11 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      * <p>
      * The indexes are interpreted according to order parameter:
      * <ul>
-     *     <li>Order.C</li> indexes are read in C order, last dimension is the fastest dimension
-     *     <li>Order.F</li> first dimension is the fastest dimension
-     *     <li>Order.A</li> if data is stored in C format, then follows C order, if data is stored in F format it follows F order, otherwise
-     *     it is the default order {@link Order#defaultOrder()}.
-     *     <li>Order.S</li> storage order is not allowed
+     *     <li>Order.C: indexes are read in C order, last dimension is the fastest dimension</li>
+     *     <li>Order.F: first dimension is the fastest dimension</li>
+     *     <li>Order.A: if data is stored in C format, then follows C order, if data is stored in F format it follows F order, otherwise
+     *     it is the default order {@link Order#defaultOrder()}.</li>
+     *     <li>Order.S: storage order is not allowed</li>
      * </ul>
      * <p>
      * Notice that the asked order is not the order in which data is stored, but in which data is interpreted for reshape.
@@ -906,10 +906,33 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
         storage.incDouble(layout().pointer(indices), value);
     }
 
+    //--------- POINTER ACCESS ----------------//
+    //
+    // Pointer access is the low-level, layout-dependent way to reach elements, provided for kernel authors who
+    // need element access without the cost of computing positions from indices. Read the contract below before
+    // using it outside this package; for regular use prefer get/set(int...), apply_ and iterator(Order).
+    //
+    // Contract:
+    //  * A pointer is an offset into the backing Storage of THIS array, computed as
+    //    layout.offset() + sum(index[i] * stride[i]) for a StrideLayout. It identifies a logical element only
+    //    together with the layout of the array it was obtained from.
+    //  * Pointers are not portable between arrays. The same logical element has a different pointer in a C ordered
+    //    array, an F ordered array, a transposed or narrowed view, or a copy. Two arrays that share a storage
+    //    (views of one another) share the pointer space, two arrays with equal shapes and values in general do not.
+    //  * Valid pointers are exactly those produced by ptrIterator(Order) of the same array. Arithmetic on pointers
+    //    (ptr + 1, ptr + stride) is only meaningful with the strides of this array's layout; there is no bounds
+    //    checking beyond that of the underlying storage, and a pointer of one view can silently address an element
+    //    outside that view but inside the shared storage.
+    //  * The typed variants (ptrGetDouble, ptrSetInt, ...) convert with the semantics of the data type of this array
+    //    (widening or narrowing), exactly like the typed get/set methods.
+    //  * The int pointer type bounds storages to Integer.MAX_VALUE elements; this is part of the current
+    //    implementation, not of the abstract DArray contract, and may change if other storages are added.
+
     /**
-     * Gets value at pointer. A pointer is an offset position in the storage.
+     * Gets value at pointer. A pointer is an offset position in the storage of this array; see the pointer access
+     * section of this class for the contract, in particular that pointers are specific to the layout of this array.
      *
-     * @param ptr data pointer
+     * @param ptr data pointer, obtained from {@link #ptrIterator(Order)} of this array
      * @return element at data pointer
      */
     public abstract N ptrGet(int ptr);
@@ -955,9 +978,11 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     }
 
     /**
-     * Sets value at given pointer. A pointer is an offset position in storage.
+     * Sets value at given pointer. A pointer is an offset position in the storage of this array; see the pointer
+     * access section of this class for the contract. Writing through a pointer of a view modifies the shared storage,
+     * so the change is visible in every array sharing it.
      *
-     * @param ptr   data pointer
+     * @param ptr   data pointer, obtained from {@link #ptrIterator(Order)} of this array
      * @param value element value to be set at data pointer
      */
     public abstract void ptrSet(int ptr, N value);
@@ -1084,6 +1109,9 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
 
     /**
      * Produces an iterator of data pointer values in the storage order.
+     * <p>
+     * The pointers are valid only for the {@code ptr*} methods of this array (or of views sharing its storage);
+     * see the pointer access section of this class.
      *
      * @return data pointer iterator
      */
@@ -1094,6 +1122,11 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     /**
      * Produces an iterator of data pointer values in the order specified
      * by parameter value.
+     * <p>
+     * This is the only supported way to obtain pointers. Pairing pointers from two different arrays by position is
+     * correct only when both iterators use the same explicit order ({@link Order#C} or {@link Order#F}) and the
+     * arrays have the same shape; {@link Order#S} (storage order) generally visits logical elements in a different
+     * sequence for arrays with different layouts.
      *
      * @param askOrder traversing order
      * @return data pointer iterator
@@ -2935,9 +2968,18 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     }
 
     //--------- REDUCE OPERATIONS ----------------//
+    //
+    // Accumulator type: every reduction accumulates in the array's own data type and returns that type.
+    // For BYTE and INTEGER arrays this means sum(), prod() and their 1d/To/nan variants use byte and int
+    // arithmetic and silently wrap on overflow (a byte sum wraps at 127, an int sum at 2^31 - 1), unlike
+    // numpy/torch which promote small integer types to a wider accumulator. Cast to INTEGER or DOUBLE
+    // first (cast(DType.DOUBLE).sum()) when the true sum may not fit in the element type.
 
     /**
      * Applies reduce operation across all elements.
+     * <p>
+     * The reduction accumulates in the data type of this array; see the note on integer overflow
+     * in the reduce section of this class.
      *
      * @param op reduce operator
      * @return scalar result
@@ -2981,6 +3023,10 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
 
     /**
      * Computes sum of all elements.
+     * <p>
+     * The sum accumulates in the element type. For {@code BYTE} and {@code INTEGER} arrays the result wraps
+     * on overflow; cast to a wider type first ({@code cast(DType.DOUBLE).sum()}) if the true sum may not fit.
+     * The same applies to {@code sum1d}, {@code sumTo} and the {@code nanSum} variants.
      *
      * @return sum value
      */
@@ -3087,6 +3133,10 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
 
     /**
      * Computes product of all elements.
+     * <p>
+     * The product accumulates in the element type. For {@code BYTE} and {@code INTEGER} arrays the result wraps
+     * on overflow; cast to a wider type first ({@code cast(DType.DOUBLE).prod()}) if the true product may not fit.
+     * The same applies to {@code prod1d} and the {@code nanProd} variants.
      *
      * @return product value
      */

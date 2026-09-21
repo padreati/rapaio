@@ -96,7 +96,7 @@ public class MNIST {
         }
     }
 
-    public static Network createLeNet1(TensorManager tm) {
+    public static Network createNet1(TensorManager tm) {
         return new Sequential(tm,
                 new Flatten(tm),
                 new Linear(tm, 28 * 28, 10, true),
@@ -104,7 +104,7 @@ public class MNIST {
         );
     }
 
-    public static Network createLeNet2(TensorManager tm) {
+    public static Network createNet2(TensorManager tm) {
         return new Sequential(tm,
                 new Flatten(tm),
                 new Linear(tm, 28 * 28, 16, true),
@@ -113,7 +113,7 @@ public class MNIST {
         );
     }
 
-    public static Network createLeNet3(TensorManager tm) {
+    public static Network createNet3(TensorManager tm) {
         return new Sequential(tm,
                 new Conv2D(tm, 1, 1, 3, 3, 2, 0, 1, 1, true),
                 new Sigmoid(tm),
@@ -138,12 +138,12 @@ public class MNIST {
                 mnist.test().darray(1));
 
         int epochs = 100;
-        double lr = 1e-3;
-        int batchSize = 1000;
+        double lr = 3.5e-3;
+        int batchSize = 256;
 
 //        var nn = new ConvNetwork(tm);
 //        var nn = new SplitNetwork(tm, 7, 2);
-        var nn = createLeNet3(tm);
+        var nn = createNet3(tm);
 
         var optimizer = Optimizer.Adam(tm, nn.parameters()).lr.set(lr);
 
@@ -191,9 +191,9 @@ public class MNIST {
 
             if (epoch % 1 == 0) {
 
-                System.out.println("Epoch: " + epoch + ", train loss:" + trainLossValue + ", test loss:" + testLossValue);
-                System.out.println("\t error: " + Format.floatShort(cm.error()) + ", accuracy: " + Format.floatShort(cm.accuracy()));
-                cm.frequencyMatrix().printContent();
+                System.out.print("Epoch: " + epoch + ", train loss:" + trainLossValue + ", test loss:" + testLossValue);
+                System.out.println(", error: " + Format.floatShort(cm.error()) + ", accuracy: " + Format.floatShort(cm.accuracy()));
+//                cm.frequencyMatrix().printContent();
             }
 
             long end = System.currentTimeMillis();

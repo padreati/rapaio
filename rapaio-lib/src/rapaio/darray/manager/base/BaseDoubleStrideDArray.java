@@ -21,7 +21,6 @@
 
 package rapaio.darray.manager.base;
 
-import static rapaio.util.Hardware.CORES;
 import static rapaio.util.Hardware.L2_CACHE_SIZE;
 
 import java.util.ArrayList;
@@ -31,11 +30,6 @@ import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.Stack;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.stream.StreamSupport;
 
@@ -52,6 +46,7 @@ import rapaio.darray.Storage;
 import rapaio.darray.iterators.PointerIterator;
 import rapaio.darray.iterators.StrideLoopDescriptor;
 import rapaio.darray.iterators.StridePointerIterator;
+import rapaio.darray.iterators.TandemStrideLoopDescriptor;
 import rapaio.darray.layout.StrideLayout;
 import rapaio.darray.manager.AbstractStrideDArray;
 import rapaio.darray.operator.Broadcast;
@@ -130,13 +125,15 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
         if (op.floatingPointOnly() && !dt().floatingPoint()) {
             throw new IllegalArgumentException("This operation is available only for floating point DArrays.");
         }
-        op.applyDouble(loop, storage);
+        op.applyDouble(loop(), storage);
         return this;
     }
 
     @Override
     public DArray<Double> unary1d_(DArrayUnaryOp op, int axis) {
-        int ax = axis < 0 ? axis + shape().rank() : axis;
+        if (axis < 0) {
+            axis += shape().rank();
+        }
 
         int[] newDims = layout.shape().narrowDims(axis);
         int[] newStrides = layout.narrowStrides(axis);
@@ -145,32 +142,20 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
 
         var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
 
-
+        // one task per group of rows; the number of rows is the size of the iterator, not the size of the axis
         int chunk = 64;
-        int tasks = Math.ceilDiv(dim(ax), chunk);
-        try (ExecutorService executor = Executors.newFixedThreadPool(dm.cpuThreads())) {
-            CountDownLatch latch = new CountDownLatch(tasks);
-            for (int i = 0; i < tasks; i++) {
-                List<Runnable> taskList = new ArrayList<>();
-                while (it.hasNext() && taskList.size() < chunk) {
-                    int ptr = it.nextInt();
-                    taskList.add(() -> {
-                        dm.stride(dt, StrideLayout.of(new int[] {selDim}, ptr, new int[] {selStride}), storage).unary_(op);
-                    });
-                }
-                executor.submit(() -> {
-                    for (var t : taskList) {
-                        t.run();
-                    }
-                    latch.countDown();
+        List<Runnable> chunks = new ArrayList<>();
+        while (it.hasNext()) {
+            List<Runnable> taskList = new ArrayList<>(chunk);
+            while (it.hasNext() && taskList.size() < chunk) {
+                int ptr = it.nextInt();
+                taskList.add(() -> {
+                    dm.stride(dt, StrideLayout.of(new int[] {selDim}, ptr, new int[] {selStride}), storage).unary_(op);
                 });
             }
-            try {
-                latch.await();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            chunks.add(() -> taskList.forEach(Runnable::run));
         }
+        dm.execute(size(), chunks);
         return this;
     }
 
@@ -190,22 +175,73 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
                             other.shape()));
         }
         other = broadcast.transform(other);
-        var order = layout.storageFastOrder();
-        order = order == Order.S ? Order.defaultOrder() : order;
+        // same data type is required for vector loads; cast() returns the same instance when types already agree
+        DArray<Double> o = other.cast(dt);
+        Storage os = o.storage();
+        Order order = Layout.storageFastTandemOrder(layout, o.layout());
+        var td = TandemStrideLoopDescriptor.of(layout, (StrideLayout) o.layout(), order, Simd.vsDouble);
+        boolean simd = storage.supportSimd() && os.supportSimd();
 
-        var it = ptrIterator(order);
-        var refIt = other.ptrIterator(order);
-        while (it.hasNext()) {
-            int next = it.nextInt();
-            storage.setDouble(next, op.applyDouble(storage.getDouble(next), other.ptrGetDouble(refIt.nextInt())));
+        for (int k = 0; k < td.offsets1.length; k++) {
+            int p1 = td.offsets1[k];
+            int p2 = td.offsets2[k];
+            int i = 0;
+            if (simd) {
+                if (td.step1 == 1 && td.step2 == 1) {
+                    // both operands contiguous: plain vector loads and stores
+                    for (; i < td.simdBound; i += td.simdLen) {
+                        DoubleVector a = storage.getDoubleVector(p1);
+                        DoubleVector b = os.getDoubleVector(p2);
+                        storage.setDoubleVector(op.applyDouble(a, b), p1);
+                        p1 += td.simdLen;
+                        p2 += td.simdLen;
+                    }
+                } else if (td.step2 == 0) {
+                    // second operand is broadcast along the inner loop: load it once per inner loop
+                    DoubleVector b = DoubleVector.broadcast(Simd.vsDouble, os.getDouble(p2));
+                    if (td.step1 == 1) {
+                        for (; i < td.simdBound; i += td.simdLen) {
+                            DoubleVector a = storage.getDoubleVector(p1);
+                            storage.setDoubleVector(op.applyDouble(a, b), p1);
+                            p1 += td.simdLen;
+                        }
+                    } else {
+                        for (; i < td.simdBound; i += td.simdLen) {
+                            DoubleVector a = storage.getDoubleVector(p1, td.simdIdx1(), 0);
+                            storage.setDoubleVector(op.applyDouble(a, b), p1, td.simdIdx1(), 0);
+                            p1 += td.simdLen * td.step1;
+                        }
+                    }
+                } else {
+                    // at least one strided operand: gather/scatter on the strided side
+                    for (; i < td.simdBound; i += td.simdLen) {
+                        DoubleVector a = td.step1 == 1 ? storage.getDoubleVector(p1) : storage.getDoubleVector(p1, td.simdIdx1(), 0);
+                        DoubleVector b = td.step2 == 1 ? os.getDoubleVector(p2) : os.getDoubleVector(p2, td.simdIdx2(), 0);
+                        DoubleVector r = op.applyDouble(a, b);
+                        if (td.step1 == 1) {
+                            storage.setDoubleVector(r, p1);
+                        } else {
+                            storage.setDoubleVector(r, p1, td.simdIdx1(), 0);
+                        }
+                        p1 += td.simdLen * td.step1;
+                        p2 += td.simdLen * td.step2;
+                    }
+                }
+            }
+            for (; i < td.bound; i++) {
+                storage.setDouble(p1, op.applyDouble(storage.getDouble(p1), os.getDouble(p2)));
+                p1 += td.step1;
+                p2 += td.step2;
+            }
         }
         return this;
     }
 
     @Override
     public <M extends Number> DArray<Double> binary_(DArrayBinaryOp op, M value) {
+        StrideLoopDescriptor loop = loop();
         double v = value.doubleValue();
-        DoubleVector m = DoubleVector.broadcast(dt.vs(), v);
+        DoubleVector m = DoubleVector.broadcast(Simd.vsDouble, v);
         for (int p : loop.offsets) {
             int i = 0;
             if (storage.supportSimd()) {
@@ -243,14 +279,47 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
             throw new IllegalArgumentException("DArrays does not have the same shape.");
         }
         double aVal = a;
-        var order = layout.storageFastOrder();
-        order = order == Order.S ? Order.defaultOrder() : order;
+        // same data type is required for vector loads; cast() returns the same instance when types already agree
+        DArray<Double> o = t.cast(dt);
+        Storage os = o.storage();
+        Order order = Layout.storageFastTandemOrder(layout, o.layout());
+        var td = TandemStrideLoopDescriptor.of(layout, (StrideLayout) o.layout(), order, Simd.vsDouble);
+        boolean simd = storage.supportSimd() && os.supportSimd();
+        DoubleVector av = DoubleVector.broadcast(Simd.vsDouble, aVal);
 
-        var it = ptrIterator(order);
-        var refIt = t.ptrIterator(order);
-        while (it.hasNext()) {
-            int next = it.nextInt();
-            storage.setDouble(next, (double) Math.fma(t.ptrGetDouble(refIt.nextInt()), aVal, storage.getDouble(next)));
+        for (int k = 0; k < td.offsets1.length; k++) {
+            int p1 = td.offsets1[k];
+            int p2 = td.offsets2[k];
+            int i = 0;
+            if (simd) {
+                if (td.step1 == 1 && td.step2 == 1) {
+                    for (; i < td.simdBound; i += td.simdLen) {
+                        DoubleVector x = storage.getDoubleVector(p1);
+                        DoubleVector tv = os.getDoubleVector(p2);
+                        storage.setDoubleVector(Simd.fma(tv, av, x), p1);
+                        p1 += td.simdLen;
+                        p2 += td.simdLen;
+                    }
+                } else {
+                    for (; i < td.simdBound; i += td.simdLen) {
+                        DoubleVector x = td.step1 == 1 ? storage.getDoubleVector(p1) : storage.getDoubleVector(p1, td.simdIdx1(), 0);
+                        DoubleVector tv = td.step2 == 1 ? os.getDoubleVector(p2) : os.getDoubleVector(p2, td.simdIdx2(), 0);
+                        DoubleVector r = Simd.fma(tv, av, x);
+                        if (td.step1 == 1) {
+                            storage.setDoubleVector(r, p1);
+                        } else {
+                            storage.setDoubleVector(r, p1, td.simdIdx1(), 0);
+                        }
+                        p1 += td.simdLen * td.step1;
+                        p2 += td.simdLen * td.step2;
+                    }
+                }
+            }
+            for (; i < td.bound; i++) {
+                storage.setDouble(p1, Simd.fma(os.getDouble(p2), aVal, storage.getDouble(p1)));
+                p1 += td.step1;
+                p2 += td.step2;
+            }
         }
         return this;
     }
@@ -259,7 +328,7 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
 
     @Override
     public Double reduce(DArrayReduceOp op) {
-        return op.reduceDouble(loop, storage);
+        return op.reduceDouble(loop(), storage);
     }
 
     @Override
@@ -277,33 +346,21 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
         var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
 
         int chunk = 128;
-        int tasks = (it.size() % chunk == 0) ? it.size() / chunk : it.size() / chunk + 1;
-        try (ExecutorService executor = Executors.newFixedThreadPool(dm.cpuThreads())) {
-            CountDownLatch latch = new CountDownLatch(tasks);
-            for (int i = 0; i < tasks; i++) {
-                List<Runnable> taskList = new ArrayList<>();
-                while (it.hasNext() && taskList.size() < chunk) {
-                    int ptr = it.nextInt();
-                    int resPtr = resIt.next();
-                    taskList.add(() -> {
-                        StrideLayout strideLayout = StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride});
-                        double value = dm.stride(dt, strideLayout, storage).reduce(op);
-                        res.ptrSetDouble(resPtr, value);
-                    });
-                }
-                executor.submit(() -> {
-                    for (var t : taskList) {
-                        t.run();
-                    }
-                    latch.countDown();
+        List<Runnable> chunks = new ArrayList<>();
+        while (it.hasNext()) {
+            List<Runnable> taskList = new ArrayList<>(chunk);
+            while (it.hasNext() && taskList.size() < chunk) {
+                int ptr = it.nextInt();
+                int resPtr = resIt.next();
+                taskList.add(() -> {
+                    StrideLayout strideLayout = StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride});
+                    double value = dm.stride(dt, strideLayout, storage).reduce(op);
+                    res.ptrSetDouble(resPtr, value);
                 });
             }
-            try {
-                latch.await();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            chunks.add(() -> taskList.forEach(Runnable::run));
         }
+        dm.execute(size(), chunks);
         return res;
     }
 
@@ -424,33 +481,20 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
         PointerIterator lastIt = StrideLayout.of(lastDims, layout().offset(), lastStrides).ptrIterator(Order.C);
 
         int chunk = 128;
-        int tasks = Math.ceilDiv(resIt.size(), chunk);
-
-        try (ExecutorService executor = Executors.newFixedThreadPool(dm.cpuThreads())) {
-            CountDownLatch latch = new CountDownLatch(tasks);
-            for (int i = 0; i < tasks; i++) {
-                List<Runnable> taskList = new ArrayList<>();
-                while (resIt.hasNext() && taskList.size() < chunk) {
-                    int ptr = resIt.nextInt();
-                    int offset = lastIt.nextInt();
-                    taskList.add(() -> {
-                        double value = dm.stride(dt, StrideLayout.of(firstDims, offset, firstStrides), storage).reduce(op);
-                        result.ptrSet(ptr, value);
-                    });
-                }
-                executor.submit(() -> {
-                    for (var t : taskList) {
-                        t.run();
-                    }
-                    latch.countDown();
+        List<Runnable> chunks = new ArrayList<>();
+        while (resIt.hasNext()) {
+            List<Runnable> taskList = new ArrayList<>(chunk);
+            while (resIt.hasNext() && taskList.size() < chunk) {
+                int ptr = resIt.nextInt();
+                int offset = lastIt.nextInt();
+                taskList.add(() -> {
+                    double value = dm.stride(dt, StrideLayout.of(firstDims, offset, firstStrides), storage).reduce(op);
+                    result.ptrSet(ptr, value);
                 });
             }
-            try {
-                latch.await();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            chunks.add(() -> taskList.forEach(Runnable::run));
         }
+        dm.execute(size(), chunks);
 
         DArray<Double> lastResult = result;
         if (keepDim) {
@@ -483,34 +527,23 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
         var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
 
         int chunk = 128;
-        int tasks = (it.size() % chunk == 0) ? it.size() / chunk : it.size() / chunk + 1;
-        try (ExecutorService executor = Executors.newFixedThreadPool(dm.cpuThreads())) {
-            CountDownLatch latch = new CountDownLatch(tasks);
-            for (int i = 0; i < tasks; i++) {
-                List<Runnable> taskList = new ArrayList<>();
-                while (it.hasNext() && taskList.size() < chunk) {
-                    int ptr = it.nextInt();
-                    int resPtr = resIt.next();
-                    taskList.add(() -> {
-                        StrideLayout strideLayout = StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride});
-                        double m = mean.ptrGetDouble(meanIt.next());
-                        double value = dm.stride(dt, strideLayout, storage).reduce(DArrayOp.reduceVarc(ddof, m));
-                        res.ptrSet(resPtr, value);
-                    });
-                }
-                executor.submit(() -> {
-                    for (var t : taskList) {
-                        t.run();
-                    }
-                    latch.countDown();
+        List<Runnable> chunks = new ArrayList<>();
+        while (it.hasNext()) {
+            List<Runnable> taskList = new ArrayList<>(chunk);
+            while (it.hasNext() && taskList.size() < chunk) {
+                int ptr = it.nextInt();
+                int resPtr = resIt.next();
+                // iterators are advanced on the calling thread; tasks may run concurrently and must not share them
+                double m = mean.ptrGetDouble(meanIt.next());
+                taskList.add(() -> {
+                    StrideLayout strideLayout = StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride});
+                    double value = dm.stride(dt, strideLayout, storage).reduce(DArrayOp.reduceVarc(ddof, m));
+                    res.ptrSet(resPtr, value);
                 });
             }
-            try {
-                latch.await();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            chunks.add(() -> taskList.forEach(Runnable::run));
         }
+        dm.execute(size(), chunks);
         return res;
     }
 
@@ -568,7 +601,7 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
         int argmax = -1;
         double argvalue = ReduceOpMax.initDouble;
         var i = 0;
-        var loop = StrideLoopDescriptor.of(layout, order, dt().vs());
+        var loop = StrideLoopDescriptor.of(layout, order, Simd.vsDouble);
         for (int p : loop.offsets) {
             for (int j = 0; j < loop.bound; j++) {
                 double value = storage.getDouble(p);
@@ -604,33 +637,21 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
         var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
 
         int chunk = 128;
-        int tasks = (it.size() % chunk == 0) ? it.size() / chunk : it.size() / chunk + 1;
-        try (ExecutorService executor = Executors.newFixedThreadPool(dm.cpuThreads())) {
-            CountDownLatch latch = new CountDownLatch(tasks);
-            for (int i = 0; i < tasks; i++) {
-                List<Runnable> taskList = new ArrayList<>();
-                while (it.hasNext() && taskList.size() < chunk) {
-                    int ptr = it.nextInt();
-                    int resPtr = resIt.next();
-                    taskList.add(() -> {
-                        StrideLayout strideLayout = StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride});
-                        int value = dm.stride(dt, strideLayout, storage).argmax();
-                        res.ptrSetInt(resPtr, value);
-                    });
-                }
-                executor.submit(() -> {
-                    for (var t : taskList) {
-                        t.run();
-                    }
-                    latch.countDown();
+        List<Runnable> chunks = new ArrayList<>();
+        while (it.hasNext()) {
+            List<Runnable> taskList = new ArrayList<>(chunk);
+            while (it.hasNext() && taskList.size() < chunk) {
+                int ptr = it.nextInt();
+                int resPtr = resIt.next();
+                taskList.add(() -> {
+                    StrideLayout strideLayout = StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride});
+                    int value = dm.stride(dt, strideLayout, storage).argmax();
+                    res.ptrSetInt(resPtr, value);
                 });
             }
-            try {
-                latch.await();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            chunks.add(() -> taskList.forEach(Runnable::run));
         }
+        dm.execute(size(), chunks);
         return res;
     }
 
@@ -655,33 +676,21 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
         var it = new StridePointerIterator(StrideLayout.of(newDims, layout().offset(), newStrides), Order.C);
 
         int chunk = 128;
-        int tasks = (it.size() % chunk == 0) ? it.size() / chunk : it.size() / chunk + 1;
-        try (ExecutorService executor = Executors.newFixedThreadPool(dm.cpuThreads())) {
-            CountDownLatch latch = new CountDownLatch(tasks);
-            for (int i = 0; i < tasks; i++) {
-                List<Runnable> taskList = new ArrayList<>();
-                while (it.hasNext() && taskList.size() < chunk) {
-                    int ptr = it.nextInt();
-                    int resPtr = resIt.next();
-                    taskList.add(() -> {
-                        StrideLayout strideLayout = StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride});
-                        int value = dm.stride(dt, strideLayout, storage).argmin();
-                        res.ptrSetInt(resPtr, value);
-                    });
-                }
-                executor.submit(() -> {
-                    for (var t : taskList) {
-                        t.run();
-                    }
-                    latch.countDown();
+        List<Runnable> chunks = new ArrayList<>();
+        while (it.hasNext()) {
+            List<Runnable> taskList = new ArrayList<>(chunk);
+            while (it.hasNext() && taskList.size() < chunk) {
+                int ptr = it.nextInt();
+                int resPtr = resIt.next();
+                taskList.add(() -> {
+                    StrideLayout strideLayout = StrideLayout.of(Shape.of(selDim), ptr, new int[] {selStride});
+                    int value = dm.stride(dt, strideLayout, storage).argmin();
+                    res.ptrSetInt(resPtr, value);
                 });
             }
-            try {
-                latch.await();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            chunks.add(() -> taskList.forEach(Runnable::run));
         }
+        dm.execute(size(), chunks);
         return res;
     }
 
@@ -690,7 +699,7 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
         int argmin = -1;
         double argvalue = ReduceOpMin.initDouble;
         var i = 0;
-        var loop = StrideLoopDescriptor.of(layout, order, dt().vs());
+        var loop = StrideLoopDescriptor.of(layout, order, Simd.vsDouble);
         for (int p : loop.offsets) {
             for (int j = 0; j < loop.bound; j++) {
                 double value = storage.getDouble(p);
@@ -707,6 +716,7 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
 
     @Override
     public int nanCount() {
+        StrideLoopDescriptor loop = loop();
         int count = 0;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
@@ -721,6 +731,7 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
 
     @Override
     public int zeroCount() {
+        StrideLoopDescriptor loop = loop();
         int count = 0;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
@@ -756,14 +767,16 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
         if (start > end || start < 0 || end > other.dim(0) || end > dim(0)) {
             throw new IllegalArgumentException("Start and end indexes are invalid (start: %d, end: %s).".formatted(start, end));
         }
-        return innerUnchecked(other, start, end);
+        return innerUnchecked(other.dt().equals(dt) ? other : other.cast(dt), start, end);
     }
 
     private Double innerUnchecked(DArray<?> other, int start, int end) {
+        StrideLoopDescriptor loop = loop();
         BaseDoubleStrideDArray dts = (BaseDoubleStrideDArray) other;
+        StrideLoopDescriptor otherLoop = dts.loop();
 
         int step1 = loop.step;
-        int step2 = dts.loop.step;
+        int step2 = otherLoop.step;
 
         if (step1 == 1 && step2 == 1) {
             return innerUncheckedUnit(dts, start, end);
@@ -771,7 +784,7 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
 
         int i = 0;
         int p1 = loop.offsets[0] + start * step1;
-        int p2 = dts.loop.offsets[0] + start * step2;
+        int p2 = otherLoop.offsets[0] + start * step2;
         double sum = 0;
 
         if (storage.supportSimd() && dts.storage.supportSimd()) {
@@ -784,10 +797,10 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
                             storage.getDoubleVector(p1, loop.simdIdx(), 0);
                     DoubleVector v2 = step2 == 1 ?
                             dts.storage.getDoubleVector(p2) :
-                            dts.storage.getDoubleVector(p2, dts.loop.simdIdx(), 0);
+                            dts.storage.getDoubleVector(p2, otherLoop.simdIdx(), 0);
                     vsum = vsum.add(v1.mul(v2));
                     p1 += loop.simdLen * step1;
-                    p2 += dts.loop.simdLen * step2;
+                    p2 += otherLoop.simdLen * step2;
                 }
                 sum += vsum.reduceLanes(VectorOperators.ADD);
             }
@@ -801,9 +814,11 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
     }
 
     private double innerUncheckedUnit(BaseDoubleStrideDArray dts, int start, int end) {
+        StrideLoopDescriptor loop = loop();
+        StrideLoopDescriptor otherLoop = dts.loop();
         int i = 0;
         int p1 = loop.offsets[0] + start;
-        int p2 = dts.loop.offsets[0] + start;
+        int p2 = otherLoop.offsets[0] + start;
         double sum = 0;
 
         if (storage.supportSimd() && dts.storage.supportSimd()) {
@@ -815,7 +830,7 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
                     DoubleVector v2 = dts.storage.getDoubleVector(p2);
                     vsum = vsum.add(v1.mul(v2));
                     p1 += loop.simdLen;
-                    p2 += dts.loop.simdLen;
+                    p2 += otherLoop.simdLen;
                 }
                 sum += vsum.reduceLanes(VectorOperators.ADD);
             }
@@ -834,9 +849,7 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
                             shape(), other.shape()));
         }
         var result = dm.zeros(dt, Shape.of(shape().dim(0)), askOrder);
-        for (int i = 0; i < shape().dim(0); i++) {
-            result.ptrSetDouble(i, selsq(0, i).inner(other));
-        }
+        mvInternal(this, other, result);
         return result;
     }
 
@@ -887,9 +900,8 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
             );
         }
         var result = dm.zeros(dt, Shape.of(other.dim(1)), askOrder);
-        for (int i = 0; i < other.dim(1); i++) {
-            result.ptrSetDouble(i, this.inner(other.selsq(1, i)));
-        }
+        // v^T * M == (M^T * v)^T, so the transposed view of the matrix goes through the matrix-vector kernel
+        mvInternal((BaseDoubleStrideDArray) other.cast(dt).t_(), this, result);
         return result;
     }
 
@@ -931,6 +943,153 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
         return res;
     }
 
+    /**
+     * Matrix-vector product {@code y += A * x} for a rank-2 matrix and rank-1 vector. Matrix-vector products are
+     * memory bound (two flops per matrix element read), so the kernel streams the matrix exactly once in whatever
+     * direction is contiguous instead of packing it: row dot products when rows are contiguous, column updates of a
+     * dense accumulator when columns are contiguous, and gathered dot products for arbitrary strides.
+     */
+    private void mvInternal(BaseDoubleStrideDArray a, DArray<?> x, DArray<Double> y) {
+        int m = a.dim(0);
+        int n = a.dim(1);
+
+        DArray<Double> xc = x.cast(dt);
+        Storage xs = xc.storage();
+        StrideLayout xl = (StrideLayout) xc.layout();
+        int xOff = xl.offset();
+        int xStride = xl.stride(0);
+
+        Storage as = a.storage;
+        int aOff = a.layout.offset();
+        int as0 = a.layout.stride(0);
+        int as1 = a.layout.stride(1);
+
+        StrideLayout yl = (StrideLayout) y.layout();
+        int yOff = yl.offset();
+        int yStride = yl.stride(0);
+
+        var vs = Simd.vsDouble;
+        int simdLen = vs.length();
+        boolean simd = as.supportSimd() && xs.supportSimd();
+
+        // a contiguous copy of x lets both paths use plain vector loads / lane broadcasts
+        double[] xv = new double[n];
+        int xp = xOff;
+        for (int k = 0; k < n; k++) {
+            xv[k] = xs.getDouble(xp);
+            xp += xStride;
+        }
+
+        if (as1 != 1 && as0 == 1 && simd) {
+            // columns contiguous (F order / transposed): y += x[k] * A[:, k], vectorized along the rows
+            double[] acc = new double[m];
+            int simdBound = vs.loopBound(m);
+            for (int k = 0; k < n; k++) {
+                double xk = xv[k];
+                if (xk == 0) {
+                    continue;
+                }
+                DoubleVector xkv = DoubleVector.broadcast(vs, xk);
+                int ptr = aOff + k * as1;
+                int i = 0;
+                for (; i < simdBound; i += simdLen) {
+                    DoubleVector col = as.getDoubleVector(ptr);
+                    DoubleVector cur = DoubleVector.fromArray(vs, acc, i);
+                    Simd.fma(col, xkv, cur).intoArray(acc, i);
+                    ptr += simdLen;
+                }
+                for (; i < m; i++) {
+                    acc[i] = Simd.fma(as.getDouble(ptr), xk, acc[i]);
+                    ptr++;
+                }
+            }
+            int yp = yOff;
+            for (int i = 0; i < m; i++) {
+                y.ptrIncDouble(yp, acc[i]);
+                yp += yStride;
+            }
+            return;
+        }
+
+        // rows contiguous (C order) or arbitrary strides: one dot product per row, split across threads by row blocks
+        int rowsPerTask = Math.max(1, Math.min(m, Math.ceilDiv(DArrayManager.DEFAULT_PARALLEL_THRESHOLD, Math.max(1, n))));
+        List<Runnable> tasks = new ArrayList<>(Math.ceilDiv(m, rowsPerTask));
+        for (int r0 = 0; r0 < m; r0 += rowsPerTask) {
+            int rs = r0;
+            int re = Math.min(m, r0 + rowsPerTask);
+            tasks.add(() -> {
+                int[] gatherIdx = null;
+                if (simd && as1 != 1) {
+                    gatherIdx = new int[simdLen];
+                    for (int l = 1; l < simdLen; l++) {
+                        gatherIdx[l] = gatherIdx[l - 1] + as1;
+                    }
+                }
+                for (int i = rs; i < re; i++) {
+                    int ptr = aOff + i * as0;
+                    double sum;
+                    if (!simd) {
+                        sum = rowDotScalar(as, ptr, as1, xv, 0, n, (double) 0);
+                    } else if (as1 == 1) {
+                        sum = rowDotUnit(as, ptr, xv, n);
+                    } else {
+                        sum = rowDotGather(as, ptr, as1, gatherIdx, xv, n);
+                    }
+                    y.ptrIncDouble(yOff + i * yStride, sum);
+                }
+            });
+        }
+        dm.execute((long) m * n, tasks);
+    }
+
+    // The row kernels are kept as small separate methods on purpose: the Vector API is only fast when every call
+    // in the chain is inlined and intrinsified, which the JIT declines to do inside large method bodies.
+
+    private static double rowDotScalar(Storage as, int ptr, int step, double[] xv, int from, int n, double init) {
+        double sum = init;
+        for (int k = from; k < n; k++) {
+            sum = Simd.fma(as.getDouble(ptr), xv[k], sum);
+            ptr += step;
+        }
+        return sum;
+    }
+
+    private static double rowDotUnit(Storage as, int ptr, double[] xv, int n) {
+        var vs = Simd.vsDouble;
+        int simdLen = vs.length();
+        int simdBound = vs.loopBound(n);
+        int twoBound = simdBound - (simdBound % (2 * simdLen));
+        // two independent accumulators hide the fma latency
+        DoubleVector acc0 = DoubleVector.zero(vs);
+        DoubleVector acc1 = DoubleVector.zero(vs);
+        int k = 0;
+        for (; k < twoBound; k += 2 * simdLen) {
+            acc0 = Simd.fma(as.getDoubleVector(ptr), DoubleVector.fromArray(vs, xv, k), acc0);
+            acc1 = Simd.fma(as.getDoubleVector(ptr + simdLen), DoubleVector.fromArray(vs, xv, k + simdLen), acc1);
+            ptr += 2 * simdLen;
+        }
+        for (; k < simdBound; k += simdLen) {
+            acc0 = Simd.fma(as.getDoubleVector(ptr), DoubleVector.fromArray(vs, xv, k), acc0);
+            ptr += simdLen;
+        }
+        double sum = acc0.add(acc1).reduceLanes(VectorOperators.ADD);
+        return rowDotScalar(as, ptr, 1, xv, k, n, sum);
+    }
+
+    private static double rowDotGather(Storage as, int ptr, int step, int[] gatherIdx, double[] xv, int n) {
+        var vs = Simd.vsDouble;
+        int simdLen = vs.length();
+        int simdBound = vs.loopBound(n);
+        DoubleVector acc = DoubleVector.zero(vs);
+        int k = 0;
+        for (; k < simdBound; k += simdLen) {
+            acc = Simd.fma(as.getDoubleVector(ptr, gatherIdx, 0), DoubleVector.fromArray(vs, xv, k), acc);
+            ptr += simdLen * step;
+        }
+        double sum = acc.reduceLanes(VectorOperators.ADD);
+        return rowDotScalar(as, ptr, step, xv, k, n, sum);
+    }
+
     @Override
     public DArray<Double> mm(DArray<?> other, Order askOrder) {
         if (askOrder == Order.S) {
@@ -948,84 +1107,234 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
         if (to.dt() != dt) {
             throw new IllegalArgumentException("Target array has different data type than operation result.");
         }
-        return mmInternalNonParallel(other, to.cast(dt));
+        return mmBlocked(other, to.cast(dt));
     }
 
-    private DArray<Double> mmInternalNonParallel(DArray<?> other, DArray<Double> to) {
+    // Blocked matrix product C += A * B.
+    //
+    // C is split in tiles of MM_MC rows by MM_NC columns; each tile loops over the inner dimension in blocks of MM_KC.
+    // Inside a tile both operands are packed into contiguous row-major buffers, which removes all layout concerns
+    // (transposed operands, F order, narrow views, other data types) from the hot loop and keeps the working set in
+    // cache: one A panel (MM_MC x MM_KC) and one B panel (MM_KC x MM_NC). The hot loop is a register-tiled micro kernel
+    // computing 4 rows x 2 vectors of C at a time with broadcast(A) * vector(B) fused multiply-adds, so B is streamed
+    // with contiguous vector loads and every load feeds four multiply-adds. Tiles of C are independent and are the
+    // unit of parallel work.
+
+    /**
+     * Rows of A packed per tile.
+     */
+    private static final int MM_MC = 128;
+    /**
+     * Inner dimension block size.
+     */
+    private static final int MM_KC = 256;
+    /**
+     * Columns of B packed per tile; a multiple of two vector lengths for every supported species.
+     */
+    private static final int MM_NC = 256;
+    /**
+     * Rows of C computed together by the micro kernel.
+     */
+    private static final int MM_MR = 4;
+
+    private DArray<Double> mmBlocked(DArray<?> other, DArray<Double> to) {
         int m = shape().dim(0);
         int n = shape().dim(1);
         int p = other.shape().dim(1);
 
-        List<DArray<Double>> rows = unbind(0, false);
-        List<DArray<Double>> cols = other.cast(dt()).unbind(1, false);
+        DArray<Double> b = other.cast(dt);
+        Storage bs = b.storage();
+        StrideLayout bl = (StrideLayout) b.layout();
+        int bOff = bl.offset();
+        int bs0 = bl.stride(0);
+        int bs1 = bl.stride(1);
 
-        int off = ((StrideLayout) to.layout()).offset();
-        int iStride = ((StrideLayout) to.layout()).stride(0);
-        int jStride = ((StrideLayout) to.layout()).stride(1);
+        int aOff = layout.offset();
+        int as0 = layout.stride(0);
+        int as1 = layout.stride(1);
 
-        for (int r = 0; r < m; r++) {
-            for (int c = 0; c < p; c++) {
-                var krow = (BaseDoubleStrideDArray) rows.get(r);
-                to.ptrIncDouble(off + r * iStride + c * jStride, (double) (krow.innerUnchecked(cols.get(c), 0, n)));
-            }
+        StrideLayout cl = (StrideLayout) to.layout();
+        int cOff = cl.offset();
+        int cs0 = cl.stride(0);
+        int cs1 = cl.stride(1);
+
+        int simdLen = Simd.vsDouble.length();
+        int vec2 = 2 * simdLen;
+
+        // shrink the row block until there are enough tiles to keep every thread busy (small matrices)
+        int mc = MM_MC;
+        while (mc > 4 * MM_MR && (long) Math.ceilDiv(m, mc) * Math.ceilDiv(p, MM_NC) < 2L * dm.cpuThreads()) {
+            mc /= 2;
         }
-        return to;
-    }
 
-    private DArray<Double> mmInternalParallel(DArray<?> other, DArray<Double> to) {
-        int m = shape().dim(0);
-        int n = shape().dim(1);
-        int p = other.shape().dim(1);
-
-        List<DArray<Double>> rows = unbind(0, false);
-        List<DArray<Double>> cols = other.cast(dt()).unbind(1, false);
-
-        int chunk = (int) Math.floor(Math.sqrt(L2_CACHE_SIZE / 2. / CORES / dt().byteCount()));
-        chunk = chunk >= 8 ? chunk - chunk % 8 : chunk;
-
-        int vectorChunk = chunk > 64 ? chunk * 4 : chunk;
-        int innerChunk = chunk > 64 ? (int) Math.ceil(Math.sqrt(chunk / 4.)) : (int) Math.ceil(Math.sqrt(chunk));
-
-        int off = ((StrideLayout) to.layout()).offset();
-        int iStride = ((StrideLayout) to.layout()).stride(0);
-        int jStride = ((StrideLayout) to.layout()).stride(1);
-
-        CountDownLatch latch = new CountDownLatch(Math.ceilDiv(m, innerChunk) * Math.ceilDiv(p, innerChunk));
-        try (ExecutorService service = Executors.newFixedThreadPool(dm.cpuThreads())) {
-
-            for (int r = 0; r < m; r += innerChunk) {
-                int rs = r;
-                int re = Math.min(m, r + innerChunk);
-
-                for (int c = 0; c < p; c += innerChunk) {
-                    int cs = c;
-                    int ce = Math.min(p, c + innerChunk);
-
-                    service.submit(() -> {
-                        for (int k = 0; k < n; k += vectorChunk) {
-                            int end = Math.min(n, k + vectorChunk);
-                            for (int i = rs; i < re; i++) {
-                                var krow = (BaseDoubleStrideDArray) rows.get(i);
-                                int offset = off + i * iStride;
-                                for (int j = cs; j < ce; j++) {
-                                    to.ptrIncDouble(offset + j * jStride, (double) (krow.innerUnchecked(cols.get(j), k, end)));
-                                }
+        List<Runnable> tasks = new ArrayList<>(Math.ceilDiv(m, mc) * Math.ceilDiv(p, MM_NC));
+        for (int i0 = 0; i0 < m; i0 += mc) {
+            int im = Math.min(mc, m - i0);
+            for (int j0 = 0; j0 < p; j0 += MM_NC) {
+                int jn = Math.min(MM_NC, p - j0);
+                // packed width: a multiple of two vectors, zero padded, so the micro kernel never needs a column tail
+                int jnPad = Math.ceilDiv(jn, vec2) * vec2;
+                int ti = i0;
+                int tj = j0;
+                tasks.add(() -> {
+                    double[] ap = new double[im * MM_KC];
+                    double[] bp = new double[MM_KC * jnPad];
+                    double[] cp = new double[im * jnPad];
+                    for (int k0 = 0; k0 < n; k0 += MM_KC) {
+                        int kn = Math.min(MM_KC, n - k0);
+                        // pack A[ti.., k0..] row-major (im x kn)
+                        for (int i = 0; i < im; i++) {
+                            int ptr = aOff + (ti + i) * as0 + k0 * as1;
+                            int base = i * kn;
+                            for (int k = 0; k < kn; k++) {
+                                ap[base + k] = storage.getDouble(ptr);
+                                ptr += as1;
                             }
                         }
-                        latch.countDown();
-                    });
-                }
-            }
-
-            try {
-                latch.await();
-                service.shutdown();
-                service.shutdownNow();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                        // pack B[k0.., tj..] row-major (kn x jnPad), zero padded columns
+                        for (int k = 0; k < kn; k++) {
+                            int ptr = bOff + (k0 + k) * bs0 + tj * bs1;
+                            int base = k * jnPad;
+                            for (int j = 0; j < jn; j++) {
+                                bp[base + j] = bs.getDouble(ptr);
+                                ptr += bs1;
+                            }
+                            for (int j = jn; j < jnPad; j++) {
+                                bp[base + j] = 0;
+                            }
+                        }
+                        mmMicroKernel(ap, bp, cp, im, kn, jnPad, simdLen, k0 == 0);
+                    }
+                    // write the tile back into C, honouring its strides
+                    for (int i = 0; i < im; i++) {
+                        int ptr = cOff + (ti + i) * cs0 + tj * cs1;
+                        int base = i * jnPad;
+                        for (int j = 0; j < jn; j++) {
+                            to.ptrIncDouble(ptr, cp[base + j]);
+                            ptr += cs1;
+                        }
+                    }
+                });
             }
         }
+        dm.execute((long) m * n * p, tasks);
         return to;
+    }
+
+    /**
+     * Computes {@code cp (+)= ap * bp} for packed row-major panels: ap is (im x kn), bp is (kn x jnPad) and
+     * cp is (im x jnPad), with jnPad a multiple of two vector lengths. When {@code init} is true the tile is
+     * overwritten (first k block), otherwise accumulated.
+     */
+    private static void mmMicroKernel(double[] ap, double[] bp, double[] cp, int im, int kn, int jnPad, int simdLen, boolean init) {
+        int i = 0;
+        for (; i + MM_MR <= im; i += MM_MR) {
+            mmTile4x2(ap, bp, cp, i, kn, jnPad, simdLen, init);
+        }
+        for (; i < im; i++) {
+            mmTile1x2(ap, bp, cp, i, kn, jnPad, simdLen, init);
+        }
+    }
+
+    // The tile kernels are separate small methods on purpose: the Vector API is only fast when every call in the
+    // chain is inlined and intrinsified, which the JIT declines to do inside large method bodies.
+
+    /**
+     * 4 rows x 2 vectors register tile of {@code cp (+)= ap * bp} for packed panels, starting at row {@code i}.
+     */
+    private static void mmTile4x2(double[] ap, double[] bp, double[] cp, int i, int kn, int jnPad, int simdLen, boolean init) {
+        var vs = Simd.vsDouble;
+        int vec2 = 2 * simdLen;
+        {
+            int a0 = i * kn;
+            int a1 = a0 + kn;
+            int a2 = a1 + kn;
+            int a3 = a2 + kn;
+            int c0 = i * jnPad;
+            int c1 = c0 + jnPad;
+            int c2 = c1 + jnPad;
+            int c3 = c2 + jnPad;
+            for (int j = 0; j < jnPad; j += vec2) {
+                DoubleVector acc00, acc01, acc10, acc11, acc20, acc21, acc30, acc31;
+                if (init) {
+                    acc00 = DoubleVector.zero(vs);
+                    acc01 = acc00;
+                    acc10 = acc00;
+                    acc11 = acc00;
+                    acc20 = acc00;
+                    acc21 = acc00;
+                    acc30 = acc00;
+                    acc31 = acc00;
+                } else {
+                    acc00 = DoubleVector.fromArray(vs, cp, c0 + j);
+                    acc01 = DoubleVector.fromArray(vs, cp, c0 + j + simdLen);
+                    acc10 = DoubleVector.fromArray(vs, cp, c1 + j);
+                    acc11 = DoubleVector.fromArray(vs, cp, c1 + j + simdLen);
+                    acc20 = DoubleVector.fromArray(vs, cp, c2 + j);
+                    acc21 = DoubleVector.fromArray(vs, cp, c2 + j + simdLen);
+                    acc30 = DoubleVector.fromArray(vs, cp, c3 + j);
+                    acc31 = DoubleVector.fromArray(vs, cp, c3 + j + simdLen);
+                }
+                int bIdx = j;
+                for (int k = 0; k < kn; k++) {
+                    DoubleVector b0 = DoubleVector.fromArray(vs, bp, bIdx);
+                    DoubleVector b1 = DoubleVector.fromArray(vs, bp, bIdx + simdLen);
+                    DoubleVector av0 = DoubleVector.broadcast(vs, ap[a0 + k]);
+                    DoubleVector av1 = DoubleVector.broadcast(vs, ap[a1 + k]);
+                    DoubleVector av2 = DoubleVector.broadcast(vs, ap[a2 + k]);
+                    DoubleVector av3 = DoubleVector.broadcast(vs, ap[a3 + k]);
+                    acc00 = Simd.fma(av0, b0, acc00);
+                    acc01 = Simd.fma(av0, b1, acc01);
+                    acc10 = Simd.fma(av1, b0, acc10);
+                    acc11 = Simd.fma(av1, b1, acc11);
+                    acc20 = Simd.fma(av2, b0, acc20);
+                    acc21 = Simd.fma(av2, b1, acc21);
+                    acc30 = Simd.fma(av3, b0, acc30);
+                    acc31 = Simd.fma(av3, b1, acc31);
+                    bIdx += jnPad;
+                }
+                acc00.intoArray(cp, c0 + j);
+                acc01.intoArray(cp, c0 + j + simdLen);
+                acc10.intoArray(cp, c1 + j);
+                acc11.intoArray(cp, c1 + j + simdLen);
+                acc20.intoArray(cp, c2 + j);
+                acc21.intoArray(cp, c2 + j + simdLen);
+                acc30.intoArray(cp, c3 + j);
+                acc31.intoArray(cp, c3 + j + simdLen);
+            }
+        }
+    }
+
+    /**
+     * Single row x 2 vectors tile, used for the rows left over by the 4-row tile.
+     */
+    private static void mmTile1x2(double[] ap, double[] bp, double[] cp, int i, int kn, int jnPad, int simdLen, boolean init) {
+        var vs = Simd.vsDouble;
+        int vec2 = 2 * simdLen;
+        {
+            int a0 = i * kn;
+            int c0 = i * jnPad;
+            for (int j = 0; j < jnPad; j += vec2) {
+                DoubleVector acc0;
+                DoubleVector acc1;
+                if (init) {
+                    acc0 = DoubleVector.zero(vs);
+                    acc1 = acc0;
+                } else {
+                    acc0 = DoubleVector.fromArray(vs, cp, c0 + j);
+                    acc1 = DoubleVector.fromArray(vs, cp, c0 + j + simdLen);
+                }
+                int bIdx = j;
+                for (int k = 0; k < kn; k++) {
+                    DoubleVector av0 = DoubleVector.broadcast(vs, ap[a0 + k]);
+                    acc0 = Simd.fma(av0, DoubleVector.fromArray(vs, bp, bIdx), acc0);
+                    acc1 = Simd.fma(av0, DoubleVector.fromArray(vs, bp, bIdx + simdLen), acc1);
+                    bIdx += jnPad;
+                }
+                acc0.intoArray(cp, c0 + j);
+                acc1.intoArray(cp, c0 + j + simdLen);
+            }
+        }
     }
 
     @Override
@@ -1049,7 +1358,7 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
     private DArray<Double> bmmInternal(DArray<?> other, Order askOrder) {
         DArray<Double> res = dm.zeros(dt, Shape.of(dim(0), dim(1), other.dim(2)), askOrder);
         for (int b = 0; b < dim(0); b++) {
-            ((BaseDoubleStrideDArray) selsq(0, b)).mmInternalParallel(other.selsq(0, b), res.selsq(0, b));
+            ((BaseDoubleStrideDArray) selsq(0, b)).mmBlocked(other.selsq(0, b), res.selsq(0, b));
         }
         return res;
     }
@@ -1202,6 +1511,7 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
             return (double) Math.sqrt(sqr().sum());
         }
         double sum = (double) 0;
+        StrideLoopDescriptor loop = loop();
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
                 sum += (double) Math.pow(Math.abs(storage.getDouble(p)), pow);
@@ -1236,7 +1546,7 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
     }
 
     private void sameLayoutCopy(Storage copy, Order askOrder) {
-        var loop = StrideLoopDescriptor.of(layout, askOrder, dt.vs());
+        var loop = StrideLoopDescriptor.of(layout, askOrder, Simd.vsDouble);
         var last = 0;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
@@ -1273,47 +1583,39 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
                 int[] starts = new int[slices.length];
                 int[] ends = new int[slices.length];
 
-                try (ExecutorService executor = Executors.newFixedThreadPool(dm.cpuThreads())) {
-                    List<Future<?>> futures = new ArrayList<>();
-                    Stack<Integer> stack = new Stack<>();
-                    boolean loop = true;
-                    while (!stack.isEmpty() || loop) {
-                        int level = stack.size();
-                        if (loop) {
-                            if (level == slices.length) {
-                                int[] ss = Ints.copy(starts);
-                                int[] es = Ints.copy(ends);
-                                futures.add(executor.submit(() -> {
-                                    BaseDoubleStrideDArray s = (BaseDoubleStrideDArray) this.narrowAll(false, ss, es);
-                                    BaseDoubleStrideDArray d = (BaseDoubleStrideDArray) dst.narrowAll(false, ss, es);
-                                    directCopyTo(s, d, askOrder);
-                                    return null;
-                                }));
-                                loop = false;
-                            } else {
-                                stack.push(0);
-                                starts[level] = 0;
-                                ends[level] = Math.min(slices[level], layout.dim(level));
-                            }
+                // one task per cache-sized block; blocks are disjoint so they can be copied concurrently
+                List<Runnable> tasks = new ArrayList<>();
+                Stack<Integer> stack = new Stack<>();
+                boolean loop = true;
+                while (!stack.isEmpty() || loop) {
+                    int level = stack.size();
+                    if (loop) {
+                        if (level == slices.length) {
+                            int[] ss = Ints.copy(starts);
+                            int[] es = Ints.copy(ends);
+                            tasks.add(() -> {
+                                BaseDoubleStrideDArray s = (BaseDoubleStrideDArray) this.narrowAll(false, ss, es);
+                                BaseDoubleStrideDArray d = (BaseDoubleStrideDArray) dst.narrowAll(false, ss, es);
+                                directCopyTo(s, d, askOrder);
+                            });
+                            loop = false;
                         } else {
-                            int last = stack.pop();
-                            if (last != lens[level - 1] - 1) {
-                                last++;
-                                stack.push(last);
-                                starts[level - 1] = last * slices[level - 1];
-                                ends[level - 1] = Math.min((last + 1) * slices[level - 1], layout.dim(level - 1));
-                                loop = true;
-                            }
+                            stack.push(0);
+                            starts[level] = 0;
+                            ends[level] = Math.min(slices[level], layout.dim(level));
+                        }
+                    } else {
+                        int last = stack.pop();
+                        if (last != lens[level - 1] - 1) {
+                            last++;
+                            stack.push(last);
+                            starts[level - 1] = last * slices[level - 1];
+                            ends[level - 1] = Math.min((last + 1) * slices[level - 1], layout.dim(level - 1));
+                            loop = true;
                         }
                     }
-                    for (var future : futures) {
-                        future.get();
-                    }
-                    executor.shutdown();
-                } catch (InterruptedException | ExecutionException e) {
-                    throw new RuntimeException(e);
                 }
-
+                dm.execute(size(), tasks);
                 return dst;
             }
 
@@ -1324,7 +1626,7 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
     }
 
     private void directCopyTo(BaseDoubleStrideDArray src, BaseDoubleStrideDArray dst, Order askOrder) {
-        var loop = StrideLoopDescriptor.of(src.layout, askOrder, dt().vs());
+        var loop = StrideLoopDescriptor.of(src.layout, askOrder, Simd.vsDouble);
         var it2 = dst.ptrIterator(askOrder);
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {

@@ -52,11 +52,27 @@
 /// * `DType.FLOAT` - `float`, represented as `DArray<Float>`
 /// * `DType.DOUBLE` - `double`, represented as `DArray<Double>`
 ///
+/// Operations never promote the data type: the result of an operation has the data type of the array it is called on,
+/// and reductions accumulate in that same type. For `BYTE` and `INTEGER` arrays this means `sum`, `prod` and their
+/// variants use `byte`/`int` arithmetic and wrap silently on overflow (a byte sum wraps at 127), which differs from
+/// numpy and pytorch where small integer types are promoted to a wider accumulator. Cast explicitly to a wider type
+/// (`x.cast(DType.DOUBLE).sum()`) when the exact result may not fit in the element type. Reductions that are only
+/// meaningful for floating point values (`mean`, `var`, `std`, ...) throw `OperationNotAvailableException` on integer arrays.
+///
 /// ## Storage
 ///
 /// A storage is a container for data which offers simple low-level API for data manipulation.
 /// This is an abstraction over the real data buffers which allows implementations of different data storages like Java arrays,
 /// memory segments on heap or off heap or any other type of storage.
+///
+/// Arrays expose two levels of element access. The regular level (`get`/`set` with indices, `apply_`, `iterator(Order)`)
+/// is independent of how the data is laid out. The low level (`ptrGet`, `ptrSet`, `ptrInc*`, `ptrIterator`) works with
+/// *pointers*, which are offsets into the storage of one specific array. Pointers depend on that array's layout: the same
+/// logical element has a different pointer in a C ordered array, an F ordered array, a transposed or narrowed view or a
+/// copy, and pointers of two arrays can be paired only when they were produced by `ptrIterator` with the same explicit
+/// order on arrays of the same shape. Pointer access exists for kernels that need element access without index arithmetic;
+/// application code should use the regular level. The full contract is documented in the pointer access section of
+/// [DArray][rapaio.darray.DArray].
 ///
 /// There are present only two implementations. The base implementation uses natural language arrays for dense data.
 /// The second available implementation abstracts storage for data frames and data variables. This implementation was built in order

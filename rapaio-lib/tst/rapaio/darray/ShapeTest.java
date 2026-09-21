@@ -42,6 +42,19 @@ public class ShapeTest {
     }
 
     @Test
+    void dimsAreNotSharedWithCaller() {
+        int[] dims = new int[] {2, 3, 4};
+        Shape shape = Shape.of(dims);
+        dims[0] = 99;
+        assertArrayEquals(new int[] {2, 3, 4}, shape.dims());
+        assertEquals(24, shape.size());
+
+        shape.dims()[1] = 99;
+        assertArrayEquals(new int[] {2, 3, 4}, shape.dims());
+        assertEquals(3, shape.dim(1));
+    }
+
+    @Test
     void builderTest() {
         assertEquals("Shape: []", Shape.of().toString());
         assertEquals("Shape: [5]", Shape.of(5).toString());

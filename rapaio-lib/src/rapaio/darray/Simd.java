@@ -65,4 +65,44 @@ public final class Simd {
     public static DoubleVector broadcast(double value) {
         return DoubleVector.broadcast(vsDouble, value);
     }
+
+    /**
+     * Lanewise {@code t * a + c}. Floating point vectors use the fused operation (single rounding);
+     * integer vectors have no fused variant and use a multiply followed by an add.
+     */
+    public static DoubleVector fma(DoubleVector t, DoubleVector a, DoubleVector c) {
+        return t.fma(a, c);
+    }
+
+    public static FloatVector fma(FloatVector t, FloatVector a, FloatVector c) {
+        return t.fma(a, c);
+    }
+
+    public static IntVector fma(IntVector t, IntVector a, IntVector c) {
+        return t.mul(a).add(c);
+    }
+
+    public static ByteVector fma(ByteVector t, ByteVector a, ByteVector c) {
+        return t.mul(a).add(c);
+    }
+
+    /**
+     * Scalar counterparts of the lanewise {@code fma}, so that the scalar tail of a kernel produces exactly the
+     * same values as its vector body: fused for floating point, wrapping multiply-add for integer types.
+     */
+    public static double fma(double t, double a, double c) {
+        return Math.fma(t, a, c);
+    }
+
+    public static float fma(float t, float a, float c) {
+        return Math.fma(t, a, c);
+    }
+
+    public static int fma(int t, int a, int c) {
+        return t * a + c;
+    }
+
+    public static byte fma(byte t, byte a, byte c) {
+        return (byte) (t * a + c);
+    }
 }

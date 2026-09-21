@@ -37,9 +37,9 @@ import rapaio.util.collection.Ints;
  * <p>
  * Some particular cases are:
  * <ul>
- *     <li>[]</li> - scalar, no dimensions
- *     <li>[n1]</li> - vector of size n1
- *     <li>[n1,n2]</li> - matrix of size n1 x n2
+ *     <li>[] - scalar, no dimensions</li>
+ *     <li>[n1] - vector of size n1</li>
+ *     <li>[n1,n2] - matrix of size n1 x n2</li>
  * </ul>
  */
 public final class Shape {
@@ -75,7 +75,8 @@ public final class Shape {
                 throw new IllegalArgumentException("Shape exceeds maximum number of elements which is Integer.MAX_VALUE - 2");
             }
         }
-        this.dims = dims;
+        // defensive copy: the caller's varargs array must not alias the shape's internal state
+        this.dims = Arrays.copyOf(dims, dims.length);
         this.size = (int) longSize;
     }
 
@@ -87,10 +88,10 @@ public final class Shape {
     }
 
     /**
-     * @return array with dimension sizes
+     * @return a copy of the array with dimension sizes; mutating it does not affect the shape
      */
     public int[] dims() {
-        return dims;
+        return Arrays.copyOf(dims, dims.length);
     }
 
     /**

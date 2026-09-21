@@ -21,9 +21,9 @@
 
 package rapaio.darray.manager.base;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import rapaio.darray.DArray;
 import rapaio.darray.DType;
@@ -261,34 +261,29 @@ public final class BaseByteStrideDArrayConvolutions {
 
         DArray<Byte> output = in.dm().zeros(DType.BYTE, Shape.of(n, outChannels, outH, outW));
 
-        try (ExecutorService executor = Executors.newFixedThreadPool(input.dm().cpuThreads())) {
-            CountDownLatch latch = new CountDownLatch(n);
-            for (int batch = 0; batch < n; batch++) {
-                int b = batch;
-                executor.submit(() -> {
-                    DArray<Byte> inBatch = input.selsq(0, b);   // (inChannels, inH, inW)
-                    DArray<Byte> outBatch = output.selsq(0, b); // (outChannels, outH, outW)
+        // one task per batch element; each writes its own slice of the output
+        List<Runnable> tasks = new ArrayList<>(n);
+        for (int batch = 0; batch < n; batch++) {
+            int b = batch;
+            tasks.add(() -> {
+                DArray<Byte> inBatch = input.selsq(0, b);   // (inChannels, inH, inW)
+                DArray<Byte> outBatch = output.selsq(0, b); // (outChannels, outH, outW)
 
-                    var inSlices = inBatch.chunk(0, true, inDepth);
-                    var outSlices = outBatch.chunk(0, true, outDepth);
-                    var kernelSlices = kk.chunk(0, true, outDepth);
-                    for (int group = 0; group < groups; group++) {
+                var inSlices = inBatch.chunk(0, true, inDepth);
+                var outSlices = outBatch.chunk(0, true, outDepth);
+                var kernelSlices = kk.chunk(0, true, outDepth);
+                for (int group = 0; group < groups; group++) {
 
-                        // im2col: (inDepth * kH * kW, outH * outW)
-                        DArray<Byte> col = inSlices.get(group).unfold2d(kH, kW, stride, padding, dilation);
-                        DArray<?> kernelSlice = kernelSlices.get(group);
-                        DArray<?> kFlat = kernelSlice.reshape(Shape.of(outDepth, inDepth * kH * kW), Order.C);
-                        // (outDepth, outH*outW)
-                        kFlat.mm(col, outSlices.get(group).reshape(Shape.of(outDepth, outH * outW)));
-                    }
-                    latch.countDown();
-                });
-            }
-            try {
-                latch.await();
-            } catch (InterruptedException _) {
-            }
+                    // im2col: (inDepth * kH * kW, outH * outW)
+                    DArray<Byte> col = inSlices.get(group).unfold2d(kH, kW, stride, padding, dilation);
+                    DArray<?> kernelSlice = kernelSlices.get(group);
+                    DArray<?> kFlat = kernelSlice.reshape(Shape.of(outDepth, inDepth * kH * kW), Order.C);
+                    // (outDepth, outH*outW)
+                    kFlat.mm(col, outSlices.get(group).reshape(Shape.of(outDepth, outH * outW)));
+                }
+            });
         }
+        input.dm().execute((long) output.size() * inDepth * kH * kW, tasks);
 
         if (bias != null) {
             for (int oc = 0; oc < outChannels; oc++) {
@@ -367,51 +362,46 @@ public final class BaseByteStrideDArrayConvolutions {
 
         DArray<Byte> output = input.dm().zeros(DType.BYTE, Shape.of(n, outChannels, outH, outW));
 
-        try (ExecutorService executor = Executors.newFixedThreadPool(input.dm().cpuThreads())) {
-            CountDownLatch latch = new CountDownLatch(n);
-            for (int batch = 0; batch < n; batch++) {
-                DArray<?> inBatch = input.selsq(0, batch);
-                DArray<?> outBatch = output.selsq(0, batch);
+        // one task per batch element; each writes its own slice of the output
+        List<Runnable> tasks = new ArrayList<>(n);
+        for (int batch = 0; batch < n; batch++) {
+            DArray<?> inBatch = input.selsq(0, batch);
+            DArray<?> outBatch = output.selsq(0, batch);
 
-                executor.submit(() -> {
-                    var inSlices = inBatch.chunk(0, true, inDepth);
-                    var outSlices = outBatch.chunk(0, true, outDepth);
-                    var kernelSlices = weights.chunk(0, true, inDepth);
-                    for (int group = 0; group < groups; group++) {
-                        var inSlice = inSlices.get(group);
-                        var outSlice = outSlices.get(group);
-                        var kernelSlice = kernelSlices.get(group);
-                        for (int ih = 0; ih < inH; ih++) {
-                            for (int iw = 0; iw < inW; iw++) {
-                                for (int c = 0; c < inDepth; c++) {
-                                    byte val = inSlice.getByte(c, ih, iw);
-                                    for (int kh = 0; kh < kH; kh++) {
-                                        int oh = ih * stride + kh * dilation - padding;
-                                        if (oh >= 0 && oh < outH) {
-                                            int ow = iw * stride - padding;
-                                            for (int kw = 0; kw < kW; kw++) {
-                                                if (ow >= 0 && ow < outW) {
-                                                    for (int oc = 0; oc < outDepth; oc++) {
-                                                        outSlice.incByte((byte) (val * kernelSlice.getByte(c, oc, kh, kw)), oc, oh,
-                                                                ow);
-                                                    }
+            tasks.add(() -> {
+                var inSlices = inBatch.chunk(0, true, inDepth);
+                var outSlices = outBatch.chunk(0, true, outDepth);
+                var kernelSlices = weights.chunk(0, true, inDepth);
+                for (int group = 0; group < groups; group++) {
+                    var inSlice = inSlices.get(group);
+                    var outSlice = outSlices.get(group);
+                    var kernelSlice = kernelSlices.get(group);
+                    for (int ih = 0; ih < inH; ih++) {
+                        for (int iw = 0; iw < inW; iw++) {
+                            for (int c = 0; c < inDepth; c++) {
+                                byte val = inSlice.getByte(c, ih, iw);
+                                for (int kh = 0; kh < kH; kh++) {
+                                    int oh = ih * stride + kh * dilation - padding;
+                                    if (oh >= 0 && oh < outH) {
+                                        int ow = iw * stride - padding;
+                                        for (int kw = 0; kw < kW; kw++) {
+                                            if (ow >= 0 && ow < outW) {
+                                                for (int oc = 0; oc < outDepth; oc++) {
+                                                    outSlice.incByte((byte) (val * kernelSlice.getByte(c, oc, kh, kw)), oc, oh,
+                                                            ow);
                                                 }
-                                                ow += dilation;
                                             }
+                                            ow += dilation;
                                         }
                                     }
                                 }
                             }
                         }
                     }
-                    latch.countDown();
-                });
-            }
-            try {
-                latch.await();
-            } catch (InterruptedException _) {
-            }
+                }
+            });
         }
+        input.dm().execute((long) input.size() * outDepth * kH * kW, tasks);
 
         if (bias != null) {
             for (int oc = 0; oc < outChannels; oc++) {
