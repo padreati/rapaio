@@ -28,6 +28,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.DoublePredicate;
 import java.util.stream.DoubleStream;
 
@@ -348,7 +349,7 @@ public class DensityVector<T> implements Printable, Serializable {
 
     @Override
     public String toString() {
-        return String.format("DVector{levels=[%s], values=%s, total=%f}",
+        return String.format(Locale.ROOT, "DVector{levels=[%s], values=%s, total=%f}",
                 String.join(",", index.getValueStrings()), Arrays.toString(values), total);
     }
 

@@ -21,6 +21,8 @@
 
 package rapaio.util;
 
+import java.util.Locale;
+
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/29/18.
  */
@@ -44,7 +46,7 @@ public final class DoublePair {
 
     @Override
     public String toString() {
-        return String.format("Pair{ %f, %f }".formatted(v1,v2));
+        return String.format(Locale.ROOT, "Pair{ %f, %f }", v1, v2);
     }
 
     public void update(double v1, double v2) {

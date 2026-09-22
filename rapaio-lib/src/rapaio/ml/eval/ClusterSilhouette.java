@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -299,7 +300,7 @@ public class ClusterSilhouette extends ParamSet<ClusterSilhouette> implements Pr
             for (int row : instanceOrder.get(i)) {
                 sb.append(clusterIds[cluster]).append(" ");
                 sb.append(clusterIds[n[row]]).append(" ");
-                sb.append(String.format("%5.2f ", s[row]));
+                sb.append(String.format(Locale.ROOT, "%5.2f ", s[row]));
                 sb.append(distanceMatrix.get().name(row)).append(" ");
                 sb.append("\n");
             }

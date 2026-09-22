@@ -232,8 +232,8 @@ public class OneRuleTest {
                 > NominalRule {value=p, class=p, errors=0, total=256, acc=1}
                 > NominalRule {value=a, class=e, errors=0, total=400, acc=1}
                 > NominalRule {value=l, class=e, errors=0, total=400, acc=1}
-                > NominalRule {value=n, class=e, errors=120, total=3,528, acc=0.9659863945578231}
-                > NominalRule {value=f, class=p, errors=0, total=2,160, acc=1}
+                > NominalRule {value=n, class=e, errors=120, total=3528, acc=0.9659863945578231}
+                > NominalRule {value=f, class=p, errors=0, total=2160, acc=1}
                 > NominalRule {value=c, class=p, errors=0, total=192, acc=1}
                 > NominalRule {value=y, class=p, errors=0, total=576, acc=1}
                 > NominalRule {value=s, class=p, errors=0, total=576, acc=1}
@@ -248,8 +248,8 @@ public class OneRuleTest {
                         "NominalRule {value=p, class=p, errors=0, total=256, acc=1}, " +
                         "NominalRule {value=a, class=e, errors=0, total=400, acc=1}, " +
                         "NominalRule {value=l, class=e, errors=0, total=400, acc=1}, " +
-                        "NominalRule {value=n, class=e, errors=120, total=3,528, acc=0.9659863945578231}, " +
-                        "NominalRule {value=f, class=p, errors=0, total=2,160, acc=1}, " +
+                        "NominalRule {value=n, class=e, errors=120, total=3528, acc=0.9659863945578231}, " +
+                        "NominalRule {value=f, class=p, errors=0, total=2160, acc=1}, " +
                         "NominalRule {value=c, class=p, errors=0, total=192, acc=1}, " +
                         "NominalRule {value=y, class=p, errors=0, total=576, acc=1}, " +
                         "NominalRule {value=s, class=p, errors=0, total=576, acc=1}, " +

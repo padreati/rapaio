@@ -22,6 +22,10 @@
 package rapaio.graphics.base;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.time.Duration;
 
 import java.time.LocalTime;
 import java.util.Locale;
@@ -49,11 +53,13 @@ public class XWilkinsonTest {
 
         Locale defaultLocale = Locale.getDefault();
         Locale.setDefault(Locale.forLanguageTag("ru-RU"));
-
-        assertEquals("0,15;0,3;0,45;0,6;0,75;0,9",
-                labels1.getList().stream().map(labels1::getFormattedValue).collect(Collectors.joining(";")));
-
-        Locale.setDefault(defaultLocale);
+        try {
+            assertEquals("0,15;0,3;0,45;0,6;0,75;0,9",
+                    labels1.getList().stream().map(labels1::getFormattedValue).collect(Collectors.joining(";")));
+        } finally {
+            // always restore, otherwise a failure here leaks the locale into every later test of the JVM
+            Locale.setDefault(defaultLocale);
+        }
     }
 
     //    @Test
@@ -137,5 +143,29 @@ public class XWilkinsonTest {
             LocalTime lt = LocalTime.ofSecondOfDay(Double.valueOf(time).intValue() * 60L);
             System.out.println(lt);
         }
+    }
+
+    /**
+     * Regression: the start bounds were computed in int from dmax / step, which overflows for axes with a
+     * large offset and a small range (e.g. epoch milliseconds); the search then looped for billions of
+     * iterations or forever.
+     */
+    @Test
+    void searchTerminatesForLargeOffsetSmallRange() {
+        assertTimeoutPreemptively(Duration.ofSeconds(5), () -> {
+            XWilkinson.Labels labels = XWilkinson.base10(XWilkinson.DEEFAULT_EPS).search(1e12, 1e12 + 1, 5);
+            assertEquals(1e12, labels.getMin(), 1e-6);
+            assertEquals(1e12 + 1, labels.getMax(), 1e-6);
+            assertEquals(0.2, labels.getStep(), 1e-12);
+            assertEquals(6, labels.getList().size());
+
+            labels = XWilkinson.base10(XWilkinson.DEEFAULT_EPS).search(-5e9, -5e9 + 2, 5);
+            assertTrue(labels.getMin() <= -5e9 && labels.getMax() >= -5e9 + 2);
+            assertTrue(labels.getList().size() >= 2);
+
+            // epoch milliseconds over one hour
+            labels = XWilkinson.base10(XWilkinson.DEEFAULT_EPS).search(1.7e12, 1.7e12 + 3_600_000, 5);
+            assertTrue(labels.getList().size() >= 2);
+        });
     }
 }

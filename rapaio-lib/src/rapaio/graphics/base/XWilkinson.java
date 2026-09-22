@@ -43,6 +43,14 @@ public class XWilkinson {
 
     public static final double DEEFAULT_EPS = 1e-10;
 
+    /**
+     * The number of candidate start positions examined for one (q, j, k, step) combination is at most j * k
+     * (the two bounds differ by the rounding of dmin/step and dmax/step plus k - 1 steps). A larger difference
+     * can only come from arithmetic overflow when the step is negligible next to the data magnitude, in which
+     * case no candidate is worth scoring.
+     */
+    private static final long MAX_START_CANDIDATES = 1L << 24;
+
     private XWilkinson(double[] Q, double base, double[] w, double eps) {
         this.w = Arrays.copyOf(w, w.length);
         this.q = Arrays.copyOf(Q, Q.length);
@@ -288,10 +296,20 @@ public class XWilkinson {
                         if (w(sm, cm, dm, 1) < bestScore) {
                             break;
                         }
-                        int min_start = (int) (Math.floor(dmax / step - (k - 1)) * j);
-                        int max_start = (int) (Math.ceil(dmin / step)) * j;
+                        // candidate label sequences: the lowest label is start * step / j, and the sequence must
+                        // still overlap the data range. The bounds are computed in long (a step count from zero
+                        // overflows int for large offsets such as epoch milliseconds) and the loop is bounded to
+                        // the finite set of distinct offsets, so it always terminates.
+                        long minStart = (long) Math.floor(dmax / step - (k - 1)) * j;
+                        long maxStart = (long) Math.ceil(dmin / step) * j;
+                        if (maxStart - minStart > MAX_START_CANDIDATES) {
+                            // the two bounds differ only by rounding of dmin/step and dmax/step, so a large gap
+                            // means the values could not be represented exactly; nothing useful lies in between
+                            z = z + 1;
+                            continue;
+                        }
 
-                        for (int start = min_start; start <= max_start; start++) {
+                        for (long start = minStart; start <= maxStart; start++) {
                             double lmin = start * step / j;
                             double lmax = lmin + step * (k - 1);
                             double c = coverage(dmin, dmax, lmin, lmax);

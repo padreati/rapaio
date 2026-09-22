@@ -32,6 +32,14 @@ import rapaio.util.IntIterable;
 import rapaio.util.hash.Murmur3;
 
 /**
+ * Open addressing hash set of primitive int values.
+ * <p>
+ * The table capacity is always a power of two and probing is triangular ({@code h, h+1, h+3, h+6, ...}),
+ * which visits every slot of a power-of-two table exactly once, so a lookup or insertion always terminates
+ * as long as the table is not full; the load factor guarantees it never is. {@link Probing#LINEAR} keeps the
+ * classic sequential probe. Every int value, including {@link Integer#MIN_VALUE}, can be stored: the value used
+ * as the empty-slot marker is tracked with a separate flag.
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/10/20.
  */
 public class IntOpenHashSet implements Serializable, IntIterable {
@@ -44,13 +52,29 @@ public class IntOpenHashSet implements Serializable, IntIterable {
     public static final int DEFAULT_ALLOCATION = 16;
     public static final Probing DEFAULT_PROBING = Probing.QUADRATIC;
 
+    /**
+     * Marker of an empty slot in the backing array. The value itself is still a valid set member,
+     * stored through a dedicated flag.
+     */
     public static final int MISSING = Integer.MIN_VALUE;
 
     private final int seed;
     private final double loadFactor;
     private final Probing probing;
-    private int size;
+
+    /**
+     * Number of values stored in the array (does not count the MISSING member).
+     */
+    private int arraySize;
+    /**
+     * Whether the value equal to the empty-slot marker is a member.
+     */
+    private boolean hasMissingValue;
     private int[] array;
+    /**
+     * Largest arraySize before the table is grown.
+     */
+    private int threshold;
 
     public IntOpenHashSet() {
         this(DEFAULT_SEEED, DEFAULT_LOAD_FACTOR, DEFAULT_ALLOCATION, DEFAULT_PROBING);
@@ -60,97 +84,103 @@ public class IntOpenHashSet implements Serializable, IntIterable {
         this(seed, DEFAULT_LOAD_FACTOR, DEFAULT_ALLOCATION, DEFAULT_PROBING);
     }
 
+    /**
+     * @param seed       hash seed
+     * @param loadFactor maximum fill ratio before growing, in {@code (0, 1)}
+     * @param allocation expected number of elements; the initial capacity is derived from it
+     * @param probing    probing strategy
+     */
     public IntOpenHashSet(int seed, double loadFactor, int allocation, Probing probing) {
+        if (!(loadFactor > 0 && loadFactor < 1)) {
+            throw new IllegalArgumentException("Load factor must be in (0, 1), given: " + loadFactor);
+        }
+        if (allocation < 0) {
+            throw new IllegalArgumentException("Allocation must be non-negative, given: " + allocation);
+        }
         this.seed = seed;
         this.loadFactor = loadFactor;
         this.probing = probing;
-        this.array = Ints.fill(allocation, MISSING);
+        allocate(capacityFor(allocation, loadFactor));
     }
 
-    /**
-     * Returns the number of elements in this set (its cardinality).  If this
-     * set contains more than {@code Integer.MAX_VALUE} elements, returns
-     * {@code Integer.MAX_VALUE}.
-     *
-     * @return the number of elements in this set (its cardinality)
-     */
+    private static int capacityFor(int expected, double loadFactor) {
+        long needed = (long) Math.ceil(Math.max(expected, 1) / loadFactor) + 1;
+        int capacity = 4;
+        while (capacity < needed) {
+            capacity <<= 1;
+        }
+        return capacity;
+    }
+
+    private void allocate(int capacity) {
+        array = Ints.fill(capacity, MISSING);
+        // keep at least one empty slot so that an unsuccessful lookup always terminates
+        threshold = Math.min(capacity - 1, (int) (capacity * loadFactor));
+    }
+
     public int size() {
-        return size;
+        return arraySize + (hasMissingValue ? 1 : 0);
     }
 
-    /**
-     * Returns {@code true} if this set contains no elements.
-     *
-     * @return {@code true} if this set contains no elements
-     */
     public boolean isEmpty() {
-        return size == 0;
+        return size() == 0;
+    }
+
+    private int home(int value, int mask) {
+        return Murmur3.murmur3A(value, seed) & mask;
     }
 
     /**
-     * Returns {@code true} if and only if the int {@code value} is a
-     * member of the set, false otherwise.
-     *
-     * @param value value to be checked
-     * @return true if value is in the set, false otherwise
+     * Index of the slot holding the value, or of the empty slot where it would be inserted.
      */
+    private int find(int[] table, int value) {
+        int mask = table.length - 1;
+        int pos = home(value, mask);
+        for (int round = 1; ; round++) {
+            int current = table[pos];
+            if (current == MISSING || current == value) {
+                return pos;
+            }
+            pos = (pos + probing.step(round)) & mask;
+        }
+    }
+
     public boolean contains(int value) {
-        int hash = Murmur3.murmur3A(value, seed) % array.length;
-        if (hash < 0) {
-            hash += array.length;
+        if (value == MISSING) {
+            return hasMissingValue;
         }
-        int step = 0;
-        while (true) {
-            hash += probing.step(step);
-            step++;
-            hash %= array.length;
-            if (array[hash] == MISSING) {
-                return false;
-            }
-            if (array[hash] == value) {
-                return true;
-            }
-        }
+        return array[find(array, value)] == value;
     }
 
-    /**
-     * Returns an iterator over the elements in this set.  The elements are
-     * returned in no particular order (unless this set is an instance of some
-     * class that provides a guarantee).
-     *
-     * @return an iterator over the elements in this set
-     */
     public PrimitiveIterator.OfInt iterator() {
         int[] copy = toArray();
         return Ints.iterator(copy, 0, copy.length);
     }
 
     public int[] toArray() {
-        return IntStream.of(array).filter(value -> value != MISSING).toArray();
+        IntStream values = IntStream.of(array).filter(value -> value != MISSING);
+        if (hasMissingValue) {
+            values = IntStream.concat(IntStream.of(MISSING), values);
+        }
+        return values.toArray();
     }
 
     public boolean add(int value) {
-        if (needsCapacity(1)) {
-            ensureCapacity(1);
+        if (value == MISSING) {
+            boolean added = !hasMissingValue;
+            hasMissingValue = true;
+            return added;
         }
-        int hash = Murmur3.murmur3A(value, seed) % array.length;
-        if (hash < 0) {
-            hash += array.length;
+        if (arraySize >= threshold) {
+            grow();
         }
-        int step = 0;
-        while (true) {
-            hash += probing.step(step);
-            step++;
-            hash %= array.length;
-            if (array[hash] == value) {
-                return false;
-            }
-            if (array[hash] == MISSING) {
-                array[hash] = value;
-                size++;
-                return true;
-            }
+        int pos = find(array, value);
+        if (array[pos] == value) {
+            return false;
         }
+        array[pos] = value;
+        arraySize++;
+        return true;
     }
 
     public boolean addAll(Collection<? extends Integer> c) {
@@ -159,73 +189,52 @@ public class IntOpenHashSet implements Serializable, IntIterable {
                 throw new ClassCastException();
             }
         }
-        if (needsCapacity(c.size())) {
-            ensureCapacity(c.size());
-        }
         boolean changed = false;
-        for (Object o : c) {
-            int i = (int) o;
-            changed |= add((int) o);
+        for (Integer i : c) {
+            changed |= add(i);
         }
         return changed;
     }
 
-    /**
-     * Removes all of the elements from this set (optional operation).
-     * The set will be empty after this call returns.
-     *
-     * @throws UnsupportedOperationException if the {@code clear} method
-     *                                       is not supported by this set
-     */
     public void clear() {
         Arrays.fill(array, MISSING);
-        this.size = 0;
+        arraySize = 0;
+        hasMissingValue = false;
     }
 
-    private boolean needsCapacity(int increment) {
-        return size >= Math.floor(loadFactor * array.length);
-    }
-
-    private void ensureCapacity(int increment) {
-        int len = (int) Math.ceil(2 * size / loadFactor);
-        int[] copy = Ints.fill(len, MISSING);
-        for (int x : array) {
-            if (x == MISSING) {
-                continue;
-            }
-            int hash = Murmur3.murmur3A(x, seed) % copy.length;
-            if (hash < 0) {
-                hash += copy.length;
-            }
-            int step = 0;
-            while (true) {
-                hash += probing.step(step);
-                step++;
-                hash %= copy.length;
-                if (copy[hash] == MISSING) {
-                    copy[hash] = x;
-                    break;
-                }
+    private void grow() {
+        int[] old = array;
+        allocate(old.length << 1);
+        for (int x : old) {
+            if (x != MISSING) {
+                array[find(array, x)] = x;
             }
         }
-        array = copy;
     }
 
     public enum Probing {
+        /**
+         * Sequential probing: slots {@code h, h+1, h+2, ...}.
+         */
         LINEAR {
+            @Override
+            public int step(int round) {
+                return 1;
+            }
+        },
+        /**
+         * Triangular probing: slots {@code h, h+1, h+3, h+6, ...}, a full permutation of a power-of-two table.
+         */
+        QUADRATIC {
             @Override
             public int step(int round) {
                 return round;
             }
-        },
-        QUADRATIC {
-            @Override
-            public int step(int round) {
-                return round * round;
-            }
         };
 
+        /**
+         * Distance from the previous probed slot to the next one, for the given probe round (starting at 1).
+         */
         public abstract int step(int round);
     }
 }
-

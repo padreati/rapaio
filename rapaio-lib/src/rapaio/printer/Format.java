@@ -22,18 +22,43 @@
 package rapaio.printer;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 /**
+ * Number formatting used by all printers and text outputs of the library.
+ * <p>
+ * Every format produced here is locale independent: '.' is the decimal separator and digits are never
+ * grouped, whatever the JVM default locale. This keeps table columns aligned and lets written numbers
+ * (for example in CSV files) be parsed back with {@code Double.parseDouble}.
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/27/18.
  */
 public class Format {
 
-    public static DecimalFormat floatShort() {
-        DecimalFormat format = new DecimalFormat();
+    /**
+     * Symbols shared by every formatter: decimal point, no grouping, ASCII digits.
+     */
+    public static final DecimalFormatSymbols SYMBOLS = DecimalFormatSymbols.getInstance(Locale.ROOT);
+
+    /**
+     * Creates a locale independent decimal format with the given number of fraction digits.
+     *
+     * @param minFraction minimum number of fraction digits
+     * @param maxFraction maximum number of fraction digits
+     * @return decimal format
+     */
+    public static DecimalFormat decimal(int minFraction, int maxFraction) {
+        DecimalFormat format = new DecimalFormat("0", SYMBOLS);
+        format.setGroupingUsed(false);
         format.setMinimumIntegerDigits(1);
-        format.setMinimumFractionDigits(3);
-        format.setMaximumFractionDigits(3);
+        format.setMinimumFractionDigits(minFraction);
+        format.setMaximumFractionDigits(maxFraction);
         return format;
+    }
+
+    public static DecimalFormat floatShort() {
+        return decimal(3, 3);
     }
 
     public static String floatShort(double value) {
@@ -41,11 +66,7 @@ public class Format {
     }
 
     public static DecimalFormat floatMedium() {
-        DecimalFormat format = new DecimalFormat();
-        format.setMinimumIntegerDigits(1);
-        format.setMinimumFractionDigits(7);
-        format.setMaximumFractionDigits(7);
-        return format;
+        return decimal(7, 7);
     }
 
     public static String floatMedium(double value) {
@@ -53,11 +74,7 @@ public class Format {
     }
 
     public static DecimalFormat floatLong() {
-        DecimalFormat format = new DecimalFormat();
-        format.setMinimumIntegerDigits(1);
-        format.setMinimumFractionDigits(30);
-        format.setMaximumFractionDigits(30);
-        return format;
+        return decimal(30, 30);
     }
 
     public static String floatLong(double value) {
@@ -65,11 +82,7 @@ public class Format {
     }
 
     public static DecimalFormat floatFlex() {
-        DecimalFormat format = new DecimalFormat();
-        format.setMinimumIntegerDigits(1);
-        format.setMinimumFractionDigits(0);
-        format.setMaximumFractionDigits(7);
-        return format;
+        return decimal(0, 7);
     }
 
     public static String floatFlex(double value) {
@@ -83,11 +96,7 @@ public class Format {
     }
 
     public static DecimalFormat floatFlexShort() {
-        DecimalFormat format = new DecimalFormat();
-        format.setMinimumIntegerDigits(1);
-        format.setMinimumFractionDigits(0);
-        format.setMaximumFractionDigits(3);
-        return format;
+        return decimal(0, 3);
     }
 
     public static String floatFlexShort(double value) {
@@ -101,11 +110,7 @@ public class Format {
     }
 
     public static DecimalFormat floatFlexLong() {
-        DecimalFormat format = new DecimalFormat();
-        format.setMinimumIntegerDigits(1);
-        format.setMinimumFractionDigits(0);
-        format.setMaximumFractionDigits(30);
-        return format;
+        return decimal(0, 30);
     }
 
     public static String floatFlexLong(double value) {
@@ -141,7 +146,7 @@ public class Format {
         if (pvalue >= 1e-6) {
             return floatMedium(pvalue);
         }
-        return String.format("%10.2e", pvalue);
+        return String.format(Locale.ROOT, "%10.2e", pvalue);
     }
 
     private Format() {

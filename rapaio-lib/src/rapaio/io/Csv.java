@@ -37,6 +37,8 @@ import java.io.Serializable;
 import java.net.URI;
 import java.net.URL;
 import java.text.DecimalFormat;
+
+import rapaio.printer.Format;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -429,7 +431,8 @@ public class Csv extends ParamSet<Csv> {
                 }
                 writer.append("\n");
             }
-            DecimalFormat format = new DecimalFormat("0.###############################");
+            // locale independent so that the file can be read back on any machine
+            DecimalFormat format = new DecimalFormat("0.###############################", Format.SYMBOLS);
             for (int i = 0; i < df.rowCount(); i++) {
                 for (int j = 0; j < df.varCount(); j++) {
                     if (j != 0) {

@@ -23,6 +23,8 @@ package rapaio.core.tests;
 
 import rapaio.data.Var;
 import rapaio.data.transform.VarSort;
+import java.util.Locale;
+
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
@@ -127,8 +129,8 @@ public class KSTestTwoSamples implements HTest {
         if (ties1 + ties2 > 0)
             sb.append(" (warning: p-values will not be exact because of ties)\n");
 
-        sb.append(String.format("D statistic: %.6f\n", D));
-        sb.append(String.format("p-value: %.16f %s\n", pValue, Format.pValueStars(pValue)));
+        sb.append(String.format(Locale.ROOT, "D statistic: %.6f\n", D));
+        sb.append(String.format(Locale.ROOT, "p-value: %.16f %s\n", pValue, Format.pValueStars(pValue)));
         sb.append("\n");
         return sb.toString();
     }

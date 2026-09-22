@@ -221,15 +221,15 @@ public class KMClusterTest {
                 Overall errors:\s
                 > count: 272
                 > mean: 32.7273288
-                > var: 1,621.0637918
+                > var: 1621.0637918
                 > sd: 40.2624365
-                > inertia/error:8,890.7628278
+                > inertia/error:8890.7628278
                 > iterations:10
                                 
                 Per cluster:\s
-                    ID count    mean         var      var/total     sd    \s
-                [0]  2   172 31.6607834 1,760.3732065 1.085937  41.9568017\s
-                [1]  1   100 34.5617867 1,391.437297  0.8583483 37.3019744\s
+                    ID count    mean        var      var/total     sd    \s
+                [0]  2   172 31.6607834 1760.3732065 1.085937  41.9568017\s
+                [1]  1   100 34.5617867 1391.437297  0.8583483 37.3019744\s
                 """, result.toSummary());
 
         assertEquals(result.toSummary(), result.toContent());

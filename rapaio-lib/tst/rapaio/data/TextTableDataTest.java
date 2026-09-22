@@ -361,13 +361,13 @@ public class TextTableDataTest {
         }
         // integers with no dots are misaligned, this is why we need custom methods
         assertEquals("""
-                     5.9229719\s
-                    23.6147893\s
-                    -6.6416266\s
-                     2.7619375\s
-                     8.6277539\s
-                     1        \s
-                -122,682,378  \s
+                    5.9229719\s
+                   23.6147893\s
+                   -6.6416266\s
+                    2.7619375\s
+                    8.6277539\s
+                    1        \s
+                -122682378   \s
                 """, tt.getRawText());
 
         tt.set(4, 0, "left", ".right");
