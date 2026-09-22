@@ -91,6 +91,11 @@ public class RForest extends RegressionModel<RForest, RegressionResult, RunInfo<
 
     private final List<RegressionModel<?, ?, ?>> regressions = new ArrayList<>();
 
+    private RForest() {
+        // a forest trains each tree on a bootstrap sample of the rows; callers may still override the sampler
+        rowSampler.set(RowSampler.bootstrap());
+    }
+
     @Override
     public RForest newInstance() {
         return new RForest().copyParameterValues(this);

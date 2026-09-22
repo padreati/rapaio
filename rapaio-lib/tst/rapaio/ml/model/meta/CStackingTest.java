@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
 import java.util.Random;
 
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,7 @@ import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
 import rapaio.ml.eval.metric.Accuracy;
+import rapaio.ml.model.ClassifierModel;
 import rapaio.ml.model.linear.BinaryLogistic;
 import rapaio.ml.model.svm.SvmClassifier;
 import rapaio.ml.model.tree.CTree;
@@ -64,5 +66,36 @@ public class CStackingTest {
         var pred = s.fit(tts.trainDf(), target).predict(tts.testDf());
         double accuracy = Accuracy.newMetric(true).compute(tts.testDf().rvar(target), pred).getScore().value();
         assertTrue(accuracy>0.9);
+    }
+
+    /**
+     * Regression: the stack model used to be fitted on density columns 1..K-1 of each weak learner but fed
+     * columns 0..K-1 at prediction time, so the feature sets differed between fit and predict. With a stack model
+     * that records its input names at fit time, the names must be exactly one column per class per learner and
+     * prediction must work on the same columns.
+     */
+    @Test
+    void stackSeesOneColumnPerClassAtFitAndPredict() {
+        CTree stacker = CTree.newCART().minCount.set(1);
+        CStacking s = CStacking.newModel()
+                .seed.set(1L)
+                .learners.add(CTree.newCART().maxDepth.set(2))
+                .learners.add(CTree.newCART().maxDepth.set(3))
+                .stackModel.set(stacker);
+        s.fit(iris, target);
+
+        // the fitted stack model is a fresh instance; recover it through the stacking model's parameters
+        ClassifierModel<?, ?, ?> fitted = s.fittedStackModel();
+        List<String> inputs = List.of(fitted.inputNames());
+        assertEquals(2 * 3, inputs.size());
+        for (String level : iris.rvar(target).levels()) {
+            assertTrue(inputs.contains(level + "_0"), inputs.toString());
+            assertTrue(inputs.contains(level + "_1"), inputs.toString());
+        }
+
+        var pred = s.predict(iris, true, true);
+        assertEquals(iris.rowCount(), pred.firstClasses().size());
+        double accuracy = Accuracy.newMetric(true).compute(iris.rvar(target), pred).getScore().value();
+        assertTrue(accuracy > 0.9);
     }
 }

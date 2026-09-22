@@ -22,6 +22,7 @@
 package rapaio.ml.model.ensemble;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
 import rapaio.data.VarDouble;
+import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
 import rapaio.ml.eval.metric.RMSE;
 import rapaio.ml.model.RegressionResult;
@@ -51,10 +53,40 @@ public class RForestTest {
         RForest rf = RForest.newRF(RTree.newCART().minCount.set(1));
         assertEquals("RForest", rf.name());
         assertEquals("RForest{model=RTree{splitter=Random,testMap={BINARY=NumericBinary,INT=NumericBinary,NOMINAL=NominalBinary," +
-                "DOUBLE=NumericBinary,LONG=NumericBinary,STRING=Ignore}}}", rf.fullName());
+                "DOUBLE=NumericBinary,LONG=NumericBinary,STRING=Ignore}},rowSampler=Bootstrap(p=1)}", rf.fullName());
 
         assertEquals(rf.toSummary(), rf.toContent());
         assertEquals(rf.toSummary(), rf.toFullContent());
+    }
+
+    /**
+     * Regression: RForest inherited the identity row sampler, so every tree was fitted on the full data set and
+     * a "random forest" did no bootstrap sampling unless the caller set a sampler explicitly.
+     */
+    @Test
+    void forestBootstrapsByDefault() {
+        RForest rf = RForest.newRF();
+        assertEquals("Bootstrap(p=1)", rf.rowSampler.get().name());
+
+        // with bagging (all vars, random splitter) and a bootstrap sample every tree sees a different subset,
+        // so the trees must differ; with the identity sampler and minCount=1 they would all be identical
+        RForest bagging = RForest.newBagging().runs.set(5).seed.set(3L).poolSize.set(1);
+        bagging.fit(advertising, "Sales");
+        var models = bagging.getFittedModels();
+        assertEquals(5, models.size());
+        var p0 = models.get(0).predict(advertising).firstPrediction();
+        boolean anyDifferent = false;
+        for (int i = 1; i < models.size(); i++) {
+            if (!models.get(i).predict(advertising).firstPrediction().deepEquals(p0)) {
+                anyDifferent = true;
+                break;
+            }
+        }
+        assertTrue(anyDifferent, "bootstrapped trees must not all be identical");
+
+        // the caller can still opt out
+        RForest plain = RForest.newRF().rowSampler.set(RowSampler.identity());
+        assertEquals("Identity", plain.rowSampler.get().name());
     }
 
     @Test

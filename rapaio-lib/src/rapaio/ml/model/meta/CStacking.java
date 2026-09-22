@@ -60,6 +60,20 @@ public class CStacking extends ClassifierModel<CStacking, ClassifierResult, RunI
     private List<ClassifierModel<?, ?, ?>> weaks;
     private ClassifierModel<?, ?, ?> stack;
 
+    /**
+     * @return the weak learners fitted by the last call to {@code fit}, or null if not fitted
+     */
+    public List<ClassifierModel<?, ?, ?>> fittedLearners() {
+        return weaks;
+    }
+
+    /**
+     * @return the stack model fitted by the last call to {@code fit}, or null if not fitted
+     */
+    public ClassifierModel<?, ?, ?> fittedStackModel() {
+        return stack;
+    }
+
     @Override
     public CStacking newInstance() {
         return new CStacking().copyParameterValues(this);
@@ -102,37 +116,40 @@ public class CStacking extends ClassifierModel<CStacking, ClassifierResult, RunI
         learned = false;
 
         logger.fine("started learning for stacker classifier...");
-        List<Var> vars = new ArrayList<>();
-        int max = firstTargetLevels().size();
         for (int i = 0; i < weaks.size(); i++) {
             logger.fine("started fitting weak learner " + i + " from " + weaks.size());
             var weak = weaks.get(i);
             weak.seed.set(seed.get());
             weak.fit(df, weights, targetNames);
-            logger.fine("started prediction for weak learner " + i + " from " + weaks.size());
-            var density = weak.predict(df, true, true).firstDensity();
-            for (int j = 1; j < max; j++) {
-                vars.add(density.rvar(j).name(density.rvar(j).name() + "_" + i));
-            }
         }
+        List<Var> vars = stackFeatures(df);
         vars.addAll(df.mapVars(targetNames).copy().varList());
         stack.seed.set(seed.get());
         stack.fit(SolidFrame.byVars(vars), weights, targetNames);
         return true;
     }
 
-    @Override
-    protected ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
-        logger.fine("predict method called.");
+    /**
+     * Features handed to the stack model: the predicted class densities of every weak learner, one column per
+     * target level, named {@code <level>_<learnerIndex>}. Used identically at fit and predict time so the stack
+     * model always sees the same columns.
+     */
+    private List<Var> stackFeatures(Frame df) {
         List<Var> vars = new ArrayList<>();
-        int max = firstTargetLevels().size();
+        int levels = firstTargetLevels().size();
         for (int i = 0; i < weaks.size(); i++) {
-            var weak = weaks.get(i);
-            var density = weak.predict(df, true, true).firstDensity();
-            for (int j = 0; j < max; j++) {
+            var density = weaks.get(i).predict(df, true, true).firstDensity();
+            for (int j = 0; j < levels; j++) {
                 vars.add(density.rvar(j).name(density.rvar(j).name() + "_" + i));
             }
         }
+        return vars;
+    }
+
+    @Override
+    protected ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
+        logger.fine("predict method called.");
+        List<Var> vars = stackFeatures(df);
         return ClassifierResult.copy(this, df, withClasses, withDistributions, stack.predict(SolidFrame.byVars(vars)));
     }
 }
