@@ -342,7 +342,7 @@ public class CTree extends ClassifierModel<CTree, ClassifierResult, RunInfo<CTre
             dv.plus(d, wc);
             w += wc;
         }
-        for (int i = 1; i < dict.size(); i++) {
+        for (int i = 0; i < dict.size(); i++) {
             dv.set(tree.firstTargetLevel(i), dv.get(tree.firstTargetLevel(i)) / w);
         }
         return Pair.from(dv.findBestLabel(), dv);

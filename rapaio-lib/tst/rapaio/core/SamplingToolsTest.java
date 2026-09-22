@@ -109,7 +109,9 @@ public class SamplingToolsTest {
                 freq.increment(next, 1);
             }
         }
-        ChiSqGoodnessOfFit test = ChiSqGoodnessOfFit.from(freq, VarDouble.wrap(w));
+        // the samplers no longer normalise the caller's array, so normalise the expected probabilities here
+        double total = Doubles.sum(w, 0, w.length);
+        ChiSqGoodnessOfFit test = ChiSqGoodnessOfFit.from(freq, VarDouble.from(w.length, i -> w[i] / total));
         assertTrue(test.pValue() > 0.05);
     }
 
@@ -149,7 +151,9 @@ public class SamplingToolsTest {
                 freq.increment(next, 1);
             }
         }
-        ChiSqGoodnessOfFit test = ChiSqGoodnessOfFit.from(freq, VarDouble.wrap(w));
+        // the samplers no longer normalise the caller's array, so normalise the expected probabilities here
+        double total = Doubles.sum(w, 0, w.length);
+        ChiSqGoodnessOfFit test = ChiSqGoodnessOfFit.from(freq, VarDouble.from(w.length, i -> w[i] / total));
         assertTrue(test.pValue() > 0.05);
     }
 
@@ -161,8 +165,10 @@ public class SamplingToolsTest {
         double[] freq = new double[] {0.127, 0.5, 0.333};
         Frame[] frames = SamplingTools.randomSampleSlices(random, df, freq);
 
+        // slices are sized from the normalised frequencies; the caller's array itself is left untouched
+        double freqTotal = Doubles.sum(freq, 0, freq.length);
         for (int i = 0; i < frames.length - 1; i++) {
-            assertEquals(((int) (100 * freq[i])), frames[i].rowCount());
+            assertEquals(((int) (df.rowCount() * freq[i] / freqTotal)), frames[i].rowCount());
         }
 
         int total = 0;
@@ -187,6 +193,64 @@ public class SamplingToolsTest {
         for (Frame st : strata) {
             ChiSqGoodnessOfFit test = ChiSqGoodnessOfFit.from(st.rvar("strata"), VarDouble.wrap(p));
             assertTrue(test.pValue() >= 0.9);
+        }
+    }
+
+    /**
+     * Regression: the stratified split used to deal rows round-robin, ignoring the requested proportions.
+     * With 4 strata of 25 rows and proportions 0.8/0.2 every stratum must contribute 20 and 5 rows.
+     */
+    @Test
+    void stratifiedSplitHonoursProportions() {
+        Frame df = SolidFrame.byVars(
+                VarDouble.from(100, row -> (double) row).name("x"),
+                VarNominal.from(100, row -> "s" + (row % 4)).name("strata")
+        );
+        double[] p = new double[] {0.8, 0.2};
+        Frame[] parts = SamplingTools.randomSampleStratifiedSplit(random, df, "strata", p);
+        assertEquals(80, parts[0].rowCount());
+        assertEquals(20, parts[1].rowCount());
+        for (String level : df.rvar("strata").levels()) {
+            assertEquals(20, parts[0].rvar("strata").stream().filter(s -> s.getLabel().equals(level)).count(), level);
+            assertEquals(5, parts[1].rvar("strata").stream().filter(s -> s.getLabel().equals(level)).count(), level);
+        }
+        // every row exactly once
+        assertEquals(100, parts[0].rowCount() + parts[1].rowCount());
+        double sum = parts[0].rvar("x").darray_().sum() + parts[1].rvar("x").darray_().sum();
+        assertEquals(df.rvar("x").darray_().sum(), sum, 1e-9);
+    }
+
+    /**
+     * Frequencies passed by the caller must not be normalised in place.
+     */
+    @Test
+    void frequenciesAreNotMutated() {
+        double[] freq = new double[] {3, 1};
+        Frame df = SolidFrame.byVars(VarDouble.from(40, row -> (double) row).name("x"), VarNominal.from(40, row -> "s" + (row % 2)).name("strata"));
+        SamplingTools.randomSampleSlices(random, df, freq);
+        SamplingTools.randomSampleStratifiedSplit(random, df, "strata", freq);
+        SamplingTools.sampleWeightedWR(random, 10, freq);
+        SamplingTools.sampleWeightedWOR(random, 1, freq);
+        assertEquals(3.0, freq[0]);
+        assertEquals(1.0, freq[1]);
+    }
+
+    /**
+     * Regression: without explicit weights the train/test split handed out the row indices as weights.
+     */
+    @Test
+    void trainTestSplitDefaultWeightsAreOne() {
+        Frame df = SolidFrame.byVars(VarDouble.from(10, row -> (double) row).name("x"));
+        SamplingTools.TrainTestSplit tts = SamplingTools.trainTestSplit(random, df, 0.7);
+        assertEquals(7, tts.trainDf().rowCount());
+        assertEquals(3, tts.testDf().rowCount());
+        assertEquals(7, tts.trainW().size());
+        assertEquals(3, tts.testW().size());
+        for (int i = 0; i < tts.trainW().size(); i++) {
+            assertEquals(1.0, tts.trainW().getDouble(i));
+        }
+        for (int i = 0; i < tts.testW().size(); i++) {
+            assertEquals(1.0, tts.testW().getDouble(i));
         }
     }
 }

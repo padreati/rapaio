@@ -30,7 +30,10 @@ import rapaio.data.VarDouble;
  */
 public record Split(int round, int fold, Frame trainDf, Var trainWeights, Frame testDf, Var testWeights) {
 
+    /**
+     * Split with unit weights for both train and test rows.
+     */
     public Split(int round, int fold, Frame trainDf, Frame testDf) {
-        this(round, fold, trainDf, VarDouble.fill(trainDf.rowCount()), testDf, VarDouble.fill(testDf.rowCount(), 1));
+        this(round, fold, trainDf, VarDouble.fill(trainDf.rowCount(), 1), testDf, VarDouble.fill(testDf.rowCount(), 1));
     }
 }

@@ -48,7 +48,7 @@ public class ROCCurveTest extends AbstractArtistTest {
     @Test
     void testRocCurve() throws IOException {
 
-        ROC roc = ROC.from(df.rvar(0), df.rvar("class"), 2);
+        ROC roc = ROC.from(df.rvar(0), df.rvar("class"), 1);
         Figure fig = rocCurve(roc);
         assertTest(fig, "roc-test");
     }

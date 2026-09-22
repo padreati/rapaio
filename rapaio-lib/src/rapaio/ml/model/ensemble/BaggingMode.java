@@ -43,7 +43,7 @@ public enum BaggingMode implements Serializable {
             predictions.stream().map(ClassifierResult::firstClasses).forEach(d -> {
                 for (int i = 0; i < d.size(); i++) {
                     int best = d.getInt(i);
-                    densities.setDouble(i, best, densities.getDouble(i, best));
+                    densities.setDouble(i, best, densities.getDouble(i, best) + 1);
                 }
             });
             for (int i = 0; i < classes.size(); i++) {

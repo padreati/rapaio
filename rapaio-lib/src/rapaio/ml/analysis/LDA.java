@@ -201,8 +201,7 @@ public class LDA extends ParamSet<LDA> implements Printable {
                 if (!var.type().equals(VarType.NOMINAL)) {
                     throw new IllegalArgumentException("target var must be nominal");
                 }
-                List<String> varLevels = var.levels();
-                targetLevels = var.levels().subList(1, varLevels.size());
+                targetLevels = var.levels();
                 return;
             }
             if (!allowedTypes.contains(var.type())) {

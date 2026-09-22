@@ -112,7 +112,7 @@ public final class RegressionEvaluationResult implements Printable {
             testScores.setInt(lastRow, FIELD_FOLD, split.fold());
             for (RegressionMetric metric : eval.metrics.get()) {
                 testScores.setDouble(lastRow, metric.getName(),
-                        metric.compute(split.trainDf().rvar(eval.targetName.get()), trainResult).value());
+                        metric.compute(split.testDf().rvar(eval.targetName.get()), testResult).value());
             }
 
             testScores = testScores.fapply(RefSort.by(
@@ -132,13 +132,23 @@ public final class RegressionEvaluationResult implements Printable {
         StringBuilder sb = new StringBuilder();
         sb.append("CV score\n");
         sb.append("=============\n");
+        Var datasetVar = VarNominal.empty().name("dataset");
         Var metricVar = VarNominal.empty().name("metric");
         Var meanVar = VarDouble.empty().name("mean");
         Var stdVar = VarDouble.empty().name("std");
-        Frame global = SolidFrame.byVars(metricVar, meanVar, stdVar);
+        Frame global = SolidFrame.byVars(datasetVar, metricVar, meanVar, stdVar);
 
+        // cross-validation scores are the ones measured on the held-out folds; train scores are listed for reference
         for (RegressionMetric metric : eval.metrics.get()) {
             global.addRows(1);
+            global.setLabel(global.rowCount() - 1, "dataset", "test");
+            global.setLabel(global.rowCount() - 1, "metric", metric.getName());
+            global.setDouble(global.rowCount() - 1, "mean", Mean.of(testScores.rvar(metric.getName())).value());
+            global.setDouble(global.rowCount() - 1, "std", Variance.of(testScores.rvar(metric.getName())).sdValue());
+        }
+        for (RegressionMetric metric : eval.metrics.get()) {
+            global.addRows(1);
+            global.setLabel(global.rowCount() - 1, "dataset", "train");
             global.setLabel(global.rowCount() - 1, "metric", metric.getName());
             global.setDouble(global.rowCount() - 1, "mean", Mean.of(trainScores.rvar(metric.getName())).value());
             global.setDouble(global.rowCount() - 1, "std", Variance.of(trainScores.rvar(metric.getName())).sdValue());
@@ -160,19 +170,22 @@ public final class RegressionEvaluationResult implements Printable {
         sb.append("Model:\n");
         sb.append(eval.model.get().fullName()).append("\n");
 
-        sb.append("Raw scores:\n");
-        sb.append("===========\n");
+        sb.append("Raw test scores:\n");
+        sb.append("================\n");
+        sb.append(testScores.toFullContent(printer, options));
+        sb.append("\n");
+        sb.append("Raw train scores:\n");
+        sb.append("=================\n");
         sb.append(trainScores.toFullContent(printer, options));
         sb.append("\n");
-
-        sb.append("Round scores:\n");
-        sb.append("=============\n");
+        sb.append("Round test scores:\n");
+        sb.append("==================\n");
         List<GroupFun> groupFuns = new ArrayList<>();
         for (RegressionMetric metric : eval.metrics.get()) {
             groupFuns.add(Group.mean(metric.getName()));
             groupFuns.add(Group.std(metric.getName()));
         }
-        sb.append(Group.from(trainScores, "round").aggregate(groupFuns.toArray(GroupFun[]::new))
+        sb.append(Group.from(testScores, "round").aggregate(groupFuns.toArray(GroupFun[]::new))
                 .toFrame()
                 .toFullContent(printer, options));
         sb.append("\n");

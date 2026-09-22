@@ -155,11 +155,13 @@ public class OneRuleTest {
         OneRule irisModel = OneRule.newModel();
         irisModel.fit(iris, "class");
 
+        // petal-width with cuts 0.8 / 1.75 is the best 3-bin rule on iris (6 errors, checked by brute force);
+        // the previously pinned petal-length rule with "1 error" was an artifact of reading labels from unsorted rows
         assertEquals("OneRule{}, fitted=true, rule set: RuleSet {" +
-                        "var=petal-length, acc=0.9933333333333333}, " +
-                        "NumericRule {minValue=-Infinity,maxValue=2.45,class=setosa,errors=0,total=50,accuracy=1}, " +
-                        "NumericRule {minValue=2.45,maxValue=4.85,class=versicolor,errors=0,total=49,accuracy=1}, " +
-                        "NumericRule {minValue=4.85,maxValue=Infinity,class=virginica,errors=1,total=51,accuracy=0.9803921568627451}",
+                        "var=petal-width, acc=0.96}, " +
+                        "NumericRule {minValue=-Infinity,maxValue=0.8,class=setosa,errors=0,total=50,accuracy=1}, " +
+                        "NumericRule {minValue=0.8,maxValue=1.75,class=versicolor,errors=5,total=54,accuracy=0.9074074074074074}, " +
+                        "NumericRule {minValue=1.75,maxValue=Infinity,class=virginica,errors=1,total=46,accuracy=0.9782608695652174}",
                 irisModel.toString());
 
         assertEquals("""
@@ -184,10 +186,10 @@ public class OneRuleTest {
                         target vars:
                         > class : NOMINAL [setosa,versicolor,virginica]
 
-                        BestRuleSet {var=petal-length, acc=0.9933333333333333}
-                        > NumericRule {minValue=-Infinity,maxValue=2.45,class=setosa,errors=0,total=50,accuracy=1}
-                        > NumericRule {minValue=2.45,maxValue=4.85,class=versicolor,errors=0,total=49,accuracy=1}
-                        > NumericRule {minValue=4.85,maxValue=Infinity,class=virginica,errors=1,total=51,accuracy=0.9803921568627451}
+                        BestRuleSet {var=petal-width, acc=0.96}
+                        > NumericRule {minValue=-Infinity,maxValue=0.8,class=setosa,errors=0,total=50,accuracy=1}
+                        > NumericRule {minValue=0.8,maxValue=1.75,class=versicolor,errors=5,total=54,accuracy=0.9074074074074074}
+                        > NumericRule {minValue=1.75,maxValue=Infinity,class=virginica,errors=1,total=46,accuracy=0.9782608695652174}
                         """,
                 irisModel.toSummary());
 

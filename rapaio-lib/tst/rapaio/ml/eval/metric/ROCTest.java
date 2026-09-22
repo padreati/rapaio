@@ -46,7 +46,7 @@ public class ROCTest {
         Var score = df.rvar(0);
         Var clazz = df.rvar("class");
 
-        ROC roc = ROC.from(score, clazz, 3);
+        ROC roc = ROC.from(score, clazz, 2);
         assertEquals("""
                         > ROC printSummary
 

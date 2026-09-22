@@ -119,7 +119,11 @@ public class ClassifierEvaluation extends ParamSet<ClassifierEvaluation> {
 
         splits.stream().collect(ParallelStreamCollector.streamingOrdered(split -> {
                     var m = model.get().newInstance();
-                    m.fit(split.trainDf(), targetName.get());
+                    if (split.trainWeights() == null) {
+                        m.fit(split.trainDf(), targetName.get());
+                    } else {
+                        m.fit(split.trainDf(), split.trainWeights(), targetName.get());
+                    }
                     var trainResult = m.predict(split.trainDf(), true, true);
                     var testResult = m.predict(split.testDf(), true, true);
                     return new Run(split, trainResult, testResult);

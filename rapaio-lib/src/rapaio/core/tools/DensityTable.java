@@ -281,15 +281,18 @@ public final class DensityTable<U, V> implements Printable, Serializable {
     }
 
     /**
-     * Computes the number of columns which have totals equal or greater than minWeight.
+     * Tells whether at least {@code minCounts} rows have a total weight (summed over all columns) of at least
+     * {@code minWeight}. Used by tree searches to reject splits that would create too small children.
      *
-     * @return number of columns which meet criteria
+     * @param minWeight minimum total weight of a row
+     * @param minCounts minimum number of rows which must reach that weight
+     * @return true if enough rows meet the criterion
      */
     public boolean hasColsWithMinimumCount(double minWeight, int minCounts) {
         int count = 0;
         for (int i = 0; i < rowIndex.size(); i++) {
             double total = 0;
-            for (int j = 1; j < colIndex.size(); j++) {
+            for (int j = 0; j < colIndex.size(); j++) {
                 total += values.getDouble(i, j);
             }
             if (total >= minWeight) {

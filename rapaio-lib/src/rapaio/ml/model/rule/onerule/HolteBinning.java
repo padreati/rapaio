@@ -80,7 +80,8 @@ public class HolteBinning implements OneRule.Binning {
                 int j = i;
                 DensityVector<String> delta = DensityVector.emptyByLabels(false, parent.firstTargetLevels());
                 while (j < len && df.getDouble(rows[j], testVarName) == df.getDouble(rows[i], testVarName)) {
-                    delta.increment(df.getLabel(j, parent.firstTargetName()), weights.getDouble(rows[i]));
+                    // rows are visited in sorted order, so every access must go through rows[j]
+                    delta.increment(df.getLabel(rows[j], parent.firstTargetName()), weights.getDouble(rows[j]));
                     j++;
                 }
 
@@ -128,9 +129,12 @@ public class HolteBinning implements OneRule.Binning {
 
         // now process missing values if there are such instances
         if (len < df.rowCount()) {
-            DensityVector<String> hist = DensityVector.emptyByLabels(true, parent.firstTargetLevels());
+            // the density is indexed by the target levels (no missing label); rows with a missing target are skipped
+            DensityVector<String> hist = DensityVector.emptyByLabels(false, parent.firstTargetLevels());
             for (int j = len; j < df.rowCount(); j++) {
-                hist.increment(df.getInt(rows[i], parent.firstTargetName()), weights.getDouble(rows[i]));
+                if (!df.isMissing(rows[j], parent.firstTargetName())) {
+                    hist.increment(df.getLabel(rows[j], parent.firstTargetName()), weights.getDouble(rows[j]));
+                }
             }
             set.getRules().add(new NumericRule(Double.NaN, Double.NaN, true, hist.getIndexValue(hist.findBestIndex()), hist));
         }

@@ -22,15 +22,24 @@
 package rapaio.ml.eval;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 import java.util.List;
 import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.ml.eval.metric.Accuracy;
 import rapaio.ml.eval.metric.ClassifierMetric;
@@ -80,5 +89,28 @@ public class ClassifierModelEvaluationTest {
         assertEquals(0, result.getTestScores().getDouble(1, "round"));
         assertEquals(1, result.getTestScores().getDouble(1, "fold"));
         assertEquals(0.75, result.getTestScores().getDouble(1, metric.getName()));
+    }
+
+    /**
+     * Instance weights configured on the evaluation must reach the model's fit method.
+     */
+    @Test
+    void trainWeightsArePassedToFit() {
+        Frame df = SolidFrame.byVars(VarNominal.copy("a", "a", "a", "b").name(targetName));
+        Var weights = VarDouble.copy(5.0, 6.0, 7.0, 8.0);
+        SplitStrategy strategy = (frame, w, __) -> List.of(new Split(0, 0, frame, w, frame, w));
+
+        ZeroRule model = spy(ZeroRule.newModel());
+        doReturn(model).when(model).newInstance();
+
+        ClassifierEvaluation.eval(df, targetName, model, Accuracy.newMetric(true))
+                .weights.set(weights)
+                .splitStrategy.set(strategy)
+                .threads.set(1)
+                .run();
+
+        ArgumentCaptor<Var> captor = ArgumentCaptor.forClass(Var.class);
+        verify(model).fit(any(Frame.class), captor.capture(), eq(targetName));
+        assertSame(weights, captor.getValue());
     }
 }

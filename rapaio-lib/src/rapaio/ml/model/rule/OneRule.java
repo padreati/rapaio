@@ -140,7 +140,7 @@ public class OneRule extends ClassifierModel<OneRule, ClassifierResult, RunInfo<
             if (withDensities) {
                 List<String> targetLevels = firstTargetLevels();
                 DensityVector<String> density = p.v2.copy().normalize();
-                for (int j = 1; j < targetLevels.size(); j++) {
+                for (int j = 0; j < targetLevels.size(); j++) {
                     pred.firstDensity().setDouble(i, j, density.get(targetLevels.get(j)));
                 }
             }

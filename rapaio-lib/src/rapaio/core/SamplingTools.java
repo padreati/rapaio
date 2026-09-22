@@ -27,13 +27,12 @@ import static java.lang.StrictMath.pow;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.PrimitiveIterator;
 import java.util.Random;
 
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
-import rapaio.data.VarInt;
+import rapaio.data.VarDouble;
 import rapaio.util.collection.Ints;
 
 /**
@@ -137,15 +136,15 @@ public final class SamplingTools {
      */
     public static int[] sampleWeightedWR(final Random random, final int sampleSize, final double[] freq) {
 
-        normalize(freq);
+        double[] p = normalized(freq);
 
-        double[] prob = Arrays.copyOf(freq, freq.length);
+        double[] prob = Arrays.copyOf(p, p.length);
         for (int i = 0; i < prob.length; i++) {
             prob[i] *= prob.length;
         }
-        int[] alias = new int[freq.length];
+        int[] alias = new int[p.length];
 
-        makeAliasWR(freq, prob, alias);
+        makeAliasWR(p, prob, alias);
 
         int[] sample = new int[sampleSize];
         for (int i = 0; i < sampleSize; i++) {
@@ -189,12 +188,12 @@ public final class SamplingTools {
             throw new IllegalArgumentException("Required sample size is bigger than population size.");
         }
 
-        normalize(freq);
+        double[] p = normalized(freq);
 
         int[] result = new int[sampleSize];
 
-        if (sampleSize == freq.length) {
-            for (int i = 0; i < freq.length; i++) {
+        if (sampleSize == p.length) {
+            for (int i = 0; i < p.length; i++) {
                 result[i] = i;
             }
             return result;
@@ -216,7 +215,7 @@ public final class SamplingTools {
         // fill heap base
         for (int i = 0; i < sampleSize; i++) {
             heap[i + len / 2] = i;
-            k[i] = pow(random.nextDouble(), 1. / freq[i]);
+            k[i] = pow(random.nextDouble(), 1. / p[i]);
             result[i] = i;
         }
 
@@ -239,27 +238,27 @@ public final class SamplingTools {
 
         // exhaust the source
         int pos = sampleSize;
-        while (pos < freq.length) {
+        while (pos < p.length) {
             double r = random.nextDouble();
             double xw = log(r) / log(k[heap[1]]);
 
             double acc = 0;
-            while (pos < freq.length) {
-                if (acc + freq[pos] < xw) {
-                    acc += freq[pos];
+            while (pos < p.length) {
+                if (acc + p[pos] < xw) {
+                    acc += p[pos];
                     pos++;
                     continue;
                 }
                 break;
             }
-            if (pos == freq.length) {
+            if (pos == p.length) {
                 break;
             }
 
             // min replaced with the new selected value
-            double tw = pow(k[heap[1]], freq[pos]);
+            double tw = pow(k[heap[1]], p[pos]);
             double r2 = random.nextDouble() * (1. - tw) + tw;
-            double ki = pow(r2, 1 / freq[pos]);
+            double ki = pow(r2, 1 / p[pos]);
 
             k[heap[1]] = ki;
             result[heap[1]] = pos++;
@@ -280,7 +279,10 @@ public final class SamplingTools {
         return result;
     }
 
-    private static void normalize(double[] freq) {
+    /**
+     * Returns a normalized copy of the given frequencies (they sum to one). The caller's array is not modified.
+     */
+    private static double[] normalized(double[] freq) {
         if (freq == null) {
             throw new IllegalArgumentException("Sampling probability array cannot be null.");
         }
@@ -294,11 +296,11 @@ public final class SamplingTools {
         if (total <= 0) {
             throw new IllegalArgumentException("Sum of frequencies must be strict positive.");
         }
-        if (total != 1.0) {
-            for (int i = 0; i < freq.length; i++) {
-                freq[i] /= total;
-            }
+        double[] result = Arrays.copyOf(freq, freq.length);
+        for (int i = 0; i < result.length; i++) {
+            result[i] /= total;
         }
+        return result;
     }
 
     /**
@@ -354,18 +356,18 @@ public final class SamplingTools {
     }
 
     public static Frame[] randomSampleSlices(final Random random, Frame frame, double... freq) {
-        normalize(freq);
+        double[] p = normalized(freq);
         int[] rows = new int[frame.rowCount()];
         for (int i = 0; i < rows.length; i++) {
             rows[i] = i;
         }
         Ints.shuffle(rows, random);
 
-        Frame[] result = new Frame[freq.length];
+        Frame[] result = new Frame[p.length];
         int start = 0;
-        for (int i = 0; i < freq.length; i++) {
-            int len = (int) (freq[i] * frame.rowCount());
-            if (i == freq.length - 1) {
+        for (int i = 0; i < p.length; i++) {
+            int len = (int) (p[i] * frame.rowCount());
+            if (i == p.length - 1) {
                 len = frame.rowCount() - start;
             }
             result[i] = frame.mapRows(Arrays.copyOfRange(rows, start, start + len));
@@ -384,31 +386,53 @@ public final class SamplingTools {
         return list;
     }
 
+    /**
+     * Splits the rows of a frame into {@code freq.length} mappings so that every stratum (level of the
+     * strata variable) is divided among the mappings in the requested proportions.
+     * <p>
+     * Within each stratum the rows are shuffled and then cut at the cumulative proportions, so mapping
+     * {@code i} receives approximately {@code freq[i]} of every stratum (rounding is handled by placing the
+     * cut points at the nearest row); a stratum with fewer rows than mappings contributes to the first mappings
+     * in proportion order. Rows with missing strata are ignored.
+     */
     private static Mapping[] getMappingsForStratifiedSplit(Random random, Frame df, String strataName, double[] freq) {
-        normalize(freq);
+        double[] p = normalized(freq);
+        double[] cumulative = new double[p.length];
+        double acc = 0;
+        for (int i = 0; i < p.length; i++) {
+            acc += p[i];
+            cumulative[i] = acc;
+        }
+        cumulative[p.length - 1] = 1.0;
+
+        Var strata = df.rvar(strataName);
         List<Mapping> groups = new ArrayList<>();
-        for (int i = 0; i < df.levels(strataName).size(); i++) {
+        for (int i = 0; i < strata.levels().size(); i++) {
             groups.add(Mapping.empty());
         }
-        df.rvar(strataName).stream().forEach(s -> groups.get(s.getInt()).add(s.row()));
-
-        Mapping[] maps = new Mapping[freq.length];
-        for (int i = 0; i < freq.length; i++) {
-            maps[i] = Mapping.empty();
-        }
-
-        int mapPos = 0;
-        for (Mapping group : groups) {
-            group.shuffle(random);
-            PrimitiveIterator.OfInt it = group.iterator();
-            while (it.hasNext()) {
-                maps[mapPos++].add(it.nextInt());
-                if (mapPos == freq.length) {
-                    mapPos = 0;
-                }
+        for (int row = 0; row < df.rowCount(); row++) {
+            if (!strata.isMissing(row)) {
+                groups.get(strata.getInt(row)).add(row);
             }
         }
-        for (int i = 0; i < freq.length; i++) {
+
+        Mapping[] maps = new Mapping[p.length];
+        for (int i = 0; i < p.length; i++) {
+            maps[i] = Mapping.empty();
+        }
+        for (Mapping group : groups) {
+            group.shuffle(random);
+            int size = group.size();
+            int start = 0;
+            for (int i = 0; i < p.length; i++) {
+                int end = (int) Math.round(cumulative[i] * size);
+                for (int j = start; j < end; j++) {
+                    maps[i].add(group.get(j));
+                }
+                start = end;
+            }
+        }
+        for (int i = 0; i < p.length; i++) {
             maps[i].shuffle(random);
         }
         return maps;
@@ -443,7 +467,7 @@ public final class SamplingTools {
         int testSize = df.rowCount() - trainSize;
 
         if (w == null) {
-            w = VarInt.seq(df.rowCount());
+            w = VarDouble.fill(df.rowCount(), 1);
         }
 
         if (strata == null) {

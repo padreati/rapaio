@@ -72,6 +72,25 @@ public class BaggingModeTest {
         // TODO: improve testing for class weights
         BaggingMode.HARD_VOTE.computeDensity(dictionary, null, results, classes, densities);
         assertEquals("a", classes.getLabel(0));
+        // two of three learners voted "a", one voted "c"
+        assertEquals(2.0 / 3, densities.getDouble(0, "a"), 1e-12);
+        assertEquals(0.0, densities.getDouble(0, "b"), 1e-12);
+        assertEquals(1.0 / 3, densities.getDouble(0, "c"), 1e-12);
+    }
+
+    /**
+     * Regression: votes were never counted, so hard voting always returned class index 0.
+     */
+    @Test
+    void votingMajorityIsNotFirstClass() {
+        results = new ArrayList<>();
+        results.add(buildResult(0.9, 0.1, 0));
+        results.add(buildResult(0, 0.1, 0.9));
+        results.add(buildResult(0.1, 0, 0.9));
+        BaggingMode.HARD_VOTE.computeDensity(dictionary, null, results, classes, densities);
+        assertEquals("c", classes.getLabel(0));
+        assertEquals(1.0 / 3, densities.getDouble(0, "a"), 1e-12);
+        assertEquals(2.0 / 3, densities.getDouble(0, "c"), 1e-12);
     }
 
     @Test

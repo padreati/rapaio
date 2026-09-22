@@ -85,10 +85,11 @@ public class ROC implements Printable, Serializable {
      *
      * @param score  scores variable
      * @param actual actual class
-     * @param index  index of the class considered 1, all other index values are 0
+     * @param index  0-based index into {@code actual.levels()} of the class considered positive; all other
+     *               classes (and missing values) are considered negative
      */
     public static ROC from(Var score, Var actual, int index) {
-        return from(score, actual, actual.levels(true).get(index));
+        return from(score, actual, actual.levels().get(index));
     }
 
     /**

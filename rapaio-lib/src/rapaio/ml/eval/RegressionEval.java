@@ -22,7 +22,6 @@
 package rapaio.ml.eval;
 
 import java.io.Serial;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -116,37 +115,25 @@ public class RegressionEval extends ParamSet<RegressionEval> {
 
         RegressionEvaluationResult result = new RegressionEvaluationResult(this);
 
-
-        ExecutorService pool = Executors.newFixedThreadPool(threads.get());
+        // threads may be configured as 0 or negative on small machines; always run with at least one
+        int th = Math.max(1, threads.get());
+        ExecutorService pool = Executors.newFixedThreadPool(th);
         try {
-            List<Future<Run>> futures = pool.invokeAll(tasks);
-
-            // collect results
-
-            while (!futures.isEmpty()) {
-                Iterator<Future<RegressionEval.Run>> iterator = futures.iterator();
-                while (iterator.hasNext()) {
-                    Future<RegressionEval.Run> future = iterator.next();
-                    if (future.isDone()) {
-                        try {
-                            var run = future.get();
-                            result.appendRun(run.split(), run.trainResult(), run.testResult());
-                            iterator.remove();
-                        } catch (InterruptedException | ExecutionException e) {
-                            // do nothing
-                            iterator.remove();
-                        }
-                    }
+            // invokeAll blocks until every task finished; a failing fold is reported instead of silently dropped
+            for (Future<Run> future : pool.invokeAll(tasks)) {
+                try {
+                    var run = future.get();
+                    result.appendRun(run.split(), run.trainResult(), run.testResult());
+                } catch (ExecutionException e) {
+                    throw new IllegalStateException("Evaluation fold failed: " + e.getCause().getMessage(), e.getCause());
                 }
             }
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Evaluation interrupted.", e);
         } finally {
             shutdownAndAwaitTermination(pool);
         }
-
-        shutdownAndAwaitTermination(pool);
-
         return result;
     }
 
@@ -169,7 +156,11 @@ public class RegressionEval extends ParamSet<RegressionEval> {
         @Override
         public Run call() {
             var m = model.newInstance();
-            m.fit(split.trainDf(), targetName);
+            if (split.trainWeights() == null) {
+                m.fit(split.trainDf(), targetName);
+            } else {
+                m.fit(split.trainDf(), split.trainWeights(), targetName);
+            }
             var trainResult = m.predict(split.trainDf());
             var testResult = m.predict(split.testDf());
             return new RegressionEval.Run(split, trainResult, testResult);

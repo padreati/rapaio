@@ -114,7 +114,8 @@ public class AdaBoost extends ClassifierModel<AdaBoost, ClassifierResult, RunInf
 
         Random random = getRandom();
         Var w = weights.darray().div_(weights.darray_().nanSum()).dv();
-        double k = firstTargetLevels().size() - 1;
+        // number of classes; levels() does not contain the missing label
+        double k = firstTargetLevels().size();
 
         learners.clear();
         alphas.clear();
@@ -146,10 +147,12 @@ public class AdaBoost extends ClassifierModel<AdaBoost, ClassifierResult, RunInf
             }
         }
         err /= w.darray_().nanSum();
-        double alpha = shrinkage.get() * (Math.log((1.0 - err) / err) + Math.log(k - 1.0));
         if (stopOnError.get() && err > (1.0 - 1.0 / k) + 1e-10) {
             return false;
         }
+        // a perfect learner (err == 0) gets a large finite weight; standard SAMME implementations clamp the same way
+        double clampedErr = Math.max(err, eps.get());
+        double alpha = shrinkage.get() * (Math.log((1.0 - clampedErr) / clampedErr) + Math.log(k - 1.0));
         learners.add(hh);
         alphas.add(alpha);
         if (err < eps.get()) {
@@ -181,17 +184,17 @@ public class AdaBoost extends ClassifierModel<AdaBoost, ClassifierResult, RunInf
         // simply predict
         for (int i = 0; i < fit.firstDensity().rowCount(); i++) {
 
-            double max = 0;
+            double max = Double.NEGATIVE_INFINITY;
             int best = 0;
             double total = 0;
-            for (int j = 1; j < fit.firstDensity().varCount(); j++) {
+            for (int j = 0; j < fit.firstDensity().varCount(); j++) {
                 total += fit.firstDensity().getDouble(i, j);
                 if (fit.firstDensity().getDouble(i, j) > max) {
                     best = j;
                     max = fit.firstDensity().getDouble(i, j);
                 }
             }
-            for (int j = 1; j < fit.firstDensity().varCount(); j++) {
+            for (int j = 0; j < fit.firstDensity().varCount(); j++) {
                 fit.firstDensity().setDouble(i, j, fit.firstDensity().getDouble(i, j) / total);
             }
             fit.firstClasses().setInt(i, best);
