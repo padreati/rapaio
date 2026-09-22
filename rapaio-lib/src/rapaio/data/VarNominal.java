@@ -247,11 +247,12 @@ public final class VarNominal extends AbstractVar {
 
     @Override
     public void removeRow(int index) {
+        checkRowIndex(index);
         int numMoved = rows - index - 1;
         if (numMoved > 0) {
             System.arraycopy(data, index + 1, data, index, numMoved);
-            rows--;
         }
+        rows--;
     }
 
     public void clearRows() {
@@ -283,6 +284,9 @@ public final class VarNominal extends AbstractVar {
 
     @Override
     public void setInt(int row, int value) {
+        if (value == VarInt.MISSING_VALUE) {
+            value = MISSING_INDEX;
+        }
         if (value > Short.MAX_VALUE - 1 || value < -1) {
             throw new IllegalArgumentException("Invalid value for nominal index.");
         }
@@ -291,7 +295,7 @@ public final class VarNominal extends AbstractVar {
 
     @Override
     public void addInt(int value) {
-        if (value == MISSING_INDEX) {
+        if (value == MISSING_INDEX || value == VarInt.MISSING_VALUE) {
             addLabel(MISSING_VALUE);
         } else {
             addLabel(dict.get(value));
@@ -300,32 +304,38 @@ public final class VarNominal extends AbstractVar {
 
     @Override
     public float getFloat(int row) {
+        if (isMissing(row)) {
+            return VarFloat.MISSING_VALUE;
+        }
         return data[row];
     }
 
     @Override
     public void setFloat(int row, float value) {
-        setInt(row, (int) Math.rint(value));
+        setInt(row, Float.isNaN(value) ? MISSING_INDEX : (int) Math.rint(value));
     }
 
     @Override
     public void addFloat(float value) {
-        addInt((int) Math.rint(value));
+        addInt(Float.isNaN(value) ? MISSING_INDEX : (int) Math.rint(value));
     }
 
     @Override
     public double getDouble(int row) {
+        if (isMissing(row)) {
+            return VarDouble.MISSING_VALUE;
+        }
         return data[row];
     }
 
     @Override
     public void setDouble(int row, double value) {
-        setInt(row, (int) Math.rint(value));
+        setInt(row, Double.isNaN(value) ? MISSING_INDEX : (int) Math.rint(value));
     }
 
     @Override
     public void addDouble(double value) {
-        addInt((int) Math.rint(value));
+        addInt(Double.isNaN(value) ? MISSING_INDEX : (int) Math.rint(value));
     }
 
     @Override

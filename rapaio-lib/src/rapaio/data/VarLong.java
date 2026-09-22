@@ -384,47 +384,56 @@ public class VarLong extends AbstractVar {
 
     @Override
     public int getInt(int row) {
-        return (int) getLong(row);
+        if (isMissing(row)) {
+            return VarInt.MISSING_VALUE;
+        }
+        return Math.toIntExact(getLong(row));
     }
 
     @Override
     public void setInt(int row, int value) {
-        setLong(row, value);
+        setLong(row, value == VarInt.MISSING_VALUE ? MISSING_VALUE : value);
     }
 
     @Override
     public void addInt(int value) {
-        addLong(value);
+        addLong(value == VarInt.MISSING_VALUE ? MISSING_VALUE : value);
     }
 
     @Override
     public float getFloat(int row) {
+        if (isMissing(row)) {
+            return VarFloat.MISSING_VALUE;
+        }
         return getLong(row);
     }
 
     @Override
     public void setFloat(int row, float value) {
-        setLong(row, (long) Math.rint(value));
+        setLong(row, Float.isNaN(value) ? MISSING_VALUE : (long) Math.rint(value));
     }
 
     @Override
     public void addFloat(float value) {
-        addLong((long) Math.rint(value));
+        addLong(Float.isNaN(value) ? MISSING_VALUE : (long) Math.rint(value));
     }
 
     @Override
     public double getDouble(int row) {
+        if (isMissing(row)) {
+            return VarDouble.MISSING_VALUE;
+        }
         return getLong(row);
     }
 
     @Override
     public void setDouble(int row, double value) {
-        setLong(row, (long) Math.rint(value));
+        setLong(row, Double.isNaN(value) ? MISSING_VALUE : (long) Math.rint(value));
     }
 
     @Override
     public void addDouble(double value) {
-        addLong((long) Math.rint(value));
+        addLong(Double.isNaN(value) ? MISSING_VALUE : (long) Math.rint(value));
     }
 
     @Override
@@ -511,12 +520,13 @@ public class VarLong extends AbstractVar {
     }
 
     @Override
-    public void removeRow(int row) {
-        int numMoved = rows - row - 1;
+    public void removeRow(int index) {
+        checkRowIndex(index);
+        int numMoved = rows - index - 1;
         if (numMoved > 0) {
-            System.arraycopy(data, row + 1, data, row, numMoved);
-            rows--;
+            System.arraycopy(data, index + 1, data, index, numMoved);
         }
+        rows--;
     }
 
     @Override

@@ -23,11 +23,13 @@ package rapaio.data.transform;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
+import rapaio.data.VarInt;
 import rapaio.data.VarNominal;
 
 public class VarApplyTest {
@@ -101,8 +103,9 @@ public class VarApplyTest {
 
     @Test
     void testApplyInt() {
+        // a missing row is seen by the function as VarInt.MISSING_VALUE; returning it keeps the row missing
         VarTransform vf = VarApply.onInt(x -> {
-            if (x == Integer.MIN_VALUE) return 0;
+            if (x == VarInt.MISSING_VALUE) return x;
             return (x > 0) ? (x * x) : (-x * x);
         });
 
@@ -110,9 +113,9 @@ public class VarApplyTest {
 
         Var y = x.copy().fapply(vf);
         assertEquals(0, y.getDouble(0), 1e-20);
-        assertEquals(0, y.getDouble(1), 1e-20);
+        assertTrue(y.isMissing(1));
         assertEquals(1, y.getDouble(2), 1e-20);
-        assertEquals(0, y.getDouble(3), 1e-20);
+        assertTrue(y.isMissing(3));
         assertEquals(-144, y.getDouble(4), 1e-20);
         assertEquals(9, y.getDouble(5), 1e-20);
     }

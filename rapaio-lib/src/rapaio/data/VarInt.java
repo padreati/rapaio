@@ -399,17 +399,20 @@ public final class VarInt extends AbstractVar implements Iterable<Integer> {
 
     @Override
     public long getLong(int row) {
+        if (isMissing(row)) {
+            return VarLong.MISSING_VALUE;
+        }
         return getInt(row);
     }
 
     @Override
     public void setLong(int row, long value) {
-        setInt(row, Integer.parseInt(String.valueOf(value)));
+        setInt(row, value == VarLong.MISSING_VALUE ? MISSING_VALUE : Math.toIntExact(value));
     }
 
     @Override
     public void addLong(long value) {
-        addInt(Integer.parseInt(String.valueOf(value)));
+        addInt(value == VarLong.MISSING_VALUE ? MISSING_VALUE : Math.toIntExact(value));
     }
 
     @Override
@@ -455,14 +458,12 @@ public final class VarInt extends AbstractVar implements Iterable<Integer> {
 
     @Override
     public void removeRow(int index) {
-        if (index > rows || index < 0) {
-            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + rows);
-        }
+        checkRowIndex(index);
         int numMoved = rows - index - 1;
         if (numMoved > 0) {
             System.arraycopy(data, index + 1, data, index, numMoved);
-            rows--;
         }
+        rows--;
     }
 
     @Override

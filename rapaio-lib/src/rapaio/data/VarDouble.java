@@ -429,11 +429,12 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
 
     @Override
     public void removeRow(int index) {
+        checkRowIndex(index);
         int numMoved = rows - index - 1;
         if (numMoved > 0) {
             System.arraycopy(data, index + 1, data, index, numMoved);
-            rows--;
         }
+        rows--;
     }
 
     @Override
@@ -493,18 +494,20 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
 
     @Override
     public int getInt(int row) {
+        if (isMissing(row)) {
+            return VarInt.MISSING_VALUE;
+        }
         return (int) Math.rint(data[row]);
     }
 
     @Override
     public void setInt(int row, int value) {
-        data[row] = value;
+        data[row] = value == VarInt.MISSING_VALUE ? MISSING_VALUE : value;
     }
 
     @Override
     public void addInt(int value) {
-        ensureCapacity(rows + 1);
-        data[rows++] = value;
+        addDouble(value == VarInt.MISSING_VALUE ? MISSING_VALUE : value);
     }
 
     @Override
@@ -534,17 +537,20 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
 
     @Override
     public long getLong(int row) {
+        if (isMissing(row)) {
+            return VarLong.MISSING_VALUE;
+        }
         return (long) Math.rint(data[row]);
     }
 
     @Override
     public void setLong(int row, long value) {
-        data[row] = Double.parseDouble(String.valueOf(value));
+        data[row] = value == VarLong.MISSING_VALUE ? MISSING_VALUE : (double) value;
     }
 
     @Override
     public void addLong(long value) {
-        addDouble(Double.parseDouble(String.valueOf(value)));
+        addDouble(value == VarLong.MISSING_VALUE ? MISSING_VALUE : (double) value);
     }
 
     @Override

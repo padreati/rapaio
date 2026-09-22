@@ -143,9 +143,13 @@ public class VarInstant extends AbstractVar {
 
     @Override
     public void removeRow(int row) {
-        if (rows - row > 0) {
-            System.arraycopy(data, row + 1, data, row, rows - row - 1);
+        checkRowIndex(row);
+        int numMoved = rows - row - 1;
+        if (numMoved > 0) {
+            System.arraycopy(data, row + 1, data, row, numMoved);
         }
+        rows--;
+        data[rows] = null;
     }
 
     @Override
@@ -156,50 +160,59 @@ public class VarInstant extends AbstractVar {
 
     @Override
     public float getFloat(int row) {
+        if (isMissing(row)) {
+            return VarFloat.MISSING_VALUE;
+        }
         return data[row].toEpochMilli();
     }
 
     @Override
     public void setFloat(int row, float value) {
-        data[row] = Instant.ofEpochMilli((long) value);
+        data[row] = Float.isNaN(value) ? MISSING_VALUE : Instant.ofEpochMilli((long) value);
     }
 
     @Override
     public void addFloat(float value) {
         ensureCapacity(rows + 1);
-        data[rows++] = Instant.ofEpochMilli((long) value);
+        data[rows++] = Float.isNaN(value) ? MISSING_VALUE : Instant.ofEpochMilli((long) value);
     }
 
     @Override
     public double getDouble(int row) {
+        if (isMissing(row)) {
+            return VarDouble.MISSING_VALUE;
+        }
         return data[row].toEpochMilli();
     }
 
     @Override
     public void setDouble(int row, double value) {
-        data[row] = Instant.ofEpochMilli((long) value);
+        data[row] = Double.isNaN(value) ? MISSING_VALUE : Instant.ofEpochMilli((long) value);
     }
 
     @Override
     public void addDouble(double value) {
         ensureCapacity(rows + 1);
-        data[rows++] = Instant.ofEpochMilli((long) value);
+        data[rows++] = Double.isNaN(value) ? MISSING_VALUE : Instant.ofEpochMilli((long) value);
     }
 
     @Override
     public int getInt(int row) {
-        return (int) data[row].toEpochMilli();
+        if (isMissing(row)) {
+            return VarInt.MISSING_VALUE;
+        }
+        return Math.toIntExact(data[row].toEpochMilli());
     }
 
     @Override
     public void setInt(int row, int value) {
-        data[row] = Instant.ofEpochMilli(value);
+        data[row] = value == VarInt.MISSING_VALUE ? MISSING_VALUE : Instant.ofEpochMilli(value);
     }
 
     @Override
     public void addInt(int value) {
         ensureCapacity(rows + 1);
-        data[rows++] = Instant.ofEpochMilli(value);
+        data[rows++] = value == VarInt.MISSING_VALUE ? MISSING_VALUE : Instant.ofEpochMilli(value);
     }
 
     @Override
@@ -247,7 +260,7 @@ public class VarInstant extends AbstractVar {
     @Override
     public void addLong(long value) {
         ensureCapacity(rows + 1);
-        data[rows++] = Instant.ofEpochMilli(value);
+        data[rows++] = value == VarLong.MISSING_VALUE ? MISSING_VALUE : Instant.ofEpochMilli(value);
     }
 
     @Override

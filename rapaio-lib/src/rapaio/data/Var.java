@@ -51,6 +51,23 @@ import rapaio.util.collection.Ints;
 /**
  * Random access list of observed values (observations) of a random variable (a vector with sample values).
  *
+ * <h2>Missing values</h2>
+ * Every variable type can hold missing observations, tested with {@link #isMissing(int)}. Each type stores them
+ * with its own sentinel ({@code NaN} for {@link VarDouble} and {@link VarFloat}, {@link VarInt#MISSING_VALUE},
+ * {@link VarLong#MISSING_VALUE}, index {@code -1} for {@link VarNominal}, {@code null} for {@link VarInstant},
+ * {@link VarString#MISSING_VALUE}), but the typed accessors follow one contract regardless of the storage type,
+ * for every type where the accessor is available at all:
+ * <ul>
+ *     <li>{@link #getDouble(int)} and {@link #getFloat(int)} return {@code NaN} on a missing row;</li>
+ *     <li>{@link #getInt(int)} returns {@link VarInt#MISSING_VALUE} on a missing row, except for
+ *     {@link VarNominal} whose integer view is the level index and returns {@code -1} (its int setters accept
+ *     both {@code -1} and {@link VarInt#MISSING_VALUE} as missing);</li>
+ *     <li>{@link #getLong(int)} returns {@link VarLong#MISSING_VALUE} on a missing row;</li>
+ *     <li>setting or adding {@code NaN} through the double or float accessors, {@link VarInt#MISSING_VALUE}
+ *     through the int accessors, or {@link VarLong#MISSING_VALUE} through the long accessors makes the row
+ *     missing instead of storing a coerced number.</li>
+ * </ul>
+ *
  * @author Aurelian Tutuianu
  */
 public interface Var extends Serializable, Printable {
@@ -572,6 +589,9 @@ public interface Var extends Serializable, Printable {
         for (int i = 0; i < size(); i++) {
             if (isMissing(i) != var.isMissing(i)) {
                 return false;
+            }
+            if (isMissing(i)) {
+                continue;
             }
             switch (type()) {
                 case DOUBLE -> {

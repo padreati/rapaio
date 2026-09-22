@@ -127,7 +127,9 @@ public class VarNominalTest {
         assertEquals(2, v.getDouble(0), 1e-10);
         assertEquals(1, v.getDouble(1), 1e-10);
         assertEquals(0, v.getDouble(2), 1e-10);
-        assertEquals(-1, v.getDouble(3), 1e-10);
+        // the numeric view of a missing nominal is missing, the index view is -1
+        assertTrue(Double.isNaN(v.getDouble(3)));
+        assertEquals(-1, v.getInt(3));
     }
 
     @Test

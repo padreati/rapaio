@@ -96,7 +96,7 @@ public class VarString extends AbstractVar {
     private VarString(int rows) {
         values = new ArrayList<>(rows);
         for (int i = 0; i < rows; i++) {
-            values.add(null);
+            values.add(MISSING_VALUE);
         }
     }
 
@@ -136,7 +136,7 @@ public class VarString extends AbstractVar {
     @Override
     public void addRows(int rowCount) {
         for (int i = 0; i < rowCount; i++) {
-            values.add(null);
+            values.add(MISSING_VALUE);
         }
     }
 
@@ -252,7 +252,8 @@ public class VarString extends AbstractVar {
 
     @Override
     public boolean isMissing(int row) {
-        return MISSING_VALUE.equals(values.get(row));
+        String value = values.get(row);
+        return value == null || MISSING_VALUE.equals(value);
     }
 
     @Override

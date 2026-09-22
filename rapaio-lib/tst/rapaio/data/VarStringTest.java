@@ -22,7 +22,6 @@
 package rapaio.data;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -67,7 +66,8 @@ public class VarStringTest {
         VarString empty2 = VarString.empty(10);
         assertEquals(10, empty2.size());
         for (int i = 0; i < 10; i++) {
-            assertNull(empty2.getLabel(i));
+            assertTrue(empty2.isMissing(i));
+            assertEquals(VarString.MISSING_VALUE, empty2.getLabel(i));
         }
 
         VarString empty3 = empty2.newInstance(empty2.size());
@@ -98,15 +98,16 @@ public class VarStringTest {
 
         assertEquals(6, text.size());
         for (int i = 0; i < 3; i++) {
-            assertNull(text.getLabel(3 + i));
+            assertTrue(text.isMissing(3 + i));
+            assertEquals(VarString.MISSING_VALUE, text.getLabel(3 + i));
         }
 
         text.removeRow(2);
         text.removeRow(2);
         assertEquals("Ana", text.getLabel(0));
         assertEquals("are", text.getLabel(1));
-        assertNull(text.getLabel(2));
-        assertNull(text.getLabel(3));
+        assertTrue(text.isMissing(2));
+        assertTrue(text.isMissing(3));
 
         text.clearRows();
         assertEquals(0, text.size());
@@ -182,7 +183,8 @@ public class VarStringTest {
     void testMissingOperations() {
         VarString x = VarString.empty(1);
         assertEquals(1, x.size());
-        assertNull(x.getLabel(0));
+        assertTrue(x.isMissing(0));
+        assertEquals(VarString.MISSING_VALUE, x.getLabel(0));
 
         x.setLabel(0, "l1");
         x.addLabel("l2");

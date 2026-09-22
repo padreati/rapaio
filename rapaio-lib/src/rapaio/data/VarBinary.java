@@ -230,6 +230,7 @@ public final class VarBinary extends AbstractVar {
 
     @Override
     public void removeRow(int row) {
+        checkRowIndex(row);
         for (int i = row + 1; i < rows; i++) {
             values.set(i - 1, values.get(i));
             missing.set(i - 1, missing.get(i));

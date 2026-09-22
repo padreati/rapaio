@@ -124,6 +124,18 @@ public abstract class AbstractVar implements Var {
 
     protected abstract String toStringClassName();
 
+    /**
+     * Validates a row index against the current size of the variable.
+     *
+     * @param row row index to validate
+     * @throws IndexOutOfBoundsException if {@code row} is negative or not smaller than {@link #size()}
+     */
+    protected final void checkRowIndex(int row) {
+        if (row < 0 || row >= size()) {
+            throw new IndexOutOfBoundsException("Index: " + row + ", Size: " + size());
+        }
+    }
+
     protected abstract int toStringDisplayValueCount();
 
     protected abstract void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POpt<?>[] options);

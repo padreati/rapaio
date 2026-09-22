@@ -163,7 +163,7 @@ public class VarBinaryTest {
         copy.clearRows();
         assertEquals(0, copy.size());
 
-        copy.removeRow(10);
+        assertThrows(IndexOutOfBoundsException.class, () -> copy.removeRow(10));
 
         VarBinary bin1 = VarBinary.fill(10, 1);
         bin1.addRows(10);
