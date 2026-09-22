@@ -46,7 +46,9 @@ public class Standardize1dNode extends Tensor {
             var dssSum = ds.mul(vs).sum1d(axis).stretch(axis);
 
             var t1 = ds.div(std.stretch(axis));
-            var t2 = dsSum.add(vs.mul(dssSum)).div(x.dim(axis)).div(std.stretch(axis));
+            // dx = (ds - mean(ds) - y * sum(ds * y) / (n - ddof)) / std, with y the standardized output
+            int n = x.dim(axis);
+            var t2 = dsSum.div(n).add(vs.mul(dssSum).div(n - ddof)).div(std.stretch(axis));
 
             return t1.sub_(t2);
         });

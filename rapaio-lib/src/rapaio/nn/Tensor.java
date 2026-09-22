@@ -202,12 +202,18 @@ public abstract class Tensor {
      * Adds the given value to the gradient. Since a tensor can be used in more than one computation,
      * its gradient can receive updates from more than one place. This method can be used to add values
      * to a gradient.
+     * <p>
+     * The tensor never keeps a reference to the given array. Backward functions routinely hand back the
+     * gradient of the node above (identity, reshape, a broadcast that did not need summing) or a view of it
+     * (stride 0 expansion after a reduction), so storing the array itself would make a later in-place
+     * accumulation into this gradient corrupt the gradient of the other node. The first contribution is
+     * copied into a dense array owned by this tensor; the following ones are added in place.
      *
      * @param grad added value to the current gradient
      */
     public final void addGrad(DArray<?> grad) {
         if (this.grad == null) {
-            this.grad = grad;
+            this.grad = grad.copy(Order.C);
         } else {
             this.grad.add_(grad);
         }

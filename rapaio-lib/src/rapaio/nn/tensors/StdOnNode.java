@@ -29,12 +29,14 @@ public class StdOnNode extends Tensor {
     public StdOnNode(Tensor x, Shape shape, int ddof, double epsilon, Tensor mean) {
         super(x.tm(), StdOnNode.class.getSimpleName());
 
-        double dof = x.size() - ddof;
+        // degrees of freedom of the reduced block, matching varOn(shape, ddof, ...)
+        double dof = shape.size() - ddof;
         var mu = mean != null ? mean : x.meanOn(shape);
         var centered = x.value().sub(mu.value());
         var std = x.value().varOn(shape, ddof, true, mu.value()).add_(epsilon).sqrt_();
         this.setValue(std);
-        backEdge(x, () -> this.grad().mul(centered.div(std).div_(shape.size())));
+        // d std / d x = (x - mu) / (std * dof); std keeps the reduced axes as size 1 and broadcasts over centered
+        backEdge(x, () -> this.grad().mul(centered.div(std).div_(dof)));
         backEdge(mu, () -> tm.zerosTensor(mu.shape()).value());
     }
 }

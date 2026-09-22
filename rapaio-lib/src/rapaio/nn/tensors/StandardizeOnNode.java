@@ -31,7 +31,7 @@ public class StandardizeOnNode extends Tensor {
     private final DArray<?> std;
 
     public StandardizeOnNode(Tensor x, Shape shape, int ddof, double epsilon) {
-        super(x.tm(), Standardize1dNode.class.getSimpleName());
+        super(x.tm(), StandardizeOnNode.class.getSimpleName());
 
         DArray<?> vx = x.value();
         mean = vx.meanOn(shape, true);
@@ -47,7 +47,9 @@ public class StandardizeOnNode extends Tensor {
             var dssSum = ds.mul(vs).sumOn(shape, true);
 
             var t1 = ds.div(std);
-            var t2 = dsSum.add(vs.mul(dssSum)).div(shape.size()).div(std);
+            // dx = (ds - mean(ds) - y * sum(ds * y) / (n - ddof)) / std, with y the standardized output
+            int n = shape.size();
+            var t2 = dsSum.div(n).add(vs.mul(dssSum).div(n - ddof)).div(std);
 
             return t1.sub_(t2);
         });

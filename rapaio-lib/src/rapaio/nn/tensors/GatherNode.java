@@ -31,7 +31,7 @@ public class GatherNode extends Tensor{
 
         this.setValue(x.value().gather(axis, index.value()));
 
-        DArray<?> zeros = tm.zerosArray(x.shape());
-        backEdge(x, () -> this.grad().scatter(axis, index.value(), zeros));
+        // a fresh destination per call: the returned array must not be shared between backward passes
+        backEdge(x, () -> this.grad().scatter(axis, index.value(), tm.zerosArray(x.shape())));
     }
 }

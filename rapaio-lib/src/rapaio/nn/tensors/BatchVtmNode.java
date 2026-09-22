@@ -30,10 +30,14 @@ public final class BatchVtmNode extends Tensor {
         super(bv.tm(), BatchVtmNode.class.getSimpleName());
 
         this.setValue(bv.value().reorder(Order.C).bvtm(bm.value().reorder(Order.F)));
+        // a rank 1 vector is a batch of one row: the output (and so the gradient) already has shape (1, n)
         backEdge(bv, () -> {
             var g = this.grad().bvtm(bm.value().t());
-            return (bv.rank() == 1) ? g.mean1d(0) : g;
+            return (bv.rank() == 1) ? g.reshape(bv.shape()) : g;
         });
-        backEdge(bm, () -> bv.value().t().reorder(Order.C).mm(this.grad().reorder(Order.F)));
+        backEdge(bm, () -> {
+            var v = bv.rank() == 1 ? bv.value().stretch(0) : bv.value();
+            return v.t().reorder(Order.C).mm(this.grad().reorder(Order.F));
+        });
     }
 }

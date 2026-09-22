@@ -23,8 +23,8 @@ package rapaio.nn.optimizer;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -52,7 +52,8 @@ public class SGD extends ParamSet<SGD> implements Optimizer {
     private final TensorManager tm;
     private final Collection<Tensor> params;
 
-    private final HashMap<Tensor, DArray<?>> mus = new HashMap<>();
+    // written concurrently by step(Tensor) tasks
+    private final ConcurrentHashMap<Tensor, DArray<?>> mus = new ConcurrentHashMap<>();
 
     public SGD(TensorManager tm, Collection<Tensor> params) {
         this.tm = tm;
@@ -87,7 +88,8 @@ public class SGD extends ParamSet<SGD> implements Optimizer {
         }
         if (momentum.get() != 0) {
             var mu = mus.get(tensor);
-            mu = (mu == null) ? gt : mu.mul(momentum.get()).add(gt.mul(1 - dampening.get()));
+            // the buffer must be owned by the optimizer: gt may be the parameter's own gradient array
+            mu = (mu == null) ? gt.copy() : mu.mul(momentum.get()).add(gt.mul(1 - dampening.get()));
             mus.put(tensor, mu);
 
             if (nesterov.get()) {

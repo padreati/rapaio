@@ -47,7 +47,8 @@ public class NegativeLogLikelihoodLoss extends AbstractLoss<NegativeLogLikelihoo
             y.setValue(y.value().stretch(1));
         }
         var sum = pred.log().neg().gather(1, y).sum();
-        Tensor last = reduce.get().equals(Reduce.MEAN) ? sum : sum.div(pred.value().size());
+        // MEAN averages over the samples (rows), as NegativeLikelihoodLoss does; the class dimension is gathered away
+        Tensor last = reduce.get().equals(Reduce.MEAN) ? sum.div(pred.dim(0)) : sum;
         last.setGrad(tm.scalarArray(1));
         return new Output(last, last.value().getDouble());
     }

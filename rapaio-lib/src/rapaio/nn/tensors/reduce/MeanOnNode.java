@@ -21,6 +21,7 @@
 
 package rapaio.nn.tensors.reduce;
 
+import rapaio.darray.DArray;
 import rapaio.darray.Shape;
 import rapaio.nn.Tensor;
 
@@ -29,6 +30,15 @@ public class MeanOnNode extends Tensor {
     public MeanOnNode(Tensor x, Shape shape) {
         super(x.tm(), MeanOnNode.class.getSimpleName());
         this.value = x.value().meanOn(shape, true);
-        backEdge(x, () -> this.grad().div(shape.size()));
+        backEdge(x, () -> {
+            // the gradient has the reduced axes kept as size 1 (keepDim); broadcast it back over them
+            DArray<?> g = this.grad().div(shape.size());
+            for (int axis = 0; axis < x.rank(); axis++) {
+                if (g.dim(axis) != x.dim(axis)) {
+                    g = g.expand(axis, x.dim(axis));
+                }
+            }
+            return g;
+        });
     }
 }

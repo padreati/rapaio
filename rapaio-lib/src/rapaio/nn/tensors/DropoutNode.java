@@ -48,6 +48,7 @@ public class DropoutNode extends Tensor {
         } else {
             this.setValue(child.value().mul(mask).div_(1 - p));
         }
-        backEdge(child, () -> this.grad().mul(mask));
+        // the forward scales kept units by 1/(1-p), so the backward must scale their gradient the same way
+        backEdge(child, () -> this.grad().mul(mask).div_(1 - p));
     }
 }
