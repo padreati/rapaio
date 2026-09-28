@@ -37,6 +37,16 @@ import rapaio.util.collection.Ints;
 
 /**
  * Sampling utilities.
+ * <p>
+ * Every sampler comes in two flavours: one which takes a {@link Random} as its first argument, and one
+ * without it which draws from a fresh {@code new Random()}. Only the former is reproducible. The remaining
+ * arguments describe the population, either as a size ({@code populationSize}) for the uniform samplers or as
+ * an array of non-negative frequencies ({@code freq}) for the weighted ones, which carries the population size
+ * in its length; in both cases the returned array holds {@code sampleSize} indexes into that population.
+ * <p>
+ * Frequencies do not need to sum to one: they are normalized internally, and the caller's array is never
+ * modified. A frequency array must be non-empty, free of negative and non-finite values, and have a strictly
+ * positive sum.
  */
 public final class SamplingTools {
 
@@ -55,13 +65,26 @@ public final class SamplingTools {
     /**
      * Discrete sampling with repetition. Nothing special, just using the uniform discrete sampler offered by the system.
      * For a deterministic sampling use random parameter with a given seed.
+     *
+     * @param populationSize population size, must be strictly positive
+     * @param sampleSize     sample size, must not be negative
      */
     public static int[] sampleWR(final Random random, final int populationSize, int sampleSize) {
+        if (populationSize <= 0) {
+            throw new IllegalArgumentException("Population size must be strict positive, not " + populationSize + ".");
+        }
+        checkSampleSize(sampleSize);
         int[] sample = new int[sampleSize];
         for (int i = 0; i < sampleSize; i++) {
             sample[i] = random.nextInt(populationSize);
         }
         return sample;
+    }
+
+    private static void checkSampleSize(int sampleSize) {
+        if (sampleSize < 0) {
+            throw new IllegalArgumentException("Sample size must not be negative, not " + sampleSize + ".");
+        }
     }
 
     /**
@@ -87,6 +110,7 @@ public final class SamplingTools {
      * @return sampling indexes
      */
     public static int[] sampleWOR(final Random random, final int populationSize, final int sampleSize) {
+        checkSampleSize(sampleSize);
         if (sampleSize > populationSize) {
             throw new IllegalArgumentException("Can't draw a sample without replacement bigger than population size.");
         }
@@ -136,6 +160,7 @@ public final class SamplingTools {
      */
     public static int[] sampleWeightedWR(final Random random, final int sampleSize, final double[] freq) {
 
+        checkSampleSize(sampleSize);
         double[] p = normalized(freq);
 
         double[] prob = Arrays.copyOf(p, p.length);
@@ -176,28 +201,81 @@ public final class SamplingTools {
      * <p>
      * Weighted random sampling without replacement.
      * Implements Efraimidis-Spirakis method.
+     * <p>
+     * An index with zero frequency is never drawn while an index with a positive frequency is still available.
+     * If the requested sample size exceeds the number of positive frequencies, all of those are included and the
+     * remaining places are filled uniformly at random from among the zero-frequency indexes.
      *
-     * @param sampleSize number of samples
+     * @param sampleSize number of samples, in {@code [0, freq.length]}
      * @param freq       var of probabilities
      * @return sampling indexes
      * @see "http://link.springer.com/content/pdf/10.1007/978-0-387-30162-4_478.pdf"
      */
     public static int[] sampleWeightedWOR(final Random random, final int sampleSize, final double[] freq) {
         // validation
-        if (sampleSize > freq.length) {
+        checkSampleSize(sampleSize);
+        double[] p = normalized(freq);
+        if (sampleSize > p.length) {
             throw new IllegalArgumentException("Required sample size is bigger than population size.");
         }
 
-        double[] p = normalized(freq);
-
-        int[] result = new int[sampleSize];
-
+        if (sampleSize == 0) {
+            return new int[0];
+        }
         if (sampleSize == p.length) {
-            for (int i = 0; i < p.length; i++) {
-                result[i] = i;
+            return Ints.seq(0, sampleSize);
+        }
+
+        // separate the indexes which can be drawn from those with zero frequency, so that the search below
+        // only ever sees strictly positive weights (a zero weight would make its key pow(u, +Inf))
+        int[] positive = new int[p.length];
+        int[] zero = new int[p.length];
+        int positiveCount = 0;
+        int zeroCount = 0;
+        for (int i = 0; i < p.length; i++) {
+            if (p[i] > 0) {
+                positive[positiveCount++] = i;
+            } else {
+                zero[zeroCount++] = i;
+            }
+        }
+
+        if (zeroCount == 0) {
+            return efraimidisSpirakis(random, sampleSize, p);
+        }
+        if (sampleSize == positiveCount) {
+            return Arrays.copyOf(positive, positiveCount);
+        }
+        if (sampleSize < positiveCount) {
+            double[] positiveP = new double[positiveCount];
+            for (int i = 0; i < positiveCount; i++) {
+                positiveP[i] = p[positive[i]];
+            }
+            int[] local = efraimidisSpirakis(random, sampleSize, normalized(positiveP));
+            int[] result = new int[sampleSize];
+            for (int i = 0; i < sampleSize; i++) {
+                result[i] = positive[local[i]];
             }
             return result;
         }
+
+        // more places than indexes with positive frequency: keep all of them, fill the rest uniformly
+        int[] result = new int[sampleSize];
+        System.arraycopy(positive, 0, result, 0, positiveCount);
+        int[] fill = sampleWOR(random, zeroCount, sampleSize - positiveCount);
+        for (int i = 0; i < fill.length; i++) {
+            result[positiveCount + i] = zero[fill[i]];
+        }
+        return result;
+    }
+
+    /**
+     * Efraimidis-Spirakis weighted sampling without replacement, with the exponential jump optimization.
+     * Requires {@code 0 < sampleSize < p.length}, all {@code p[i] > 0} and {@code sum(p) == 1}.
+     */
+    private static int[] efraimidisSpirakis(final Random random, final int sampleSize, final double[] p) {
+
+        int[] result = new int[sampleSize];
 
         int len = 1;
         while (len <= sampleSize) {
@@ -281,6 +359,9 @@ public final class SamplingTools {
 
     /**
      * Returns a normalized copy of the given frequencies (they sum to one). The caller's array is not modified.
+     * <p>
+     * Frequencies must be non-negative and finite, and their sum strictly positive; individual zero frequencies
+     * are allowed and mean the corresponding index is never drawn.
      */
     private static double[] normalized(double[] freq) {
         if (freq == null) {
@@ -290,6 +371,9 @@ public final class SamplingTools {
         for (double p : freq) {
             if (p < 0) {
                 throw new IllegalArgumentException("Frequencies must be positive.");
+            }
+            if (!Double.isFinite(p)) {
+                throw new IllegalArgumentException("Frequencies must be finite numbers, not " + p + ".");
             }
             total += p;
         }
@@ -304,9 +388,13 @@ public final class SamplingTools {
     }
 
     /**
-     * Builds discrete random sampler without replacement
+     * Builds the Vose alias table for sampling with replacement. On return every column {@code c} either has
+     * {@code prob[c] >= 1} (it is always accepted, and {@code alias[c]} is never consulted) or has been paired
+     * with a column whose index is stored in {@code alias[c]}.
+     * <p>
+     * Package-private so that invariant can be asserted directly by the tests.
      */
-    private static void makeAliasWR(double[] p, double[] prob, int[] alias) {
+    static void makeAliasWR(double[] p, double[] prob, int[] alias) {
         if (p.length == 0) {
             throw new IllegalArgumentException("Probability var must be nonempty.");
         }
@@ -341,9 +429,8 @@ public final class SamplingTools {
             }
         }
 
-        while (smallPos > 0) {
-            prob[dq[smallPos - 1]] = 1.0;
-            smallPos--;
+        while (smallPos >= 0) {
+            prob[dq[smallPos--]] = 1.0;
         }
         while (largePos < dq.length) {
             prob[dq[largePos]] = 1.0;
@@ -351,27 +438,35 @@ public final class SamplingTools {
         }
     }
 
+    /**
+     * Splits the rows of a frame into {@code freq.length} random disjoint slices whose sizes follow the
+     * normalized frequencies. Cut points are placed at the rounded cumulative proportions, so every slice is
+     * within one row of its requested share and the rounding remainder is not accumulated into the last one.
+     */
     public static Frame[] randomSampleSlices(Frame frame, double... freq) {
         return randomSampleSlices(new Random(), frame, freq);
     }
 
+    /**
+     * Splits the rows of a frame into {@code freq.length} random disjoint slices whose sizes follow the
+     * normalized frequencies. Cut points are placed at the rounded cumulative proportions, so every slice is
+     * within one row of its requested share and the rounding remainder is not accumulated into the last one.
+     */
     public static Frame[] randomSampleSlices(final Random random, Frame frame, double... freq) {
         double[] p = normalized(freq);
-        int[] rows = new int[frame.rowCount()];
-        for (int i = 0; i < rows.length; i++) {
-            rows[i] = i;
-        }
+        int rowCount = frame.rowCount();
+        int[] rows = Ints.seq(0, rowCount);
         Ints.shuffle(rows, random);
 
         Frame[] result = new Frame[p.length];
+        double cumulative = 0;
         int start = 0;
         for (int i = 0; i < p.length; i++) {
-            int len = (int) (p[i] * frame.rowCount());
-            if (i == p.length - 1) {
-                len = frame.rowCount() - start;
-            }
-            result[i] = frame.mapRows(Arrays.copyOfRange(rows, start, start + len));
-            start += len;
+            cumulative += p[i];
+            // the last slice takes whatever is left, so that the slices always cover every row exactly once
+            int end = i == p.length - 1 ? rowCount : Math.clamp(Math.round(cumulative * rowCount), start, rowCount);
+            result[i] = frame.mapRows(Arrays.copyOfRange(rows, start, end));
+            start = end;
         }
         return result;
     }

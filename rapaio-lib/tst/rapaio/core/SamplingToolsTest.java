@@ -165,10 +165,13 @@ public class SamplingToolsTest {
         double[] freq = new double[] {0.127, 0.5, 0.333};
         Frame[] frames = SamplingTools.randomSampleSlices(random, df, freq);
 
-        // slices are sized from the normalised frequencies; the caller's array itself is left untouched
+        // cut points sit at the rounded cumulative proportions, so every slice is within one row of its
+        // requested share; the caller's array itself is left untouched
         double freqTotal = Doubles.sum(freq, 0, freq.length);
-        for (int i = 0; i < frames.length - 1; i++) {
-            assertEquals(((int) (df.rowCount() * freq[i] / freqTotal)), frames[i].rowCount());
+        for (int i = 0; i < frames.length; i++) {
+            double exact = df.rowCount() * freq[i] / freqTotal;
+            assertTrue(Math.abs(frames[i].rowCount() - exact) <= 1,
+                    "slice " + i + " has " + frames[i].rowCount() + " rows, requested " + exact);
         }
 
         int total = 0;
