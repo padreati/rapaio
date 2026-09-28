@@ -72,7 +72,8 @@ public class BinomialTest {
 
         assertEquals(0.13693063937629152, b.skewness(), TOL);
         assertEquals(0.0020833333333333233, b.kurtosis(), TOL);
-        assertEquals(4.1786127880975386, b.entropy(), TOL);
+        // large-n approximation in nats; exact value (scipy) is 2.8947822386221778
+        assertEquals(2.896393672721541, b.entropy(), TOL);
     }
 
     @Test

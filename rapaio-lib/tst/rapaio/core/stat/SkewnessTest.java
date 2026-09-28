@@ -38,10 +38,9 @@ public class SkewnessTest {
     void testDouble() {
         Skewness sk = Skewness.of(VarDouble.wrap(1, 2, 45, 109, 200));
 
-        // these values were computed in R from
-        // library(fBasics)
-        // skewness(c(1, 2, 45, 109, 200))
-        assertEquals(0.493673230307975, sk.value(), TOL);
+        // g1 = scipy.stats.skew(x) = R e1071::skewness(x, type = 1); value() is g1 since 2026-09-28
+        // b1 = R fBasics::skewness(c(1, 2, 45, 109, 200)) = e1071 type 3; G1 = scipy skew(x, bias=False)
+        assertEquals(0.6899293135253384, sk.value(), TOL);
         assertEquals(0.493673230307975, sk.b1(), TOL);
         assertEquals(0.6899293135253384, sk.g1(), TOL);
         assertEquals(1.0284858964749477, sk.bigG1(), TOL);

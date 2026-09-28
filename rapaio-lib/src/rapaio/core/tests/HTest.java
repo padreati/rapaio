@@ -21,6 +21,7 @@
 
 package rapaio.core.tests;
 
+import rapaio.core.distributions.Distribution;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
@@ -50,9 +51,38 @@ public interface HTest extends Printable {
 
     double pValue();
 
+    /**
+     * Upper end of the confidence interval for the estimated quantity at confidence
+     * level {@code 1 - sl}. For a {@link Alternative#LESS_THAN} alternative the interval
+     * is one-sided, {@code (-Inf, ciHigh]}; for {@link Alternative#GREATER_THAN} it is
+     * {@code [ciLow, +Inf)}, as in R's {@code t.test}. Tests without an interval return NaN.
+     */
     double ciHigh();
 
+    /**
+     * Lower end of the confidence interval, see {@link #ciHigh()}.
+     */
     double ciLow();
+
+    /**
+     * Confidence interval for a location estimate whose sampling distribution,
+     * centered at the estimate, is {@code sampling}. Returns {@code {ciLow, ciHigh}}:
+     * the central {@code 1 - sl} interval for a two tailed alternative, and the
+     * one-sided {@code 1 - sl} interval matching the direction of a one tailed
+     * alternative ({@code [q(sl), +Inf)} for greater, {@code (-Inf, q(1 - sl)]} for less).
+     *
+     * @param sampling sampling distribution of the estimator, located at the estimate
+     * @param sl       significance level
+     * @param alt      alternative hypothesis
+     * @return two element array {@code {ciLow, ciHigh}}
+     */
+    static double[] confidenceInterval(Distribution sampling, double sl, Alternative alt) {
+        return switch (alt) {
+            case GREATER_THAN -> new double[] {sampling.quantile(sl), Double.POSITIVE_INFINITY};
+            case LESS_THAN -> new double[] {Double.NEGATIVE_INFINITY, sampling.quantile(1 - sl)};
+            case TWO_TAILS -> new double[] {sampling.quantile(sl / 2), sampling.quantile(1 - sl / 2)};
+        };
+    }
 
     @Override
     default String toContent(Printer printer, POpt<?>... options) {

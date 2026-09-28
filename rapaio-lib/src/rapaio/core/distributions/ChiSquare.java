@@ -21,12 +21,12 @@
 
 package rapaio.core.distributions;
 
-import static java.lang.StrictMath.abs;
 import static java.lang.StrictMath.exp;
 import static java.lang.StrictMath.log;
 import static java.lang.StrictMath.max;
 import static java.lang.StrictMath.sqrt;
 
+import static rapaio.math.MathTools.digamma;
 import static rapaio.math.MathTools.incGamma;
 import static rapaio.math.MathTools.lnGamma;
 
@@ -79,6 +79,13 @@ public final class ChiSquare implements Distribution {
         if (x < 0.0) {
             return 0;
         }
+        if (x == 0.0) {
+            // limit of x^(df/2 - 1) at 0
+            if (df == 2) {
+                return 0.5;
+            }
+            return df < 2 ? Double.POSITIVE_INFINITY : 0;
+        }
         return exp((df / 2.0 - 1.0) * log(x / 2.0) - x / 2.0 - lnGamma(df / 2.0)) / 2.0;
     }
 
@@ -90,30 +97,24 @@ public final class ChiSquare implements Distribution {
         return incGamma(df / 2.0, x / 2.0);
     }
 
+    /**
+     * Quantile obtained by numerically inverting {@link #cdf(double)}; there is no
+     * closed form. The result is the smallest {@code x} with {@code cdf(x) >= p}
+     * at double resolution, so its accuracy is that of the regularized
+     * incomplete gamma function.
+     *
+     * @throws IllegalArgumentException if {@code p} is not in {@code [0, 1]}
+     */
     @Override
     public double quantile(double p) {
-
-        // implement binary search
-        double low = 0;
-        double high = 1;
-
-        while (cdf(high) < p) {
-            high *= 2;
+        QuantileSearch.checkProbability(p);
+        if (p == 0) {
+            return 0;
         }
-
-        while (true) {
-            double mid = (low + high) / 2.0;
-            double v = cdf(mid);
-            if (v < p) {
-                low = mid;
-            } else {
-                high = mid;
-            }
-            if (abs(p - v) < 1e-14) {
-                break;
-            }
+        if (p == 1) {
+            return Double.POSITIVE_INFINITY;
         }
-        return low;
+        return QuantileSearch.continuous(this::cdf, p);
     }
 
     @Override
@@ -151,9 +152,12 @@ public final class ChiSquare implements Distribution {
         return 12 / df;
     }
 
+    /**
+     * @return differential entropy in nats: {@code df/2 + log(2 Gamma(df/2)) + (1 - df/2) psi(df/2)}
+     */
     @Override
     public double entropy() {
-        throw new IllegalArgumentException("Not implemented");
+        return df / 2 + log(2) + lnGamma(df / 2) + (1 - df / 2) * digamma(df / 2);
     }
 
     @Override

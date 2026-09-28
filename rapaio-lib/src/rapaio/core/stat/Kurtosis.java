@@ -29,9 +29,22 @@ import rapaio.printer.Printer;
 import rapaio.printer.opt.POpt;
 
 /**
- * Computes sample kurtosis. Formulas for sample kurtosis are taken from wikipedia page
+ * Computes sample excess kurtosis. Formulas for sample kurtosis are taken from wikipedia page
  * <a href="https://en.wikipedia.org/wiki/Kurtosis#Sample_kurtosis">Sample_kurtosis</a>.
  * <p>
+ * Three estimators are computed, named as in
+ * <a href="https://www.rdocumentation.org/packages/e1071/versions/1.7-0/topics/kurtosis">R e1071 kurtosis</a>,
+ * with {@code m_k} the central moments {@code sum((x - mean)^k) / n}; all are <em>excess</em> kurtosis,
+ * 0 for a normal distribution:
+ * <ul>
+ * <li>{@link #g2()} {@code = m_4 / m_2^2 - 3}, the method of moments (plug-in) estimator of the
+ * distribution kurtosis (e1071 type 1, {@code scipy.stats.kurtosis} default, {@code OnlineStat.kurtosis()}).
+ * This is what {@link #value()} returns.</li>
+ * <li>{@link #bigG2()} {@code = ((n + 1) g2 + 6) (n - 1) / ((n - 2)(n - 3))}, unbiased under normality
+ * (e1071 type 2, {@code scipy.stats.kurtosis(bias=False)}, SAS, SPSS, Excel).</li>
+ * <li>{@link #b2()} {@code = (g2 + 3) (1 - 1/n)^2 - 3}, the fourth moment over the fourth power of the
+ * sample standard deviation (e1071 type 3, Minitab).</li>
+ * </ul>
  * <p>
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/10/18.
  */
@@ -43,7 +56,7 @@ public class Kurtosis implements Printable {
 
     private final double g2;
     private final double b2;
-    private final double G2;
+    private final double bigG2;
     private final int rows;
     private final int complete;
     private final String varName;
@@ -62,8 +75,9 @@ public class Kurtosis implements Printable {
             if (x.isMissing(i)) continue;
             n++;
             double diff = x.getDouble(i) - mean;
-            m2 += Math.pow(diff, 2);
-            m4 += Math.pow(diff, 4);
+            double diff2 = diff * diff;
+            m2 += diff2;
+            m4 += diff2 * diff2;
         }
         m2 /= n;
         m4 /= n;
@@ -71,28 +85,43 @@ public class Kurtosis implements Printable {
 
         g2 = m4 / (m2 * m2) - 3;
         b2 = (g2 + 3) * Math.pow(1 - 1 / n, 2) - 3;
-        G2 = ((n + 1) * g2 + 6) * (n - 1) / ((n - 2) * n - 3);
+        bigG2 = ((n + 1) * g2 + 6) * (n - 1) / ((n - 2) * (n - 3));
     }
 
+    /**
+     * Default excess kurtosis estimator, {@link #g2()}: the plug-in estimator of the distribution
+     * kurtosis, consistent with {@code OnlineStat.kurtosis()}.
+     */
     public double value() {
-        return b2;
+        return g2;
     }
 
+    /**
+     * Method of moments estimator {@code m_4 / m_2^2 - 3} (e1071 type 1).
+     */
     public double g2() {
         return g2;
     }
 
+    /**
+     * Fourth central moment over the fourth power of the sample standard deviation, minus 3,
+     * {@code (g2 + 3) (1 - 1/n)^2 - 3} (e1071 type 3).
+     */
     public double b2() {
         return b2;
     }
 
+    /**
+     * Sample excess kurtosis {@code ((n + 1) g2 + 6) (n - 1) / ((n - 2)(n - 3))},
+     * unbiased under normality (e1071 type 2).
+     */
     public double bigG2() {
-        return G2;
+        return bigG2;
     }
 
     @Override
     public String toString() {
-        return "kurtosis[" + varName + "] = g2:" + floatFlex(g2) + ", b2:" + floatFlex(b2) + ", G2:" + floatFlex(G2);
+        return "kurtosis[" + varName + "] = g2:" + floatFlex(g2) + ", b2:" + floatFlex(b2) + ", G2:" + floatFlex(bigG2);
     }
 
     @Override
@@ -101,7 +130,7 @@ public class Kurtosis implements Printable {
                 "total rows: " + rows + " (complete: " + complete + ", missing: " + (rows - complete) + ")\n" +
                 "kurtosis (g2): " + floatFlex(g2) + "\n" +
                 "kurtosis (b2): " + floatFlex(b2) + "\n" +
-                "kurtosis (G2): " + floatFlex(G2) + "\n";
+                "kurtosis (G2): " + floatFlex(bigG2) + "\n";
     }
 
     @Override

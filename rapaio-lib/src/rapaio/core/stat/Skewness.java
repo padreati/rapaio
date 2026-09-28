@@ -32,8 +32,18 @@ import rapaio.printer.opt.POpt;
  * Computes sample skewness. Formulas for sample skewness are taken from wikipedia page
  * <a href="https://en.wikipedia.org/wiki/Skewness#Sample_skewness">Sample_skewness</a>.
  * <p>
- * There are 3 types of computed sample skewness, according with:
- * <a href="https://www.rdocumentation.org/packages/e1071/versions/1.7-0/topics/skewness">R e1071 skewness</a>
+ * Three estimators are computed, named as in
+ * <a href="https://www.rdocumentation.org/packages/e1071/versions/1.7-0/topics/skewness">R e1071 skewness</a>,
+ * with {@code m_k} the central moments {@code sum((x - mean)^k) / n}:
+ * <ul>
+ * <li>{@link #g1()} {@code = m_3 / m_2^{3/2}}, the method of moments (plug-in) estimator of the
+ * distribution skewness (e1071 type 1, {@code scipy.stats.skew} default, {@code OnlineStat.skewness()}).
+ * This is what {@link #value()} returns.</li>
+ * <li>{@link #bigG1()} {@code = g1 * sqrt(n (n - 1)) / (n - 2)}, the adjusted Fisher-Pearson coefficient,
+ * unbiased under normality (e1071 type 2, {@code scipy.stats.skew(bias=False)}, SAS, SPSS, Excel).</li>
+ * <li>{@link #b1()} {@code = g1 * ((n - 1) / n)^{3/2}}, the third moment over the cube of the sample
+ * standard deviation (e1071 type 3, Minitab).</li>
+ * </ul>
  * <p>
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/10/18.
  */
@@ -64,8 +74,9 @@ public class Skewness implements Printable {
             if (x.isMissing(i)) continue;
             n++;
             double diff = x.getDouble(i) - mean;
-            m2 += Math.pow(diff, 2);
-            m3 += Math.pow(diff, 3);
+            double diff2 = diff * diff;
+            m2 += diff2;
+            m3 += diff2 * diff;
         }
         m2 /= n;
         m3 /= n;
@@ -76,18 +87,33 @@ public class Skewness implements Printable {
         b1 = g1 * Math.pow((n - 1) / n, 1.5);
     }
 
+    /**
+     * Default skewness estimator, {@link #g1()}: the plug-in estimator of the distribution skewness,
+     * consistent with {@code OnlineStat.skewness()}.
+     */
     public double value() {
-        return b1();
+        return g1;
     }
 
-    public double b1() {
-        return b1;
-    }
-
+    /**
+     * Method of moments estimator {@code m_3 / m_2^{3/2}} (e1071 type 1).
+     */
     public double g1() {
         return g1;
     }
 
+    /**
+     * Third central moment over the cube of the sample standard deviation,
+     * {@code g1 * ((n - 1) / n)^{3/2}} (e1071 type 3).
+     */
+    public double b1() {
+        return b1;
+    }
+
+    /**
+     * Adjusted Fisher-Pearson standardized moment coefficient
+     * {@code g1 * sqrt(n (n - 1)) / (n - 2)}, unbiased under normality (e1071 type 2).
+     */
     public double bigG1() {
         return bigG1;
     }

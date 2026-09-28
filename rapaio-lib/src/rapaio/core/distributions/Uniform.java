@@ -29,11 +29,22 @@ import static rapaio.printer.Format.floatFlex;
 import java.io.Serial;
 
 /**
- * Continuous uniform distribution
+ * Continuous uniform distribution on the closed interval {@code [a, b]}, with {@code a < b}.
+ * A degenerate interval ({@code a == b}) is rejected: it would be a point mass, for which
+ * {@code pdf} is not a density and {@code cdf(a)} is {@code 0/0}.
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public record Uniform(double a, double b) implements Distribution {
+
+    public Uniform {
+        if (!(Double.isFinite(a) && Double.isFinite(b))) {
+            throw new IllegalArgumentException("Interval bounds must be finite, not [" + a + "," + b + "]");
+        }
+        if (!(a < b)) {
+            throw new IllegalArgumentException("Lower bound a=" + a + " must be less than upper bound b=" + b);
+        }
+    }
 
     public static Uniform of(double a, double b) {
         return new Uniform(a, b);
@@ -57,9 +68,6 @@ public record Uniform(double a, double b) implements Distribution {
         if (x < a || x > b) {
             return 0;
         }
-        if (a == b) {
-            return 1;
-        }
         return 1 / (b - a);
     }
 
@@ -76,9 +84,7 @@ public record Uniform(double a, double b) implements Distribution {
 
     @Override
     public double quantile(double p) {
-        if (p < 0 || p > 1) {
-            throw new IllegalArgumentException("probability value should lie in [0,1] interval");
-        }
+        QuantileSearch.checkProbability(p);
         return a + p * (b - a);
     }
 

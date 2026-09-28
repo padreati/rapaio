@@ -56,13 +56,13 @@ public class DUniformTest {
     @Test
     void testLowQuantile() {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> DUniform.of(1, 6).quantile(-0.1));
-        assertEquals("Probability must be interface the range [0,1], not -0.1", ex.getMessage());
+        assertEquals("Probability value should lie in [0,1] interval, not -0.1", ex.getMessage());
     }
 
     @Test
     void testHighQuantile() {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> DUniform.of(1, 6).quantile(1.1));
-        assertEquals("Probability must be interface the range [0,1], not 1.1", ex.getMessage());
+        assertEquals("Probability value should lie in [0,1] interval, not 1.1", ex.getMessage());
     }
 
     @Test

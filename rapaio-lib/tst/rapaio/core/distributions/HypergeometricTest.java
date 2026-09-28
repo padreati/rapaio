@@ -58,14 +58,15 @@ public class HypergeometricTest {
         assertEquals(1, hg1.cdf(Double.POSITIVE_INFINITY), TOL);
         assertEquals(1, hg1.cdf(32), TOL);
 
-        assertEquals(0, hg1.minValue(), TOL);
+        // support of Hypergeometric(20, 20, 30) is [10, 20]; moments from scipy.stats.hypergeom(40, 20, 30)
+        assertEquals(10, hg1.minValue(), TOL);
         assertEquals(20, hg1.maxValue(), TOL);
         assertEquals(15, hg1.mean(), TOL);
         assertEquals(15, hg1.mode(), TOL);
         assertEquals(1.9230769230769231, hg1.var(), TOL);
-        assertEquals(0.018027756377319945, hg1.skewness(), TOL);
+        assertEquals(0, hg1.skewness(), TOL);
         assertEquals(-0.11891891891891893, hg1.kurtosis(), TOL);
-        assertEquals(Double.NaN, hg1.entropy(), TOL); // not implemented
+        assertEquals(1.745551479912629, hg1.entropy(), 1e-12);
     }
 
     @Test
@@ -93,10 +94,14 @@ public class HypergeometricTest {
     }
 
     @Test
-    void testInvalidValuePdf() {
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> hg1.pdf(Double.POSITIVE_INFINITY));
-        assertEquals("x should be an integer since the hypergeometric" +
-                " repartition is a discrete repartion.", ex.getMessage());
+    void testPdfOutsideSupport() {
+        assertEquals(0, hg1.pdf(Double.POSITIVE_INFINITY), TOL);
+        assertEquals(0, hg1.pdf(Double.NEGATIVE_INFINITY), TOL);
+        assertEquals(0, hg1.pdf(-1), TOL);
+        assertEquals(0, hg1.pdf(9), TOL);
+        assertEquals(0, hg1.pdf(21), TOL);
+        assertEquals(0, hg1.pdf(12.5), TOL);
+        assertTrue(Double.isNaN(hg1.pdf(Double.NaN)));
     }
 
     @Test

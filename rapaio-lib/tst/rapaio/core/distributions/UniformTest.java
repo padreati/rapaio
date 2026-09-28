@@ -50,7 +50,11 @@ public class UniformTest {
         assertEquals(-1.2, u.kurtosis(), TOL);
         assertEquals(2.302585092994046, u.entropy(), TOL);
 
-        assertEquals(1, Uniform.of(9, 9).pdf(9), TOL);
+        // a degenerate interval is a point mass, not a uniform distribution
+        assertThrows(IllegalArgumentException.class, () -> Uniform.of(9, 9));
+        assertThrows(IllegalArgumentException.class, () -> Uniform.of(10, 9));
+        assertThrows(IllegalArgumentException.class, () -> Uniform.of(0, Double.POSITIVE_INFINITY));
+        assertThrows(IllegalArgumentException.class, () -> Uniform.of(Double.NaN, 1));
     }
 
     @Test
@@ -92,12 +96,12 @@ public class UniformTest {
     @Test
     void testLowQuantile() {
         var ex = assertThrows(IllegalArgumentException.class, () -> Uniform.of(0, 10).quantile(-1));
-        assertEquals("probability value should lie in [0,1] interval", ex.getMessage());
+        assertEquals("Probability value should lie in [0,1] interval, not -1.0", ex.getMessage());
     }
 
     @Test
     void testHighQuantile() {
         var ex = assertThrows(IllegalArgumentException.class, () -> Uniform.of(0, 10).quantile(1.1));
-        assertEquals("probability value should lie in [0,1] interval", ex.getMessage());
+        assertEquals("Probability value should lie in [0,1] interval, not 1.1", ex.getMessage());
     }
 }

@@ -23,6 +23,8 @@ package rapaio.core.distributions;
 
 import static java.lang.StrictMath.abs;
 import static java.lang.StrictMath.floor;
+import static java.lang.StrictMath.log;
+import static java.lang.StrictMath.max;
 import static java.lang.StrictMath.min;
 import static java.lang.StrictMath.pow;
 import static java.lang.StrictMath.rint;
@@ -77,6 +79,9 @@ public class Hypergeometric implements Distribution {
         if (n + m < 1) {
             throw new IllegalArgumentException("m + n should be at least 1.");
         }
+        if (k < 0) {
+            throw new IllegalArgumentException("k parameter should not be negative.");
+        }
         if (k > m + n) {
             throw new IllegalArgumentException("Size of sample k should be at most m + n.");
         }
@@ -108,14 +113,16 @@ public class Hypergeometric implements Distribution {
      */
     @Override
     public double pdf(double x) {
+        if (Double.isNaN(x)) {
+            return Double.NaN;
+        }
         if (Double.isInfinite(x)) {
-            throw new IllegalArgumentException("x should be an integer since the hypergeometric" +
-                    " repartition is a discrete repartion.");
+            return 0.0;
         }
         int xx = (int) rint(x);
         if (abs(xx - x) > 1e-30)
             return 0.0;
-        if ((xx > m) || (xx > k) || (xx < k - n))
+        if ((xx < 0) || (xx > m) || (xx > k) || (xx < k - n))
             return 0.0;
         if (!Double.isNaN(pdfCache[xx])) {
             return pdfCache[xx];
@@ -214,15 +221,18 @@ public class Hypergeometric implements Distribution {
 
     @Override
     public double cdf(double x) {
-        if (Double.isInfinite(x)) {
-            return x > 0 ? 1.0 : 0.0;
+        if (Double.isNaN(x)) {
+            return Double.NaN;
         }
-        if (x > m) return 1.0;
-        if (x > k) return 1.0;
-        if (x > n) return 1.0;
-
+        if (x < minValue()) {
+            return 0.0;
+        }
+        if (x >= maxValue()) {
+            return 1.0;
+        }
         double cdf = 0;
-        for (int i = 0; i <= x; i++) {
+        int upper = (int) floor(x);
+        for (int i = (int) minValue(); i <= upper; i++) {
             cdf += pdf(i);
         }
         return cdf;
@@ -230,29 +240,39 @@ public class Hypergeometric implements Distribution {
 
     @Override
     public double quantile(double p) {
+        if (p < 0 || p > 1) {
+            throw new IllegalArgumentException("Probability value should lie in [0,1] interval");
+        }
+        int upper = (int) maxValue();
         double cdf = 0;
-        for (int i = 0; i <= m; ++i) {
+        for (int i = (int) minValue(); i < upper; ++i) {
             cdf += pdf(i);
-            if (cdf > p) {
+            if (cdf >= p) {
                 return i;
             }
         }
-        return m;
+        return upper;
     }
 
+    /**
+     * @return the smallest value with positive probability, {@code max(0, k - n)}
+     */
     @Override
     public double minValue() {
-        return 0;
+        return max(0, k - n);
     }
 
+    /**
+     * @return the largest value with positive probability, {@code min(m, k)}
+     */
     @Override
     public double maxValue() {
-        return m;
+        return min(m, k);
     }
 
     @Override
     public double mean() {
-        return (double) (m * k) / (m + n);
+        return (double) m * k / ((double) m + n);
     }
 
     @Override
@@ -261,18 +281,29 @@ public class Hypergeometric implements Distribution {
     }
 
     /*
-       According to http://mathworld.wolfram.com/HypergeometricDistribution.html
-       the variance of a random variable X ~ Hypergeometric(m, n, k) is
-       var(X) = ( n * m *  k * ( n + m - k ) ) / (( (n + m) ^ 2) * (n + m - 1))
+       With N = m + n, X ~ Hypergeometric(m, n, k) has
+       var(X) = k m n (N - k) / (N^2 (N - 1))
+       skewness(X) = (N - 2m) sqrt(N - 1) (N - 2k) / (sqrt(k m n (N - k)) (N - 2))
+       (https://en.wikipedia.org/wiki/Hypergeometric_distribution). All products are
+       evaluated in double to avoid int overflow for large urns.
      */
     @Override
     public double var() {
-        return (n * m * k * (n + m - k)) / (pow((n + m), 2) * (n + m - 1));
+        double N = (double) m + n;
+        if (N <= 1) {
+            return 0;
+        }
+        return (double) k * m * n * (N - k) / (N * N * (N - 1));
     }
 
     @Override
     public double skewness() {
-        return sqrt((double) (n + m - 1) / (n * m * k * (n + m - k)));
+        double N = (double) m + n;
+        double denom = sqrt((double) k * m * n * (N - k)) * (N - 2);
+        if (denom == 0) {
+            return Double.NaN;
+        }
+        return (N - 2 * m) * sqrt(N - 1) * (N - 2 * k) / denom;
     }
 
     /*
@@ -281,16 +312,26 @@ public class Hypergeometric implements Distribution {
      */
     @Override
     public double kurtosis() {
-        double total = m + n;
-        double firstTerm = k * m * n * (total - k) * (total - 2) * (total - 3);
-        double secondTerm = (total - 1) * Math.pow(total, 2) * (total * (total + 1)
-                - 6 * m * n - 6 * k * (total - k)) + 6 * k * m * n * (total - k)
+        double total = (double) m + n;
+        double firstTerm = (double) k * m * n * (total - k) * (total - 2) * (total - 3);
+        double secondTerm = (total - 1) * total * total * (total * (total + 1)
+                - 6.0 * m * n - 6.0 * k * (total - k)) + 6.0 * k * m * n * (total - k)
                 * (5 * total - 6);
         return secondTerm / firstTerm;
     }
 
+    /**
+     * @return Shannon entropy in nats, {@code -sum p(x) log p(x)} over the support
+     */
     @Override
     public double entropy() {
-        return Double.NaN;
+        double h = 0;
+        for (int x = (int) minValue(); x <= (int) maxValue(); x++) {
+            double p = pdf(x);
+            if (p > 0) {
+                h -= p * log(p);
+            }
+        }
+        return h;
     }
 }

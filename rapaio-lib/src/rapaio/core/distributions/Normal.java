@@ -54,6 +54,9 @@ public class Normal implements Distribution {
     private final double var;
 
     private Normal(double mu, double sd) {
+        if (sd < 0) {
+            throw new IllegalArgumentException("Standard deviation must not be negative, got: " + floatFlex(sd) + ".");
+        }
         this.mu = mu;
         this.sd = sd;
         this.var = sd * sd;
@@ -125,6 +128,6 @@ public class Normal implements Distribution {
 
     @Override
     public double entropy() {
-        return log(2 * PI * E * var);
+        return 0.5 * log(2 * PI * E * var);
     }
 }

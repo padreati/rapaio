@@ -79,14 +79,15 @@ public class ZTestTwoSamplesTest {
         ZTestTwoSamples z4 = ZTestTwoSamples.test(x, y, 2, 0.5, 0.5, 0.05, HTest.Alternative.GREATER_THAN);
         assertEquals(-1.051599374295714, z4.getZScore(), TOL);
         assertEquals(0.8535083025071536, z4.pValue(), TOL);
-        assertEquals(1.3003232007875778, z4.ciLow(), TOL);
-        assertEquals(2.211040435576059, z4.ciHigh(), TOL);
+        // one-sided intervals follow the alternative, as R's t.test does
+        assertEquals(1.3735328198877015, z4.ciLow(), TOL);
+        assertEquals(Double.POSITIVE_INFINITY, z4.ciHigh(), TOL);
 
 
         ZTestTwoSamples z5 = ZTestTwoSamples.test(x, y, 2, 0.5, 0.5, 0.05, HTest.Alternative.LESS_THAN);
         assertEquals(-1.051599374295714, z5.getZScore(), TOL);
         assertEquals(0.1464916974928464, z5.pValue(), TOL);
-        assertEquals(1.3003232007875778, z5.ciLow(), TOL);
-        assertEquals(2.211040435576059, z5.ciHigh(), TOL);
+        assertEquals(Double.NEGATIVE_INFINITY, z5.ciLow(), TOL);
+        assertEquals(2.1378308164759314, z5.ciHigh(), TOL);
     }
 }

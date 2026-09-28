@@ -123,8 +123,9 @@ public class TTestTwoPaired implements HTest {
             default -> pValue = st.cdf(-Math.abs(t)) * 2;
         }
 
-        ciLow = StudentT.of(df, sampleMean, sv).quantile(sl / 2);
-        ciHigh = StudentT.of(df, sampleMean, sv).quantile(1 - sl / 2);
+        double[] ci = HTest.confidenceInterval(StudentT.of(df, sampleMean, sv), sl, alt);
+        ciLow = ci[0];
+        ciHigh = ci[1];
     }
 
     public double getMu() {

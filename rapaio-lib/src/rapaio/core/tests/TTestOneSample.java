@@ -182,26 +182,16 @@ public class TTestOneSample implements HTest {
         t = (sampleMean - mu) * Math.sqrt(sampleSize) / sampleSd;
 
         StudentT dist = StudentT.of(sampleSize - 1);
-
-        var t = StudentT.of(sampleSize - 1, sampleMean, sampleSd / Math.sqrt(sampleSize));
-
         switch (alt) {
-            case GREATER_THAN -> {
-                pValue = 1 - dist.cdf(this.t);
-                ciLow = t.quantile(sl);
-                ciHigh = Double.POSITIVE_INFINITY;
-            }
-            case LESS_THAN -> {
-                pValue = dist.cdf(this.t);
-                ciLow = Double.NEGATIVE_INFINITY;
-                ciHigh = t.quantile(1 - sl);
-            }
-            default -> {
-                pValue = dist.cdf(-Math.abs(this.t)) * 2;
-                ciLow = t.quantile(sl / 2);
-                ciHigh = t.quantile(1 - sl / 2);
-            }
+            case GREATER_THAN -> pValue = 1 - dist.cdf(t);
+            case LESS_THAN -> pValue = dist.cdf(t);
+            default -> pValue = dist.cdf(-Math.abs(t)) * 2;
         }
+
+        double[] ci = HTest.confidenceInterval(
+                StudentT.of(sampleSize - 1, sampleMean, sampleSd / Math.sqrt(sampleSize)), sl, alt);
+        ciLow = ci[0];
+        ciHigh = ci[1];
     }
 
     @Override

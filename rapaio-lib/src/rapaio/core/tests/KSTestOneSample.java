@@ -62,7 +62,7 @@ public class KSTestOneSample implements HTest {
     }
 
     private KSTestOneSample(Var sample, Distribution cdf) {
-        this.v = VarSort.ascending().fapply(sample);
+        this.v = VarSort.ascending().fapply(sample.stream().complete().toMappedVar());
         this.cdf = cdf;
 
         D = 0;

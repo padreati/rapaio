@@ -94,7 +94,7 @@ public class BernoulliTest {
         assertEquals(1, b90.mode(), TOL);
 
         assertEquals(0.08999999999999998, b90.var(), TOL);
-        assertEquals(3.3333333333333335, b90.skewness(), TOL);
+        assertEquals(-2.6666666666666705, b90.skewness(), 1e-12);
         assertEquals(5.1111111111111125, b90.kurtosis(), TOL);
         assertEquals(0.3250829733914482, b90.entropy(), TOL);
 

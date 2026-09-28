@@ -62,9 +62,9 @@ public class ChiSqConditionalIndependence implements HTest {
     private final String[] zlevels;
     private final ChiSqIndependence[] ztests;
 
-    private static int degrees;
-    private static double statistic;
-    private static double pValue;
+    private final int degrees;
+    private final double statistic;
+    private final double pValue;
 
     private ChiSqConditionalIndependence(Var x, Var y, Var z) {
         this.x = x;
@@ -85,9 +85,11 @@ public class ChiSqConditionalIndependence implements HTest {
         }
 
         degrees = z.levels().size() * (x.levels().size() - 1) * (y.levels().size() - 1);
+        double sum = 0;
         for (ChiSqIndependence ztest : ztests) {
-            statistic += ztest.getChiValue();
+            sum += ztest.getChiValue();
         }
+        statistic = sum;
         pValue = 1.0 - ChiSquare.of(degrees).cdf(statistic);
     }
 

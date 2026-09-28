@@ -63,12 +63,18 @@ public interface Distribution extends Serializable {
 
     /**
      * Computes quantile for the given probability value.
-     * Quantile function is the inverse of the cdf, aka it
-     * returns the value for which the cdf evaluates to
-     * a given probability.
+     * Quantile function is the generalized inverse of the cdf:
+     * {@code quantile(p) = inf { x : cdf(x) >= p }}, which for a
+     * continuous distribution is the value where the cdf equals
+     * {@code p} and for a discrete one is the smallest support
+     * point whose cumulative probability reaches {@code p}.
+     * <p>
+     * {@code quantile(0)} is {@link #minValue()} and {@code quantile(1)}
+     * is {@link #maxValue()}, either of which may be infinite.
      *
-     * @param p given probability
+     * @param p given probability, in {@code [0, 1]}
      * @return quantile value
+     * @throws IllegalArgumentException if {@code p} is outside {@code [0, 1]} or NaN
      */
     double quantile(double p);
 
@@ -188,17 +194,19 @@ public interface Distribution extends Serializable {
     }
 
     /**
-     * @return skewness of the distribution
+     * @return skewness of the distribution; {@code NaN} when it is not defined
      */
     double skewness();
 
     /**
-     * @return kurtosis of the distribution
+     * @return <b>excess</b> kurtosis of the distribution (0 for the normal distribution);
+     * {@code NaN} when it is not defined and {@code +Infinity} when the fourth moment diverges
      */
     double kurtosis();
 
     /**
-     * @return entropy of the distribution
+     * @return entropy of the distribution in <b>nats</b> (natural logarithm): the Shannon entropy
+     * for discrete distributions and the differential entropy for continuous ones
      */
     double entropy();
 }

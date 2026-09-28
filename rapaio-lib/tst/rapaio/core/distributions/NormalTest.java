@@ -96,7 +96,7 @@ public class NormalTest {
         assertEquals(1, normal.var(), TOL);
         assertEquals(0, normal.skewness(), TOL);
         assertEquals(0, normal.kurtosis(), TOL);
-        assertEquals(2.8378770664093453, normal.entropy(), TOL);
+        assertEquals(1.4189385332046727, normal.entropy(), TOL);
 
         assertEquals(Double.NaN, Normal.std().cdf(Double.NaN), TOL);
         assertEquals(0, Normal.std().cdf(Double.NEGATIVE_INFINITY), TOL);

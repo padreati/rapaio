@@ -40,6 +40,19 @@ import rapaio.printer.opt.POpt;
  * Hypothesis test which assess if a given samples belongs to a normal distribution.
  * Andreson-Darling test is based on A^2 distance statistic.
  * <p>
+ * Two p-values are reported:
+ * <ul>
+ * <li>{@link #pValue()} treats the normal distribution as fully specified with the mean and
+ * standard deviation actually used (given, or estimated when not given). It is exact only when
+ * both parameters are given (Stephens' case 0).</li>
+ * <li>{@link #getPValueStar()} accounts for parameter estimation. When both mean and standard
+ * deviation are estimated (case 3) it uses the adjusted statistic
+ * {@code A*^2 = A^2 (1 + 0.75/n + 2.25/n^2)} and the p-value formula of D'Agostino and Stephens
+ * (1986), the same as R {@code nortest::ad.test}. When exactly one parameter is estimated
+ * (cases 1 and 2) only critical value tables exist and {@code NaN} is returned. When none is
+ * estimated it equals {@link #pValue()}.</li>
+ * </ul>
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/8/17.
  */
 public class ADTestGoodness implements HTest {
@@ -85,12 +98,12 @@ public class ADTestGoodness implements HTest {
             sigmaHat = sigma;
         } else {
             if (!Double.isNaN(mu)) {
-                // variance unknown, mean is known
+                // variance unknown, mean is known: maximum likelihood estimate around the known mean
                 sigmaHat = 0.0;
                 for (int i = 0; i < x.size(); i++) {
                     sigmaHat += Math.pow(x.getDouble(i) - mu, 2);
                 }
-                sigmaHat = Math.sqrt(sigmaHat);
+                sigmaHat = Math.sqrt(sigmaHat / x.size());
             } else {
                 // both variance and mean are unknown
                 sigmaHat = Variance.of(x).sdValue();
@@ -107,10 +120,44 @@ public class ADTestGoodness implements HTest {
             a2 += (2 * i - 1) * Math.log(phi) + (2 * (n - i) + 1) * Math.log(1 - phi);
         }
         a2 = -n - a2 / n;
-        a2star = (Double.isNaN(mu) && Double.isNaN(sigma)) ? a2 * (1.0 + 4.0 / n - 25.0 / (n * n)) : a2;
 
+        // p-value for the fully specified distribution (Stephens' case 0), Marsaglia & Marsaglia (2004)
         pValue = 1 - pvalue(a2, n);
-        pValueStar = 1 - pvalue(a2star, n);
+
+        boolean bothEstimated = Double.isNaN(mu) && Double.isNaN(sigma);
+        if (bothEstimated) {
+            // Stephens' case 3: mean and variance estimated from the sample; adjusted statistic and
+            // p-value from D'Agostino & Stephens (1986), Table 4.9 (as in R nortest::ad.test)
+            a2star = a2 * (1.0 + 0.75 / n + 2.25 / (n * n));
+            pValueStar = pvalueCase3(a2star);
+        } else if (Double.isNaN(mu) || Double.isNaN(sigma)) {
+            // Stephens' cases 1 and 2: only critical value tables exist, no p-value formula
+            a2star = a2;
+            pValueStar = Double.NaN;
+        } else {
+            a2star = a2;
+            pValueStar = pValue;
+        }
+    }
+
+    /**
+     * p-value of the adjusted statistic when both mean and variance are estimated
+     * (D'Agostino &amp; Stephens, Goodness-of-Fit Techniques, 1986, Table 4.9).
+     */
+    private static double pvalueCase3(double aa) {
+        if (aa < 0.2) {
+            return 1 - exp(-13.436 + 101.14 * aa - 223.73 * aa * aa);
+        }
+        if (aa < 0.34) {
+            return 1 - exp(-8.318 + 42.796 * aa - 59.938 * aa * aa);
+        }
+        if (aa < 0.6) {
+            return exp(0.9177 - 4.279 * aa - 1.38 * aa * aa);
+        }
+        if (aa < 10) {
+            return exp(1.2937 - 5.709 * aa + 0.0186 * aa * aa);
+        }
+        return 3.7e-24;
     }
 
     /**
@@ -144,6 +191,22 @@ public class ADTestGoodness implements HTest {
     @Override
     public double pValue() {
         return pValue;
+    }
+
+    /**
+     * @return the Anderson-Darling statistic {@code A^2} computed with the mean and standard
+     * deviation actually used
+     */
+    public double a2() {
+        return a2;
+    }
+
+    /**
+     * @return the statistic adjusted for parameter estimation, {@code A*^2}; equals {@link #a2()}
+     * unless both parameters were estimated
+     */
+    public double a2star() {
+        return a2star;
     }
 
     public double getPValueStar() {

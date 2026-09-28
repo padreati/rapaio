@@ -26,6 +26,7 @@ import static java.lang.StrictMath.exp;
 import static java.lang.StrictMath.log;
 import static java.lang.StrictMath.sqrt;
 
+import static rapaio.math.MathTools.digamma;
 import static rapaio.math.MathTools.incGamma;
 import static rapaio.math.MathTools.lnGamma;
 import static rapaio.printer.Format.floatFlex;
@@ -34,23 +35,22 @@ import java.io.Serial;
 import java.util.Random;
 
 /**
- * Gamma distribution;
- * <A HREF="http://wwwinfo.cern.ch/asdoc/shortwrupsdir/g106/top.html"\n > math definition</A>,
- * <A HREF="http://www.cern.ch/RD11/rkb/AN16pp/node96.html#SECTION000960000000000000000"\n > definition of gamma function</A>
- * and
- * <A HREF="http://www.statsoft.com/textbook/glosf.html#Gamma Distribution">animated definition</A>.
+ * Gamma distribution with shape {@code alpha} and <b>scale</b> {@code beta}:
+ * {@code p(x) = x^(alpha-1) e^(-x/beta) / (Gamma(alpha) beta^alpha)} for {@code x >= 0}.
  * <p>
- * <tt>p(x) = k * x^(alpha-1) * e^(-x/beta)</tt> with
- * <tt>k = 1/(g(alpha) * b^a))</tt> and <tt>g(a)</tt> being the gamma function.
+ * {@code beta} is a scale, not a rate, everywhere in this class ({@code pdf}, {@code cdf},
+ * sampling and the moments): {@code mean = alpha * beta}, {@code var = alpha * beta^2},
+ * as in R {@code dgamma(x, shape, scale)} or scipy {@code gamma(alpha, scale=beta)}.
+ * A distribution with rate {@code lambda} is {@code Gamma.of(alpha, 1 / lambda)}.
  * <p>
- * Valid parameter ranges: <tt>alpha &gt; 0</tt>.
+ * Valid parameter ranges: <tt>alpha &gt; 0</tt>, <tt>beta &gt; 0</tt>.
  * <p>
  * Note: For a Gamma distribution to have the mean <tt>mean</tt> and variance
  * <tt>variance</tt>, set the parameters as follows:
  * <p>
  * <pre>
  * alpha = mean * mean / variance;
- * lambda = 1 / (variance / mean);
+ * beta = variance / mean;
  * </pre>
  * <p>
  * <p>
@@ -114,7 +114,7 @@ public record Gamma(double alpha, double beta) implements Distribution {
      */
     public double pdf(double x) {
         if (x < 0) {
-            return Double.NaN;
+            return 0.0;
         }
         if (x == 0) {
             if (alpha == 1.0) {
@@ -141,46 +141,24 @@ public record Gamma(double alpha, double beta) implements Distribution {
         return incGamma(alpha, x / beta);
     }
 
+    /**
+     * Quantile obtained by numerically inverting {@link #cdf(double)}; there is no
+     * closed form. The result is the smallest {@code x} with {@code cdf(x) >= p}
+     * at double resolution, so its accuracy is that of the regularized
+     * incomplete gamma function.
+     *
+     * @throws IllegalArgumentException if {@code p} is not in {@code [0, 1]}
+     */
     @Override
     public double quantile(double p) {
+        QuantileSearch.checkProbability(p);
+        if (p == 0) {
+            return 0;
+        }
         if (p == 1) {
             return Double.POSITIVE_INFINITY;
         }
-
-        double cdf0 = cdf(0);
-        if (p <= cdf0) {
-            return 0;
-        }
-
-        // unbounded binary search
-        double low = 0;
-        double up = 1;
-
-        // double up until we found a bound
-        double cdf_up = cdf(up);
-        while (cdf_up <= p) {
-            up *= 2;
-            cdf_up = cdf(up);
-        }
-        while (true) {
-            double mid = (low + up) / 2;
-            double cdf_mid = cdf(mid);
-            double err = abs(up - low);
-            if (err <= 1e-20) {
-                return up;
-            }
-            if (cdf_mid < p) {
-                if (low >= mid) {
-                    return up;
-                }
-                low = mid;
-            } else {
-                if (up <= mid) {
-                    return up;
-                }
-                up = mid;
-            }
-        }
+        return QuantileSearch.continuous(this::cdf, p);
     }
 
     @Override
@@ -369,22 +347,22 @@ public record Gamma(double alpha, double beta) implements Distribution {
 
     @Override
     public double mean() {
-        return alpha / beta;
+        return alpha * beta;
     }
 
     @Override
     public double mode() {
-        return Double.NaN;
+        return alpha >= 1 ? (alpha - 1) * beta : 0;
     }
 
     @Override
     public double var() {
-        return alpha / (beta * beta);
+        return alpha * beta * beta;
     }
 
     @Override
     public double skewness() {
-        return 2 / sqrt(beta);
+        return 2 / sqrt(alpha);
     }
 
     @Override
@@ -394,6 +372,6 @@ public record Gamma(double alpha, double beta) implements Distribution {
 
     @Override
     public double entropy() {
-        throw new IllegalArgumentException("Not implemented");
+        return alpha + log(beta) + lnGamma(alpha) + (1 - alpha) * digamma(alpha);
     }
 }

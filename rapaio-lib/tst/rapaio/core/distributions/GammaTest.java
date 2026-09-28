@@ -82,9 +82,9 @@ public class GammaTest {
     }
 
     @Test
-    void testNotImplementedEntropy() {
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> Gamma.of(2, 3).entropy());
-        assertEquals("Not implemented", ex.getMessage());
+    void testEntropy() {
+        // scipy.stats.gamma(3, scale=2).entropy()
+        assertEquals(2.540725690922956, Gamma.of(3, 2).entropy(), 1e-12);
     }
 
     @Test
@@ -95,14 +95,16 @@ public class GammaTest {
         assertEquals("Gamma(alpha=0.5, beta=0.5)", g.name());
         assertEquals(0, g.minValue(), TOL);
         assertEquals(Double.POSITIVE_INFINITY, g.maxValue(), TOL);
-        assertEquals(Double.NaN, g.pdf(-1), TOL);
+        assertEquals(0, g.pdf(-1), TOL);
         assertEquals(0, g.cdf(-1), TOL);
-        assertEquals(Double.NaN, g.mode(), TOL);
+        assertEquals(0, g.mode(), TOL);
 
-        assertEquals(1.5, Gamma.of(3, 2).mean(), TOL);
-        assertEquals(sqrt(2), Gamma.of(3, 2).skewness(), TOL);
-        assertEquals(3 / 4., Gamma.of(3, 2).var(), TOL);
+        // beta is a scale: scipy.stats.gamma(3, scale=2)
+        assertEquals(6, Gamma.of(3, 2).mean(), TOL);
+        assertEquals(2 / sqrt(3), Gamma.of(3, 2).skewness(), TOL);
+        assertEquals(12, Gamma.of(3, 2).var(), TOL);
         assertEquals(2, Gamma.of(3, 2).kurtosis(), TOL);
+        assertEquals(4, Gamma.of(3, 2).mode(), TOL);
     }
 
     @Test

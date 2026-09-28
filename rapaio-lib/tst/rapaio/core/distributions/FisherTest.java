@@ -53,9 +53,9 @@ public class FisherTest {
         assertEquals(Double.NaN, Fisher.of(1, 2).var(), TOL);
         assertEquals(Double.NaN, Fisher.of(3, 3).skewness(), TOL);
 
-        // not implemented
         assertEquals(Double.NaN, Fisher.of(1, 2).kurtosis(), TOL);
-        assertEquals(Double.NaN, Fisher.of(1, 2).entropy(), TOL);
+        // scipy.stats.f(1, 2).entropy()
+        assertEquals(1.613705638880109, Fisher.of(1, 2).entropy(), 1e-12);
 
         assertEquals(0, Fisher.of(1, 2).cdf(-1), TOL);
         assertEquals(0, Fisher.of(1, 2).cdf(0), TOL);

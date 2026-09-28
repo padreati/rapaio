@@ -29,7 +29,9 @@ import static java.lang.StrictMath.sqrt;
 
 import static rapaio.math.MathTools.PI;
 import static rapaio.math.MathTools.betaIncReg;
+import static rapaio.math.MathTools.digamma;
 import static rapaio.math.MathTools.invBetaIncReg;
+import static rapaio.math.MathTools.lnBeta;
 import static rapaio.math.MathTools.lnGamma;
 
 import java.io.Serial;
@@ -61,7 +63,7 @@ public final class StudentT implements Distribution {
     private final double sigma;
 
     private StudentT(double df, double mu, double sigma) {
-        if (df < 1) {
+        if (!(df > 0)) {
             throw new IllegalArgumentException("degrees of freedom in student t distribution must have a value greater than 0.");
         }
         this.df = df;
@@ -148,7 +150,7 @@ public final class StudentT implements Distribution {
         if (df <= 1) {
             return Double.NaN;
         }
-        if (df == 2) {
+        if (df <= 2) {
             return Double.POSITIVE_INFINITY;
         }
         return df / (df - 2) * sigma * sigma;
@@ -165,9 +167,12 @@ public final class StudentT implements Distribution {
         return 6 / (df - 4);
     }
 
+    /**
+     * @return differential entropy in nats:
+     * {@code (df+1)/2 (psi((df+1)/2) - psi(df/2)) + log(sqrt(df) B(df/2, 1/2)) + log(sigma)}
+     */
     @Override
     public double entropy() {
-        // take a look at the wiki page - it's scary
-        throw new IllegalArgumentException("Not implemented.");
+        return (df + 1) / 2 * (digamma((df + 1) / 2) - digamma(df / 2)) + log(df) / 2 + lnBeta(df / 2, 0.5) + log(sigma);
     }
 }

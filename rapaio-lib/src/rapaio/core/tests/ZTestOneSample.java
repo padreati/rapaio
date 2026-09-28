@@ -188,8 +188,9 @@ public class ZTestOneSample implements HTest {
             default -> pValue = normal.cdf(-Math.abs(zScore)) * 2;
         }
 
-        ciLow = Normal.of(sampleMean, sd / Math.sqrt(sampleSize)).quantile(sl / 2);
-        ciHigh = Normal.of(sampleMean, sd / Math.sqrt(sampleSize)).quantile(1 - sl / 2);
+        double[] ci = HTest.confidenceInterval(Normal.of(sampleMean, sd / Math.sqrt(sampleSize)), sl, alt);
+        ciLow = ci[0];
+        ciHigh = ci[1];
     }
 
     @Override

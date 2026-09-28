@@ -66,16 +66,17 @@ public class ZTestTwoPairedTest {
         assertEquals(1.75, z3.getSampleMean(), TOL);
         assertEquals(-1.4142135623730951, z3.getZScore(), TOL);
         assertEquals(0.9213503964748574, z3.pValue(), TOL);
-        assertEquals(1.4035240439125807, z3.ciLow(), TOL);
-        assertEquals(2.0964759560874193, z3.ciHigh(), TOL);
+        // one-sided intervals follow the alternative, as R's t.test does
+        assertEquals(1.4592282115808315, z3.ciLow(), TOL);
+        assertEquals(Double.POSITIVE_INFINITY, z3.ciHigh(), TOL);
         assertEquals(0.05, z3.getSl(), TOL);
 
         ZTestTwoPaired z4 = ZTestTwoPaired.test(x, y, 2, 0.5, 0.05, HTest.Alternative.LESS_THAN);
         assertEquals(1.75, z4.getSampleMean(), TOL);
         assertEquals(-1.4142135623730951, z4.getZScore(), TOL);
         assertEquals(0.07864960352514261, z4.pValue(), TOL);
-        assertEquals(1.4035240439125807, z4.ciLow(), TOL);
-        assertEquals(2.0964759560874193, z4.ciHigh(), TOL);
+        assertEquals(Double.NEGATIVE_INFINITY, z4.ciLow(), TOL);
+        assertEquals(2.0407717884191685, z4.ciHigh(), TOL);
         assertEquals(0.05, z4.getSl(), TOL);
     }
 }

@@ -21,12 +21,13 @@
 
 package rapaio.core.distributions;
 
-import static java.lang.StrictMath.abs;
+import static java.lang.StrictMath.ceil;
 import static java.lang.StrictMath.floor;
 import static java.lang.StrictMath.log;
 import static java.lang.StrictMath.rint;
 
 import java.io.Serial;
+import java.util.Locale;
 
 /**
  * Discrete uniform distribution
@@ -41,31 +42,38 @@ public class DUniform implements Distribution {
 
     @Serial
     private static final long serialVersionUID = -6164593855805329051L;
-    private final double a;
-    private final double b;
+    private final int a;
+    private final int b;
+    /**
+     * Number of support points {@code b - a + 1}, kept as double since it can exceed {@code int}.
+     */
     private final double n;
 
     private DUniform(int a, int b) {
+        if (a > b) {
+            throw new IllegalArgumentException("Lower bound a=" + a + " must not exceed upper bound b=" + b);
+        }
         this.a = a;
         this.b = b;
-        this.n = b - a + 1;
+        this.n = (double) b - a + 1;
     }
 
+    @Override
     public boolean discrete() {
         return true;
     }
 
     public int a() {
-        return (int) a;
+        return a;
     }
 
     public int b() {
-        return (int) b;
+        return b;
     }
 
     @Override
     public String name() {
-        return String.format("DUniform(a=%d,b=%d)", (int) a, (int) b);
+        return String.format(Locale.ROOT, "DUniform(a=%d,b=%d)", a, b);
     }
 
     @Override
@@ -91,19 +99,19 @@ public class DUniform implements Distribution {
         return (floor(x) - a + 1) / n;
     }
 
+    /**
+     * Smallest support point {@code k} with {@code cdf(k) >= p}, that is
+     * {@code a + ceil(p * n) - 1} for {@code p > 0} and {@code a} for {@code p == 0}.
+     *
+     * @throws IllegalArgumentException if {@code p} is not in {@code [0, 1]}
+     */
     @Override
     public double quantile(double p) {
-        if (p < 0 || p > 1) {
-            throw new IllegalArgumentException("Probability must be interface the range [0,1], not " + p);
-        }
-        if (a == b) {
+        QuantileSearch.checkProbability(p);
+        if (p == 0) {
             return a;
         }
-        double v = a + p * n;
-        int vi = (int) v;
-        if (abs(v - floor(v)) < Double.MIN_VALUE)
-            return vi - 1;
-        return vi;
+        return a + ceil(p * n) - 1;
     }
 
     @Override
@@ -118,7 +126,7 @@ public class DUniform implements Distribution {
 
     @Override
     public double mean() {
-        return (a + b) / 2;
+        return ((double) a + b) / 2;
     }
 
     @Override

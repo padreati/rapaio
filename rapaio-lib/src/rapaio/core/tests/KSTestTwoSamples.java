@@ -51,8 +51,8 @@ public class KSTestTwoSamples implements HTest {
     }
 
     private KSTestTwoSamples(Var sample1, Var sample2) {
-        this.v1 = VarSort.ascending().fapply(sample1);
-        this.v2 = VarSort.ascending().fapply(sample2);
+        this.v1 = VarSort.ascending().fapply(sample1.stream().complete().toMappedVar());
+        this.v2 = VarSort.ascending().fapply(sample2.stream().complete().toMappedVar());
 
         D = 0;
         double fn1 = 0.0;
@@ -64,8 +64,8 @@ public class KSTestTwoSamples implements HTest {
         while (i1 < n1 && i2 < n2) {
             double d1 = v1.getDouble(i1);
             double d2 = v2.getDouble(i2);
-            if (d1 <= d2) fn1 = i1++ / n1;
-            if (d2 <= d1) fn2 = i2++ / n2;
+            if (d1 <= d2) fn1 = ++i1 / n1;
+            if (d2 <= d1) fn2 = ++i2 / n2;
             D = Math.max(D, Math.abs(fn1 - fn2));
         }
         double n = (n1 * n2) / (n1 + n2);

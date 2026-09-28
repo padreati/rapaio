@@ -65,7 +65,7 @@ public class OnlineStat {
     public final void clean() {
         n = 0;
         min = Double.POSITIVE_INFINITY;
-        max = 0;
+        max = Double.NEGATIVE_INFINITY;
         sum = 0;
         m1 = 0;
         m2 = 0;
@@ -163,6 +163,7 @@ public class OnlineStat {
                 4.0 * delta * (a.n * this.m3 - this.n * a.m3) / combined.n;
         combined.min = Math.min(this.min, a.min);
         combined.max = Math.max(this.max, a.max);
+        combined.sum = this.sum + a.sum;
 
         n = combined.n;
         m1 = combined.m1;
@@ -171,6 +172,7 @@ public class OnlineStat {
         m4 = combined.m4;
         min = combined.min;
         max = combined.max;
+        sum = combined.sum;
 
         return this;
     }

@@ -122,8 +122,8 @@ public class ChiSquareTest {
     }
 
     @Test
-    void testNotImplementedEntropy() {
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> ChiSquare.of(12).entropy());
-        assertEquals("Not implemented", ex.getMessage());
+    void testEntropy() {
+        // scipy.stats.chi2(12).entropy()
+        assertEquals(2.950050581182989, ChiSquare.of(12).entropy(), 1e-12);
     }
 }

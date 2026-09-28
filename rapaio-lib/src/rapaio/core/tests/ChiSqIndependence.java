@@ -111,7 +111,11 @@ public final class ChiSqIndependence implements HTest {
             for (int j = 0; j < observed.cols(); j++) {
                 double exp = rowTotals[i] * colTotals[j] / total;
                 expected.inc(i, j, exp);
-                sum += Math.pow(Math.abs(observed.get(i, j) - exp) - (yates ? 0.5 : 0.0), 2) / exp;
+                double diff = Math.abs(observed.get(i, j) - exp);
+                if (yates) {
+                    diff -= Math.min(0.5, diff);
+                }
+                sum += diff * diff / exp;
             }
         }
         chiValue = sum;

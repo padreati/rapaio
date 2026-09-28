@@ -38,21 +38,22 @@ public class KurtosisTest {
     void testDouble() {
         Kurtosis kt = Kurtosis.of(VarDouble.wrap(1, 2, 45, 109, 200));
 
-        // these values were computed in R from
-        // library(fBasics)
-        // kurtosis(c(1, 2, 45, 109, 200))
+        // g2 and b2 computed in R with fBasics::kurtosis(c(1, 2, 45, 109, 200), method = "moment" / "excess");
+        // G2 (sample excess kurtosis, unbiased under normality) from scipy.stats.kurtosis(x, bias=False),
+        // equal to R e1071::kurtosis(x, type = 2)
 
-        assertEquals(-1.7174503726358747, kt.value(), TOL);
+        // value() is g2 (scipy.stats.kurtosis default) since 2026-09-28
+        assertEquals(-0.9960162072435548, kt.value(), TOL);
         assertEquals(-0.9960162072435548, kt.g2(), TOL);
         assertEquals(-1.7174503726358747, kt.b2(), TOL);
-        assertEquals(0.007967585512890452, kt.bigG2(), TOL);
+        assertEquals(0.015935171025782235, kt.bigG2(), 1e-12);
 
         assertEquals("""
                 > kurtosis[?]
                 total rows: 5 (complete: 5, missing: 0)
                 kurtosis (g2): -0.9960162
                 kurtosis (b2): -1.7174504
-                kurtosis (G2): 0.0079676
+                kurtosis (G2): 0.0159352
                 """, kt.toSummary());
     }
 }

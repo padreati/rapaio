@@ -343,8 +343,9 @@ public class TTestTwoSamples implements HTest {
             default -> pValue = st.cdf(-Math.abs(t)) * 2;
         }
 
-        ciLow = StudentT.of(df, xSampleMean - ySampleMean, pv).quantile(sl / 2);
-        ciHigh = StudentT.of(df, xSampleMean - ySampleMean, pv).quantile(1 - sl / 2);
+        double[] ci = HTest.confidenceInterval(StudentT.of(df, xSampleMean - ySampleMean, pv), sl, alt);
+        ciLow = ci[0];
+        ciHigh = ci[1];
     }
 
     @Override

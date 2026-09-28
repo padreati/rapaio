@@ -68,7 +68,7 @@ public class PoissonTest {
         assertEquals(1, pois1.var(), TOL);
         assertEquals(1, pois1.skewness(), TOL);
         assertEquals(1, pois1.kurtosis(), TOL);
-        assertEquals(0, pois1.entropy(), TOL);
+        assertEquals(1.304842242256252, pois1.entropy(), 1e-12); // scipy.stats.poisson(1).entropy()
     }
 
     @Test

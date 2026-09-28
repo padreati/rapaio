@@ -76,8 +76,9 @@ public class ZTestOneSampleTest {
         assertEquals(71.2, z2.getSampleMean(), TOL);
         assertEquals(-0.6675919504799908, z2.getZScore(), TOL);
         assertEquals(0.2521970486667804, z2.pValue(), TOL);
-        assertEquals(60.0436894185179, z2.ciLow(), TOL);
-        assertEquals(82.3563105814821, z2.ciHigh(), TOL);
+        // one-sided interval (-Inf, mean + z_{0.95} * sd/sqrt(n)], as R's t.test(alternative="less")
+        assertEquals(Double.NEGATIVE_INFINITY, z2.ciLow(), TOL);
+        assertEquals(80.56267098176004, z2.ciHigh(), 1e-12); // scipy value, implementation differs by 1 ulp
         assertEquals(0.05, z2.getSl(), TOL);
 
 
@@ -85,8 +86,9 @@ public class ZTestOneSampleTest {
         assertEquals(71.2, z3.getSampleMean(), TOL);
         assertEquals(-0.6675919504799908, z3.getZScore(), TOL);
         assertEquals(0.7478029513332196, z3.pValue(), TOL);
-        assertEquals(56.53812256656457, z3.ciLow(), TOL);
-        assertEquals(85.86187743343541, z3.ciHigh(), TOL);
+        // one-sided interval [mean - z_{0.99} * sd/sqrt(n), +Inf)
+        assertEquals(57.958195758652806, z3.ciLow(), 1e-12);
+        assertEquals(Double.POSITIVE_INFINITY, z3.ciHigh(), TOL);
         assertEquals(0.01, z3.getSl(), TOL);
 
         ZTestOneSample z4 = ZTestOneSample.test(VarDouble.copy(Double.NaN, Double.NaN), 0, 1);

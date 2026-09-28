@@ -113,7 +113,7 @@ public final class Bernoulli implements Distribution {
 
     @Override
     public double skewness() {
-        return 1 / sqrt((1 - prob) * prob);
+        return (1 - 2 * prob) / sqrt((1 - prob) * prob);
     }
 
     @Override

@@ -88,6 +88,9 @@ public final class Binomial implements Distribution {
 
     @Override
     public double cdf(double x) {
+        if (x < 0) {
+            return 0.0;
+        }
         if (x >= n) {
             return 1.0;
         }
@@ -206,18 +209,14 @@ public final class Binomial implements Distribution {
     }
 
     /**
-     * The wikipedia dedicated page (http://en.wikipedia.org/wiki/Binomial_distribution)
-     * states that entropy for binomial is:
-     * $$\frac1 2 \log_2 \big( 2\pi e\, np(1-p) \big) + O \left( \frac{1}{n} \right)$$
-     * <p>
-     * According to this page is lighter to use an approximation. The following page
-     * http://math.stackexchange.com/questions/244455/entropy-of-a-binomial-distribution
-     * documents how this entropy is approximated.
+     * Entropy in nats, using the large-{@code n} approximation
+     * {@code 1/2 log(2 pi e n p (1-p)) + O(1/n)} from
+     * http://en.wikipedia.org/wiki/Binomial_distribution; the error is of order {@code 1/n}.
      *
-     * @return entropy value
+     * @return approximate entropy value in nats
      */
     @Override
     public double entropy() {
-        return log(2 * PI * Math.E * n * p * (1 - p)) / (2.0 * log(2));
+        return 0.5 * log(2 * PI * Math.E * n * p * (1 - p));
     }
 }

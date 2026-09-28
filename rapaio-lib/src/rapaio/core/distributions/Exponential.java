@@ -31,9 +31,18 @@ import java.io.Serial;
 import rapaio.printer.Format;
 
 /**
+ * Exponential distribution with rate {@code lambda > 0}: density {@code lambda * exp(-lambda * x)}
+ * on {@code [0, +Inf)}, mean {@code 1 / lambda}.
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/19/20.
  */
 public record Exponential(double lambda) implements Distribution {
+
+    public Exponential {
+        if (!(lambda > 0 && Double.isFinite(lambda))) {
+            throw new IllegalArgumentException("Rate lambda must be a positive finite number, not " + lambda);
+        }
+    }
 
     public static Exponential of(double lambda) {
         return new Exponential(lambda);
@@ -68,9 +77,13 @@ public record Exponential(double lambda) implements Distribution {
         return 1 - exp(-lambda * x);
     }
 
+    /**
+     * @throws IllegalArgumentException if {@code p} is not in {@code [0, 1]}
+     */
     @Override
     public double quantile(double p) {
-        if (p < 0) {
+        QuantileSearch.checkProbability(p);
+        if (p == 0) {
             return 0;
         }
         if (p == 1) {

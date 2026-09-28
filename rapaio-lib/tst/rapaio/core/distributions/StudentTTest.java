@@ -200,7 +200,7 @@ public class StudentTTest {
 
     @Test
     void testEntropy() {
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> StudentT.of(4).entropy());
-        assertEquals("Not implemented.", ex.getMessage());
+        // scipy.stats.t(4).entropy()
+        assertEquals(1.6817600168786664, StudentT.of(4).entropy(), 1e-12);
     }
 }

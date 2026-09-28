@@ -21,12 +21,15 @@
 
 package rapaio.core.distributions;
 
+import static java.lang.StrictMath.exp;
 import static java.lang.StrictMath.floor;
-import static java.lang.StrictMath.floorDiv;
+import static java.lang.StrictMath.log;
+import static java.lang.StrictMath.max;
 import static java.lang.StrictMath.rint;
 import static java.lang.StrictMath.sqrt;
 
 import static rapaio.math.MathTools.incGammaC;
+import static rapaio.math.MathTools.lnGamma;
 import static rapaio.math.MathTools.pdfPois;
 
 import java.io.Serial;
@@ -85,35 +88,22 @@ public record Poisson(double lambda) implements Distribution {
         return incGammaC(floor(x + 1), lambda);
     }
 
+    /**
+     * Quantile obtained by searching the cdf over the non-negative integers:
+     * the smallest {@code k} with {@code cdf(k) >= p}.
+     *
+     * @throws IllegalArgumentException if {@code p} is not in {@code [0, 1]}
+     */
     @Override
     public double quantile(double p) {
-        if (p == 1)
+        QuantileSearch.checkProbability(p);
+        if (p == 1) {
             return Double.POSITIVE_INFINITY;
-
-        if (p <= cdf(0))
+        }
+        if (p <= cdf(0)) {
             return 0;
-
-        // unbounded binary search
-        int low = 0;
-        int up = 1;
-
-        // double up until we found a bound
-        double cdf_up = cdf(up);
-        while (cdf_up <= p) {
-            up *= 2;
-            cdf_up = cdf(up);
         }
-        while (true) {
-            int mid = floorDiv(low + up, 2);
-            if (mid == low)
-                return up;
-            double cdf_mid = cdf(mid);
-            if (cdf_mid < p) {
-                low = mid;
-            } else {
-                up = mid;
-            }
-        }
+        return QuantileSearch.discrete(this::cdf, p);
     }
 
     @Override
@@ -151,8 +141,21 @@ public record Poisson(double lambda) implements Distribution {
         return 1 / lambda;
     }
 
+    /**
+     * Shannon entropy in nats, computed from the identity
+     * {@code H = lambda (1 - log lambda) + e^-lambda sum_k lambda^k log(k!) / k!}; the series is
+     * summed over the range of {@code k} where the pmf is not negligible.
+     */
     @Override
     public double entropy() {
-        return 0;
+        int from = (int) max(0, floor(lambda - 40 * sqrt(lambda) - 40));
+        int to = (int) (lambda + 40 * sqrt(lambda) + 40);
+        double sum = 0;
+        for (int k = from; k <= to; k++) {
+            double lnFact = lnGamma(k + 1.0);
+            double pmf = exp(-lambda + k * log(lambda) - lnFact);
+            sum += pmf * lnFact;
+        }
+        return lambda * (1 - log(lambda)) + sum;
     }
 }

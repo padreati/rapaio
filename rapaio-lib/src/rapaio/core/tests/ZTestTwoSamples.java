@@ -254,8 +254,9 @@ public class ZTestTwoSamples implements HTest {
             default -> pValue = normal.cdf(-Math.abs(zScore)) * 2;
         }
 
-        ciLow = Normal.of(xSampleMean - ySampleMean, sv).quantile(sl / 2);
-        ciHigh = Normal.of(xSampleMean - ySampleMean, sv).quantile(1 - sl / 2);
+        double[] ci = HTest.confidenceInterval(Normal.of(xSampleMean - ySampleMean, sv), sl, alt);
+        ciLow = ci[0];
+        ciHigh = ci[1];
     }
 
     @Override

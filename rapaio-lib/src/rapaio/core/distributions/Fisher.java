@@ -21,12 +21,15 @@
 
 package rapaio.core.distributions;
 
+import static java.lang.StrictMath.log;
 import static java.lang.StrictMath.pow;
 import static java.lang.StrictMath.sqrt;
 
 import static rapaio.math.MathTools.beta;
 import static rapaio.math.MathTools.betaIncReg;
+import static rapaio.math.MathTools.digamma;
 import static rapaio.math.MathTools.invBetaIncReg;
+import static rapaio.math.MathTools.lnBeta;
 
 import java.io.Serial;
 
@@ -60,6 +63,12 @@ public record Fisher(double df1, double df2) implements Distribution {
 
     @Override
     public double pdf(double x) {
+        if (x < 0) {
+            return 0;
+        }
+        if (x == 0) {
+            return df1 < 2 ? Double.POSITIVE_INFINITY : (df1 == 2 ? 1 : 0);
+        }
         return pow(df1 / df2, df1 / 2) * pow(x, df1 / 2 - 1) * pow(1 + df1 * x / df2, -(df1 + df2) / 2) / beta(df1 / 2, df2 / 2);
     }
 
@@ -101,8 +110,12 @@ public record Fisher(double df1, double df2) implements Distribution {
 
     @Override
     public double var() {
-        if (df2 <= 4)
+        if (df2 <= 2) {
             return Double.NaN;
+        }
+        if (df2 <= 4) {
+            return Double.POSITIVE_INFINITY;
+        }
         return (2 * df2 * df2 * (df1 + df2 - 2)) / (df1 * (df2 - 2) * (df2 - 2) * (df2 - 4));
     }
 
@@ -114,14 +127,31 @@ public record Fisher(double df1, double df2) implements Distribution {
         return (2 * df1 + df2 - 2) * sqrt(8 * (df2 - 4)) / ((df2 - 6) * sqrt(df1 * (df1 + df2 - 2)));
     }
 
+    /**
+     * @return excess kurtosis for {@code df2 > 8}; {@code +Infinity} for {@code 4 < df2 <= 8}
+     * (finite variance, divergent fourth moment) and {@code NaN} otherwise
+     */
     @Override
     public double kurtosis() {
-        return Double.NaN;
+        if (df2 <= 4) {
+            return Double.NaN;
+        }
+        if (df2 <= 8) {
+            return Double.POSITIVE_INFINITY;
+        }
+        return 12 * (df1 * (5 * df2 - 22) * (df1 + df2 - 2) + (df2 - 4) * (df2 - 2) * (df2 - 2))
+                / (df1 * (df2 - 6) * (df2 - 8) * (df1 + df2 - 2));
     }
 
+    /**
+     * @return differential entropy in nats; with {@code a = df1/2, b = df2/2}:
+     * {@code ln B(a,b) + (a+b) psi(a+b) - (a-1) psi(a) - (b+1) psi(b) + ln(df2/df1)}
+     */
     @Override
     public double entropy() {
-        return Double.NaN;
+        double a = df1 / 2;
+        double b = df2 / 2;
+        return lnBeta(a, b) + (a + b) * digamma(a + b) - (a - 1) * digamma(a) - (b + 1) * digamma(b) + log(df2 / df1);
     }
 }
 

@@ -540,6 +540,43 @@ public class MathTools {
     }
 
     /**
+     * Computes the digamma function {@code psi(x) = d/dx ln Gamma(x)}.
+     * <p>
+     * For {@code x >= 10} the asymptotic expansion
+     * {@code ln x - 1/(2x) - 1/(12x^2) + 1/(120x^4) - 1/(252x^6) + 1/(240x^8) - 5/(660x^10) + 691/(32760x^12)}
+     * is used; smaller positive arguments are shifted upwards with the recurrence
+     * {@code psi(x) = psi(x + 1) - 1/x}; negative non-integer arguments use the reflection
+     * formula {@code psi(1 - x) - psi(x) = pi cot(pi x)}. The result is accurate to roughly
+     * {@code 1e-15} relative for {@code x > 0}.
+     *
+     * @param x argument
+     * @return digamma of x, {@code NaN} for {@code 0} and negative integers
+     */
+    public static double digamma(double x) {
+        if (Double.isNaN(x) || Double.isInfinite(x)) {
+            return x > 0 ? Double.POSITIVE_INFINITY : Double.NaN;
+        }
+        if (x <= 0) {
+            if (x == floor(x)) {
+                return Double.NaN;
+            }
+            // reflection: psi(x) = psi(1 - x) - pi / tan(pi x)
+            return digamma(1 - x) - PI / StrictMath.tan(PI * x);
+        }
+        double result = 0;
+        while (x < 10) {
+            result -= 1 / x;
+            x += 1;
+        }
+        double inv = 1 / x;
+        double inv2 = inv * inv;
+        result += log(x) - 0.5 * inv
+                - inv2 * (1.0 / 12 - inv2 * (1.0 / 120 - inv2 * (1.0 / 252 - inv2 * (1.0 / 240
+                - inv2 * (5.0 / 660 - inv2 * (691.0 / 32760))))));
+        return result;
+    }
+
+    /**
      * Computes the Beta function B(z,w).
      * <p>
      * http://en.wikipedia.org/wiki/Beta_function
