@@ -40,9 +40,15 @@ public class ChiSquareKernel extends AbstractKernel {
 
     @Override
     public double compute(DArray<Double> v, DArray<Double> u) {
-        var sum = v.add(u);
-        var delta = v.sub(u);
-        return 1 - 2 * delta.sqr().div(sum).sum();
+        double sum = 0;
+        for (int i = 0; i < v.size(); i++) {
+            double delta = v.getDouble(i) - u.getDouble(i);
+            // a term with equal coordinates is zero; computing it as 0/0 when both are zero would poison the sum
+            if (delta != 0) {
+                sum += delta * delta / (v.getDouble(i) + u.getDouble(i));
+            }
+        }
+        return 1 - 2 * sum;
     }
 
     @Override

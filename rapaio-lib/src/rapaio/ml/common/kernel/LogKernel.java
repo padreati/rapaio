@@ -50,7 +50,7 @@ public class LogKernel extends AbstractKernel {
 
     @Override
     public double compute(DArray<Double> v, DArray<Double> u) {
-        return -Math.log1p(Math.pow(deltaSumSquares(v, u), degree));
+        return -Math.log1p(Math.pow(deltaNorm(v, u), degree));
     }
 
     @Override

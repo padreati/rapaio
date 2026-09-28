@@ -21,6 +21,7 @@
 
 package rapaio.ml.common.distance;
 
+import static java.lang.StrictMath.abs;
 import static java.lang.StrictMath.pow;
 
 import rapaio.darray.DArray;
@@ -36,7 +37,7 @@ public class MinkowskiDistance implements Distance {
 
     @Override
     public String name() {
-        return "Euclidean";
+        return "Minkowski(p=" + p + ")";
     }
 
     @Override
@@ -51,7 +52,7 @@ public class MinkowskiDistance implements Distance {
 
     @Override
     public double reduced(DArray<Double> x, DArray<Double> y) {
-        return x.sub(y).apply_(v -> pow(v, p)).sum();
+        return x.sub(y).apply_(v -> pow(abs(v), p)).sum();
     }
 
     @Override
@@ -60,7 +61,7 @@ public class MinkowskiDistance implements Distance {
         String[] names = df1.varNames();
         for (String name : names) {
             double delta = df1.getDouble(row1, name) - df2.getDouble(row2, name);
-            sum += pow(delta, p);
+            sum += pow(abs(delta), p);
         }
         return sum;
     }

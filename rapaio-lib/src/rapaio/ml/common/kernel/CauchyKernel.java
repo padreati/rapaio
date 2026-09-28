@@ -58,8 +58,7 @@ public class CauchyKernel extends AbstractKernel {
 
     @Override
     public double compute(DArray<Double> v, DArray<Double> u) {
-        double value = deltaSumSquares(u, v) / sigma;
-        return 1.0 / (1.0 + value * value);
+        return 1.0 / (1.0 + deltaSumSquares(u, v) / (sigma * sigma));
     }
 
     @Override

@@ -49,6 +49,11 @@ public class LinearKernel extends AbstractKernel {
     }
 
     @Override
+    public boolean isLinear() {
+        return true;
+    }
+
+    @Override
     public Kernel newInstance() {
         return new LinearKernel(c);
     }

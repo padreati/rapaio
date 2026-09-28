@@ -54,8 +54,7 @@ public class ExponentialKernel extends AbstractKernel {
 
     @Override
     public double compute(DArray<Double> v, DArray<Double> u) {
-        double value = deltaSumSquares(v, u);
-        return Math.exp(factor * value);
+        return Math.exp(factor * deltaNorm(v, u));
     }
 
     @Override

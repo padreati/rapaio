@@ -36,6 +36,14 @@ public interface Kernel extends Serializable {
 
     String name();
 
+    /**
+     * True when the kernel is the inner product up to an additive constant, {@code k(x, y) = x'y + c}.
+     * Consumers use it to keep an explicit weight vector {@code w = sum(alpha_i y_i x_i)} and predict with
+     * {@code w'x}, which is exact only under that form (the constant cancels because {@code sum(alpha_i y_i) = 0}).
+     * A scaled inner product or a polynomial of degree one with slope different from one must return false.
+     *
+     * @return true if the kernel is the plain inner product plus a constant
+     */
     boolean isLinear();
 
     double compute(DArray<Double> v, DArray<Double> u);

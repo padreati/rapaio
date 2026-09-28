@@ -53,8 +53,7 @@ public class InverseMultiQuadricKernel extends AbstractKernel {
 
     @Override
     public double compute(DArray<Double> v, DArray<Double> u) {
-        double dot = deltaSumSquares(u, v);
-        return 1.0 / Math.sqrt(dot * dot + c_square);
+        return 1.0 / Math.sqrt(deltaSumSquares(u, v) + c_square);
     }
 
     @Override

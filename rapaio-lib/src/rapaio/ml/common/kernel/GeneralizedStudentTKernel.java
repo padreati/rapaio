@@ -50,8 +50,7 @@ public class GeneralizedStudentTKernel extends AbstractKernel {
 
     @Override
     public double compute(DArray<Double> v, DArray<Double> u) {
-        double dot = deltaSumSquares(u, v);
-        return 1.0 / (1.0 + Math.pow(dot, degree));
+        return 1.0 / (1.0 + Math.pow(deltaNorm(u, v), degree));
     }
 
     @Override

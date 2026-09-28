@@ -146,10 +146,12 @@ public class BinarySMOTest {
                 2, 1
         );
         ClassifierResult result = smo1.predict(SolidFrame.matrix(test, "x", "y"));
-        assertTrue(VarNominal.copy("a", "b", "b", "a", "a").name("class").deepEquals(result.firstClasses()));
-        assertArrayEquals(new double[] {0, -1.0762311696089155, -1.0762311696089155, 1.0762311696089155, 1.0762311696089155},
+        // the four training points get their own labels back and the centre sits on the decision boundary
+        assertTrue(VarNominal.copy("a", "a", "a", "b", "b").name("class").deepEquals(result.firstClasses()));
+        double margin = 0.0010232154487563871;
+        assertArrayEquals(new double[] {0, margin, margin, -margin, -margin},
                 result.firstDensity().rvar("a").stream().mapToDouble().toArray(), TOL);
-        assertArrayEquals(new double[] {0, 1.0762311696089155, 1.0762311696089155, -1.0762311696089155, -1.0762311696089155},
+        assertArrayEquals(new double[] {0, -margin, -margin, margin, margin},
                 result.firstDensity().rvar("b").stream().mapToDouble().toArray(), TOL);
     }
 
@@ -230,7 +232,7 @@ public class BinarySMOTest {
         smo.fit(tts.trainDf(), "class");
 
         assertEquals("BinarySMO{c=100,eps=0.3,firstLabel=versicolor,kernel=Log(degree=1),maxRuns=10,secondLabel=setosa,seed=1}, " +
-                        "fitted=true, support vectors=6",
+                        "fitted=true, support vectors=9",
                 smo.toString());
         assertEquals("BinarySMO{c=100,eps=0.3,firstLabel=versicolor,kernel=Log(degree=1),maxRuns=10," +
                         "secondLabel=setosa,seed=1}",
@@ -239,15 +241,18 @@ public class BinarySMOTest {
                 BinarySMO model
                 ===============
                 BinarySMO{c=100,eps=0.3,firstLabel=versicolor,kernel=Log(degree=1),maxRuns=10,secondLabel=setosa,seed=1}
-                fitted: true, support vectors=6
+                fitted: true, support vectors=9
                 Decision function:
-                   0.2643514 * <[4.5,2.3,1.3,0.3], x>
-                 - 0.1108114 * <[5.9,3.2,4.8,1.8], x>
-                 - 0.4685095 * <[4.9,2.4,3.3,1], x>
-                 - 0.1656843 * <[5.8,2.7,4.1,1], x>
-                 + 0.192999 * <[5,3,1.6,0.2], x>
-                 + 0.2876547 * <[5.4,3.9,1.7,0.4], x>
-                 - 0.0594024""", smo.toSummary());
+                   0.2014013 * <[5.7,4.4,1.5,0.4], x>
+                 + 0.4679814 * <[4.5,2.3,1.3,0.3], x>
+                 - 0.2436365 * <[5.9,3.2,4.8,1.8], x>
+                 - 0.4203838 * <[4.9,2.4,3.3,1], x>
+                 - 0.2910844 * <[5.8,2.7,4.1,1], x>
+                 - 0.3328443 * <[5,2,3.5,1], x>
+                 + 0.3328443 * <[4.9,3.1,1.5,0.2], x>
+                 - 0.2014013 * <[7,3.2,4.7,1.4], x>
+                 + 0.4871233 * <[5.4,3.9,1.7,0.4], x>
+                 - 0.1753206""", smo.toSummary());
         assertEquals(smo.toSummary(), smo.toContent());
         assertEquals(smo.toSummary(), smo.toFullContent());
 

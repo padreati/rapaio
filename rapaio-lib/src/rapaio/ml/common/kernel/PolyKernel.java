@@ -58,7 +58,8 @@ public class PolyKernel extends AbstractKernel {
 
     @Override
     public boolean isLinear() {
-        return MathTools.eq(exponent, 1.0);
+        // the linear shortcut in consumers computes w'x with w built from plain inner products, so the slope must be one
+        return MathTools.eq(exponent, 1.0) && MathTools.eq(slope, 1.0);
     }
 
     @Override

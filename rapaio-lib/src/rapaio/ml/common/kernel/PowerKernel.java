@@ -49,7 +49,7 @@ public class PowerKernel extends AbstractKernel {
 
     @Override
     public double compute(DArray<Double> v, DArray<Double> u) {
-        return -Math.pow(deltaSumSquares(u, v), degree);
+        return -Math.pow(deltaNorm(u, v), degree);
     }
 
     @Override

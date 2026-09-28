@@ -65,7 +65,7 @@ public class SigmoidKernel extends AbstractKernel {
 
     @Override
     public double compute(DArray<Double> v, DArray<Double> u) {
-        return Math.atan(alpha * u.inner(v) + c);
+        return Math.tanh(alpha * u.inner(v) + c);
     }
 
     @Override

@@ -38,8 +38,18 @@ public abstract class AbstractKernel implements Kernel {
         return false;
     }
 
+    /**
+     * Squared euclidean norm of the difference, {@code ||u - v||^2}.
+     */
     protected double deltaSumSquares(DArray<Double> u, DArray<Double> v) {
         return u.sub(v).sqr().sum();
+    }
+
+    /**
+     * Euclidean norm of the difference, {@code ||u - v||}.
+     */
+    protected double deltaNorm(DArray<Double> u, DArray<Double> v) {
+        return Math.sqrt(deltaSumSquares(u, v));
     }
 
 }

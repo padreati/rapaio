@@ -31,7 +31,10 @@ import rapaio.printer.Format;
  * <p>
  * The circular kernel is used in geostatic applications. It is an example of an isotropic stationary kernel and is positive definite in R2.
  * <p>
- * k(x, y) = \frac{2}{\pi} \arccos ( - \frac{ \lVert x-y \rVert}{\sigma}) - \frac{2}{\pi} \frac{ \lVert x-y \rVert}{\sigma} \sqrt{1 - \left(\frac{ \lVert x-y \rVert}{\sigma} \right)^2}
+ * k(x, y) = \frac{2}{\pi} \arccos ( \frac{ \lVert x-y \rVert}{\sigma}) - \frac{2}{\pi} \frac{ \lVert x-y \rVert}{\sigma} \sqrt{1 - \left(\frac{ \lVert x-y \rVert}{\sigma} \right)^2}
+ * <p>
+ * This is the circular covariance model of geostatistics: it equals one at distance zero and decreases continuously
+ * to zero at distance sigma, where its support ends.
  * <p>
  * \mbox{if}~ \lVert x-y \rVert < \sigma \mbox{, zero otherwise}
  * <p>
@@ -50,12 +53,11 @@ public class CircularKernel extends AbstractKernel {
 
     @Override
     public double compute(DArray<Double> v, DArray<Double> u) {
-        double dot = deltaSumSquares(u, v);
-        if (dot < sigma) {
+        double f = deltaNorm(u, v) / sigma;
+        if (f >= 1) {
             return 0;
         }
-        double f = dot / sigma;
-        return 2 * (Math.acos(-f) - f * Math.sqrt(1 - f * f)) / Math.PI;
+        return 2 * (Math.acos(f) - f * Math.sqrt(1 - f * f)) / Math.PI;
     }
 
     @Override

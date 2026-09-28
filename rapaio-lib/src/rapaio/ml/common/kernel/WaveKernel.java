@@ -27,22 +27,11 @@ import rapaio.darray.DArray;
 import rapaio.printer.Format;
 
 /**
- * The Wave kernel (Zhang et al, 2004) comes from Wavelet theory and is given as:
+ * The Wave kernel is a symmetric positive semi-definite kernel given by:
  * <p>
- * k(x,y) = \prod_{i=1}^N h(\frac{x_i-c_i}{a}) \: h(\frac{y_i-c_i}{a})
+ * k(x,y) = \frac{\theta}{\lVert x-y \rVert} \sin\left(\frac{\lVert x-y \rVert}{\theta}\right)
  * <p>
- * Where a and c are the wavelet dilation and translation coefficients, respectively
- * (the form presented above is a simplification, please see the original paper for
- * details). A translation-invariant version of this kernel can be given as:
- * <p>
- * k(x,y) = \prod_{i=1}^N h(\frac{x_i-y_i}{a})
- * <p>
- * Where in both h(x) denotes a mother wavelet function. In the paper by Li Zhang,
- * Weida Zhou, and Licheng Jiao, the authors suggests a possible h(x) as:
- * <p>
- * h(x) = cos(1.75x)exp(-\frac{x^2}{2})
- * <p>
- * Which they also prove as an admissible kernel function.
+ * Since sin(z)/z tends to one as z tends to zero, k(x, x) = 1.
  * <p>
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
@@ -64,11 +53,11 @@ public class WaveKernel extends AbstractKernel {
 
     @Override
     public double compute(DArray<Double> v, DArray<Double> u) {
-        double dot = deltaSumSquares(v, u);
-        if (dot <= 0) {
-            return 0;
+        double norm = deltaNorm(v, u);
+        if (norm == 0) {
+            return 1;
         }
-        return theta * Math.sin(dot / theta) / dot;
+        return theta * Math.sin(norm / theta) / norm;
     }
 
     @Override
