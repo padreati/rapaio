@@ -50,8 +50,10 @@ public final class Shape {
 
     private final int[] dims;
     private final int size;
-    private int[] cStrides = null;
-    private int[] fStrides = null;
+    // volatile, so that the arrays published below are safe to read from another thread; two threads may each compute
+    // a cache, which is harmless since both build the same values from the immutable dims
+    private volatile int[] cStrides = null;
+    private volatile int[] fStrides = null;
 
     private Shape(int[] dims) {
         if(dims==null || dims.length > 8) {
@@ -177,27 +179,32 @@ public final class Shape {
     }
 
     private int[] cStrides() {
-        if (cStrides == null) {
-            cStrides = Ints.fill(dims.length, 1);
-            for (int i = 1; i < cStrides.length; i++) {
+        int[] strides = cStrides;
+        if (strides == null) {
+            // fill a local array and publish it once, so that a concurrent reader cannot observe a partial one
+            strides = Ints.fill(dims.length, 1);
+            for (int i = 1; i < strides.length; i++) {
                 for (int j = 0; j < i; j++) {
-                    cStrides[j] *= dims[i];
+                    strides[j] *= dims[i];
                 }
             }
+            cStrides = strides;
         }
-        return cStrides;
+        return strides;
     }
 
     private int[] fStrides() {
-        if (fStrides == null) {
-            fStrides = Ints.fill(dims.length, 1);
-            for (int i = fStrides.length - 2; i >= 0; i--) {
-                for (int j = fStrides.length - 1; j > i; j--) {
-                    fStrides[j] *= dims[i];
+        int[] strides = fStrides;
+        if (strides == null) {
+            strides = Ints.fill(dims.length, 1);
+            for (int i = strides.length - 2; i >= 0; i--) {
+                for (int j = strides.length - 1; j > i; j--) {
+                    strides[j] *= dims[i];
                 }
             }
+            fStrides = strides;
         }
-        return fStrides;
+        return strides;
     }
 
     private int[] strides(Order askOrder) {

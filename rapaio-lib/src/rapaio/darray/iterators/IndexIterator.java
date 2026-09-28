@@ -41,10 +41,13 @@ public class IndexIterator implements Iterator<int[]> {
         this.shape = shape;
         this.cOrder = askOrder == Order.C;
         this.index = new int[shape.rank()];
-        if (cOrder) {
-            this.index[this.index.length - 1] = -1;
-        } else {
-            this.index[0] = -1;
+        // a rank 0 shape holds a single element addressed by an empty index, there is nothing to pre-decrement
+        if (index.length > 0) {
+            if (cOrder) {
+                this.index[this.index.length - 1] = -1;
+            } else {
+                this.index[0] = -1;
+            }
         }
     }
 
@@ -53,6 +56,12 @@ public class IndexIterator implements Iterator<int[]> {
         return pos < shape.size() - 1;
     }
 
+    /**
+     * Advances to the next index. The returned array is the iterator's own buffer and is mutated by the following
+     * call, so a consumer which keeps the values must copy it.
+     *
+     * @return the next index, valid until the next call
+     */
     @Override
     public int[] next() {
         if (!hasNext()) {
@@ -67,6 +76,11 @@ public class IndexIterator implements Iterator<int[]> {
     }
 
     private void advanceIndex() {
+        // a rank 0 shape has a single, empty index: there is nothing to advance, only the position to consume
+        if (index.length == 0) {
+            pos++;
+            return;
+        }
         if (cOrder) {
             advanceIndexCOrder();
         } else {

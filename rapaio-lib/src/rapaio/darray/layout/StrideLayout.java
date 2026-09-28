@@ -21,6 +21,8 @@
 
 package rapaio.darray.layout;
 
+import java.util.Arrays;
+
 import rapaio.darray.Layout;
 import rapaio.darray.Order;
 import rapaio.darray.Shape;
@@ -52,6 +54,11 @@ public interface StrideLayout extends Layout {
     }
 
     static StrideLayout ofDense(Shape shape, int offset, Order order) {
+        // a rank 0 shape holds a single element and has no stride, so it always gets the canonical scalar layout;
+        // otherwise a degenerate ArrayStrideLayout of rank 0 would compete with it as a second representation
+        if (shape.rank() == 0) {
+            return new ScalarStrideLayout(offset);
+        }
         order = Order.autoFC(order);
         int[] strides = switch (order) {
             case C -> {
@@ -75,7 +82,56 @@ public interface StrideLayout extends Layout {
 
     int offset();
 
+    /**
+     * @return a copy of the stride array, owned by the caller; mutating it does not affect the layout
+     */
     int[] strides();
+
+    /**
+     * Structural equality for stride layouts: two layouts are equal when they describe the same view, which means the
+     * same shape, the same offset and the same strides. Runtime classes are deliberately not compared, since the same
+     * view is represented by a rank-specialised implementation when it is built by {@link #of} and by
+     * {@link ArrayStrideLayout} when it is built by {@link #ofDense}.
+     * <p>
+     * Every implementation must route {@code equals} here, so that the relation stays symmetric across them.
+     *
+     * @param layout layout on whose behalf the comparison is made
+     * @param o      object to compare with
+     * @return true if the other object is a stride layout describing the same view
+     */
+    static boolean structuralEquals(StrideLayout layout, Object o) {
+        if (layout == o) {
+            return true;
+        }
+        if (!(o instanceof StrideLayout other)) {
+            return false;
+        }
+        if (layout.offset() != other.offset() || !layout.shape().equals(other.shape())) {
+            return false;
+        }
+        // equal shapes imply equal ranks, so the strides can be compared position by position without allocating
+        for (int i = 0; i < layout.rank(); i++) {
+            if (layout.stride(i) != other.stride(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Hash code consistent with {@link #structuralEquals(StrideLayout, Object)}: it is derived from the shape, the
+     * offset and the strides, so two implementations describing the same view hash alike.
+     *
+     * @param layout layout to hash
+     * @return hash code of the described view
+     */
+    static int structuralHashCode(StrideLayout layout) {
+        int result = 31 * layout.shape().hashCode() + layout.offset();
+        for (int i = 0; i < layout.rank(); i++) {
+            result = 31 * result + layout.stride(i);
+        }
+        return result;
+    }
 
     int stride(int i);
 
@@ -103,7 +159,40 @@ public interface StrideLayout extends Layout {
         return narrowAll(true, starts, ends);
     }
 
+    /**
+     * Creates a view with every axis truncated to {@code [starts[i], ends[i])}. When {@code keepDim} is false, the
+     * axes which this request reduced to a single element are dropped, as {@link #narrowedUnitAxes} defines; an axis
+     * which was already unitary is left alone, since the request did not narrow it.
+     *
+     * @param keepDim keep every axis, even the ones truncated to a single element
+     * @param starts  start index per axis, inclusive
+     * @param ends    end index per axis, exclusive
+     * @return a view with truncated axes
+     */
     StrideLayout narrowAll(boolean keepDim, int[] starts, int[] ends);
+
+    /**
+     * The axes a {@code narrowAll} request reduces to a single element, which are the ones dropped when it is asked
+     * not to keep dimensions. An axis whose dimension is already 1 is not reported: the request did not narrow it, so
+     * it survives, unlike in {@link #narrow(int, boolean, int, int)} where the caller names the axis explicitly.
+     * <p>
+     * Callers must validate that {@code starts} and {@code ends} have one entry per axis before calling this.
+     *
+     * @param layout layout the request is applied to, before it is narrowed
+     * @param starts start index per axis, inclusive
+     * @param ends   end index per axis, exclusive
+     * @return the axes to squeeze, in increasing order, empty when the request narrows nothing down to a single element
+     */
+    static int[] narrowedUnitAxes(StrideLayout layout, int[] starts, int[] ends) {
+        int[] axes = new int[layout.rank()];
+        int len = 0;
+        for (int i = 0; i < layout.rank(); i++) {
+            if (ends[i] - starts[i] == 1 && layout.dim(i) > 1) {
+                axes[len++] = i;
+            }
+        }
+        return Arrays.copyOf(axes, len);
+    }
 
     StrideLayout permute(int... dims);
 

@@ -21,12 +21,25 @@
 
 package rapaio.darray.layout;
 
-import java.util.Arrays;
-
 import rapaio.darray.Order;
 import rapaio.darray.Shape;
 
 public abstract class AbstractStrideLayout implements StrideLayout {
+
+    /**
+     * Two stride layouts are equal when they describe the same view: same shape, same offset and same strides.
+     * The relation is shared by every implementation through {@link StrideLayout#structuralEquals}, so it stays
+     * symmetric between the rank-specialised layouts and {@link ArrayStrideLayout}.
+     */
+    @Override
+    public final boolean equals(Object o) {
+        return StrideLayout.structuralEquals(this, o);
+    }
+
+    @Override
+    public final int hashCode() {
+        return StrideLayout.structuralHashCode(this);
+    }
 
     @Override
     public StrideLayout attemptReshape(Shape shape, Order askOrder) {
@@ -37,8 +50,9 @@ public abstract class AbstractStrideLayout implements StrideLayout {
         int newRank = shape.rank();
         int[] newstrides = new int[newRank];
 
-        int[] olddims = Arrays.copyOf(dims(), dims().length);
-        int[] oldstrides = Arrays.copyOf(strides(), strides().length);
+        // dims() and strides() already hand out caller owned arrays, so they are used directly as working buffers
+        int[] olddims = dims();
+        int[] oldstrides = strides();
         int last_stride;
 
         int oldRank = 0;
@@ -46,7 +60,7 @@ public abstract class AbstractStrideLayout implements StrideLayout {
          * Remove axes with dimension 1 from the old array. They have no effect
          * but would need special cases since their strides do not matter.
          */
-        for (int oi = 0; oi < dims().length; oi++) {
+        for (int oi = 0; oi < olddims.length; oi++) {
             if (dim(oi) != 1) {
                 olddims[oldRank] = dim(oi);
                 oldstrides[oldRank] = stride(oi);

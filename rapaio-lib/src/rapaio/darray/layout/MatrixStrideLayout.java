@@ -60,7 +60,7 @@ public class MatrixStrideLayout extends AbstractStrideLayout {
 
     @Override
     public int[] strides() {
-        return strides;
+        return Arrays.copyOf(strides, strides.length);
     }
 
     @Override
@@ -117,16 +117,19 @@ public class MatrixStrideLayout extends AbstractStrideLayout {
 
     @Override
     public int[] index(int pointer) {
-        int pos = strides[0] > strides[1] ? 1 : 0;
+        // divide by the larger stride first, and work relative to this layout's offset
+        int pos = strides[0] >= strides[1] ? 0 : 1;
         int[] index = new int[2];
 
-        int p = pointer / strides[pos];
-        index[pos] = p;
-        pointer -= p * strides[pos];
-        pos = pos == 0 ? 1 : 0;
-        p = pointer / strides[pos];
-        index[pos] = p;
-
+        pointer -= offset;
+        for (int step = 0; step < 2; step++) {
+            if (strides[pos] != 0) {
+                int p = pointer / strides[pos];
+                index[pos] = p;
+                pointer -= p * strides[pos];
+            }
+            pos = pos == 0 ? 1 : 0;
+        }
         return index;
     }
 
@@ -249,14 +252,16 @@ public class MatrixStrideLayout extends AbstractStrideLayout {
                 len++;
             }
         }
-        return new ArrayStrideLayout(Shape.of(Arrays.copyOf(newDims, len)), offset, Arrays.copyOf(newStrides, len));
+        // go through the factory, as squeeze() does, so the result gets its canonical implementation
+        return StrideLayout.of(Shape.of(Arrays.copyOf(newDims, len)), offset, Arrays.copyOf(newStrides, len));
     }
 
     @Override
     public StrideLayout stretch(int... axes) {
         for (int axis : axes) {
-            if (axis < 0 || axis >= axes.length + 2) {
-                throw new IndexOutOfBoundsException();
+            // the result has rank() + axes.length dimensions, so every new axis must address one of them
+            if (axis < 0 || axis >= rank() + axes.length) {
+                throw new IndexOutOfBoundsException("Axis value is invalid: " + axis + ".");
             }
         }
         if (Ints.containsDuplicates(axes)) {
@@ -323,9 +328,17 @@ public class MatrixStrideLayout extends AbstractStrideLayout {
         int[] askStrides = Ints.copy(strides);
         int tmpDim = askDims[src];
         int tmpStride = askStrides[src];
-        for (int i = src; i < dst; i++) {
-            askDims[i] = askDims[i + 1];
-            askStrides[i] = askStrides[i + 1];
+        if (src < dst) {
+            for (int i = src; i < dst; i++) {
+                askDims[i] = askDims[i + 1];
+                askStrides[i] = askStrides[i + 1];
+            }
+        } else {
+            // shift the axes between dst and src one position up, to open the slot at dst
+            for (int i = src; i > dst; i--) {
+                askDims[i] = askDims[i - 1];
+                askStrides[i] = askStrides[i - 1];
+            }
         }
         askDims[dst] = tmpDim;
         askStrides[dst] = tmpStride;
@@ -386,7 +399,10 @@ public class MatrixStrideLayout extends AbstractStrideLayout {
             newOffset += starts[i] * strides[i];
 
         }
-        return StrideLayout.of(Shape.of(newDims), newOffset, strides);
+        StrideLayout result = StrideLayout.of(Shape.of(newDims), newOffset, strides);
+        // only the axes this request reduced to a single element are dropped, an axis which was already unitary was
+        // not narrowed and stays, so the result does not depend on unit axes the caller never touched
+        return keepdim ? result : result.squeeze(StrideLayout.narrowedUnitAxes(this, starts, ends));
     }
 
     @Override
@@ -397,7 +413,7 @@ public class MatrixStrideLayout extends AbstractStrideLayout {
         boolean[] flags = new boolean[rank()];
         int flagCount = 0;
         for (int dim : dims) {
-            if (dim < 0 || dim >= rank() - 1) {
+            if (dim < 0 || dim >= rank()) {
                 throw new IllegalArgumentException("Dimension value is invalid: [" +
                         IntStream.of(dims).mapToObj(String::valueOf).collect(Collectors.joining(",")) + "]");
             }
@@ -420,17 +436,4 @@ public class MatrixStrideLayout extends AbstractStrideLayout {
         return "MatrixStride([" + dim(0) + "," + dim(1) + "]," + offset + ",[" + stride(0) + "," + stride(1) + "])";
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        MatrixStrideLayout that = (MatrixStrideLayout) o;
-        return offset == that.offset && Objects.equals(shape, that.shape) && Objects.deepEquals(strides, that.strides);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(shape, offset, Arrays.hashCode(strides));
-    }
 }

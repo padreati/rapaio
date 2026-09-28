@@ -109,6 +109,10 @@ public final class StrideWrapper<N extends Number> extends AbstractList<N> {
 
     private void quickSortIndirect(final int[] perm, final int from, final int to, final Comparator<N> comp) {
         final int len = to - from;
+        if (len < 2) {
+            // nothing to sort, and med3Indirect below would read outside perm
+            return;
+        }
         // Choose a partition element, v
         int m = from + len / 2;
         int l = from;

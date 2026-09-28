@@ -425,6 +425,11 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
 
     /**
      * Creates a new darray view with possibly all truncated axes.
+     * <p>
+     * When {@code keepDim} is false, only the axes this call truncated down to a single element are dropped. An axis
+     * which was already unitary is kept, since the call did not narrow it, which is what distinguishes this from
+     * {@link #narrow(int, boolean, int, int)}, where the caller names one axis and that axis is dropped whenever the
+     * result is unitary.
      *
      * @param keepDim keep dimensions even if some of have length 1, false otherwise
      * @param starts  vector of indexes where narrow interval starts
@@ -1088,8 +1093,9 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     public abstract Iterator<N> iterator(Order askOrder);
 
     /**
-     * Produces a stream with values from this darray in the storage order. The storage order is a computed order in which
-     * the computed offsets are increasing, allowing better performance.
+     * Produces a stream with values from this darray in the default order, which is the same order used by
+     * {@link #iterator()}. Use {@link #stream(Order)} with {@link Order#S} for the storage order, which visits the
+     * elements at increasing offsets and is faster but depends on how the darray is laid out.
      *
      * @return value stream
      */
@@ -3487,6 +3493,9 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      * Computes the variance over all elements using a precomputed mean and difference degree of freedom.
      * The degree of freedom are computed as {@code N - ddof}, where {@code N} is the number of elements.
      * The storage order is the default storage order.
+     * <p>
+     * The mean is used as the shift of a compensated two-pass computation, so the result is the variance about the
+     * sample mean whatever value is passed; passing the exact sample mean only saves its computation.
      *
      * @param ddof difference degree of freedom
      * @param mean precomputed mean

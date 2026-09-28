@@ -21,8 +21,6 @@
 
 package rapaio.darray.layout;
 
-import java.util.Objects;
-
 import rapaio.darray.Order;
 import rapaio.darray.Shape;
 import rapaio.util.collection.Ints;
@@ -94,7 +92,11 @@ public record ScalarStrideLayout(int offset) implements StrideLayout {
 
     @Override
     public StrideLayout squeeze(int... axes) {
-        throw new IndexOutOfBoundsException();
+        // a scalar has no dimension to squeeze, so any request is already satisfied
+        if (axes == null || axes.length == 0) {
+            return this;
+        }
+        throw new IndexOutOfBoundsException("A scalar layout has no axis to squeeze.");
     }
 
     @Override
@@ -162,7 +164,8 @@ public record ScalarStrideLayout(int offset) implements StrideLayout {
 
     @Override
     public StrideLayout attemptReshape(Shape shape, Order askOrder) {
-        return StrideLayout.of(shape, offset, new int[rank()]);
+        // the target holds a single element, so every stride is irrelevant; the length must match the new rank
+        return StrideLayout.of(shape, offset, new int[shape.rank()]);
     }
 
     @Override
@@ -170,17 +173,19 @@ public record ScalarStrideLayout(int offset) implements StrideLayout {
         return "ScalarStride([]," + offset + ",[])";
     }
 
+    /**
+     * Uses the same structural relation as the other implementations rather than the one a record generates, which
+     * would only accept another {@link ScalarStrideLayout} and would therefore disagree with a rank 0 layout of a
+     * different class comparing itself against this one.
+     */
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ScalarStrideLayout that = (ScalarStrideLayout) o;
-        return offset == that.offset;
+        return StrideLayout.structuralEquals(this, o);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(offset);
+        return StrideLayout.structuralHashCode(this);
     }
+
 }

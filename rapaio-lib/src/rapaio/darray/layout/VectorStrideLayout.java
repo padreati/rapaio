@@ -66,7 +66,7 @@ public final class VectorStrideLayout extends AbstractStrideLayout {
 
     @Override
     public boolean isDense() {
-        return false;
+        return stride == 1;
     }
 
     @Override
@@ -200,10 +200,8 @@ public final class VectorStrideLayout extends AbstractStrideLayout {
         if (axis != 0) {
             throw new IllegalArgumentException("Invalid axis value: " + axis);
         }
-        if (!keepDim && (end - start != 1)) {
-            throw new IllegalArgumentException("Invalid value for keepDim: " + keepDim + " if the resulting tensor is not a scalar.");
-        }
-        return keepDim ?
+        // the dimension is dropped only when the narrowed result has unit length, as DArray.narrow documents
+        return keepDim || end - start > 1 ?
                 StrideLayout.of(Shape.of(end - start), offset + stride * start, new int[] {stride}) :
                 StrideLayout.of(Shape.of(), offset + stride * start, new int[0]);
     }
@@ -216,7 +214,10 @@ public final class VectorStrideLayout extends AbstractStrideLayout {
         if (starts.length != 1 || ends.length != 1) {
             throw new IllegalArgumentException("Starts and ends must have length 1.");
         }
-        return narrow(0, keepDim, starts[0], ends[0]);
+        // narrow drops the axis it is given whenever the result is unitary, including an axis which was already
+        // unitary; narrowAll only drops what it actually narrowed, so the axis is kept in that case
+        boolean drop = !keepDim && StrideLayout.narrowedUnitAxes(this, starts, ends).length > 0;
+        return narrow(0, !drop, starts[0], ends[0]);
     }
 
     @Override
@@ -242,6 +243,10 @@ public final class VectorStrideLayout extends AbstractStrideLayout {
         if (Order.S == askOrder) {
             throw new IllegalArgumentException("Requested order must be Order.C or Order.F.");
         }
+        if (shape.rank() == 0) {
+            // a single element viewed as a scalar: there is no stride to compute
+            return StrideLayout.of(shape, offset, new int[0]);
+        }
         int[] newStrides = new int[shape.rank()];
         if (Order.F == askOrder) {
             newStrides[0] = stride;
@@ -262,17 +267,4 @@ public final class VectorStrideLayout extends AbstractStrideLayout {
         return "VectorStride([" + dim(0) + "]," + offset + ",[" + stride(0) + "])";
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        VectorStrideLayout that = (VectorStrideLayout) o;
-        return offset == that.offset && stride == that.stride && Objects.equals(shape, that.shape);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(shape, offset, stride);
-    }
 }

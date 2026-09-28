@@ -78,7 +78,7 @@ public class ArrayStrideLayout extends AbstractStrideLayout {
 
     @Override
     public int[] strides() {
-        return strides;
+        return Arrays.copyOf(strides, strides.length);
     }
 
     @Override
@@ -189,7 +189,14 @@ public class ArrayStrideLayout extends AbstractStrideLayout {
         Ints.quickSort(storageOrder,
                 IntComparators.asIntComparator(Comparator.comparingInt(this::stride).thenComparing(this::dim).reversed()));
         int[] index = new int[rank()];
+        // the pointer is an absolute position in storage, the index is relative to this layout's offset
+        pointer -= offset;
         for (int j : storageOrder) {
+            // an expanded axis has stride 0 and addresses the same element for every index value
+            if (strides[j] == 0) {
+                index[j] = 0;
+                continue;
+            }
             int p = pointer / strides[j];
             // this should not happen, if it happens than the strides are wrong from the very beginning
             if (p >= dim(j)) {
@@ -291,7 +298,12 @@ public class ArrayStrideLayout extends AbstractStrideLayout {
             return this;
         }
         if (axes.length > rank()) {
-            throw new IllegalArgumentException("Matrix allows maximum two axes as parameters.");
+            throw new IllegalArgumentException("Number of axes is greater than rank.");
+        }
+        for (int axis : axes) {
+            if (axis < 0 || axis >= rank()) {
+                throw new IllegalArgumentException("Axis value is invalid: " + axis + ".");
+            }
         }
         if (Ints.containsDuplicates(axes)) {
             throw new IllegalArgumentException("Duplicates values in axis parameters.");
@@ -315,7 +327,9 @@ public class ArrayStrideLayout extends AbstractStrideLayout {
                 len++;
             }
         }
-        return new ArrayStrideLayout(Shape.of(Arrays.copyOf(newDims, len)), offset, Arrays.copyOf(newStrides, len));
+        // go through the factory, as squeeze() does, so a result of rank 2 or less gets its canonical implementation
+        // instead of a degenerate ArrayStrideLayout competing with it as a second representation of the same view
+        return StrideLayout.of(Shape.of(Arrays.copyOf(newDims, len)), offset, Arrays.copyOf(newStrides, len));
     }
 
     @Override
@@ -324,8 +338,9 @@ public class ArrayStrideLayout extends AbstractStrideLayout {
             return this;
         }
         for (int axis : axes) {
-            if (axis < 0 || axis > rank() + 1) {
-                throw new IndexOutOfBoundsException();
+            // the result has rank() + axes.length dimensions, so every new axis must address one of them
+            if (axis < 0 || axis >= rank() + axes.length) {
+                throw new IndexOutOfBoundsException("Axis value is invalid: " + axis + ".");
             }
         }
         if (Ints.containsDuplicates(axes)) {
@@ -391,9 +406,17 @@ public class ArrayStrideLayout extends AbstractStrideLayout {
         int[] askStrides = Ints.copy(strides);
         int tmpDim = askDims[src];
         int tmpStride = askStrides[src];
-        for (int i = src; i < dst; i++) {
-            askDims[i] = askDims[i + 1];
-            askStrides[i] = askStrides[i + 1];
+        if (src < dst) {
+            for (int i = src; i < dst; i++) {
+                askDims[i] = askDims[i + 1];
+                askStrides[i] = askStrides[i + 1];
+            }
+        } else {
+            // shift the axes between dst and src one position up, to open the slot at dst
+            for (int i = src; i > dst; i--) {
+                askDims[i] = askDims[i - 1];
+                askStrides[i] = askStrides[i - 1];
+            }
         }
         askDims[dst] = tmpDim;
         askStrides[dst] = tmpStride;
@@ -426,11 +449,8 @@ public class ArrayStrideLayout extends AbstractStrideLayout {
             throw new IllegalArgumentException("Axis is out of bounds.");
         }
         if (rank() == 1) {
-            return StrideLayout.of(
-                    Shape.of(end - start),
-                    offset + stride(axis) * start,
-                    strides
-            );
+            StrideLayout result = StrideLayout.of(Shape.of(end - start), offset + stride(axis) * start, strides);
+            return keepdim ? result : result.squeeze(axis);
         }
         int[] newDims = Arrays.copyOf(shape.dims(), strides.length);
         newDims[axis] = end - start;
@@ -454,7 +474,10 @@ public class ArrayStrideLayout extends AbstractStrideLayout {
             newOffset += starts[i] * strides[i];
 
         }
-        return StrideLayout.of(Shape.of(newDims), newOffset, strides);
+        StrideLayout result = StrideLayout.of(Shape.of(newDims), newOffset, strides);
+        // only the axes this request reduced to a single element are dropped, an axis which was already unitary was
+        // not narrowed and stays, so the result does not depend on unit axes the caller never touched
+        return keepdim ? result : result.squeeze(StrideLayout.narrowedUnitAxes(this, starts, ends));
     }
 
     @Override
@@ -481,25 +504,6 @@ public class ArrayStrideLayout extends AbstractStrideLayout {
         int[] newDims = Ints.newPermutation(dims(), dims);
         int[] newStrides = Ints.newPermutation(strides, dims);
         return StrideLayout.of(Shape.of(newDims), offset, newStrides);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ArrayStrideLayout layout = (ArrayStrideLayout) o;
-        return offset == layout.offset && shape.equals(layout.shape) && Arrays.equals(strides, layout.strides);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = Objects.hash(shape, offset);
-        result = 31 * result + Arrays.hashCode(strides);
-        return result;
     }
 
     @Override
