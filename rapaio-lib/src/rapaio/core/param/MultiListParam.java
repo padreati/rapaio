@@ -23,6 +23,7 @@ package rapaio.core.param;
 
 import java.io.Serial;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -38,7 +39,7 @@ import rapaio.util.function.SFunction;
 public class MultiListParam<K, T, S extends ParamSet<S>> implements Param<Map<K, List<T>>, S> {
 
     @Serial
-    private static final long serialVersionUID = 6971154885891319057L;
+    private static final long serialVersionUID = -2477338925409713295L;
     private final S params;
     private final TreeMap<K, List<T>> defaultValue;
     private final TreeMap<K, List<T>> valueMap;
@@ -56,9 +57,13 @@ public class MultiListParam<K, T, S extends ParamSet<S>> implements Param<Map<K,
         params.registerParameter(this);
     }
 
+    /**
+     * @return an unmodifiable view of the current map; use {@link #set(Map)}, {@link #add(Map)},
+     * {@link #add(Object, Object[])} or {@link #clear()} to change it so that the validator is applied
+     */
     @Override
-    public TreeMap<K, List<T>> get() {
-        return valueMap;
+    public Map<K, List<T>> get() {
+        return Collections.unmodifiableMap(valueMap);
     }
 
     public List<T> get(K key) {
@@ -67,20 +72,37 @@ public class MultiListParam<K, T, S extends ParamSet<S>> implements Param<Map<K,
 
     @Override
     public S set(Map<K, List<T>> value) {
+        checkValid(value);
         this.valueMap.clear();
         this.valueMap.putAll(value);
         return params;
     }
 
     public S add(Map<K, List<T>> value) {
+        TreeMap<K, List<T>> merged = new TreeMap<>(valueMap);
+        merged.putAll(value);
+        checkValid(merged);
         this.valueMap.putAll(value);
         return params;
     }
 
     @SafeVarargs
     public final S add(K key, T... values) {
+        TreeMap<K, List<T>> merged = new TreeMap<>(valueMap);
+        merged.put(key, Arrays.asList(values));
+        checkValid(merged);
         this.valueMap.put(key, Arrays.asList(values));
         return params;
+    }
+
+    /**
+     * Applies the validator before anything is changed, so a rejected value leaves the
+     * parameter as it was.
+     */
+    private void checkValid(Map<K, List<T>> value) {
+        if (!validate(value)) {
+            throw new IllegalArgumentException("Parameter value is invalid: " + value);
+        }
     }
 
     @Override
@@ -113,7 +135,7 @@ public class MultiListParam<K, T, S extends ParamSet<S>> implements Param<Map<K,
         for (var entry : defaultValue.entrySet()) {
             var ref = entry.getValue();
             var comp = valueMap.get(entry.getKey());
-            if (comp == null) {
+            if (comp == null || comp.size() != ref.size()) {
                 return false;
             }
             for (int i = 0; i < ref.size(); i++) {

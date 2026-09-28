@@ -22,6 +22,7 @@
 package rapaio.core.param;
 
 import java.io.Serial;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
@@ -53,9 +54,13 @@ public class MultiParam<K, T, S extends ParamSet<S>> implements Param<Map<K, T>,
         params.registerParameter(this);
     }
 
+    /**
+     * @return an unmodifiable view of the current map; use {@link #set(Map)}, {@link #add(Map)},
+     * {@link #add(Object, Object)} or {@link #clear()} to change it so that the validator is applied
+     */
     @Override
     public Map<K, T> get() {
-        return valueMap;
+        return Collections.unmodifiableMap(valueMap);
     }
 
     public T get(K key) {
@@ -64,19 +69,36 @@ public class MultiParam<K, T, S extends ParamSet<S>> implements Param<Map<K, T>,
 
     @Override
     public S set(Map<K, T> value) {
+        checkValid(value);
         this.valueMap.clear();
         this.valueMap.putAll(value);
         return params;
     }
 
     public S add(Map<K, T> value) {
+        TreeMap<K, T> merged = new TreeMap<>(valueMap);
+        merged.putAll(value);
+        checkValid(merged);
         this.valueMap.putAll(value);
         return params;
     }
 
     public S add(K key, T value) {
+        TreeMap<K, T> merged = new TreeMap<>(valueMap);
+        merged.put(key, value);
+        checkValid(merged);
         this.valueMap.put(key, value);
         return params;
+    }
+
+    /**
+     * Applies the validator before anything is changed, so a rejected value leaves the
+     * parameter as it was.
+     */
+    private void checkValid(Map<K, T> value) {
+        if (!validate(value)) {
+            throw new IllegalArgumentException("Parameter value is invalid: " + value);
+        }
     }
 
     @Override

@@ -74,11 +74,17 @@ public class OnlineStat {
     }
 
     /**
-     * Adds an element with weight 1 to the sample.
+     * Adds an element with weight 1 to the sample. Non finite values are ignored,
+     * as {@link WeightedOnlineStat#update(double, double)} does and as the
+     * {@link rapaio.data.Var} based statistics do for missing values: a single
+     * {@code NaN} would otherwise turn every moment into {@code NaN}.
      *
      * @param x added sample value
      */
     public void update(double x) {
+        if (!Double.isFinite(x)) {
+            return;
+        }
         double n1 = n;
         n++;
         double delta = (x - m1);
@@ -101,22 +107,37 @@ public class OnlineStat {
         return n;
     }
 
+    /**
+     * @return smallest value seen so far, {@code NaN} if no value was seen
+     */
     public double min() {
-        return min;
+        return n == 0 ? Double.NaN : min;
     }
 
+    /**
+     * @return largest value seen so far, {@code NaN} if no value was seen
+     */
     public double max() {
-        return max;
+        return n == 0 ? Double.NaN : max;
     }
 
+    /**
+     * @return sample mean, {@code NaN} if no value was seen (as {@link Mean} does for an empty variable)
+     */
     public double mean() {
-        return m1;
+        return n == 0 ? Double.NaN : m1;
     }
 
+    /**
+     * @return sum of the values seen so far, {@code NaN} if no value was seen
+     */
     public double sum() {
         return n == 0 ? Double.NaN : sum;
     }
 
+    /**
+     * @return biased (population) variance, {@code NaN} if no value was seen
+     */
     public double variance() {
         return m2 / n;
     }
@@ -125,8 +146,11 @@ public class OnlineStat {
         return sqrt(variance());
     }
 
+    /**
+     * @return unbiased (sample) variance, {@code NaN} if fewer than two values were seen
+     */
     public double sampleVariance() {
-        return m2 / (n - 1.0);
+        return n < 2 ? Double.NaN : m2 / (n - 1.0);
     }
 
     public double sampleSd() {

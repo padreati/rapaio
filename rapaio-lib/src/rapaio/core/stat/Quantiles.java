@@ -41,6 +41,12 @@ import rapaio.util.collection.Doubles;
  * <p>
  * Default type is R-7, but is can be changed.
  * <p>
+ * The values passed to the factory methods are <em>probabilities</em> in
+ * {@code [0, 1]} (R calls them {@code probs}, numpy {@code q}), not percentages;
+ * anything outside that interval is rejected. Missing values are ignored:
+ * {@link #values()} always has one entry per requested probability, {@code NaN}
+ * for each of them when the variable has no complete value, and the single
+ * complete value when it has exactly one.
  * <p>
  * For further reference see:
  * <a href="http://en.wikipedia.org/wiki/Quantile">http://en.wikipedia.org/wiki/Quantile</a>
@@ -65,8 +71,13 @@ public class Quantiles implements Printable {
     private final Type type;
 
     private Quantiles(Var var, Type type, double... percentiles) {
+        for (double p : percentiles) {
+            if (!(p >= 0 && p <= 1)) {
+                throw new IllegalArgumentException("Probability value should lie in [0,1] interval, not " + p);
+            }
+        }
         this.varName = var.name();
-        this.percentiles = percentiles;
+        this.percentiles = Arrays.copyOf(percentiles, percentiles.length);
         this.type = type;
         this.quantiles = compute(var);
     }
@@ -83,11 +94,10 @@ public class Quantiles implements Printable {
         missingCount = var.size() - completeCount;
 
         if (completeCount == 0) {
-            Arrays.fill(x, Double.NaN);
-            return x;
+            return Doubles.newFill(percentiles.length, Double.NaN);
         }
         if (completeCount == 1) {
-            return Doubles.newFill(percentiles.length, 0);
+            return Doubles.newFill(percentiles.length, x[0]);
         }
 
         Arrays.sort(x, 0, completeCount);
@@ -95,33 +105,41 @@ public class Quantiles implements Printable {
         double[] values = new double[percentiles.length];
         for (int i = 0; i < percentiles.length; i++) {
             double p = percentiles[i];
-            if (type.equals(Type.R8)) {
-                int N = completeCount;
-                double h = (N + 1. / 3.) * p + 1. / 3.;
-                int hfloor = (int) StrictMath.floor(h);
-
-                if (p < (2. / 3.) / (N + 1. / 3.)) {
-                    values[i] = x[0];
-                    continue;
+            int N = completeCount;
+            switch (type) {
+                case R8 -> {
+                    if (p < (2. / 3.) / (N + 1. / 3.)) {
+                        values[i] = x[0];
+                    } else if (p >= (N - 1. / 3.) / (N + 1. / 3.)) {
+                        values[i] = x[N - 1];
+                    } else {
+                        double h = (N + 1. / 3.) * p + 1. / 3.;
+                        int hfloor = (int) StrictMath.floor(h);
+                        values[i] = x[hfloor - 1] + (h - hfloor) * (x[hfloor] - x[hfloor - 1]);
+                    }
                 }
-                if (p >= (N - 1. / 3.) / (N + 1. / 3.)) {
-                    values[i] = x[completeCount - 1];
-                    continue;
+                case R7 -> {
+                    double h = (N - 1.0) * p + 1;
+                    int hfloor = (int) Math.min(StrictMath.floor(h), N - 1);
+                    values[i] = x[hfloor - 1] + (h - hfloor) * (x[hfloor] - x[hfloor - 1]);
                 }
-                values[i] = x[hfloor - 1] + (h - hfloor) * (x[hfloor] - x[hfloor - 1]);
-            }
-            if (type.equals(Type.R7)) {
-                int N = completeCount;
-                double h = (N - 1.0) * p + 1;
-                int hfloor = (int) Math.min(StrictMath.floor(h), completeCount - 1);
-                values[i] = x[hfloor - 1] + (h - hfloor) * (x[hfloor] - x[hfloor - 1]);
             }
         }
         return values;
     }
 
+    /**
+     * @return one estimated quantile per requested probability, in the order they were given
+     */
     public double[] values() {
         return quantiles;
+    }
+
+    /**
+     * @return the probabilities these quantiles were estimated for
+     */
+    public double[] probabilities() {
+        return Arrays.copyOf(percentiles, percentiles.length);
     }
 
     @Override

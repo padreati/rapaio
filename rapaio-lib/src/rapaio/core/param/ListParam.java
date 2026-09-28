@@ -24,6 +24,7 @@ package rapaio.core.param;
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import rapaio.util.function.SBiFunction;
@@ -50,38 +51,46 @@ public class ListParam<T, S extends ParamSet<S>> implements Param<List<T>, S> {
         params.registerParameter(this);
     }
 
+    /**
+     * @return an unmodifiable view of the current values; use {@link #set(List)}, {@link #add(Object[])}
+     * or {@link #clear()} to change them so that the validator is applied
+     */
     @Override
     public List<T> get() {
-        return values;
+        return Collections.unmodifiableList(values);
     }
 
     @Override
     public S set(List<T> values) {
-        clear();
-        if (!validate(values)) {
-            throw new IllegalArgumentException("Parameter values are invalid.");
-        }
-        this.values.addAll(values);
-        return params;
+        return replace(values);
     }
 
     @SafeVarargs
     public final S set(T... arrayValues) {
-        List<T> values = Arrays.asList(arrayValues);
-        clear();
-        if (!validate(values)) {
-            throw new IllegalArgumentException("Parameter values are invalid.");
-        }
-        this.values.addAll(values);
-        return params;
+        return replace(Arrays.asList(arrayValues));
     }
 
     @SafeVarargs
     public final S add(T... values) {
-        if (!validate(Arrays.asList(values))) {
+        List<T> newValues = Arrays.asList(values);
+        if (!validator.apply(this.values, newValues)) {
             throw new IllegalArgumentException("Parameter values are invalid.");
         }
-        this.values.addAll(Arrays.asList(values));
+        this.values.addAll(newValues);
+        return params;
+    }
+
+    /**
+     * Replaces the current values. The validator sees an empty list of existing values, since
+     * a replacement discards them; it is applied before anything is changed, so a rejected
+     * value leaves the parameter as it was.
+     */
+    private S replace(List<T> newValues) {
+        if (!validator.apply(List.of(), newValues)) {
+            throw new IllegalArgumentException("Parameter values are invalid.");
+        }
+        this.values.clear();
+        this.values.addAll(newValues);
         return params;
     }
 
@@ -94,19 +103,17 @@ public class ListParam<T, S extends ParamSet<S>> implements Param<List<T>, S> {
     @SuppressWarnings( {"unchecked", "rawtypes"})
     public boolean hasDefaultValue() {
         if (defaultValues == null) {
-            return true;
+            return values.isEmpty();
         }
         if (defaultValues.size() != values.size()) {
             return false;
         }
         for (int i = 0; i < defaultValues.size(); i++) {
             if (defaultValues.get(i) instanceof ParametricEquals dvi) {
-                boolean eq = dvi.equalOnParams(values.get(i));
-                if (!eq) {
+                if (!dvi.equalOnParams(values.get(i))) {
                     return false;
                 }
-            }
-            if (!defaultValues.get(i).equals(values.get(i))) {
+            } else if (!defaultValues.get(i).equals(values.get(i))) {
                 return false;
             }
         }

@@ -51,23 +51,45 @@ public final class HistogramTable implements Printable {
                 .filter(x -> x.getDouble() <= this.max)
                 .toMappedVar();
 
-        this.bins = bins > 0 ? bins : computeFreedmanDiaconisEstimation(sel);
+        this.bins = bins > 0 ? bins : computeBinCount(sel);
         this.step = (this.max - this.min) / this.bins;
 
         this.freq = new double[this.bins];
         sel.forEachDouble(x -> {
             int index = (int) Math.floor((x - this.min) / step);
+            // step is 0 for constant data, which makes the ratio NaN or infinite
             if (index >= this.bins) {
                 index = this.bins - 1;
+            }
+            if (index < 0) {
+                index = 0;
             }
             freq[index]++;
         });
     }
 
-    private int computeFreedmanDiaconisEstimation(Var v) {
+    /**
+     * Number of bins for the selected values: the Freedman-Diaconis estimate when it is
+     * usable, Sturges' rule otherwise. The Freedman-Diaconis bin width {@code 2·IQR·n^{-1/3}}
+     * is zero whenever at least half the values are equal (and in particular for constant
+     * data), which would give an infinite or undefined bin count. The result is always in
+     * {@code [1, 1024]}, so an empty or constant selection still produces one usable bin.
+     */
+    private int computeBinCount(Var v) {
+        if (v.size() < 2) {
+            return 1;
+        }
         double[] q = Quantiles.of(v, 0, 0.25, 0.75, 1).values();
+        double range = q[3] - q[0];
         double iqr = q[2] - q[1];
-        return (int) Math.min(1024, Math.ceil((q[3] - q[0]) / (2 * iqr * Math.pow(v.size(), -1.0 / 3.0))));
+        double width = 2 * iqr * Math.pow(v.size(), -1.0 / 3.0);
+        double count = width > 0 ? range / width
+                // Sturges' rule, as numpy does when the Freedman-Diaconis width degenerates
+                : Math.log(v.size()) / Math.log(2) + 1;
+        if (!Double.isFinite(count)) {
+            return 1;
+        }
+        return (int) Math.min(1024, Math.max(1, Math.ceil(count)));
     }
 
     public double min() {

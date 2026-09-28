@@ -30,7 +30,6 @@ import java.util.TreeMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import rapaio.ml.model.RegressionModel;
 import rapaio.printer.Format;
 
 /**
@@ -65,7 +64,7 @@ public abstract class ParamSet<T extends ParamSet<T>> implements Serializable {
 
     public void registerParameter(Param<?, T> parameter) {
         if (parameterMap.containsKey(parameter.name())) {
-            throw new IllegalArgumentException("Parameters contains a prameter with the same name.");
+            throw new IllegalArgumentException("Parameters already contain a parameter named " + parameter.name() + ".");
         }
         parameterMap.put(parameter.name(), parameter);
     }
@@ -73,7 +72,12 @@ public abstract class ParamSet<T extends ParamSet<T>> implements Serializable {
     @SuppressWarnings("unchecked")
     protected T copyParameterValues(T paramSet) {
         for (var e : parameterMap.entrySet()) {
-            e.getValue().copyFrom(paramSet.getParameterMap().get(e.getKey()));
+            Param<?, T> source = paramSet.getParameterMap().get(e.getKey());
+            if (source == null) {
+                throw new IllegalArgumentException(
+                        "Source parameter set does not contain a parameter named " + e.getKey() + ".");
+            }
+            e.getValue().copyFrom(source);
         }
         return (T) this;
     }
@@ -92,21 +96,43 @@ public abstract class ParamSet<T extends ParamSet<T>> implements Serializable {
         return sb.toString();
     }
 
-    private String format(Object value) {
-        if (value instanceof RegressionModel<?, ?, ?>) {
-            return ((RegressionModel<?, ?, ?>) value).fullName();
-        }
-        if (value instanceof Double) {
-            return Format.floatFlex((double) value);
-        }
+    /**
+     * Invokes a no-argument {@code String} returning method of the given name, if the value has
+     * one. Returns {@code null} when there is no such method, so the caller can try another name.
+     */
+    private String describe(Object value, String methodName) {
         for (Method m : value.getClass().getMethods()) {
-            if ("fullName".equals(m.getName()) || "name".equals(m.getName())) {
+            if (methodName.equals(m.getName()) && m.getParameterCount() == 0 && m.getReturnType() == String.class) {
                 try {
                     m.setAccessible(true);
+                } catch (RuntimeException ignored) {
+                    // not permitted across module boundaries; invoke still works for exported types
+                }
+                try {
                     return (String) m.invoke(value);
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     return e.getMessage();
                 }
+            }
+        }
+        return null;
+    }
+
+    private String format(Object value) {
+        if (value == null) {
+            return "null";
+        }
+        if (value instanceof Double) {
+            return Format.floatFlex((double) value);
+        }
+        // a value describing itself through fullName()/name() prints as that description; this
+        // covers the models (RegressionModel/ClassifierModel.fullName) without core depending on
+        // ml. fullName is preferred over name, since a model has both and fullName carries the
+        // parameters; the reflective order of getMethods() is unspecified, so it is not relied on
+        for (String candidate : new String[] {"fullName", "name"}) {
+            String described = describe(value, candidate);
+            if (described != null) {
+                return described;
             }
         }
         if (value instanceof Map) {

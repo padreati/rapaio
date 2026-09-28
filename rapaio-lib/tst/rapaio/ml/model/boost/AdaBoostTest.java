@@ -65,7 +65,13 @@ public class AdaBoostTest {
             int treeCount = model.getLearners().size();
             assertEquals(treeCount, model.getAlphas().size());
 
-            assertEquals("AdaBoost{model=CTree,runs=10,seed=" + seed + "}; fitted=true, fitted trees=" + treeCount, model.toString());
+            // a model valued parameter prints its fullName (with parameters), as the regression
+            // models already did; until 2026-09-28 a classifier printed the bare name() instead,
+            // which depended on the reflective method order in ParamSet.format
+            assertEquals("AdaBoost{model=CTree{maxDepth=5,minCount=4,purity=GainRatio,splitter=Weighted,"
+                    + "testMap={BINARY=Binary,INT=NumericBinary,NOMINAL=NominalFull,DOUBLE=NumericBinary},"
+                    + "varSelector=VarSelector[10]},runs=10,seed=" + seed + "}; fitted=true, fitted trees="
+                    + treeCount, model.toString());
 
             var result = model.predict(spam, true, true);
 
