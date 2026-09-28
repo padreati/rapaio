@@ -81,7 +81,7 @@ public final class BaseDoubleStrideDArrayConvolutions {
         }
 
         int outDepth = outChannels / groups;
-        int outLen = Math.floorDiv(inLen + 2 * padding - (k - 1) * dilation, stride);
+        int outLen = Math.floorDiv(inLen + 2 * padding - (k - 1) * dilation - 1, stride) + 1;
 
         DArray<Double> output = input.dm().zeros(DType.DOUBLE, Shape.of(n, outChannels, outLen));
 
@@ -99,7 +99,7 @@ public final class BaseDoubleStrideDArrayConvolutions {
 
                 DArray<Double> unfold1d = inSlice.unfold1d(k, stride, padding, dilation);
 
-                kernelSlice = kernelSlice.reshape(Shape.of(outDepth, inDepth * k));
+                kernelSlice = kernelSlice.reshape(Shape.of(outDepth, inDepth * k), Order.C);
                 outSlice.add_(kernelSlice.mm(unfold1d));
             }
         }
@@ -168,7 +168,7 @@ public final class BaseDoubleStrideDArrayConvolutions {
                 DArray<?> kernelSlice = weights.narrow(0, group * inDepth, (group + 1) * inDepth); // (inDepth, outDepth, kLen)
 
                 // col = kernelFlat^T @ inSlice: (outDepth*kLen, inDepth) @ (inDepth, inLen) = (outDepth*kLen, inLen)
-                DArray<?> kernelFlat = kernelSlice.reshape(Shape.of(inDepth, outDepth * kLen)); // (inDepth, outDepth*kLen)
+                DArray<?> kernelFlat = kernelSlice.reshape(Shape.of(inDepth, outDepth * kLen), Order.C);
                 DArray<?> col = kernelFlat.t().mm(inSlice); // (outDepth*kLen, inLen)
 
                 // fold col (outDepth, kLen, inLen) -> outSlice (outDepth, outLen)
@@ -204,7 +204,7 @@ public final class BaseDoubleStrideDArrayConvolutions {
         int n = input.dim(0);
         int inCh = input.dim(1);
 
-        int outLen = Math.floorDiv(input.dim(2) + 2 * padding - (kLen - 1) * dilation, stride);
+        int outLen = Math.floorDiv(input.dim(2) + 2 * padding - (kLen - 1) * dilation - 1, stride) + 1;
 
         DArray<Double> result = input.dm().zeros(DType.DOUBLE, Shape.of(n, inCh, kLen, outLen));
 
@@ -254,6 +254,9 @@ public final class BaseDoubleStrideDArrayConvolutions {
         if (inDepth * groups != inChannels) {
             throw new IllegalArgumentException(
                     String.format("inDepth x groups (%d x %d) must equal inChannels (%d).", inDepth, groups, inChannels));
+        }
+        if (outChannels % groups != 0) {
+            throw new IllegalArgumentException("Number of output channels must be a multiple of groups.");
         }
         int outDepth = outChannels / groups;
         int outH = Math.floorDiv(inH + 2 * padding - dilation * (kH - 1) - 1, stride) + 1;
@@ -356,6 +359,9 @@ public final class BaseDoubleStrideDArrayConvolutions {
         if (input.dim(1) != weights.dim(0)) {
             throw new IllegalArgumentException("Input channels and weight output channels do not match.");
         }
+        if (inChannels % groups != 0) {
+            throw new IllegalArgumentException("Number of input channels must be a multiple of groups.");
+        }
 
         int outH = (inH - 1) * stride - 2 * padding + dilation * (kH - 1) + 1 + outputPadding;
         int outW = (inW - 1) * stride - 2 * padding + dilation * (kW - 1) + 1 + outputPadding;
@@ -427,6 +433,9 @@ public final class BaseDoubleStrideDArrayConvolutions {
         if (inDepth * groups != inChannels) {
             throw new IllegalArgumentException("inDepth * groups must equal inChannels.");
         }
+        if (outChannels % groups != 0) {
+            throw new IllegalArgumentException("Number of output channels must be a multiple of groups.");
+        }
         int outDepth = outChannels / groups;
         int outD = Math.floorDiv(inD + 2 * padding - dilation * (kD - 1) - 1, stride) + 1;
         int outH = Math.floorDiv(inH + 2 * padding - dilation * (kH - 1) - 1, stride) + 1;
@@ -441,8 +450,8 @@ public final class BaseDoubleStrideDArrayConvolutions {
                 DArray<?> outSlice = outBatch.narrow(0, group * outDepth, (group + 1) * outDepth);
                 DArray<?> kernelSlice = kernel.narrow(0, group * outDepth, (group + 1) * outDepth);
                 DArray<?> unfold = inSlice.unfold3d(kD, kH, kW, stride, padding, dilation);
-                outSlice.add_(kernelSlice.reshape(Shape.of(outDepth, inDepth * kD * kH * kW)).mm(unfold)
-                        .reshape(Shape.of(outDepth, outD, outH, outW)));
+                outSlice.add_(kernelSlice.reshape(Shape.of(outDepth, inDepth * kD * kH * kW), Order.C).mm(unfold)
+                        .reshape(Shape.of(outDepth, outD, outH, outW), Order.C));
             }
         }
         if (bias != null) {
@@ -523,6 +532,9 @@ public final class BaseDoubleStrideDArrayConvolutions {
         if (input.dim(1) != weights.dim(0)) {
             throw new IllegalArgumentException("Input channels and weight output channels do not match.");
         }
+        if (inChannels % groups != 0) {
+            throw new IllegalArgumentException("Number of input channels must be a multiple of groups.");
+        }
 
         int outD = (inD - 1) * stride - 2 * padding + dilation * (kD - 1) + 1 + outputPadding;
         int outH = (inH - 1) * stride - 2 * padding + dilation * (kH - 1) + 1 + outputPadding;
@@ -538,8 +550,8 @@ public final class BaseDoubleStrideDArrayConvolutions {
                 DArray<?> kernelSlice = weights.narrow(0, group * inDepth, (group + 1) * inDepth); // (inDepth, outDepth, kD, kH, kW)
 
                 // col = kernelFlat^T @ inSlice_flat: (outDepth*kD*kH*kW, inDepth) @ (inDepth, inD*inH*inW) = (outDepth*kD*kH*kW, inD*inH*inW)
-                DArray<?> kernelFlat = kernelSlice.reshape(Shape.of(inDepth, outDepth * kD * kH * kW));
-                DArray<?> col = kernelFlat.t().mm(inSlice.reshape(Shape.of(inDepth, inD * inH * inW)));
+                DArray<?> kernelFlat = kernelSlice.reshape(Shape.of(inDepth, outDepth * kD * kH * kW), Order.C);
+                DArray<?> col = kernelFlat.t().mm(inSlice.reshape(Shape.of(inDepth, inD * inH * inW), Order.C));
 
                 // fold col -> outSlice
                 for (int oc = 0; oc < outDepth; oc++) {
@@ -578,6 +590,17 @@ public final class BaseDoubleStrideDArrayConvolutions {
         return output;
     }
 
+    /**
+     * Drops the last output position of a ceil-mode pooling window when that window would start past the end of the
+     * input and its left padding, so that no output is computed entirely inside the right padding.
+     */
+    private static int correctCeilMode(int out, int inLen, int padding, int stride) {
+        if (out > 1 && (out - 1) * stride >= inLen + padding) {
+            return out - 1;
+        }
+        return out;
+    }
+
     public static Pair<DArray<Double>, DArray<Integer>> maxPool1d(DArray<Double> input, int kSize, int stride, int padding, int dilation, boolean ceilMode) {
         boolean batched = input.rank() == 3;
         if (input.rank() != 2 && input.rank() != 3) {
@@ -594,6 +617,7 @@ public final class BaseDoubleStrideDArrayConvolutions {
         int outLen;
         if (ceilMode) {
             outLen = (int) Math.ceil((inLen + 2.0 * padding - dilation * (kSize - 1) - 1) / stride + 1);
+            outLen = correctCeilMode(outLen, inLen, padding, stride);
         } else {
             outLen = Math.floorDiv(inLen + 2 * padding - dilation * (kSize - 1) - 1, stride) + 1;
         }
@@ -680,8 +704,8 @@ public final class BaseDoubleStrideDArrayConvolutions {
 
         int outH, outW;
         if (ceilMode) {
-            outH = (int) Math.ceil((inH + 2.0 * padding - dilation * (kH - 1) - 1) / stride + 1);
-            outW = (int) Math.ceil((inW + 2.0 * padding - dilation * (kW - 1) - 1) / stride + 1);
+            outH = correctCeilMode((int) Math.ceil((inH + 2.0 * padding - dilation * (kH - 1) - 1) / stride + 1), inH, padding, stride);
+            outW = correctCeilMode((int) Math.ceil((inW + 2.0 * padding - dilation * (kW - 1) - 1) / stride + 1), inW, padding, stride);
         } else {
             outH = Math.floorDiv(inH + 2 * padding - dilation * (kH - 1) - 1, stride) + 1;
             outW = Math.floorDiv(inW + 2 * padding - dilation * (kW - 1) - 1, stride) + 1;
@@ -785,9 +809,9 @@ public final class BaseDoubleStrideDArrayConvolutions {
 
         int outD, outH, outW;
         if (ceilMode) {
-            outD = (int) Math.ceil((inD + 2.0 * padding - dilation * (kD - 1) - 1) / stride + 1);
-            outH = (int) Math.ceil((inH + 2.0 * padding - dilation * (kH - 1) - 1) / stride + 1);
-            outW = (int) Math.ceil((inW + 2.0 * padding - dilation * (kW - 1) - 1) / stride + 1);
+            outD = correctCeilMode((int) Math.ceil((inD + 2.0 * padding - dilation * (kD - 1) - 1) / stride + 1), inD, padding, stride);
+            outH = correctCeilMode((int) Math.ceil((inH + 2.0 * padding - dilation * (kH - 1) - 1) / stride + 1), inH, padding, stride);
+            outW = correctCeilMode((int) Math.ceil((inW + 2.0 * padding - dilation * (kW - 1) - 1) / stride + 1), inW, padding, stride);
         } else {
             outD = Math.floorDiv(inD + 2 * padding - dilation * (kD - 1) - 1, stride) + 1;
             outH = Math.floorDiv(inH + 2 * padding - dilation * (kH - 1) - 1, stride) + 1;

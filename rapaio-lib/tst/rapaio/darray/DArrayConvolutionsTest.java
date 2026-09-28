@@ -177,7 +177,7 @@ public class DArrayConvolutionsTest {
         var kernel = dm.seq(dt, Shape.of(p.outChannels, Math.floorDiv(p.inChannels, p.groups), p.k)).add(1);
         var y = in.conv1d(kernel, null, p.stride, p.padding, p.dilation, p.groups);
 
-        int outLen = Math.floorDiv(p.inLen + 2 * p.padding - (p.k - 1) * p.dilation, p.stride);
+        int outLen = Math.floorDiv(p.inLen + 2 * p.padding - (p.k - 1) * p.dilation - 1, p.stride) + 1;
         var expected = dm.stride(dt, exp).reshape(Shape.of(p.n, p.outChannels, outLen));
 
         assertEquals(Shape.of(p.n, p.outChannels, outLen), y.shape());
