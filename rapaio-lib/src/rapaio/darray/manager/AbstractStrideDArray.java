@@ -118,9 +118,27 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
         return dm.stride(dt(), layout.revert(), storage);
     }
 
+    /**
+     * Resolves {@link Order#A} against this darray's own layout, the same way {@link #reshape} does, so that every
+     * caller which accepts an arbitrary order can pass it on to the layout and loop machinery, which know only
+     * {@code F}, {@code C} and {@code S}.
+     */
+    private Order resolveAuto(Order askOrder) {
+        if (Order.A != askOrder) {
+            return askOrder;
+        }
+        if (layout.isCOrdered()) {
+            return Order.C;
+        }
+        if (layout.isFOrdered()) {
+            return Order.F;
+        }
+        return Order.defaultOrder();
+    }
+
     @Override
     public final DArray<N> flatten(Order askOrder) {
-        askOrder = Order.autoFC(askOrder);
+        askOrder = Order.autoFC(resolveAuto(askOrder));
         var result = dm.zeros(dt, Shape.of(layout.size()), askOrder);
         var out = result.storage();
         int ptr = 0;
@@ -136,6 +154,7 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
 
     @Override
     public final DArray<N> ravel(Order askOrder) {
+        askOrder = resolveAuto(askOrder);
         var compact = layout.computeFortranLayout(askOrder, true);
         if (compact.shape().rank() == 1) {
             return dm.stride(dt(), compact, storage);
@@ -236,12 +255,13 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
 
     @Override
     public final DArray<N> gather_(int axis, DArray<?> index, DArray<?> input) {
-        if (index.shape() != this.shape()) {
+        if (!index.shape().equals(this.shape())) {
             throw new IllegalArgumentException("Index must have the same shape as destination.");
         }
         if (index.rank() != input.rank()) {
             throw new IllegalArgumentException("Index must have the same rank as input.");
         }
+        checkGatherScatterAxis(axis, input);
         var ptrDstIt = ptrIterator(Order.C);
         var ptrIdxIt = index.ptrIterator(Order.C);
         var indexIt = new IndexIterator(shape(), Order.C);
@@ -263,6 +283,11 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
         if (index.rank() != this.rank()) {
             throw new IllegalArgumentException("Index must have the same rank as self tensor.");
         }
+        // the loop below pairs index and input elements by flat position, which matches only for equal shapes
+        if (!index.shape().equals(input.shape())) {
+            throw new IllegalArgumentException("Index must have the same shape as input.");
+        }
+        checkGatherScatterAxis(axis, this);
         var ptrSrcIt = input.ptrIterator(Order.C);
         var ptrIdxIt = index.ptrIterator(Order.C);
         var indexIt = new IndexIterator(index.shape(), Order.C);
@@ -274,6 +299,15 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
             setDouble(input.ptrGetDouble(ptrSrcIt.nextInt()), idx);
         }
         return this;
+    }
+
+    private void checkGatherScatterAxis(int axis, DArray<?> target) {
+        if (axis < 0 || axis >= rank()) {
+            throw new IllegalArgumentException("Axis is out of bounds: " + axis + ".");
+        }
+        if (axis >= target.rank()) {
+            throw new IllegalArgumentException("Axis is out of bounds for the indexed darray: " + axis + ".");
+        }
     }
 
     @Override
@@ -397,9 +431,9 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
             throw new IllegalArgumentException("Only one dimensional tensors can be converted to VarDouble.");
         }
         if (this instanceof BaseDoubleStrideDArray bs) {
-            if (bs.layout().offset() == 0 && bs.layout().stride(0) == 1) {
-                return VarDouble.wrap(bs.asDoubleArray());
-            }
+            // asDoubleArray either shares the backing array, when this darray covers it exactly, or returns a fresh
+            // array of exactly size() values; both are safe to wrap, so there is nothing left to copy here
+            return VarDouble.wrap(bs.asDoubleArray());
         }
         double[] copy = new double[layout().size()];
         var it = iterator(Order.C);
@@ -413,7 +447,7 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
     public double[] toDoubleArray(Order askOrder) {
         double[] copy = new double[size()];
         int pos = 0;
-        var loop = StrideLoopDescriptor.of(layout, askOrder, dt().vs());
+        var loop = StrideLoopDescriptor.of(layout, resolveAuto(askOrder), dt().vs());
         for (int offset : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
                 int p = offset + i * loop.step;
@@ -425,7 +459,10 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
 
     @Override
     public double[] asDoubleArray(Order askOrder) {
-        if (storage instanceof DoubleArrayStorage as && isVector() && layout.offset() == 0 && layout.stride(0) == 1) {
+        // the backing array can be shared only when this darray covers it exactly; a view over the first elements
+        // of a larger storage (the first row of a matrix, a narrowed vector) must be copied out
+        if (storage instanceof DoubleArrayStorage as && isVector() && layout.offset() == 0 && layout.stride(0) == 1
+                && size() == as.array().length) {
             return as.array();
         }
         return toDoubleArray(askOrder);

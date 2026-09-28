@@ -386,13 +386,17 @@ public final class BaseIntStrideDArray extends AbstractStrideDArray<Integer> {
             }
         }
         if (rank() == shape.rank()) {
-            return dm.scalar(dt, reduce(op));
+            // every axis is reduced; keepDim asks for the reduced axes back as unit dimensions
+            return keepDim ? dm.full(dt, Shape.of(Ints.fill(rank(), 1)), reduce(op), order) : dm.scalar(dt, reduce(op));
         }
 
-        int[] firstDims = Arrays.copyOfRange(layout.dims(), 0, rank() - shape.rank());
-        int[] firstStrides = Arrays.copyOfRange(layout.strides(), 0, rank() - shape.rank());
-        int[] lastDims = Arrays.copyOfRange(layout.dims(), rank() - shape.rank(), rank());
-        int[] lastStrides = Arrays.copyOfRange(layout.strides(), rank() - shape.rank(), rank());
+        // dims() and strides() already hand out caller owned arrays, so they are split without copying again
+        int[] layoutDims = layout.dims();
+        int[] layoutStrides = layout.strides();
+        int[] firstDims = Arrays.copyOfRange(layoutDims, 0, rank() - shape.rank());
+        int[] firstStrides = Arrays.copyOfRange(layoutStrides, 0, rank() - shape.rank());
+        int[] lastDims = Arrays.copyOfRange(layoutDims, rank() - shape.rank(), rank());
+        int[] lastStrides = Arrays.copyOfRange(layoutStrides, rank() - shape.rank(), rank());
 
         StrideLayout firstLayout = StrideLayout.of(firstDims, layout().offset(), firstStrides);
         DArray<Integer> result = dm.zeros(dt, Shape.of(firstDims), order);
@@ -416,7 +420,7 @@ public final class BaseIntStrideDArray extends AbstractStrideDArray<Integer> {
     @Override
     public DArray<Integer> reduceTo(DArrayReduceOp op, Shape targetShape, boolean keepDim, Order order) {
         if (targetShape.rank() == 0) {
-            return dm.scalar(dt, reduce(op));
+            return keepDim ? dm.full(dt, Shape.of(Ints.fill(rank(), 1)), reduce(op), order) : dm.scalar(dt, reduce(op));
         }
         Broadcast.ElementWise broadcast = Broadcast.elementWise(this.shape(), targetShape);
         if (!broadcast.valid() || !broadcast.shape().equals(this.shape())) {
@@ -564,17 +568,23 @@ public final class BaseIntStrideDArray extends AbstractStrideDArray<Integer> {
             }
         }
         if (rank() == shape.rank()) {
-            return dm.scalar(dt, var(ddof, mean.getInt()));
+            int value = var(ddof, mean.getInt());
+            return keepDim ? dm.full(dt, Shape.of(Ints.fill(rank(), 1)), value, order) : dm.scalar(dt, value);
         }
 
-        int[] firstDims = Arrays.copyOfRange(layout.dims(), 0, rank() - shape.rank());
-        int[] firstStrides = Arrays.copyOfRange(layout.strides(), 0, rank() - shape.rank());
-        int[] lastDims = Arrays.copyOfRange(layout.dims(), rank() - shape.rank(), rank());
-        int[] lastStrides = Arrays.copyOfRange(layout.strides(), rank() - shape.rank(), rank());
+        // dims() and strides() already hand out caller owned arrays, so they are split without copying again
+        int[] layoutDims = layout.dims();
+        int[] layoutStrides = layout.strides();
+        int[] firstDims = Arrays.copyOfRange(layoutDims, 0, rank() - shape.rank());
+        int[] firstStrides = Arrays.copyOfRange(layoutStrides, 0, rank() - shape.rank());
+        int[] lastDims = Arrays.copyOfRange(layoutDims, rank() - shape.rank(), rank());
+        int[] lastStrides = Arrays.copyOfRange(layoutStrides, rank() - shape.rank(), rank());
 
         StrideLayout firstLayout = StrideLayout.of(firstDims, layout().offset(), firstStrides);
-        if (mean.shape().equals(firstLayout.shape())) {
-            throw new IllegalArgumentException("Mean darray must have the same shape as the result array.");
+        // the loop below consumes one mean value per result element, in C order, so the mean must hold exactly as
+        // many values as the result; both the reduced shape and its keepDim form (trailing unit axes) qualify
+        if (mean.size() != firstLayout.shape().size()) {
+            throw new IllegalArgumentException("Mean darray must have the same number of values as the result array.");
         }
         DArray<Integer> result = dm.zeros(dt, Shape.of(firstDims), order);
         PointerIterator resIt = result.ptrIterator(Order.C);
@@ -598,7 +608,8 @@ public final class BaseIntStrideDArray extends AbstractStrideDArray<Integer> {
 
     @Override
     public int argmax(Order order) {
-        int argmax = -1;
+        // start from the first element rather than from a sentinel, which is a legal value for some dtypes
+        int argmax = size() == 0 ? -1 : 0;
         int argvalue = ReduceOpMax.initInt;
         var i = 0;
         var loop = StrideLoopDescriptor.of(layout, order, Simd.vsInt);
@@ -621,8 +632,8 @@ public final class BaseIntStrideDArray extends AbstractStrideDArray<Integer> {
         if (axis < 0) {
             axis += shape().rank();
         }
-        int[] newDims = keepDim ? Arrays.copyOf(layout.dims(), layout.rank()) : layout.shape().narrowDims(axis);
-        int[] newStrides = keepDim ? Arrays.copyOf(layout.strides(), layout.rank()) : layout.narrowStrides(axis);
+        int[] newDims = keepDim ? layout.dims() : layout.shape().narrowDims(axis);
+        int[] newStrides = keepDim ? layout.strides() : layout.narrowStrides(axis);
         if (keepDim) {
             newDims[axis] = 1;
             newStrides[axis] = 0;
@@ -660,8 +671,8 @@ public final class BaseIntStrideDArray extends AbstractStrideDArray<Integer> {
         if (axis < 0) {
             axis += shape().rank();
         }
-        int[] newDims = keepDim ? Arrays.copyOf(layout.dims(), layout.rank()) : layout.shape().narrowDims(axis);
-        int[] newStrides = keepDim ? Arrays.copyOf(layout.strides(), layout.rank()) : layout.narrowStrides(axis);
+        int[] newDims = keepDim ? layout.dims() : layout.shape().narrowDims(axis);
+        int[] newStrides = keepDim ? layout.strides() : layout.narrowStrides(axis);
         if (keepDim) {
             newDims[axis] = 1;
             newStrides[axis] = 0;
@@ -696,7 +707,8 @@ public final class BaseIntStrideDArray extends AbstractStrideDArray<Integer> {
 
     @Override
     public int argmin(Order order) {
-        int argmin = -1;
+        // start from the first element rather than from a sentinel, which is a legal value for some dtypes
+        int argmin = size() == 0 ? -1 : 0;
         int argvalue = ReduceOpMin.initInt;
         var i = 0;
         var loop = StrideLoopDescriptor.of(layout, order, Simd.vsInt);
@@ -986,9 +998,6 @@ public final class BaseIntStrideDArray extends AbstractStrideDArray<Integer> {
             int simdBound = vs.loopBound(m);
             for (int k = 0; k < n; k++) {
                 int xk = xv[k];
-                if (xk == 0) {
-                    continue;
-                }
                 IntVector xkv = IntVector.broadcast(vs, xk);
                 int ptr = aOff + k * as1;
                 int i = 0;
@@ -1106,6 +1115,11 @@ public final class BaseIntStrideDArray extends AbstractStrideDArray<Integer> {
         }
         if (to.dt() != dt) {
             throw new IllegalArgumentException("Target array has different data type than operation result.");
+        }
+        if (to.rank() != 2 || to.dim(0) != shape().dim(0) || to.dim(1) != other.shape().dim(1)) {
+            throw new IllegalArgumentException(String.format(
+                    "Target array shape %s does not match the result shape ([%d,%d]).", to.shape(), shape().dim(0),
+                    other.shape().dim(1)));
         }
         return mmBlocked(other, to.cast(dt));
     }
@@ -1475,8 +1489,10 @@ public final class BaseIntStrideDArray extends AbstractStrideDArray<Integer> {
             return m;
         }
         if (isMatrix()) {
-            int d = diagonal >= 0 ? dim(1) : dim(0);
-            int len = diagonal >= 0 ? d - diagonal : d + diagonal;
+            // the diagonal ends at the first edge it reaches, so both dimensions bound its length
+            int len = diagonal >= 0
+                    ? Math.min(dim(0), dim(1) - diagonal)
+                    : Math.min(dim(0) + diagonal, dim(1));
             if (len <= 0) {
                 throw new IllegalArgumentException("Diagonal " + diagonal + " does not exists for shape " + shape() + ".");
             }
@@ -1556,6 +1572,10 @@ public final class BaseIntStrideDArray extends AbstractStrideDArray<Integer> {
 
     @Override
     public DArray<Integer> copyTo(DArray<Integer> to) {
+        if (!shape().equals(to.shape())) {
+            throw new IllegalArgumentException(
+                    String.format("Destination shape %s does not match the source shape %s.", to.shape(), shape()));
+        }
 
         Order askOrder = Layout.storageFastTandemOrder(layout, to.layout());
 

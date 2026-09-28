@@ -410,9 +410,21 @@ public abstract class DArrayManager {
     }
 
     private static void validateForConcatenation(int axis, List<int[]> dims) {
+        if (dims.isEmpty()) {
+            throw new IllegalArgumentException("At least one darray is required for concatenation.");
+        }
+        int rank = dims.getFirst().length;
+        if (axis < 0 || axis >= rank) {
+            throw new IllegalArgumentException("Axis is out of bounds: " + axis + ".");
+        }
         for (int i = 1; i < dims.size(); i++) {
             int[] dimsPrev = dims.get(i - 1);
             int[] dimsNext = dims.get(i);
+            // without this the loop below compares only the first dimsPrev.length dimensions, and the copy
+            // stops when the destination slice is exhausted, silently dropping the rest of the longer array
+            if (dimsNext.length != dimsPrev.length) {
+                throw new IllegalArgumentException("DArrays are not valid for concatenation");
+            }
             for (int j = 0; j < dimsPrev.length; j++) {
                 if (j != axis && dimsNext[j] != dimsPrev[j]) {
                     throw new IllegalArgumentException("DArrays are not valid for concatenation");
