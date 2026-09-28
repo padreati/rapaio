@@ -27,7 +27,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
@@ -242,5 +244,33 @@ public class VarContractTest {
         assertTrue(a.deepEquals(b));
         b.setMissing(2);
         assertFalse(a.deepEquals(b));
+    }
+
+    /**
+     * {@code shuffle()} draws from a fresh {@code Random} and is deliberately not reproducible;
+     * {@code shuffle(Random)} is, which is what callers needing a seeded permutation must use.
+     */
+    @Test
+    void shuffleWithARandomIsReproducible() {
+        VarDouble source = VarDouble.seq(0, 199);
+
+        Var a = source.shuffle(new Random(42));
+        Var b = source.shuffle(new Random(42));
+        assertTrue(a.deepEquals(b), "equally seeded generators must give the same permutation");
+
+        Var c = source.shuffle(new Random(43));
+        assertFalse(a.deepEquals(c), "different seeds should give different permutations");
+
+        // a permutation: same size, same values, each exactly once, and not the identity
+        assertEquals(source.size(), a.size());
+        double[] sorted = new double[a.size()];
+        for (int i = 0; i < a.size(); i++) {
+            sorted[i] = a.getDouble(i);
+        }
+        Arrays.sort(sorted);
+        for (int i = 0; i < sorted.length; i++) {
+            assertEquals(i, sorted[i], 1e-12);
+        }
+        assertFalse(a.deepEquals(source), "a shuffle of 200 rows should not come back in order");
     }
 }

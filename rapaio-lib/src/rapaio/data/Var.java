@@ -26,6 +26,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
@@ -542,8 +543,26 @@ public interface Var extends Serializable, Printable {
         return var;
     }
 
+    /**
+     * Builds a new variable with the rows of this variable in a uniformly random order, drawn from a fresh
+     * {@link Random}. The result is therefore <b>not reproducible</b>; use {@link #shuffle(Random)} with a
+     * seeded random generator when it has to be.
+     *
+     * @return a mapped variable over a random permutation of the rows
+     */
     default Var shuffle() {
-        return mapRows(SamplingTools.sampleWOR(size(), size()));
+        return shuffle(new Random());
+    }
+
+    /**
+     * Builds a new variable with the rows of this variable in a uniformly random order, drawn from the given
+     * random generator. Two calls with equally seeded generators produce the same permutation.
+     *
+     * @param random random generator used to draw the permutation
+     * @return a mapped variable over a random permutation of the rows
+     */
+    default Var shuffle(Random random) {
+        return mapRows(SamplingTools.sampleWOR(random, size(), size()));
     }
 
     default IntComparator refComparator() {

@@ -190,6 +190,14 @@ public class CForest extends ClassifierModel<CForest, ClassifierResult, RunInfo<
         return getVIInfo(gainVIMap);
     }
 
+    /**
+     * Permutation variable importance, one row per input variable, sorted by decreasing significance.
+     * <p>
+     * {@code mean} and {@code sd} are the sample mean and standard deviation of the per-tree accuracy drops.
+     * {@code z-score} is the standardized mean {@code |mean| / (sd / sqrt(n))} over the {@code n} trees which
+     * contributed, and {@code p-value} the corresponding two-sided normal tail {@code 2 * Phi(-|z|)}, that is
+     * the probability of a drop this large if permuting the variable made no difference.
+     */
     public Frame getPermVIInfo() {
         Var name = VarNominal.empty().name("name");
         Var score = VarDouble.empty().name("mean");
@@ -202,8 +210,10 @@ public class CForest extends ClassifierModel<CForest, ClassifierResult, RunInfo<
             VarDouble scores = VarDouble.copy(e.getValue());
             double mean = Mean.of(scores).value();
             double sd = Variance.of(scores).sdValue();
-            double zscore = mean / (sd);
-            double pvalue = normal.cdf(2 * normal.cdf(-Math.abs(zscore)));
+            // the statistic is a mean over scores.size() trees, so the standard error is sd / sqrt(n)
+            double zscore = mean / (sd / Math.sqrt(scores.size()));
+            // two sided normal tail; the result is already a probability and must not be fed to cdf again
+            double pvalue = 2 * normal.cdf(-Math.abs(zscore));
             score.addDouble(Math.abs(mean));
             sds.addDouble(sd);
             zscores.addDouble(Math.abs(zscore));
@@ -241,6 +251,11 @@ public class CForest extends ClassifierModel<CForest, ClassifierResult, RunInfo<
         long[] seeds = IntStream.range(0, runs.get())
                 .mapToLong(__ -> random.nextLong())
                 .toArray();
+        // permutation variable importance draws its own seeds, so that the permutations are reproducible under
+        // this model's seed without being derived from the same stream as each tree's bootstrap sample
+        long[] permSeeds = IntStream.range(0, runs.get())
+                .mapToLong(__ -> random.nextLong())
+                .toArray();
 
         ExecutorService executor = Executors.newWorkStealingPool(threads);
         IntStream.range(0, runs.get()).boxed()
@@ -257,7 +272,7 @@ public class CForest extends ClassifierModel<CForest, ClassifierResult, RunInfo<
                         gainVICompute(info.model);
                     }
                     if (viPerm.get()) {
-                        permVICompute(df, info.model, info.mapping);
+                        permVICompute(df, info.model, info.mapping, permSeeds[info.run]);
                     }
                     runningHook.get().accept(RunInfo.forClassifier(this, info.run));
                 });
@@ -265,7 +280,16 @@ public class CForest extends ClassifierModel<CForest, ClassifierResult, RunInfo<
         return true;
     }
 
-    private void permVICompute(Frame df, ClassifierModel<?, ?, ?> c, Mapping oobIndexes) {
+    /**
+     * Computes the permutation variable importance contributed by one weak predictor: for each input variable
+     * the values are permuted in the out-of-bag frame and the drop in the number of correctly classified cases
+     * is recorded.
+     *
+     * @param seed seed of the random generator used for the permutations, so the result is reproducible
+     */
+    private void permVICompute(Frame df, ClassifierModel<?, ?, ?> c, Mapping oobIndexes, long seed) {
+
+        Random random = new Random(seed);
 
         // build oob data frame
         Frame oobFrame = df.mapRows(oobIndexes);
@@ -281,7 +305,7 @@ public class CForest extends ClassifierModel<CForest, ClassifierResult, RunInfo<
         for (String varName : inputNames()) {
 
             // shuffle values from variable
-            Var shuffled = oobFrame.rvar(varName).shuffle();
+            Var shuffled = oobFrame.rvar(varName).shuffle(random);
 
             // build oob frame with shuffled variable
             Frame oobReduced = oobFrame.removeVars(VarRange.of(varName)).bindVars(shuffled);

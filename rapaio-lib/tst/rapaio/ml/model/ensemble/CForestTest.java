@@ -22,6 +22,7 @@
 package rapaio.ml.model.ensemble;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -36,6 +37,8 @@ import java.util.Random;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import rapaio.core.distributions.Distribution;
+import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarType;
@@ -321,5 +324,62 @@ public class CForestTest {
         var density2 = rf2.fit(df, "class").predict(df).firstDensity();
 
         assertTrue(density1.deepEquals(density2));
+    }
+
+    /**
+     * Permutation importance used to shuffle through {@code Var.shuffle()}, which draws from a fresh
+     * {@code Random}, so the reported importance differed on every fit even with the seed pinned.
+     */
+    @Test
+    void permutationViIsReproducibleUnderSeed() {
+        var first = permVi(123L);
+        var second = permVi(123L);
+        assertTrue(first.deepEquals(second), "same seed must give the same permutation importance\n" + first + second);
+
+        // and the test is not vacuous: a different seed permutes differently
+        var other = permVi(987L);
+        assertFalse(first.deepEquals(other), "a different seed should give a different permutation importance");
+    }
+
+    /**
+     * The reported statistic is a mean over the trees, so it must be standardized by the standard error
+     * {@code sd / sqrt(n)}, and the p-value is the two-sided normal tail of it. The p-value used to be fed
+     * through the cdf a second time, which pinned every variable near 0.5 regardless of the z-score.
+     */
+    @Test
+    void permutationViStatisticsUseTheStandardErrorAndATwoSidedTail() {
+        int runs = 20;
+        var model = CForest.newModel().runs.set(runs).seed.set(42L).viPerm.set(true);
+        model.fit(iris, "class");
+        Frame info = model.getPermVIInfo();
+
+        assertEquals(4, info.rowCount());
+        Distribution normal = Normal.std();
+        for (int row = 0; row < info.rowCount(); row++) {
+            double mean = info.getDouble(row, "mean");
+            double sd = info.getDouble(row, "sd");
+            double z = info.getDouble(row, "z-score");
+            double p = info.getDouble(row, "p-value");
+
+            assertEquals(mean, z * sd / Math.sqrt(runs), 1e-9,
+                    "z-score of " + info.getLabel(row, "name") + " must be |mean| / (sd / sqrt(n))");
+            assertEquals(2 * normal.cdf(-z), p, 1e-12,
+                    "p-value of " + info.getLabel(row, "name") + " must be 2 * Phi(-|z|)");
+            assertTrue(p >= 0 && p <= 1, "p-value out of range: " + p);
+        }
+
+        // on iris the petal measurements carry the signal, so at least one variable must be clearly significant
+        assertTrue(info.getDouble(0, "p-value") < 0.01,
+                "expected a significant variable, most significant p-value was " + info.getDouble(0, "p-value"));
+    }
+
+    private Frame permVi(long seed) {
+        var model = CForest.newModel()
+                .runs.set(10)
+                .poolSize.set(2)
+                .seed.set(seed)
+                .viPerm.set(true);
+        model.fit(iris, "class");
+        return model.getPermVIInfo();
     }
 }
