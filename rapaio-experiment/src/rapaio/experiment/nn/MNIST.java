@@ -115,9 +115,11 @@ public class MNIST {
 
     public static Network createNet3(TensorManager tm) {
         return new Sequential(tm,
-                new Conv2D(tm, 1, 1, 3, 3, 2, 0, 1, 1, true),
+                new Conv2D(tm, 1, 12, 5, 5, 2, 1, 1, 1, true),
                 new Sigmoid(tm),
-                new Conv2D(tm, 1, 1, 3, 3, 2, 0, 2, 1, true),
+                new Conv2D(tm, 12, 4, 3, 3, 2, 0, 2, 1, true),
+                new Sigmoid(tm),
+                new Conv2D(tm, 4, 1, 3, 3, 1, 1, 1, 1, true),
                 new Sigmoid(tm),
                 new Flatten(tm),
                 new Linear(tm, 25, 10, true),
@@ -138,7 +140,7 @@ public class MNIST {
                 mnist.test().darray(1));
 
         int epochs = 100;
-        double lr = 3.5e-3;
+        double lr = 1.3e-3;
         int batchSize = 256;
 
 //        var nn = new ConvNetwork(tm);
