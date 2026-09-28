@@ -569,12 +569,20 @@ public interface Var extends Serializable, Printable {
         return refComparator(true);
     }
 
+    /**
+     * Builds a comparator of row indexes which orders the rows by this variable's values, ascending or
+     * descending. The comparison follows the variable's own type: numeric types compare numerically,
+     * instants chronologically, nominal and string values lexicographically by label.
+     * <p>
+     * The switch is exhaustive on purpose: a new {@link VarType} will not compile until it is given an
+     * ordering here, instead of silently falling back to a lexicographic comparison of its labels.
+     */
     default IntComparator refComparator(boolean asc) {
         return switch (this.type()) {
-            case DOUBLE -> RowComparators.doubleComparator(this, asc);
-            case LONG -> RowComparators.longComparator(this, asc);
+            case DOUBLE, FLOAT -> RowComparators.doubleComparator(this, asc);
             case INT, BINARY -> RowComparators.integerComparator(this, asc);
-            default -> RowComparators.labelComparator(this, asc);
+            case LONG, INSTANT -> RowComparators.longComparator(this, asc);
+            case NOMINAL, STRING -> RowComparators.labelComparator(this, asc);
         };
     }
 
@@ -589,9 +597,15 @@ public interface Var extends Serializable, Printable {
     }
 
     /**
-     * Tests if two variables has identical content, it does not matter the implementation.
+     * Tests if two variables have identical content, whatever the implementation: same name, size, type, the
+     * same rows missing, and equal values on every non-missing row. Floating point values are compared with the
+     * given absolute tolerance; every other type is compared exactly.
+     * <p>
+     * The per-type comparison is an exhaustive switch expression, so a new {@link VarType} must be given a
+     * comparison here instead of silently falling back to comparing labels.
      *
      * @param var variable on which the deep equals applied
+     * @param tol absolute tolerance used for floating point values
      * @return true if type, size and content is identical
      */
     default boolean deepEquals(Var var, double tol) {
@@ -612,32 +626,22 @@ public interface Var extends Serializable, Printable {
             if (isMissing(i)) {
                 continue;
             }
-            switch (type()) {
-                case DOUBLE -> {
-                    if (Math.abs(getDouble(i) - var.getDouble(i)) > tol) {
-                        return false;
-                    }
+            int row = i;
+            boolean equalValues = switch (type()) {
+                case DOUBLE, FLOAT -> {
+                    double v1 = getDouble(row);
+                    double v2 = var.getDouble(row);
+                    // the identity test is what makes two infinities equal: their difference is NaN,
+                    // and every comparison against NaN is false
+                    yield v1 == v2 || Math.abs(v1 - v2) <= tol;
                 }
-                case INT, BINARY -> {
-                    if (getInt(i) != var.getInt(i)) {
-                        return false;
-                    }
-                }
-                case LONG -> {
-                    if (getLong(i) != var.getLong(i)) {
-                        return false;
-                    }
-                }
-                case INSTANT -> {
-                    if (!getInstant(i).equals(var.getInstant(i))) {
-                        return false;
-                    }
-                }
-                default -> {
-                    if (!Objects.equals(getLabel(i), var.getLabel(i))) {
-                        return false;
-                    }
-                }
+                case INT, BINARY -> getInt(row) == var.getInt(row);
+                case LONG -> getLong(row) == var.getLong(row);
+                case INSTANT -> getInstant(row).equals(var.getInstant(row));
+                case NOMINAL, STRING -> Objects.equals(getLabel(row), var.getLabel(row));
+            };
+            if (!equalValues) {
+                return false;
             }
         }
         return true;

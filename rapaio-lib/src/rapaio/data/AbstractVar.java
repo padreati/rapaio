@@ -52,16 +52,17 @@ public abstract class AbstractVar implements Var {
         return this;
     }
 
+    /**
+     * Copies this variable into a new solid variable of the same type, preserving name and missing values.
+     * <p>
+     * This implementation serves the non-solid variables (mapped, bound); every solid implementation
+     * overrides it. The switch is an exhaustive switch <i>expression</i>, so adding a {@link VarType}
+     * without handling it here is a compile error rather than a runtime exception.
+     */
     @Override
     public Var copy() {
-
-        // this implementation is useful for non-solid variables like bounded or mapped
-        // all solid implementations have their own version of copy method
-
-        switch (type()) {
-            case INT -> {
-                return VarInt.from(size(), this::getInt).name(name());
-            }
+        return switch (type()) {
+            case INT -> VarInt.from(size(), this::getInt).name(name());
             case LONG -> {
                 VarLong stamp = VarLong.empty(size()).name(name());
                 for (int i = 0; i < size(); i++) {
@@ -71,14 +72,21 @@ public abstract class AbstractVar implements Var {
                     }
                     stamp.setLong(i, getLong(i));
                 }
-                return stamp;
+                yield stamp;
             }
             case DOUBLE -> {
                 VarDouble num = VarDouble.empty(size()).name(name());
                 for (int i = 0; i < size(); i++) {
                     num.setDouble(i, getDouble(i));
                 }
-                return num;
+                yield num;
+            }
+            case FLOAT -> {
+                VarFloat num = VarFloat.empty(size()).name(name());
+                for (int i = 0; i < size(); i++) {
+                    num.setFloat(i, getFloat(i));
+                }
+                yield num;
             }
             case BINARY -> {
                 VarBinary bin = VarBinary.empty(size()).name(name());
@@ -89,7 +97,7 @@ public abstract class AbstractVar implements Var {
                     }
                     bin.setInt(i, getInt(i));
                 }
-                return bin;
+                yield bin;
             }
             case NOMINAL -> {
                 VarNominal nom = VarNominal.empty(size(), levels()).name(name());
@@ -100,16 +108,11 @@ public abstract class AbstractVar implements Var {
                     }
                     nom.setLabel(i, getLabel(i));
                 }
-                return nom;
+                yield nom;
             }
-            case STRING -> {
-                return VarString.from(size(), this::getLabel).name(name());
-            }
-            case INSTANT -> {
-                return VarInstant.from(size(), this::getInstant).name(name());
-            }
-            default -> throw new IllegalArgumentException("Variable type does not hav an implementation.");
-        }
+            case STRING -> VarString.from(size(), this::getLabel).name(name());
+            case INSTANT -> VarInstant.from(size(), this::getInstant).name(name());
+        };
     }
 
     @Serial

@@ -33,36 +33,42 @@ import org.junit.jupiter.api.Test;
 public class VarTypeTest {
 
     private final VarType[] types = new VarType[]{
-            VarType.BINARY, VarType.INT, VarType.LONG, VarType.DOUBLE, VarType.NOMINAL, VarType.STRING};
+            VarType.BINARY, VarType.INT, VarType.LONG, VarType.FLOAT, VarType.DOUBLE,
+            VarType.NOMINAL, VarType.INSTANT, VarType.STRING};
 
     @Test
     void testNewInstance() {
+        // every type must build an empty instance of itself, and one of the requested size
+        assertEquals(VarType.values().length, types.length, "every VarType must be covered by this test");
+        for (VarType type : types) {
+            Var empty = type.newInstance();
+            assertEquals(type, empty.type(), type.name());
+            assertEquals(0, empty.size(), type.name());
+            assertTrue(empty.deepEquals(type.newInstance()), type.name());
 
-        VarDouble varDouble = VarDouble.empty();
-        VarLong varLong = VarLong.empty();
-        VarInt varInt = VarInt.empty();
-        VarBinary varBinary = VarBinary.empty();
-        VarNominal varNominal = VarNominal.empty();
-        VarString varString = VarString.empty();
-
-        assertTrue(varDouble.deepEquals(varDouble.type().newInstance()));
-        assertTrue(varLong.deepEquals(varLong.type().newInstance()));
-        assertTrue(varInt.deepEquals(varInt.type().newInstance()));
-        assertTrue(varBinary.deepEquals(varBinary.type().newInstance()));
-        assertTrue(varNominal.deepEquals(varNominal.type().newInstance()));
-        assertTrue(varString.deepEquals(varString.type().newInstance()));
+            Var sized = type.newInstance(3);
+            assertEquals(type, sized.type(), type.name());
+            assertEquals(3, sized.size(), type.name());
+            for (int row = 0; row < 3; row++) {
+                assertTrue(sized.isMissing(row), type.name() + " row " + row);
+            }
+        }
     }
 
     @Test
     void testIsCategory() {
-        boolean[] numeric = new boolean[]{true, true, false, true, false, false};
-        boolean[] nominal = new boolean[]{false, false, false, false, true, false};
-        String[] code = new String[]{"bin", "int", "long", "dbl", "nom", "str"};
+        //                                        bin    int   long   flt    dbl    nom   instant  str
+        boolean[] numeric = new boolean[]{true, true, true, true, true, false, false, false};
+        boolean[] floating = new boolean[]{false, false, false, true, true, false, false, false};
+        boolean[] nominal = new boolean[]{false, false, false, false, false, true, false, false};
+        String[] code = new String[]{"bin", "int", "long", "flt", "dbl", "nom", "instant", "str"};
 
+        assertEquals(VarType.values().length, types.length, "every VarType must be covered by this test");
         for (int i = 0; i < types.length; i++) {
-            assertEquals(numeric[i], types[i].isNumeric());
-            assertEquals(nominal[i], types[i].isNominal());
-            assertEquals(code[i], types[i].code());
+            assertEquals(numeric[i], types[i].isNumeric(), types[i].name());
+            assertEquals(floating[i], types[i].isFloatingPoint(), types[i].name());
+            assertEquals(nominal[i], types[i].isNominal(), types[i].name());
+            assertEquals(code[i], types[i].code(), types[i].name());
         }
     }
 }

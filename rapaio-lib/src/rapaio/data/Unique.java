@@ -24,6 +24,7 @@ package rapaio.data;
 import rapaio.data.unique.UniqueDouble;
 import rapaio.data.unique.UniqueInt;
 import rapaio.data.unique.UniqueLabel;
+import rapaio.data.unique.UniqueLong;
 import rapaio.printer.Printable;
 
 /**
@@ -57,12 +58,19 @@ public interface Unique extends Printable {
         return Unique.of(var, false);
     }
 
+    /**
+     * Builds a unique value structure over the given variable, dispatching on its type. The switch is
+     * exhaustive so that a new {@link rapaio.data.VarType} cannot silently end up unsupported.
+     * <p>
+     * {@code FLOAT} is handled by {@link UniqueDouble} (every float is exactly representable as a double),
+     * {@code LONG} and {@code INSTANT} by {@link UniqueLong}, which keeps full long precision.
+     */
     static Unique of(Var var, boolean sorted) {
         return switch (var.type()) {
-            case DOUBLE -> ofDouble(var, sorted);
+            case DOUBLE, FLOAT -> ofDouble(var, sorted);
             case STRING, NOMINAL -> ofLabel(var, sorted);
             case INT, BINARY -> ofInt(var, sorted);
-            default -> throw new IllegalArgumentException("Cannot build unique structure for given type: not implemented.");
+            case LONG, INSTANT -> ofLong(var, sorted);
         };
     }
 
@@ -80,6 +88,14 @@ public interface Unique extends Printable {
 
     static UniqueInt ofInt(Var var, boolean sorted) {
         return UniqueInt.of(var, sorted);
+    }
+
+    static UniqueLong ofLong(Var var) {
+        return UniqueLong.of(var, false);
+    }
+
+    static UniqueLong ofLong(Var var, boolean sorted) {
+        return UniqueLong.of(var, sorted);
     }
 
     static UniqueLabel ofLabel(Var var) {

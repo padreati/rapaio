@@ -78,9 +78,15 @@ public class VarStandardScaler extends AbstractVarTransform {
         return this;
     }
 
+    /**
+     * Standardizes the values in place. The variable must store floating point values: writing a standardized
+     * value into an integral variable would truncate it (an {@code INT} variable would keep only -2, -1, 0, 1, 2),
+     * so integral, nominal, instant and string variables are returned untouched, as is a variable whose standard
+     * deviation is numerically zero.
+     */
     @Override
     public Var coreApply(Var var) {
-        if (!var.type().isNumeric()) {
+        if (!var.type().isFloatingPoint()) {
             return var;
         }
         if (Math.abs(sd) < 1e-20)

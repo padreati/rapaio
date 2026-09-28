@@ -117,8 +117,9 @@ public class VarLongTest {
     @Test
     void smokeTest() {
         Var v = VarLong.empty();
-        boolean flag = v.type().isNumeric();
-        assertFalse(flag);
+        // a long is a number: isNumeric says the value has a numeric meaning, not that a real fits in it
+        assertTrue(v.type().isNumeric());
+        assertFalse(v.type().isFloatingPoint());
         assertFalse(v.type().isNominal());
 
         assertEquals(0, v.size());

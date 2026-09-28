@@ -97,8 +97,19 @@ public enum VarType {
         return code;
     }
 
+    /**
+     * Tells if this type has a numeric representation, that is if {@code getDouble} / {@code getLong} carry
+     * the value's meaning rather than an encoding of it. See {@link #isNumeric(VarType)}.
+     */
     public boolean isNumeric() {
         return isNumeric(this);
+    }
+
+    /**
+     * Tells if this type stores values as floating point numbers. See {@link #isFloatingPoint(VarType)}.
+     */
+    public boolean isFloatingPoint() {
+        return isFloatingPoint(this);
     }
 
     public boolean isNominal() {
@@ -124,11 +135,41 @@ public enum VarType {
         return newInstanceFunction.apply(rows);
     }
 
+    /**
+     * Tells if values of the given type have a numeric meaning, so that reading them through
+     * {@code getDouble} or {@code getLong} yields the value itself rather than an encoding of it.
+     * <p>
+     * True for {@link #DOUBLE}, {@link #FLOAT}, {@link #INT}, {@link #LONG} and {@link #BINARY}. Notably
+     * <b>false</b> for {@link #INSTANT}: an instant does have a numeric representation (epoch milliseconds)
+     * but arithmetic on it is not meaningful in the way it is for a measurement, and false for
+     * {@link #NOMINAL}, whose integer view is a category index.
+     * <p>
+     * This says nothing about whether an arbitrary real number can be <i>stored</i> back into such a
+     * variable: writing {@code 0.5} into an {@link #INT} or {@link #LONG} variable truncates. Use
+     * {@link #isFloatingPoint(VarType)} for that question.
+     */
     public static boolean isNumeric(VarType type) {
-        return type == DOUBLE || type == INT || type == BINARY;
+        return switch (type) {
+            case DOUBLE, FLOAT, INT, LONG, BINARY -> true;
+            case NOMINAL, INSTANT, STRING -> false;
+        };
+    }
+
+    /**
+     * Tells if the given type stores values as floating point numbers, so that an arbitrary real number can
+     * be written into it without truncation. True for {@link #DOUBLE} and {@link #FLOAT} only.
+     */
+    public static boolean isFloatingPoint(VarType type) {
+        return switch (type) {
+            case DOUBLE, FLOAT -> true;
+            case INT, LONG, BINARY, NOMINAL, INSTANT, STRING -> false;
+        };
     }
 
     public static boolean isNominal(VarType type) {
-        return type == NOMINAL;
+        return switch (type) {
+            case NOMINAL -> true;
+            case DOUBLE, FLOAT, INT, LONG, BINARY, INSTANT, STRING -> false;
+        };
     }
 }

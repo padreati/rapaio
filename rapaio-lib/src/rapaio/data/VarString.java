@@ -279,31 +279,6 @@ public class VarString extends AbstractVar {
     }
 
     @Override
-    public boolean deepEquals(Var var) {
-        if (var.type() != VarType.STRING) {
-            return false;
-        }
-        if (var.size() != values.size()) {
-            return false;
-        }
-        for (int i = 0; i < values.size(); i++) {
-            String val1 = values.get(i);
-            String val2 = var.getLabel(i);
-
-            if (val1 == null && val2 != null) {
-                return false;
-            }
-            if (val1 != null && val2 == null) {
-                return false;
-            }
-            if ((val1 != null) && val1.compareTo(val2) != 0) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
     protected void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POpt<?>[] options) {
         tt.textCenter(i, j, getLabel(row));
     }

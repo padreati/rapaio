@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.Instant;
 import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -37,9 +38,12 @@ import rapaio.data.Unique;
 import rapaio.data.Var;
 import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
+import rapaio.data.VarFloat;
+import rapaio.data.VarInstant;
 import rapaio.data.VarInt;
 import rapaio.data.VarLong;
 import rapaio.data.VarNominal;
+import rapaio.data.VarType;
 import rapaio.data.transform.VarRefSort;
 
 /**
@@ -136,10 +140,77 @@ public class UniqueTest {
         assertTrue(sortedIds.deepEquals(secondSorted));
     }
 
+    /**
+     * {@code Unique.of} used to reject LONG, FLOAT and INSTANT with a generic "not implemented" message;
+     * they now dispatch to {@link UniqueLong} and {@link UniqueDouble}, and the switch is exhaustive so no
+     * type can be left out.
+     */
     @Test
-    void testUnimplemented() {
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> Unique.of(VarLong.copy(1, 2, 3, 4), false));
-        assertEquals("Cannot build unique structure for given type: not implemented.", ex.getMessage());
+    void everyVarTypeIsSupported() {
+        for (VarType type : VarType.values()) {
+            Var var = type.newInstance(3);
+            Unique unique = Unique.of(var, false);
+            assertEquals(1, unique.uniqueCount(), type.name() + ": three missing values are one unique value");
+            assertEquals(3, unique.rowList(0).size(), type.name());
+        }
+    }
+
+    @Test
+    void longAndInstantKeepFullPrecision() {
+        // these two differ by 1 but are 2^53 apart from zero, so a double-backed implementation would merge them
+        long big = (1L << 53) + 1;
+        Unique unique = Unique.of(VarLong.copy(big, big + 1, big).name("x"), true);
+        assertEquals(2, unique.uniqueCount());
+        assertEquals(2, unique.rowList(0).size());
+        assertEquals(1, unique.rowList(1).size());
+        assertEquals(big, ((UniqueLong) unique).uniqueValue(0));
+        assertEquals(big + 1, ((UniqueLong) unique).uniqueValue(1));
+
+        Instant t1 = Instant.parse("2026-09-28T10:15:30.00Z");
+        Instant t2 = Instant.parse("2026-09-28T10:15:30.001Z");
+        Unique instants = Unique.of(VarInstant.from(3, row -> row == 1 ? t2 : t1).name("t"), true);
+        assertEquals(2, instants.uniqueCount());
+        assertEquals(t1.toEpochMilli(), ((UniqueLong) instants).uniqueValue(0));
+        assertEquals(t2.toEpochMilli(), ((UniqueLong) instants).uniqueValue(1));
+    }
+
+    @Test
+    void floatUsesTheDoubleImplementation() {
+        Unique unique = Unique.of(VarFloat.copy(1.5f, 2.5f, 1.5f).name("x"), true);
+        assertEquals(2, unique.uniqueCount());
+        assertEquals(1.5, ((UniqueDouble) unique).uniqueValue(0), 1e-12);
+        assertEquals(2.5, ((UniqueDouble) unique).uniqueValue(1), 1e-12);
+    }
+
+    @Test
+    void longValuesSortAndGroupCorrectly() {
+        Var x = VarLong.copy(30, 10, 20, 10, VarLong.MISSING_VALUE).name("x");
+        Unique unique = Unique.of(x, true);
+
+        assertEquals(4, unique.uniqueCount());
+        UniqueLong ul = (UniqueLong) unique;
+        assertEquals(10, ul.uniqueValue(0));
+        assertEquals(20, ul.uniqueValue(1));
+        assertEquals(30, ul.uniqueValue(2));
+        // missing sorts last, as NaN does in UniqueDouble
+        assertEquals(VarLong.MISSING_VALUE, ul.uniqueValue(3));
+
+        assertEquals(2, unique.rowList(0).size());
+        assertEquals(0, unique.idByRow(1));
+        assertEquals(0, unique.idByRow(3));
+        assertEquals(2, unique.idByRow(0));
+        assertEquals(3, unique.idByRow(4));
+
+        // the unsorted variant exposes the same grouping through valueSortedIds
+        Unique unsorted = Unique.of(x, false);
+        assertEquals(4, unsorted.uniqueCount());
+        UniqueLong ulu = (UniqueLong) unsorted;
+        int[] ids = unsorted.valueSortedIds().elements();
+        long previous = Long.MIN_VALUE;
+        for (int i = 0; i < unsorted.uniqueCount(); i++) {
+            long value = ulu.uniqueValue(ids[i]);
+            assertTrue(value >= previous, "valueSortedIds must be in ascending value order");
+            previous = value;
+        }
     }
 }

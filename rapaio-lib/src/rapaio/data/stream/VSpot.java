@@ -141,31 +141,32 @@ public record VSpot(int row, Var rvar) implements Comparable<VSpot>, Serializabl
         rvar.setInstant(row, value);
     }
 
+    /**
+     * Compares two spots by the value they point at, following the type of the underlying variable.
+     * Nominal and string values are compared by label, with missing labels ordered first; every other type
+     * compares numerically or chronologically. The switch is exhaustive so that a new {@link rapaio.data.VarType}
+     * cannot silently fall back to comparing labels.
+     */
     @Override
     public int compareTo(VSpot o) {
         return switch (rvar.type()) {
-            case DOUBLE -> Double.compare(getDouble(), o.getDouble());
+            case DOUBLE, FLOAT -> Double.compare(getDouble(), o.getDouble());
             case BINARY, INT -> Integer.compare(getInt(), o.getInt());
-            case LONG -> Long.compare(getLong(), o.getLong());
-            default -> getLabel().compareTo(o.getLabel());
+            case LONG, INSTANT -> Long.compare(getLong(), o.getLong());
+            case NOMINAL, STRING -> compareLabels(getLabel(), o.getLabel());
         };
     }
 
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
+    /**
+     * Label comparison which tolerates the {@code null} a missing {@link rapaio.data.VarString} row returns.
+     */
+    private static int compareLabels(String label1, String label2) {
+        if (label1 == null) {
+            return label2 == null ? 0 : -1;
         }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
+        if (label2 == null) {
+            return 1;
         }
-        VSpot vSpot = (VSpot) o;
-        return row == vSpot.row && Objects.equals(rvar, vSpot.rvar);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(row, rvar);
+        return label1.compareTo(label2);
     }
 }

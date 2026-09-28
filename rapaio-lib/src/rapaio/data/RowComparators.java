@@ -68,7 +68,7 @@ public final class RowComparators implements Serializable {
 
     public static IntComparator longComparator(final Var var, final boolean asc) {
         final int sign = asc ? 1 : -1;
-        return (i1, i2) -> sign * (var.getLong(i1) < var.getLong(i2) ? -1 : 1);
+        return (i1, i2) -> sign * Long.compare(var.getLong(i1), var.getLong(i2));
     }
 }
 
