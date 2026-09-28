@@ -127,6 +127,10 @@ public class LUDecompositionTest {
     <N extends Number> void testInvalidSolver(DArrayManager tm, DType<N> dt) {
         var ex = assertThrows(IllegalArgumentException.class,
                 () -> tm.random(dt, Shape.of(4, 3), random).lu().solve(tm.random(dt, Shape.of(6, 6), random)));
+        assertEquals("A system can be solved only for squared matrices.", ex.getMessage());
+
+        ex = assertThrows(IllegalArgumentException.class,
+                () -> tm.eye(dt, 4).lu().solve(tm.eye(dt, 6)));
         assertEquals("Matrix row dimensions must agree.", ex.getMessage());
 
         ex = assertThrows(IllegalArgumentException.class, () -> tm.zeros(dt, Shape.of(3, 3)).lu().solve(tm.eye(dt, 3)));

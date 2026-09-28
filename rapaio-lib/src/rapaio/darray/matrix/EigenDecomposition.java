@@ -63,6 +63,8 @@ public final class EigenDecomposition<N extends Number> implements Serializable 
     private final DArray<N> vectors;
 
     private final DType<N> dt;
+    // true when the decomposed matrix was symmetric, so that vectors are orthogonal and eigenvalues real
+    private final boolean symmetric;
     private final DArrayManager tm;
 
     /**
@@ -72,6 +74,13 @@ public final class EigenDecomposition<N extends Number> implements Serializable 
      * @param a Square matrix
      */
     public EigenDecomposition(DArray<N> a) {
+        if (!a.isMatrix()) {
+            throw new IllegalArgumentException("Only matrix tensors can have eigen decomposition.");
+        }
+        if (a.dt().isInteger()) {
+            throw new IllegalArgumentException(
+                    "Cannot compute decomposition for integer types (dtype: " + a.dt().id() + ")");
+        }
         if (a.nanCount() > 0) {
             throw new IllegalArgumentException("DArrays cannot have NaN values.");
         }
@@ -84,7 +93,8 @@ public final class EigenDecomposition<N extends Number> implements Serializable 
         real = new double[n];
         imag = new double[n];
 
-        if (a.isSymmetric()) {
+        symmetric = a.isSymmetric();
+        if (symmetric) {
             vectors = a.copy();
             tridiagonalize();
             diagonalize();
@@ -955,7 +965,8 @@ public final class EigenDecomposition<N extends Number> implements Serializable 
      * @return real(diag ( D))
      */
     public DArray<N> real() {
-        return tm.stride(dt, Shape.of(real.length), Order.C, real);
+        // a copy: for DType.DOUBLE the factory would wrap the internal array without copying it
+        return tm.stride(dt, Shape.of(real.length), Order.C, real.clone());
     }
 
     /**
@@ -964,10 +975,23 @@ public final class EigenDecomposition<N extends Number> implements Serializable 
      * @return {@code imag(diag(D))}
      */
     public DArray<N> imag() {
-        return tm.stride(dt, Shape.of(imag.length), Order.C, imag);
+        // a copy: for DType.DOUBLE the factory would wrap the internal array without copying it
+        return tm.stride(dt, Shape.of(imag.length), Order.C, imag.clone());
     }
 
+    /**
+     * Computes {@code A^power} as {@code V * diag(lambda)^power * V'}. This identity holds only when the
+     * decomposed matrix is symmetric, where the eigenvectors are orthogonal and the eigenvalues real; for a
+     * non-symmetric matrix {@code V'} is not the inverse of {@code V} and the complex pairs of {@code d()} are
+     * not raised to the power, so the call is rejected instead of returning a wrong matrix.
+     *
+     * @param power exponent
+     * @return the matrix power
+     */
     public DArray<N> power(double power) {
+        if (!symmetric) {
+            throw new IllegalArgumentException("Matrix power can be computed only for symmetric matrices.");
+        }
         DArray<N> lambda = d();
         for (int i = 0; i < n; i++) {
             lambda.setDouble(Math.pow(lambda.getDouble(i, i), power), i, i);

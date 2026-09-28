@@ -74,6 +74,13 @@ public class LUDecomposition<N extends Number> implements Serializable, Printabl
     private int[] piv;
 
     public LUDecomposition(DArray<N> ref, Method method) {
+        if (!ref.isMatrix()) {
+            throw new IllegalArgumentException("Only matrix tensors can have LU decomposition.");
+        }
+        if (ref.dt().isInteger()) {
+            throw new IllegalArgumentException(
+                    "Cannot compute decomposition for integer types (dtype: " + ref.dt().id() + ")");
+        }
         if (ref.dim(0) < ref.dim(1)) {
             throw new IllegalArgumentException("For LU decomposition, number of rows must be greater or equal with number of columns.");
         }
@@ -242,7 +249,18 @@ public class LUDecomposition<N extends Number> implements Serializable, Printabl
         return d;
     }
 
+    /**
+     * Solves {@code A*X = B} for a square {@code A}. The decomposition of a matrix with more rows than columns
+     * does not define a solution (it is not a least squares fit either), so such a system is rejected; use
+     * {@link QRDecomposition} for an overdetermined system.
+     *
+     * @param B right hand side, a vector or a matrix with as many rows as the decomposed matrix
+     * @return the solution X
+     */
     public DArray<N> solve(DArray<N> B) {
+        if (ref.dim(0) != ref.dim(1)) {
+            throw new IllegalArgumentException("A system can be solved only for squared matrices.");
+        }
         if (B.dim(0) != ref.dim(0)) {
             throw new IllegalArgumentException("Matrix row dimensions must agree.");
         }

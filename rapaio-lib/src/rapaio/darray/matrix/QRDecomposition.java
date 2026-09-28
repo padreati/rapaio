@@ -56,6 +56,17 @@ public class QRDecomposition<N extends Number> implements Serializable {
     protected final DArrayManager tm;
 
     public QRDecomposition(DArray<N> ref) {
+        if (!ref.isMatrix()) {
+            throw new IllegalArgumentException("Only matrix tensors can have QR decomposition.");
+        }
+        if (ref.dt().isInteger()) {
+            throw new IllegalArgumentException(
+                    "Cannot compute decomposition for integer types (dtype: " + ref.dt().id() + ")");
+        }
+        if (ref.dim(0) < ref.dim(1)) {
+            throw new IllegalArgumentException(
+                    "For QR decomposition, number of rows must be greater or equal with number of columns.");
+        }
         // Initialize.
         this.ref = ref;
         this.dt = ref.dt();

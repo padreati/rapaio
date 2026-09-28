@@ -93,6 +93,13 @@ public class SVDecomposition<N extends Number> implements java.io.Serializable {
     private final DArrayManager tm;
 
     public SVDecomposition(DArray<N> Arg, boolean wantu, boolean wantv) {
+        if (!Arg.isMatrix()) {
+            throw new IllegalArgumentException("Only matrix tensors can have SVD decomposition.");
+        }
+        if (Arg.dt().isInteger()) {
+            throw new IllegalArgumentException(
+                    "Cannot compute decomposition for integer types (dtype: " + Arg.dt().id() + ")");
+        }
 
         // Derived from LINPACK code.
         // Initialize.
