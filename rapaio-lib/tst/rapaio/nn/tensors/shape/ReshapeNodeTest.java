@@ -21,11 +21,15 @@
 
 package rapaio.nn.tensors.shape;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import rapaio.darray.DArray;
+import rapaio.darray.Order;
 import rapaio.darray.Shape;
 import rapaio.nn.Autograd;
 import rapaio.nn.TensorManager;
@@ -43,5 +47,29 @@ public class ReshapeNodeTest {
 
         assertNotNull(t1.grad());
         assertTrue(t1.grad().deepEquals(t2.grad().reshape(t1.shape())));
+    }
+
+    @Test
+    void backwardReadsTheGradientInTheForwardOrder() {
+        var t1 = tm.randomTensor(Shape.of(2, 3, 4)).requiresGrad(true);
+        var t2 = t1.reshape(Shape.of(2, 12));
+
+        // a gradient stored in F order, which an upstream operation may well leave behind. The forward read the input
+        // in C order, so the backward has to read this in C order too, whatever its own layout says
+        DArray<?> g = tm.randomArray(t2.shape()).reorder(Order.F);
+        assertTrue(g.layout().isFOrdered());
+        assertFalse(g.layout().isCOrdered());
+        t2.setGrad(g);
+        Autograd.backward(t2);
+
+        assertNotNull(t1.grad());
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 3; j++) {
+                for (int k = 0; k < 4; k++) {
+                    assertEquals(g.getDouble(i, j * 4 + k), t1.grad().getDouble(i, j, k), 1e-12,
+                            "position [" + i + "," + j + "," + k + "]");
+                }
+            }
+        }
     }
 }

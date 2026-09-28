@@ -22,6 +22,7 @@
 package rapaio.nn.tensors;
 
 import rapaio.darray.DArray;
+import rapaio.darray.Order;
 import rapaio.darray.Shape;
 import rapaio.nn.Tensor;
 
@@ -60,6 +61,11 @@ public final class Conv1dNode extends Tensor {
             int inDepth = w.value().dim(1);
             int outDepth = w.value().dim(0) / groups;
             DArray<?> gradW = tm.zerosArray(w.value().shape());
+            // a C ordered view of the whole gradient, one row per output channel. Reshaping the freshly allocated,
+            // and therefore contiguous, array always yields a view, so the narrowed blocks below write straight into
+            // gradW; reshaping a narrowed block instead would fall back to a detached copy whenever the reshape
+            // could not be expressed as a view, and the gradient of that group would be silently dropped
+            DArray<?> gradWFlat = gradW.reshape(Shape.of(w.value().dim(0), inDepth * k), Order.C);
             for (int batch = 0; batch < n; batch++) {
                 DArray<?> xBatch = x.value().selsq(0, batch);       // (C_in, L_in)
                 DArray<?> gyBatch = this.grad().selsq(0, batch);    // (C_out, L_out)
@@ -69,7 +75,7 @@ public final class Conv1dNode extends Tensor {
 
                 for (int group = 0; group < groups; group++) {
                     DArray<?> unfold = xSlices.get(group).unfold1d(k, stride, padding, dilation);          // (inDepth*k, L_out)
-                    var gradWn = gradW.narrow(0, group * outDepth, (group + 1) * outDepth).reshape(Shape.of(outDepth, inDepth * k));
+                    var gradWn = gradWFlat.narrow(0, group * outDepth, (group + 1) * outDepth);
                     gySlices.get(group).mm(unfold.t_(), gradWn); // (outDepth, inDepth, k)
                 }
             }

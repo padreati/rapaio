@@ -22,6 +22,7 @@
 package rapaio.nn.tensors;
 
 import rapaio.darray.DArray;
+import rapaio.darray.Order;
 import rapaio.darray.Shape;
 import rapaio.nn.Tensor;
 
@@ -65,6 +66,11 @@ public final class Conv2dNode extends Tensor {
             int inDepth = w.value().dim(1);
             int outDepth = w.value().dim(0) / groups;
             DArray<?> gradW = tm.zerosArray(w.value().shape());
+            // a C ordered view of the whole gradient, one row per output channel. Reshaping the freshly allocated,
+            // and therefore contiguous, array always yields a view, so the narrowed blocks below write straight into
+            // gradW; reshaping a narrowed block instead would fall back to a detached copy whenever the reshape
+            // could not be expressed as a view, and the gradient of that group would be silently dropped
+            DArray<?> gradWFlat = gradW.reshape(Shape.of(w.value().dim(0), inDepth * kH * kW), Order.C);
 
             var xBatches = x.value().chunk(0, false, 1);    // (C_in, H, W)
             var gyBatches = this.grad().chunk(0, false, 1); // (C_out, outH, outW)
@@ -75,10 +81,12 @@ public final class Conv2dNode extends Tensor {
                 for (int group = 0; group < groups; group++) {
                     // unfold: (inDepth*kH*kW, outH*outW)
                     DArray<?> unfold = xSlices.get(group).unfold2d(kH, kW, stride, padding, dilation);
-                    // gyFlat: (outDepth, outH*outW)
-                    DArray<?> gyFlat = gySlices.get(group).reshape(Shape.of(outDepth, outH * outW));
+                    // gyFlat: (outDepth, outH*outW). The order is pinned to C, since the gradient reaching this node
+                    // carries whatever layout the upstream operation left it in, and Order.A would read an F ordered
+                    // one column major and pair the wrong positions with the unfolded input
+                    DArray<?> gyFlat = gySlices.get(group).reshape(Shape.of(outDepth, outH * outW), Order.C);
 
-                    var gradWn = gradW.narrow(0, group * outDepth, (group + 1) * outDepth).reshape(Shape.of(outDepth, inDepth * kH * kW));
+                    var gradWn = gradWFlat.narrow(0, group * outDepth, (group + 1) * outDepth);
                     gyFlat.mm(unfold.t_(), gradWn);
                 }
             }

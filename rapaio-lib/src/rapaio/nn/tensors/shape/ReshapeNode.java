@@ -29,7 +29,28 @@ public class ReshapeNode extends Tensor {
 
     public ReshapeNode(Tensor x, Shape shape, Order askOrder) {
         super(x.tm(), ReshapeNode.class.getSimpleName());
-        this.setValue(x.value().reshape(shape, askOrder));
-        backEdge(x, () -> this.grad.reshape(x.shape()));
+        // Order.A is resolved once, here, against the input. The backward below must read the gradient in the same
+        // order the forward read the input, otherwise the values land on the wrong input positions. Passing the
+        // gradient reshape no order at all defaults it to Order.A, which resolves a second time against the
+        // gradient's own layout, and that is whatever the operation above this node happened to leave behind
+        Order order = resolveAuto(x, askOrder);
+        this.setValue(x.value().reshape(shape, order));
+        backEdge(x, () -> this.grad.reshape(x.shape(), order));
+    }
+
+    /**
+     * Resolves {@link Order#A} the same way {@code reshape} does, against the layout of the darray being reshaped.
+     */
+    private static Order resolveAuto(Tensor x, Order askOrder) {
+        if (Order.A != askOrder) {
+            return askOrder;
+        }
+        if (x.value().layout().isCOrdered()) {
+            return Order.C;
+        }
+        if (x.value().layout().isFOrdered()) {
+            return Order.F;
+        }
+        return Order.defaultOrder();
     }
 }
