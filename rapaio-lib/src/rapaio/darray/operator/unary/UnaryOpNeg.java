@@ -134,7 +134,7 @@ public class UnaryOpNeg extends DArrayUnaryOp {
                 int a = s.getInt(p);
                 a = -a;
                 s.setInt(p, a);
-                p++;
+                p += loop.step;
             }
         }
     }

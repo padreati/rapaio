@@ -134,7 +134,7 @@ public class UnaryOpSqr extends DArrayUnaryOp {
                 int a = s.getInt(p);
                 a = a * a;
                 s.setInt(p, a);
-                p++;
+                p += loop.step;
             }
         }
     }

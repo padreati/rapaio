@@ -85,8 +85,8 @@ public class UnaryOpLogSoftmax extends DArrayUnaryOp {
         vmax = Simd.broadcast(max);
 
         float logsum = 0;
-        FloatVector vlogsum = Simd.zeroFloat();
         for (int p : loop.offsets) {
+            FloatVector vlogsum = Simd.zeroFloat();
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 FloatVector v = s.getFloatVector(p);
@@ -101,7 +101,7 @@ public class UnaryOpLogSoftmax extends DArrayUnaryOp {
             }
         }
         logsum = (float) Math.log(logsum);
-        vlogsum = Simd.broadcast(logsum);
+        FloatVector vlogsum = Simd.broadcast(logsum);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
@@ -134,8 +134,8 @@ public class UnaryOpLogSoftmax extends DArrayUnaryOp {
         }
         vmax = FloatVector.broadcast(Simd.vsFloat, max);
         float logsum = 0;
-        FloatVector vlogsum = Simd.zeroFloat();
         for (int p : loop.offsets) {
+            FloatVector vlogsum = Simd.zeroFloat();
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 FloatVector v = s.getFloatVector(p, loop.simdIdx(), 0);
@@ -150,7 +150,7 @@ public class UnaryOpLogSoftmax extends DArrayUnaryOp {
             }
         }
         logsum = (float) Math.log(logsum);
-        vlogsum = Simd.broadcast(logsum);
+        FloatVector vlogsum = Simd.broadcast(logsum);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
@@ -208,8 +208,8 @@ public class UnaryOpLogSoftmax extends DArrayUnaryOp {
         }
         vmax = Simd.broadcast(max);
         double logsum = 0;
-        DoubleVector vlogsum = Simd.zeroDouble();
         for (int p : loop.offsets) {
+            DoubleVector vlogsum = Simd.zeroDouble();
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 DoubleVector v = s.getDoubleVector(p);
@@ -224,7 +224,7 @@ public class UnaryOpLogSoftmax extends DArrayUnaryOp {
             }
         }
         logsum = Math.log(logsum);
-        vlogsum = Simd.broadcast(logsum);
+        DoubleVector vlogsum = Simd.broadcast(logsum);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
@@ -257,8 +257,8 @@ public class UnaryOpLogSoftmax extends DArrayUnaryOp {
         }
         vmax = Simd.broadcast(max);
         double logsum = 0;
-        DoubleVector vlogsum = Simd.zeroDouble();
         for (int p : loop.offsets) {
+            DoubleVector vlogsum = Simd.zeroDouble();
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 DoubleVector v = s.getDoubleVector(p, loop.simdIdx(), 0);
@@ -273,7 +273,7 @@ public class UnaryOpLogSoftmax extends DArrayUnaryOp {
             }
         }
         logsum = Math.log(logsum);
-        vlogsum = Simd.broadcast(logsum);
+        DoubleVector vlogsum = Simd.broadcast(logsum);
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
@@ -304,6 +304,7 @@ public class UnaryOpLogSoftmax extends DArrayUnaryOp {
                 p += loop.step;
             }
         }
+        logsum = Math.log(logsum);
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
                 s.setDouble(p, s.getDouble(p) - max - logsum);

@@ -200,7 +200,7 @@ public class UnaryOpCompareMask<N extends Number> extends DArrayUnaryOp {
 
     @Override
     protected void applyUnitDouble(StrideLoopDescriptor loop, Storage s) {
-        double ref = value.floatValue();
+        double ref = value.doubleValue();
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
@@ -221,7 +221,7 @@ public class UnaryOpCompareMask<N extends Number> extends DArrayUnaryOp {
 
     @Override
     protected void applyStepDouble(StrideLoopDescriptor loop, Storage s) {
-        double ref = value.floatValue();
+        double ref = value.doubleValue();
         for (int p : loop.offsets) {
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
@@ -242,7 +242,7 @@ public class UnaryOpCompareMask<N extends Number> extends DArrayUnaryOp {
 
     @Override
     protected void applyGenericDouble(StrideLoopDescriptor loop, Storage s) {
-        double ref = value.floatValue();
+        double ref = value.doubleValue();
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
                 double v = s.getDouble(p);

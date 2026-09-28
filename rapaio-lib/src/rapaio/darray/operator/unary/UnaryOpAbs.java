@@ -134,7 +134,7 @@ public class UnaryOpAbs extends DArrayUnaryOp {
                 int a = s.getInt(p);
                 a = Math.abs(a);
                 s.setInt(p, a);
-                p++;
+                p += loop.step;
             }
         }
     }

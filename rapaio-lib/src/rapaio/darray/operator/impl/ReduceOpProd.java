@@ -46,8 +46,8 @@ public final class ReduceOpProd extends DArrayReduceOp {
     @Override
     protected byte reduceByteVectorUnit(StrideLoopDescriptor loop, Storage storage) {
         byte result = initByte;
-        ByteVector a = Simd.broadcast(initByte);
         for (int p : loop.offsets) {
+            ByteVector a = Simd.broadcast(initByte);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 ByteVector v = storage.getByteVector(p);
@@ -66,8 +66,8 @@ public final class ReduceOpProd extends DArrayReduceOp {
     @Override
     protected byte reduceByteVectorStep(StrideLoopDescriptor loop, Storage storage) {
         byte result = initByte;
-        ByteVector a = Simd.broadcast(initByte);
         for (int p : loop.offsets) {
+            ByteVector a = Simd.broadcast(initByte);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 ByteVector v = storage.getByteVector(p, loop.simdIdx(), 0);
@@ -98,8 +98,8 @@ public final class ReduceOpProd extends DArrayReduceOp {
     @Override
     protected int reduceIntVectorUnit(StrideLoopDescriptor loop, Storage storage) {
         int result = initInt;
-        IntVector a = Simd.broadcast(initInt);
         for (int p : loop.offsets) {
+            IntVector a = Simd.broadcast(initInt);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 IntVector v = storage.getIntVector(p);
@@ -118,8 +118,8 @@ public final class ReduceOpProd extends DArrayReduceOp {
     @Override
     protected int reduceIntVectorStep(StrideLoopDescriptor loop, Storage storage) {
         int result = initInt;
-        IntVector a = Simd.broadcast(initInt);
         for (int p : loop.offsets) {
+            IntVector a = Simd.broadcast(initInt);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 IntVector v = storage.getIntVector(p, loop.simdIdx(), 0);
@@ -140,7 +140,7 @@ public final class ReduceOpProd extends DArrayReduceOp {
         int result = initInt;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
-                result *= storage.getByte(p);
+                result *= storage.getInt(p);
                 p += loop.step;
             }
         }
@@ -150,8 +150,8 @@ public final class ReduceOpProd extends DArrayReduceOp {
     @Override
     protected float reduceFloatVectorUnit(StrideLoopDescriptor loop, Storage storage) {
         float result = initFloat;
-        FloatVector a = Simd.broadcast(initFloat);
         for (int p : loop.offsets) {
+            FloatVector a = Simd.broadcast(initFloat);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 FloatVector v = storage.getFloatVector(p);
@@ -170,8 +170,8 @@ public final class ReduceOpProd extends DArrayReduceOp {
     @Override
     protected float reduceFloatVectorStep(StrideLoopDescriptor loop, Storage storage) {
         float result = initFloat;
-        FloatVector a = Simd.broadcast(initFloat);
         for (int p : loop.offsets) {
+            FloatVector a = Simd.broadcast(initFloat);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 FloatVector v = storage.getFloatVector(p, loop.simdIdx(), 0);
@@ -202,8 +202,8 @@ public final class ReduceOpProd extends DArrayReduceOp {
     @Override
     protected double reduceDoubleVectorUnit(StrideLoopDescriptor loop, Storage storage) {
         double result = initDouble;
-        DoubleVector a = Simd.broadcast(initDouble);
         for (int p : loop.offsets) {
+            DoubleVector a = Simd.broadcast(initDouble);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 DoubleVector v = storage.getDoubleVector(p);
@@ -222,8 +222,8 @@ public final class ReduceOpProd extends DArrayReduceOp {
     @Override
     protected double reduceDoubleVectorStep(StrideLoopDescriptor loop, Storage storage) {
         double result = initDouble;
-        DoubleVector a = Simd.broadcast(initDouble);
         for (int p : loop.offsets) {
+            DoubleVector a = Simd.broadcast(initDouble);
             int i = 0;
             for (; i < loop.simdBound; i += loop.simdLen) {
                 DoubleVector v = storage.getDoubleVector(p, loop.simdIdx(), 0);

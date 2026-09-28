@@ -152,7 +152,7 @@ public class <op.name> extends DArrayUnaryOp {
                 int a = s.getInt(p);
                 <op.intValueOp>
                 s.setInt(p, a);
-                p++;
+                p += loop.step;
             }
         }
     }

@@ -160,8 +160,7 @@ public final class ReduceOpNanSum extends DArrayReduceOp {
                 a = a.add(v, m.not());
                 p += loop.simdLen;
             }
-            VectorMask<Float> m = a.test(VectorOperators.IS_NAN);
-            result += a.reduceLanes(VectorOperators.ADD, m.not());
+            result += a.reduceLanes(VectorOperators.ADD);
             for (; i < loop.bound; i++) {
                 float value = storage.getFloat(p);
                 if(!Float.isNaN(value)) {
@@ -185,8 +184,7 @@ public final class ReduceOpNanSum extends DArrayReduceOp {
                 a = a.add(v, m.not());
                 p += loop.simdLen * loop.step;
             }
-            VectorMask<Float> m = a.test(VectorOperators.IS_NAN);
-            result += a.reduceLanes(VectorOperators.ADD, m.not());
+            result += a.reduceLanes(VectorOperators.ADD);
             for (; i < loop.bound; i++) {
                 float value = storage.getFloat(p);
                 if(!Float.isNaN(value)) {
@@ -225,8 +223,7 @@ public final class ReduceOpNanSum extends DArrayReduceOp {
                 a = a.add(v, m.not());
                 p += loop.simdLen;
             }
-            VectorMask<Double> m = a.test(VectorOperators.IS_NAN);
-            result += a.reduceLanes(VectorOperators.ADD, m.not());
+            result += a.reduceLanes(VectorOperators.ADD);
             for (; i < loop.bound; i++) {
                 double value = storage.getDouble(p);
                 if(!Double.isNaN(value)) {
@@ -250,8 +247,7 @@ public final class ReduceOpNanSum extends DArrayReduceOp {
                 a = a.add(v, m.not());
                 p += loop.simdLen * loop.step;
             }
-            VectorMask<Double> m = a.test(VectorOperators.IS_NAN);
-            result += a.reduceLanes(VectorOperators.ADD, m.not());
+            result += a.reduceLanes(VectorOperators.ADD);
             for (; i < loop.bound; i++) {
                 double value = storage.getDouble(p);
                 if(!Double.isNaN(value)) {

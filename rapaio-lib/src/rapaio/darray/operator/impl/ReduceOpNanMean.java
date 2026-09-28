@@ -80,11 +80,10 @@ public final class ReduceOpNanMean extends DArrayReduceOp {
                 count += m.not().trueCount();
                 p += loop.simdLen;
             }
-            var m = a.test(VectorOperators.IS_NAN);
-            sum += a.reduceLanes(VectorOperators.ADD, m.not());
+            sum += a.reduceLanes(VectorOperators.ADD);
             for (; i < loop.bound; i++) {
                 float v = storage.getFloat(p);
-                if (Float.isNaN(v)) {
+                if (!Float.isNaN(v)) {
                     sum += v;
                     count++;
                 }
@@ -104,8 +103,7 @@ public final class ReduceOpNanMean extends DArrayReduceOp {
                 a = a.add(v, m.not());
                 p += loop.simdLen;
             }
-            var m = a.test(VectorOperators.IS_NAN);
-            sum += a.reduceLanes(VectorOperators.ADD, m.not());
+            sum += a.reduceLanes(VectorOperators.ADD);
             for (; i < loop.bound; i++) {
                 float v = storage.getFloat(p);
                 if (!Float.isNaN(v)) {
@@ -132,8 +130,7 @@ public final class ReduceOpNanMean extends DArrayReduceOp {
                 count += m.not().trueCount();
                 p += loop.simdLen * loop.step;
             }
-            var m = a.test(VectorOperators.IS_NAN);
-            sum += a.reduceLanes(VectorOperators.ADD, m.not());
+            sum += a.reduceLanes(VectorOperators.ADD);
             for (; i < loop.bound; i++) {
                 float v = storage.getFloat(p);
                 if (!Float.isNaN(v)) {
@@ -155,8 +152,7 @@ public final class ReduceOpNanMean extends DArrayReduceOp {
                 a = a.add(v, m.not());
                 p += loop.simdLen * loop.step;
             }
-            var m = a.test(VectorOperators.IS_NAN);
-            sum += a.reduceLanes(VectorOperators.ADD, m.not());
+            sum += a.reduceLanes(VectorOperators.ADD);
             for (; i < loop.bound; i++) {
                 float v = storage.getFloat(p);
                 if (!Float.isNaN(v)) {
@@ -211,8 +207,7 @@ public final class ReduceOpNanMean extends DArrayReduceOp {
                 count += m.not().trueCount();
                 p += loop.simdLen;
             }
-            var m = a.test(VectorOperators.IS_NAN);
-            sum += a.reduceLanes(VectorOperators.ADD, m.not());
+            sum += a.reduceLanes(VectorOperators.ADD);
             for (; i < loop.bound; i++) {
                 double v = storage.getDouble(p);
                 if (!Double.isNaN(v)) {
@@ -260,8 +255,7 @@ public final class ReduceOpNanMean extends DArrayReduceOp {
                 count += m.not().trueCount();
                 p += loop.simdLen * loop.step;
             }
-            var m = a.test(VectorOperators.IS_NAN);
-            sum += a.reduceLanes(VectorOperators.ADD, m.not());
+            sum += a.reduceLanes(VectorOperators.ADD);
             for (; i < loop.bound; i++) {
                 double v = storage.getDouble(p);
                 if (!Double.isNaN(v)) {

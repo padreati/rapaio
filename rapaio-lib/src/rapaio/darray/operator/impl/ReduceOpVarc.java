@@ -105,7 +105,7 @@ public final class ReduceOpVarc extends DArrayReduceOp {
             }
         }
         int size = loop.bound * loop.offsets.length;
-        return ((sum2 - (sum3 * sum3) / (size-ddof)) / (size - ddof));
+        return ((sum2 - (sum3 * sum3) / size) / (size - ddof));
     }
 
     @Override
@@ -137,7 +137,7 @@ public final class ReduceOpVarc extends DArrayReduceOp {
             }
         }
         int size = loop.bound * loop.offsets.length;
-        return ((sum2 - (sum3 * sum3) / (size-ddof)) / (size - ddof));
+        return ((sum2 - (sum3 * sum3) / size) / (size - ddof));
     }
 
     @Override
@@ -155,7 +155,7 @@ public final class ReduceOpVarc extends DArrayReduceOp {
             }
         }
         int size = loop.bound * loop.offsets.length;
-        return ((sum2 - (sum3 * sum3) / (size-ddof)) / (size - ddof));
+        return ((sum2 - (sum3 * sum3) / size) / (size - ddof));
     }
 
     @Override
@@ -187,7 +187,7 @@ public final class ReduceOpVarc extends DArrayReduceOp {
             }
         }
         int size = loop.bound * loop.offsets.length;
-        return ((sum2 - (sum3 * sum3) / (size-ddof)) / (size - ddof));
+        return ((sum2 - (sum3 * sum3) / size) / (size - ddof));
     }
 
     @Override
@@ -219,7 +219,7 @@ public final class ReduceOpVarc extends DArrayReduceOp {
             }
         }
         int size = loop.bound * loop.offsets.length;
-        return ((sum2 - (sum3 * sum3) / (size-ddof)) / (size - ddof));
+        return ((sum2 - (sum3 * sum3) / size) / (size - ddof));
     }
 
     @Override
@@ -237,6 +237,6 @@ public final class ReduceOpVarc extends DArrayReduceOp {
             }
         }
         int size = loop.bound * loop.offsets.length;
-        return ((sum2 - (sum3 * sum3) / (size-ddof)) / (size - ddof));
+        return ((sum2 - (sum3 * sum3) / size) / (size - ddof));
     }
 }

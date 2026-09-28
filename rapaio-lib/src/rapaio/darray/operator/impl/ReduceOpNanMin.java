@@ -141,7 +141,7 @@ public final class ReduceOpNanMin extends DArrayReduceOp {
         int result = initInt;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
-                result = Math.min(result, storage.getByte(p));
+                result = Math.min(result, storage.getInt(p));
                 p += loop.step;
             }
         }
@@ -200,7 +200,7 @@ public final class ReduceOpNanMin extends DArrayReduceOp {
 
     @Override
     protected float reduceFloatDefault(StrideLoopDescriptor loop, Storage storage) {
-        float result = 0;
+        float result = initFloat;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
                 float value = storage.getFloat(p);
