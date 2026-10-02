@@ -230,6 +230,11 @@ public class MatrixStrideLayout extends AbstractStrideLayout {
         if (axes.length > 2) {
             throw new IllegalArgumentException("Matrix allows maximum two axes as parameters.");
         }
+        for (int axis : axes) {
+            if (axis < 0 || axis >= rank()) {
+                throw new IllegalArgumentException("Axis value is invalid: " + axis + ".");
+            }
+        }
         if (Ints.containsDuplicates(axes)) {
             throw new IllegalArgumentException("Duplicates values in axis parameters.");
         }
@@ -370,6 +375,7 @@ public class MatrixStrideLayout extends AbstractStrideLayout {
         if (axis < 0 || axis >= strides.length) {
             throw new IllegalArgumentException("Axis is out of bounds.");
         }
+        StrideLayout.validateNarrowBounds(this, axis, start, end);
         if (rank() == 1) {
             return StrideLayout.of(
                     Shape.of(end - start),
@@ -392,6 +398,7 @@ public class MatrixStrideLayout extends AbstractStrideLayout {
         if (starts.length != ends.length) {
             throw new IllegalArgumentException("Starts and ends does not have the same length.");
         }
+        StrideLayout.validateNarrowAllBounds(this, starts, ends);
         int[] newDims = Arrays.copyOf(dims(), strides.length);
         int newOffset = offset;
         for (int i = 0; i < newDims.length; i++) {

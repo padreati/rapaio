@@ -151,6 +151,9 @@ public final class ReduceOpNanMax extends DArrayReduceOp {
     @Override
     protected float reduceFloatVectorUnit(StrideLoopDescriptor loop, Storage storage) {
         float result = initFloat;
+        // every value may be NaN, in which case there is no extremum and
+        // the initial value must not leak out as the answer
+        boolean found = false;
         for (int p : loop.offsets) {
             FloatVector a = Simd.broadcast(initFloat);
             int i = 0;
@@ -158,6 +161,7 @@ public final class ReduceOpNanMax extends DArrayReduceOp {
                 FloatVector v = storage.getFloatVector(p);
                 VectorMask<Float> m = v.test(VectorOperators.IS_NAN);
                 a = a.lanewise(VectorOperators.MAX, v, m.not());
+                found |= !m.allTrue();
                 p += loop.simdLen;
             }
             VectorMask<Float> m = a.test(VectorOperators.IS_NAN);
@@ -166,16 +170,20 @@ public final class ReduceOpNanMax extends DArrayReduceOp {
                 float value = storage.getFloat(p);
                 if (!Float.isNaN(value)) {
                     result = Math.max(result, value);
+                    found = true;
                 }
                 p++;
             }
         }
-        return result;
+        return found ? result : Float.NaN;
     }
 
     @Override
     protected float reduceFloatVectorStep(StrideLoopDescriptor loop, Storage storage) {
         float result = initFloat;
+        // every value may be NaN, in which case there is no extremum and
+        // the initial value must not leak out as the answer
+        boolean found = false;
         for (int p : loop.offsets) {
             FloatVector a = Simd.broadcast(initFloat);
             int i = 0;
@@ -183,6 +191,7 @@ public final class ReduceOpNanMax extends DArrayReduceOp {
                 FloatVector v = storage.getFloatVector(p, loop.simdIdx(), 0);
                 VectorMask<Float> m = v.test(VectorOperators.IS_NAN);
                 a = a.lanewise(VectorOperators.MAX, v, m.not());
+                found |= !m.allTrue();
                 p += loop.simdLen * loop.step;
             }
             VectorMask<Float> m = a.test(VectorOperators.IS_NAN);
@@ -191,31 +200,39 @@ public final class ReduceOpNanMax extends DArrayReduceOp {
                 float value = storage.getFloat(p);
                 if (!Float.isNaN(value)) {
                     result = Math.max(result, value);
+                    found = true;
                 }
                 p += loop.step;
             }
         }
-        return result;
+        return found ? result : Float.NaN;
     }
 
     @Override
     protected float reduceFloatDefault(StrideLoopDescriptor loop, Storage storage) {
         float result = initFloat;
+        // every value may be NaN, in which case there is no extremum and
+        // the initial value must not leak out as the answer
+        boolean found = false;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
                 float value = storage.getFloat(p);
                 if (!Float.isNaN(value)) {
                     result = Math.max(result, value);
+                    found = true;
                 }
                 p += loop.step;
             }
         }
-        return result;
+        return found ? result : Float.NaN;
     }
 
     @Override
     protected double reduceDoubleVectorUnit(StrideLoopDescriptor loop, Storage storage) {
         double result = initDouble;
+        // every value may be NaN, in which case there is no extremum and
+        // the initial value must not leak out as the answer
+        boolean found = false;
         for (int p : loop.offsets) {
             DoubleVector a = Simd.broadcast(initDouble);
             int i = 0;
@@ -223,6 +240,7 @@ public final class ReduceOpNanMax extends DArrayReduceOp {
                 DoubleVector v = storage.getDoubleVector(p);
                 VectorMask<Double> m = v.test(VectorOperators.IS_NAN);
                 a = a.lanewise(VectorOperators.MAX, v, m.not());
+                found |= !m.allTrue();
                 p += loop.simdLen;
             }
             VectorMask<Double> m = a.test(VectorOperators.IS_NAN);
@@ -231,16 +249,20 @@ public final class ReduceOpNanMax extends DArrayReduceOp {
                 double value = storage.getDouble(p);
                 if (!Double.isNaN(value)) {
                     result = Math.max(result, value);
+                    found = true;
                 }
                 p++;
             }
         }
-        return result;
+        return found ? result : Double.NaN;
     }
 
     @Override
     protected double reduceDoubleVectorStep(StrideLoopDescriptor loop, Storage storage) {
         double result = initDouble;
+        // every value may be NaN, in which case there is no extremum and
+        // the initial value must not leak out as the answer
+        boolean found = false;
         for (int p : loop.offsets) {
             DoubleVector a = Simd.broadcast(initDouble);
             int i = 0;
@@ -248,6 +270,7 @@ public final class ReduceOpNanMax extends DArrayReduceOp {
                 DoubleVector v = storage.getDoubleVector(p, loop.simdIdx(), 0);
                 VectorMask<Double> m = v.test(VectorOperators.IS_NAN);
                 a = a.lanewise(VectorOperators.MAX, v, m.not());
+                found |= !m.allTrue();
                 p += loop.simdLen * loop.step;
             }
             VectorMask<Double> m = a.test(VectorOperators.IS_NAN);
@@ -256,25 +279,30 @@ public final class ReduceOpNanMax extends DArrayReduceOp {
                 double value = storage.getDouble(p);
                 if (!Double.isNaN(value)) {
                     result = Math.max(result, value);
+                    found = true;
                 }
                 p += loop.step;
             }
         }
-        return result;
+        return found ? result : Double.NaN;
     }
 
     @Override
     protected double reduceDoubleDefault(StrideLoopDescriptor loop, Storage storage) {
         double result = initDouble;
+        // every value may be NaN, in which case there is no extremum and
+        // the initial value must not leak out as the answer
+        boolean found = false;
         for (int p : loop.offsets) {
             for (int i = 0; i < loop.bound; i++) {
                 double value = storage.getDouble(p);
                 if (!Double.isNaN(value)) {
                     result = Math.max(result, value);
+                    found = true;
                 }
                 p += loop.step;
             }
         }
-        return result;
+        return found ? result : Double.NaN;
     }
 }

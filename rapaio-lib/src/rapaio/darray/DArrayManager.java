@@ -352,6 +352,15 @@ public abstract class DArrayManager {
 
     public final <N extends Number> DArray<N> stack(DType<N> dt, Order order, int axis, Collection<? extends DArray<?>> nArrays) {
         var nArrayList = nArrays.stream().toList();
+        if (nArrayList.isEmpty()) {
+            throw new IllegalArgumentException("At least one darray is required for stacking.");
+        }
+        // the new axis may be appended after the last existing one, so the bound is one wider than usual
+        int rank = nArrayList.getFirst().rank();
+        if (axis < 0 || axis > rank) {
+            throw new IllegalArgumentException(String.format(
+                    "Axis %d is out of bounds for stacking darrays of rank %d.", axis, rank));
+        }
         for (int i = 1; i < nArrayList.size(); i++) {
             if (!nArrayList.get(i - 1).shape().equals(nArrayList.get(i).shape())) {
                 throw new IllegalArgumentException("DArrays are not valid for stack, they have to have the same dimensions.");

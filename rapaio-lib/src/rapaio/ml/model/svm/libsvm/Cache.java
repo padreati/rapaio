@@ -102,13 +102,34 @@ public class Cache {
                 old.data = null;
             }
             // allocate new space
-            h.data = (h.data == null) ? DArrays.zeros(Shape.of(len)) : h.data.pad(0, more, 1);
+            h.data = (h.data == null) ? DArrays.zeros(Shape.of(len)) : grow(h.data, oldLen, len);
             size -= more;
         }
 
         lruLink(h);
         data.set(h.data);
         return oldLen;
+    }
+
+    /**
+     * Grows a cached row to {@code len} elements, keeping the {@code oldLen} values already computed at the
+     * positions they occupy. The caller is told to fill {@code [oldLen, len)} and reads {@code [0, oldLen)} from
+     * the cache, so the prefix has to stay where it is.
+     * <p>
+     * This was once a call to {@code pad(0, more, 1)}, which pads an axis on both sides: the result was
+     * {@code oldLen + 2 * more} elements long rather than {@code len}, with the cached values moved to
+     * {@code [more, more + oldLen)} and zeros left in the prefix the caller trusts. The size accounting below
+     * assumes a growth of exactly {@code more} as well.
+     *
+     * @param data   row as cached so far, of length {@code oldLen}
+     * @param oldLen number of values already computed
+     * @param len    requested length, strictly greater than {@code oldLen}
+     * @return a row of {@code len} elements whose prefix is {@code data} and whose tail is zero
+     */
+    private static DArray<Double> grow(DArray<Double> data, int oldLen, int len) {
+        DArray<Double> grown = DArrays.zeros(Shape.of(len));
+        data.copyTo(grown.narrow(0, true, 0, oldLen));
+        return grown;
     }
 
     void swapIndex(int i, int j) {

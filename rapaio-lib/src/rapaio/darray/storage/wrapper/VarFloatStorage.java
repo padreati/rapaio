@@ -115,23 +115,62 @@ public class VarFloatStorage extends Storage {
 
     @Override
     public float getFloat(int ptr) {
+        checkPointer(ptr);
         return vd.getFloat(ptr);
     }
 
     @Override
     public void setFloat(int ptr, float value) {
+        checkPointer(ptr);
         vd.setFloat(ptr, value);
     }
 
     @Override
     public void incFloat(int ptr, float value) {
+        checkPointer(ptr);
         vd.setFloat(ptr, vd.getFloat(ptr) + value);
     }
 
     @Override
     public void fill(float value, int start, int len) {
+        checkRange(start, len);
         for (int i = start; i < start + len; i++) {
             vd.setFloat(i, value);
+        }
+    }
+
+    /**
+     * The wrapped variable indexes its own array without checking the row against its size, and that array is sized by
+     * the variable's growth capacity rather than by its size. A pointer between the size and the capacity would
+     * therefore read stale slack, or write into slack which the next value added to the variable overwrites, where an
+     * array backed storage throws for the same pointer.
+     *
+     * @param ptr storage position
+     * @throws IndexOutOfBoundsException if the position is outside this storage
+     */
+    private void checkPointer(int ptr) {
+        if (ptr < 0 || ptr >= vd.size()) {
+            throw new IndexOutOfBoundsException(
+                    String.format("Storage position %d is outside the storage of size %d.", ptr, vd.size()));
+        }
+    }
+
+    /**
+     * Validates a range the same way {@link java.util.Arrays#fill(float[], int, int, float)} does for the array
+     * backed storages, so that every storage rejects the same arguments.
+     *
+     * @param start first position of the range
+     * @param len   length of the range
+     * @throws IllegalArgumentException   if the length is negative
+     * @throws IndexOutOfBoundsException if the range is not inside this storage
+     */
+    private void checkRange(int start, int len) {
+        if (len < 0) {
+            throw new IllegalArgumentException("Length must be positive, but it is " + len + ".");
+        }
+        if (start < 0 || start + len > vd.size()) {
+            throw new IndexOutOfBoundsException(String.format(
+                    "Range [%d, %d) is outside the storage of size %d.", start, start + len, vd.size()));
         }
     }
 

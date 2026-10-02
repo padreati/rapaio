@@ -350,4 +350,118 @@ public class StrideLayoutContractTest {
         DArray<Double> view = DArrays.seq(Shape.of(4, 4)).narrow(1, true, 0, 2);
         assertEquals(8, view.ravel(Order.A).size());
     }
+
+    /**
+     * An aliased layout is one which maps two distinct index tuples onto the same storage position, which happens
+     * exactly when an axis longer than one element has a zero stride. The distinction from an axis of a single element
+     * with a zero stride is load bearing: {@code stretch} produces those, and in-place operations must keep accepting
+     * them while rejecting genuinely expanded layouts.
+     */
+    @Test
+    void aliasedElementsAreDetectedOnlyForRepeatedAxes() {
+        for (StrideLayout layout : bothFactories(Shape.of(2, 3, 4), Order.C)) {
+            String name = layout.getClass().getSimpleName();
+            assertFalse(layout.hasAliasedElements(), name);
+            // a dense layout stays unaliased under every view which only selects elements
+            assertFalse(layout.revert().hasAliasedElements(), name);
+            assertFalse(layout.narrow(1, true, 0, 2).hasAliasedElements(), name);
+            assertFalse(layout.squeeze().hasAliasedElements(), name);
+        }
+
+        for (StrideLayout layout : bothFactories(Shape.of(2, 1, 4), Order.C)) {
+            String name = layout.getClass().getSimpleName();
+            // the unit axis of a dense layout carries a real stride, so it is not aliased either way
+            assertFalse(layout.hasAliasedElements(), name);
+            assertTrue(layout.expand(1, 5).hasAliasedElements(), name);
+            // expanding to a single element repeats nothing
+            assertFalse(layout.expand(1, 1).hasAliasedElements(), name);
+        }
+
+        // stretch inserts axes of a single element with a zero stride: addressed once, repeating nothing
+        StrideLayout stretched = StrideLayout.ofDense(Shape.of(4), 0, Order.C).stretch(0, 2);
+        assertArrayEquals(new int[] {1, 4, 1}, stretched.dims());
+        assertArrayEquals(new int[] {0, 1, 0}, stretched.strides());
+        assertFalse(stretched.hasAliasedElements());
+        // until one of them is expanded
+        assertTrue(stretched.expand(0, 3).hasAliasedElements());
+
+        // a rank 0 layout has no axis at all
+        assertFalse(StrideLayout.ofDense(Shape.of(), 0, Order.C).hasAliasedElements());
+    }
+
+    @Test
+    void narrowRejectsBoundsOutsideTheAxis() {
+        for (StrideLayout layout : bothFactories(Shape.of(3, 4), Order.C)) {
+            String name = layout.getClass().getSimpleName();
+
+            // past the end of the axis
+            assertTrue(assertThrows(IllegalArgumentException.class, () -> layout.narrow(0, true, 0, 4), name)
+                    .getMessage().contains("out of range for axis 0 of dimension 3"), name);
+            assertThrows(IllegalArgumentException.class, () -> layout.narrow(1, true, 2, 5), name);
+            // a negative start
+            assertThrows(IllegalArgumentException.class, () -> layout.narrow(0, true, -1, 2), name);
+            // an empty or inverted range
+            assertThrows(IllegalArgumentException.class, () -> layout.narrow(0, true, 1, 1), name);
+            assertThrows(IllegalArgumentException.class, () -> layout.narrow(0, true, 2, 1), name);
+
+            // the whole axis and a proper sub-range are accepted
+            assertArrayEquals(new int[] {3, 4}, layout.narrow(0, true, 0, 3).dims(), name);
+            assertArrayEquals(new int[] {2, 4}, layout.narrow(0, true, 1, 3).dims(), name);
+        }
+
+        // rank 1 goes through the vector implementation, which has its own narrow
+        for (StrideLayout layout : bothFactories(Shape.of(5), Order.C)) {
+            String name = layout.getClass().getSimpleName();
+            assertThrows(IllegalArgumentException.class, () -> layout.narrow(0, true, 0, 6), name);
+            assertThrows(IllegalArgumentException.class, () -> layout.narrow(0, true, -2, 3), name);
+            assertThrows(IllegalArgumentException.class, () -> layout.narrow(0, true, 3, 3), name);
+            assertArrayEquals(new int[] {5}, layout.narrow(0, true, 0, 5).dims(), name);
+        }
+
+        // rank 3 goes through ArrayStrideLayout under both factories
+        for (StrideLayout layout : bothFactories(Shape.of(2, 3, 4), Order.C)) {
+            String name = layout.getClass().getSimpleName();
+            assertThrows(IllegalArgumentException.class, () -> layout.narrow(2, true, 0, 5), name);
+            assertArrayEquals(new int[] {2, 3, 2}, layout.narrow(2, true, 1, 3).dims(), name);
+        }
+    }
+
+    @Test
+    void narrowAllRejectsBoundsOutsideAnyAxis() {
+        for (StrideLayout layout : bothFactories(Shape.of(3, 4), Order.C)) {
+            String name = layout.getClass().getSimpleName();
+
+            // the second axis is the one out of range
+            assertTrue(assertThrows(IllegalArgumentException.class,
+                    () -> layout.narrowAll(true, new int[] {0, 0}, new int[] {3, 5}), name)
+                    .getMessage().contains("out of range for axis 1 of dimension 4"), name);
+            assertThrows(IllegalArgumentException.class,
+                    () -> layout.narrowAll(true, new int[] {-1, 0}, new int[] {2, 2}), name);
+            assertThrows(IllegalArgumentException.class,
+                    () -> layout.narrowAll(true, new int[] {1, 2}, new int[] {1, 3}), name);
+
+            assertArrayEquals(new int[] {2, 2},
+                    layout.narrowAll(true, new int[] {1, 2}, new int[] {3, 4}).dims(), name);
+        }
+    }
+
+    @Test
+    void narrowOfANarrowCannotEscapeIntoTheParent() {
+        // the bound a view must respect is its own dimension, not the storage of the array it was cut from, which is
+        // what makes this silent rather than an out of bounds failure when it is not validated
+        DArray<Double> parent = DArrays.seq(Shape.of(6));
+        DArray<Double> view = parent.narrow(0, true, 0, 2);
+        assertEquals(2, view.dim(0));
+
+        assertThrows(IllegalArgumentException.class, () -> view.narrow(0, true, 0, 5));
+        assertThrows(IllegalArgumentException.class, () -> view.narrow(0, true, 2, 4));
+        assertThrows(IllegalArgumentException.class, () -> view.narrowAll(true, new int[] {2}, new int[] {4}));
+
+        // the parent is untouched, since nothing was ever written through an escaped view
+        for (int i = 0; i < 6; i++) {
+            assertEquals(i, parent.getDouble(i), 0.0);
+        }
+        // and a legitimate narrow of the view still works
+        assertEquals(1.0, view.narrow(0, true, 1, 2).getDouble(0), 0.0);
+    }
 }

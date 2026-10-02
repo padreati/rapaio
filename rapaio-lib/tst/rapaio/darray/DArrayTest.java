@@ -718,8 +718,8 @@ public class DArrayTest {
             assertTrue(t1.copy(Order.C).log_().deepEquals(t1.log(Order.C)));
             assertTrue(t1.copy(Order.F).log_().deepEquals(t1.log(Order.F)));
         } else {
-            var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).log_());
-            assertEquals("This operation is available only for floating point DArrays.", e.getMessage());
+            var e = assertThrows(OperationNotAvailableException.class, () -> g.random(Shape.of(41, 31)).log_());
+            assertEquals("This operation is available only for floating point data types.", e.getMessage());
         }
 
         if (g.dt().floatingPoint()) {
@@ -729,8 +729,8 @@ public class DArrayTest {
             assertTrue(t1.copy(Order.C).log1p_().deepEquals(t1.log1p(Order.C)));
             assertTrue(t1.copy(Order.F).log1p_().deepEquals(t1.log1p(Order.F)));
         } else {
-            var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).log1p_());
-            assertEquals("This operation is available only for floating point DArrays.", e.getMessage());
+            var e = assertThrows(OperationNotAvailableException.class, () -> g.random(Shape.of(41, 31)).log1p_());
+            assertEquals("This operation is available only for floating point data types.", e.getMessage());
         }
 
         if (g.dt().floatingPoint()) {
@@ -740,8 +740,8 @@ public class DArrayTest {
             assertTrue(t1.copy(Order.C).exp_().deepEquals(t1.exp(Order.C)));
             assertTrue(t1.copy(Order.F).exp_().deepEquals(t1.exp(Order.F)));
         } else {
-            var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).exp_());
-            assertEquals("This operation is available only for floating point DArrays.", e.getMessage());
+            var e = assertThrows(OperationNotAvailableException.class, () -> g.random(Shape.of(41, 31)).exp_());
+            assertEquals("This operation is available only for floating point data types.", e.getMessage());
         }
 
         if (g.dt().floatingPoint()) {
@@ -751,8 +751,8 @@ public class DArrayTest {
             assertTrue(t1.copy(Order.C).expm1_().deepEquals(t1.expm1(Order.C)));
             assertTrue(t1.copy(Order.F).expm1_().deepEquals(t1.expm1(Order.F)));
         } else {
-            var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).expm1_());
-            assertEquals("This operation is available only for floating point DArrays.", e.getMessage());
+            var e = assertThrows(OperationNotAvailableException.class, () -> g.random(Shape.of(41, 31)).expm1_());
+            assertEquals("This operation is available only for floating point data types.", e.getMessage());
         }
 
         if (g.dt().floatingPoint()) {
@@ -763,8 +763,8 @@ public class DArrayTest {
             t1 = g.random(Shape.of(41, 31)).sub_(0.5);
             assertTrue(t1.copy(Order.F).sin_().deepEquals(t1.sin(Order.F)));
         } else {
-            var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).sin_());
-            assertEquals("This operation is available only for floating point DArrays.", e.getMessage());
+            var e = assertThrows(OperationNotAvailableException.class, () -> g.random(Shape.of(41, 31)).sin_());
+            assertEquals("This operation is available only for floating point data types.", e.getMessage());
         }
 
         if (g.dt().floatingPoint()) {
@@ -774,8 +774,8 @@ public class DArrayTest {
             assertTrue(t1.copy(Order.C).asin_().deepEquals(t1.asin(Order.C)));
             assertTrue(t1.copy(Order.F).asin_().deepEquals(t1.asin(Order.F)));
         } else {
-            var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).asin_());
-            assertEquals("This operation is available only for floating point DArrays.", e.getMessage());
+            var e = assertThrows(OperationNotAvailableException.class, () -> g.random(Shape.of(41, 31)).asin_());
+            assertEquals("This operation is available only for floating point data types.", e.getMessage());
         }
 
         if (g.dt().floatingPoint()) {
@@ -785,8 +785,8 @@ public class DArrayTest {
             assertTrue(t1.copy(Order.C).sinh_().deepEquals(t1.sinh(Order.C)));
             assertTrue(t1.copy(Order.F).sinh_().deepEquals(t1.sinh(Order.F)));
         } else {
-            var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).sinh_());
-            assertEquals("This operation is available only for floating point DArrays.", e.getMessage());
+            var e = assertThrows(OperationNotAvailableException.class, () -> g.random(Shape.of(41, 31)).sinh_());
+            assertEquals("This operation is available only for floating point data types.", e.getMessage());
         }
 
         if (g.dt().floatingPoint()) {
@@ -796,8 +796,8 @@ public class DArrayTest {
             assertTrue(t1.copy(Order.C).cos_().deepEquals(t1.cos(Order.C)));
             assertTrue(t1.copy(Order.F).cos_().deepEquals(t1.cos(Order.F)));
         } else {
-            var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).cos_());
-            assertEquals("This operation is available only for floating point DArrays.", e.getMessage());
+            var e = assertThrows(OperationNotAvailableException.class, () -> g.random(Shape.of(41, 31)).cos_());
+            assertEquals("This operation is available only for floating point data types.", e.getMessage());
         }
 
         if (g.dt().floatingPoint()) {
@@ -807,8 +807,8 @@ public class DArrayTest {
             assertTrue(t1.copy(Order.C).acos_().deepEquals(t1.acos(Order.C)));
             assertTrue(t1.copy(Order.F).acos_().deepEquals(t1.acos(Order.F)));
         } else {
-            var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).acos_());
-            assertEquals("This operation is available only for floating point DArrays.", e.getMessage());
+            var e = assertThrows(OperationNotAvailableException.class, () -> g.random(Shape.of(41, 31)).acos_());
+            assertEquals("This operation is available only for floating point data types.", e.getMessage());
         }
 
         if (g.dt().floatingPoint()) {
@@ -818,8 +818,8 @@ public class DArrayTest {
             assertTrue(t1.copy(Order.C).cosh_().deepEquals(t1.cosh(Order.C)));
             assertTrue(t1.copy(Order.F).cosh_().deepEquals(t1.cosh(Order.F)));
         } else {
-            var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).cosh_());
-            assertEquals("This operation is available only for floating point DArrays.", e.getMessage());
+            var e = assertThrows(OperationNotAvailableException.class, () -> g.random(Shape.of(41, 31)).cosh_());
+            assertEquals("This operation is available only for floating point data types.", e.getMessage());
         }
 
         if (g.dt().floatingPoint()) {
@@ -829,8 +829,8 @@ public class DArrayTest {
             assertTrue(t1.copy(Order.C).tan_().deepEquals(t1.tan(Order.C)));
             assertTrue(t1.copy(Order.F).tan_().deepEquals(t1.tan(Order.F)));
         } else {
-            var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).tan_());
-            assertEquals("This operation is available only for floating point DArrays.", e.getMessage());
+            var e = assertThrows(OperationNotAvailableException.class, () -> g.random(Shape.of(41, 31)).tan_());
+            assertEquals("This operation is available only for floating point data types.", e.getMessage());
         }
 
         if (g.dt().floatingPoint()) {
@@ -840,8 +840,8 @@ public class DArrayTest {
             assertTrue(t1.copy(Order.C).atan_().deepEquals(t1.atan(Order.C)));
             assertTrue(t1.copy(Order.F).atan_().deepEquals(t1.atan(Order.F)));
         } else {
-            var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).atan_());
-            assertEquals("This operation is available only for floating point DArrays.", e.getMessage());
+            var e = assertThrows(OperationNotAvailableException.class, () -> g.random(Shape.of(41, 31)).atan_());
+            assertEquals("This operation is available only for floating point data types.", e.getMessage());
         }
 
         if (g.dt().floatingPoint()) {
@@ -851,8 +851,8 @@ public class DArrayTest {
             assertTrue(t1.copy(Order.C).tanh_().deepEquals(t1.tanh(Order.C)));
             assertTrue(t1.copy(Order.F).tanh_().deepEquals(t1.tanh(Order.F)));
         } else {
-            var e = assertThrows(IllegalArgumentException.class, () -> g.random(Shape.of(41, 31)).tanh_());
-            assertEquals("This operation is available only for floating point DArrays.", e.getMessage());
+            var e = assertThrows(OperationNotAvailableException.class, () -> g.random(Shape.of(41, 31)).tanh_());
+            assertEquals("This operation is available only for floating point data types.", e.getMessage());
         }
     }
 
@@ -1753,8 +1753,8 @@ public class DArrayTest {
     @MethodSource("dataFactorySource")
     <N extends Number> void softmaxTest(DataFactory<N> g) {
         if (!g.dt().floatingPoint()) {
-            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> g.seq(Shape.of(2, 3, 4)).softmax());
-            assertEquals("This operation is available only for floating point DArrays.", ex.getMessage());
+            OperationNotAvailableException ex = assertThrows(OperationNotAvailableException.class, () -> g.seq(Shape.of(2, 3, 4)).softmax());
+            assertEquals("This operation is available only for floating point data types.", ex.getMessage());
             return;
         }
 
@@ -1830,12 +1830,17 @@ public class DArrayTest {
         DArray<N> r1 = t1.sumOn(Shape.of(3, 2), false, Order.C);
 
         List<DArray<N>> splits = t1.unbind(0, false);
-        splits = splits.stream().flatMap(s -> s.split(0, false).stream()).toList();
+        // each slice is split into the single-element pieces of its own first axis, so that each piece carries
+        // exactly the elements reduced into one value of r1. This read split(0, false) with no indexes, which
+        // answered with an empty list, so the comparison below never ran
+        splits = splits.stream().flatMap(s -> s.unbind(0, false).stream()).toList();
 
         Iterator<N> valueIterator = r1.iterator();
         for (DArray<N> split : splits) {
             assertEquals(split.sum().doubleValue(), valueIterator.next().doubleValue(), 1e-10);
         }
+        assertEquals(6, splits.size());
+        assertFalse(valueIterator.hasNext());
 
         DArray<N> r2 = t1.sumOn(Shape.of(3, 2), true);
         assertEquals(t1.rank(), r2.rank());
@@ -1858,12 +1863,15 @@ public class DArrayTest {
 
         assertEquals(Shape.of(3, 2), r1.shape());
         List<DArray<N>> splits = t1.unbind(2, false);
-        splits = splits.stream().flatMap(s -> s.split(2, false).stream()).toList();
+        // as in reduceOnTest, this read split(2, false) with no indexes and silently produced nothing
+        splits = splits.stream().flatMap(s -> s.unbind(2, false).stream()).toList();
 
         Iterator<N> valueIterator = r1.iterator();
         for (DArray<N> split : splits) {
             assertEquals(split.sum().doubleValue(), valueIterator.next().doubleValue(), 1e-10);
         }
+        assertEquals(6, splits.size());
+        assertFalse(valueIterator.hasNext());
 
         DArray<N> r2 = t1.sumTo(Shape.of(3, 2), true);
         assertEquals(Shape.of(1, 1, 3, 2), r2.shape());

@@ -82,6 +82,89 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
         return layout;
     }
 
+    /**
+     * Rejects an operation which would write into a layout that maps several logical elements onto the same storage
+     * position, as {@link StrideLayout#hasAliasedElements()} defines. Such a layout comes from {@code expand}, directly
+     * or through {@code strexp} and broadcasting.
+     * <p>
+     * Writing through one is not well defined: the writes to all the repeats of an element collide, so the result
+     * depends on the order the loop visits them in, which differs between the vectorised and the scalar path and
+     * therefore with the vector length of the data type. Reading stays allowed, since every repeat yields the same
+     * value, and so does broadcasting the operand of an in-place operation, which is only read.
+     * <p>
+     * Guarding here, at the entry points, is what makes the loops below safe: none of them can be reached with a
+     * destination whose inner step is zero, so they need no special case for a store which does not advance.
+     *
+     * @param target    array being written into, which is the destination and not necessarily {@code this}
+     * @param operation name of the operation, used in the message
+     * @throws IllegalArgumentException if the target layout is aliased
+     */
+    protected static void validateWritableTarget(DArray<?> target, String operation) {
+        if (target.layout().hasAliasedElements()) {
+            throw new IllegalArgumentException(String.format(
+                    "Operation %s cannot write into an expanded darray with shape %s, since several of its elements "
+                            + "share the same storage position. Copy it first.", operation, target.shape()));
+        }
+    }
+
+    /**
+     * Rejects an operation which reads from and writes into the same storage over ranges which overlap. The copy
+     * loops read the source and write the destination element by element in one pass, with no intermediate buffer,
+     * so an overlap makes a position which has already been overwritten the source of a later element. The result
+     * then depends on the direction of the overlap: copying a range onto a later one corrupts it, copying onto an
+     * earlier one happens to be correct.
+     * <p>
+     * The ranges compared are the bounding storage intervals of the two layouts, so a pair of strided views which
+     * interleave without sharing an element is rejected as well. That is deliberate: deciding the question exactly
+     * costs an index-by-index comparison, while the conservative answer only rejects an operation whose result the
+     * caller should not be relying on anyway. Copying between distinct storages is never affected, nor is an
+     * out-of-place operation, which allocates its own destination.
+     *
+     * @param source    array being read
+     * @param target    array being written into
+     * @param operation name of the operation, used in the message
+     * @throws IllegalArgumentException if both arrays share storage and their element ranges overlap
+     */
+    protected static void validateNonOverlapping(DArray<?> source, DArray<?> target, String operation) {
+        if (!(source instanceof AbstractStrideDArray<?> src) || !(target instanceof AbstractStrideDArray<?> dst)) {
+            return;
+        }
+        if (src.storage != dst.storage) {
+            return;
+        }
+        long[] srcRange = storageRange(src.layout);
+        long[] dstRange = storageRange(dst.layout);
+        if (srcRange[0] <= dstRange[1] && dstRange[0] <= srcRange[1]) {
+            throw new IllegalArgumentException(String.format(
+                    "Operation %s cannot be applied with a source and a destination which share storage over "
+                            + "overlapping ranges [%d,%d] and [%d,%d], since the copy would read positions it has "
+                            + "already written. Copy the source first.",
+                    operation, srcRange[0], srcRange[1], dstRange[0], dstRange[1]));
+        }
+    }
+
+    /**
+     * The inclusive bounding interval of the storage positions a layout addresses. An axis with a positive stride
+     * pushes the upper bound up, one with a negative stride pushes the lower bound down, and a zero stride moves
+     * neither.
+     *
+     * @param layout layout to measure
+     * @return the lowest and the highest storage position the layout can address
+     */
+    private static long[] storageRange(StrideLayout layout) {
+        long min = layout.offset();
+        long max = layout.offset();
+        for (int i = 0; i < layout.rank(); i++) {
+            long span = (long) layout.stride(i) * (layout.dim(i) - 1);
+            if (span > 0) {
+                max += span;
+            } else {
+                min += span;
+            }
+        }
+        return new long[] {min, max};
+    }
+
     @Override
     public final DArray<N> reshape(Shape askShape, Order askOrder) {
         if (layout.shape().size() != askShape.size()) {
@@ -213,6 +296,10 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
 
     @Override
     public final List<DArray<N>> split(int axis, boolean keepdim, int... indexes) {
+        if (axis < 0 || axis >= rank()) {
+            throw new IllegalArgumentException("Axis is out of bounds: " + axis + ".");
+        }
+        validateSplitIndexes(indexes, axis, shape().dim(axis));
         List<DArray<N>> result = new ArrayList<>(indexes.length);
         for (int i = 0; i < indexes.length; i++) {
             result.add(narrow(axis, keepdim, indexes[i], i < indexes.length - 1 ? indexes[i + 1] : shape().dim(axis)));
@@ -220,11 +307,41 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
         return result;
     }
 
+    /**
+     * Validates the cut points of a split along one axis. Each index is the start of a piece which runs to the next
+     * index, or to the end of the axis for the last one, so the indexes must be strictly increasing and inside the
+     * axis. An empty request is rejected rather than answered with an empty list: it names no piece at all, and
+     * returning nothing silently drops the whole array.
+     *
+     * @param indexes start index of each piece
+     * @param axis    axis being split, used in the message
+     * @param dim     dimension of that axis
+     */
+    private static void validateSplitIndexes(int[] indexes, int axis, int dim) {
+        if (indexes == null || indexes.length == 0) {
+            throw new IllegalArgumentException("Split indexes cannot be empty for axis " + axis + ".");
+        }
+        for (int i = 0; i < indexes.length; i++) {
+            if (indexes[i] < 0 || indexes[i] >= dim) {
+                throw new IllegalArgumentException(String.format(
+                        "Split index %d is out of range for axis %d of dimension %d.", indexes[i], axis, dim));
+            }
+            if (i > 0 && indexes[i] <= indexes[i - 1]) {
+                throw new IllegalArgumentException(String.format(
+                        "Split indexes for axis %d must be strictly increasing, found %d after %d.",
+                        axis, indexes[i], indexes[i - 1]));
+            }
+        }
+    }
+
     @Override
     public final List<DArray<N>> splitAll(boolean keepdim, int[][] indexes) {
         if (indexes.length != rank()) {
             throw new IllegalArgumentException(
                     "Indexes length of %d is not the same as shape rank %d.".formatted(indexes.length, rank()));
+        }
+        for (int axis = 0; axis < indexes.length; axis++) {
+            validateSplitIndexes(indexes[axis], axis, shape().dim(axis));
         }
         List<DArray<N>> results = new ArrayList<>();
         int[] starts = new int[indexes.length];
@@ -255,6 +372,7 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
 
     @Override
     public final DArray<N> gather_(int axis, DArray<?> index, DArray<?> input) {
+        validateWritableTarget(this, "gather_");
         if (!index.shape().equals(this.shape())) {
             throw new IllegalArgumentException("Index must have the same shape as destination.");
         }
@@ -277,6 +395,7 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
 
     @Override
     public final DArray<N> scatter_(int axis, DArray<?> index, DArray<?> input) {
+        validateWritableTarget(this, "scatter_");
         if (index.rank() != input.rank()) {
             throw new IllegalArgumentException("Index must have the same rank as input.");
         }
@@ -335,7 +454,10 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
             int[] newDims = Arrays.copyOf(layout.dims(), layout.dims().length);
             int[] newStrides = Arrays.copyOf(layout.strides(), layout.strides().length);
             newDims[axis] = 1;
-            newStrides[axis] = 1;
+            // the axis holds one element, so its stride is never used for addressing, but it is used to describe the
+            // view: substituting 1 makes a C-ordered selection look F-ordered, which costs reshape and copyTo their
+            // view and fast-order paths. Keeping the real stride agrees with what narrow produces for the same view
+            newStrides[axis] = layout.stride(axis);
             int newOffset = layout().offset() + indices[0] * layout.stride(axis);
             return dm.stride(dt(), StrideLayout.of(Shape.of(newDims), newOffset, newStrides), storage);
         }
@@ -370,6 +492,11 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
 
     @Override
     public final DArray<N> sort_(int axis, boolean asc) {
+        // sorting acts along an axis, so it follows the reduction convention and accepts a negative axis. Before this
+        // was resolved here, an in-range negative axis happened to work, since narrowDims and narrowStrides resolve
+        // one themselves, while an out-of-range one fell through to a raw arraycopy failure
+        axis = StrideLayout.normalizeAxis(layout, axis, "sort_");
+        validateWritableTarget(this, "sort_");
         int[] newDims = layout.shape().narrowDims(axis);
         int[] newStrides = layout.narrowStrides(axis);
         int selDim = layout.dim(axis);

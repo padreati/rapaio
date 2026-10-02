@@ -448,6 +448,7 @@ public class ArrayStrideLayout extends AbstractStrideLayout {
         if (axis < 0 || axis >= strides.length) {
             throw new IllegalArgumentException("Axis is out of bounds.");
         }
+        StrideLayout.validateNarrowBounds(this, axis, start, end);
         if (rank() == 1) {
             StrideLayout result = StrideLayout.of(Shape.of(end - start), offset + stride(axis) * start, strides);
             return keepdim ? result : result.squeeze(axis);
@@ -467,6 +468,7 @@ public class ArrayStrideLayout extends AbstractStrideLayout {
         if (starts.length != ends.length) {
             throw new IllegalArgumentException("Starts and ends does not have the same length.");
         }
+        StrideLayout.validateNarrowAllBounds(this, starts, ends);
         int[] newDims = Arrays.copyOf(dims(), strides.length);
         int newOffset = offset;
         for (int i = 0; i < newDims.length; i++) {

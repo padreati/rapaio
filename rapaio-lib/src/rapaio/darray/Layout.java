@@ -88,6 +88,20 @@ public interface Layout {
     boolean isDense();
 
     /**
+     * Tells whether this layout maps more than one index onto the same storage position, so that the elements it
+     * addresses are not all distinct. Such a layout is produced by {@link #expand(int, int)}, directly or through
+     * {@code strexp} and broadcasting.
+     * <p>
+     * Reading through an aliased layout is well defined and is what broadcasting relies on: every repeat yields the
+     * same value. Writing is not, since the writes to all the repeats of one element collide, so in-place operations
+     * reject an aliased destination. Test this before an in-place operation when the layout may come from a broadcast,
+     * or copy the array first.
+     *
+     * @return true if two distinct indexes of this layout share a storage position
+     */
+    boolean hasAliasedElements();
+
+    /**
      * Finds the best order which is closest to how values are stored in data storage.
      * It returns {@link Order#C} or {@link Order#F} for standard row major or col
      * major orderings. If none of the standard orderings are appropriate, then it returns

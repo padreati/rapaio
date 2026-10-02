@@ -213,27 +213,33 @@ public class DArrayManagerTest {
         assertTrue(t1.deepEquals(exp1.narrow(1, true, 0, 1)));
         assertTrue(t1.deepEquals(exp1.narrow(1, true, 1, 2)));
         assertEquals(Shape.of(4, 2, 2), exp1.shape());
-        // add 1, which should be added twice
-        exp1.add_(1);
-        assertTrue(manager.seq(dt, Shape.of(4, 1, 2)).add_(2).deepEquals(t1));
+        // writing is rejected: every repeat of the expanded axis shares one storage position, so the
+        // writes would collide and the surviving value would depend on the loop and the vector length
+        IllegalArgumentException w1 = assertThrows(IllegalArgumentException.class, () -> exp1.add_(1));
+        assertTrue(w1.getMessage().startsWith("Operation binary_ cannot write into an expanded darray"), w1.getMessage());
+        assertTrue(manager.seq(dt, Shape.of(4, 1, 2)).deepEquals(t1));
 
         DArray<N> t2 = manager.seq(dt, Shape.of(4, 2, 1));
         DArray<N> exp2 = t2.expand(2, 2);
         assertTrue(t2.deepEquals(exp2.narrow(2, true, 0, 1)));
         assertTrue(t2.deepEquals(exp2.narrow(2, true, 1, 2)));
         assertEquals(Shape.of(4, 2, 2), exp2.shape());
-        // add 1, which should be added twice
-        exp2.add_(1);
-        assertTrue(manager.seq(dt, Shape.of(4, 2, 1)).add_(2).deepEquals(t2));
+        // writing is rejected: every repeat of the expanded axis shares one storage position, so the
+        // writes would collide and the surviving value would depend on the loop and the vector length
+        IllegalArgumentException w2 = assertThrows(IllegalArgumentException.class, () -> exp2.add_(1));
+        assertTrue(w2.getMessage().startsWith("Operation binary_ cannot write into an expanded darray"), w2.getMessage());
+        assertTrue(manager.seq(dt, Shape.of(4, 2, 1)).deepEquals(t2));
 
         DArray<N> t3 = manager.seq(dt, Shape.of(1, 2, 4));
         DArray<N> exp3 = t3.expand(0, 2);
         assertTrue(t3.deepEquals(exp3.narrow(0, true, 0, 1)));
         assertTrue(t3.deepEquals(exp3.narrow(0, true, 1, 2)));
         assertEquals(Shape.of(2, 2, 4), exp3.shape());
-        // add 1, which should be added twice
-        exp3.add_(1);
-        assertTrue(manager.seq(dt, Shape.of(1, 2, 4)).add_(2).deepEquals(t3));
+        // writing is rejected: every repeat of the expanded axis shares one storage position, so the
+        // writes would collide and the surviving value would depend on the loop and the vector length
+        IllegalArgumentException w3 = assertThrows(IllegalArgumentException.class, () -> exp3.add_(1));
+        assertTrue(w3.getMessage().startsWith("Operation binary_ cannot write into an expanded darray"), w3.getMessage());
+        assertTrue(manager.seq(dt, Shape.of(1, 2, 4)).deepEquals(t3));
 
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> manager.seq(dt, Shape.of(2, 3, 4)).expand(0, 10));
         assertEquals("Dimension 0 must have size 1, but have size 2.", e.getMessage());

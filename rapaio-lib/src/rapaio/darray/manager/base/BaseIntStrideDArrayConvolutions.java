@@ -33,8 +33,45 @@ import rapaio.util.Pair;
 
 public final class BaseIntStrideDArrayConvolutions {
 
+    /**
+     * Validates the window arguments shared by the unfold operations, and so by the convolutions built on them.
+     * The bounds guards inside the loops hold for any integers, so a bad argument never reads out of range; it
+     * produces a result which has no meaning instead. A non-positive stride makes the window count a quotient of
+     * two negatives, which stays positive and can exceed the number of positions available; a dilation of zero
+     * makes every row of the window read the same element, and a negative one yields more windows than there are
+     * positions. A negative padding would crop the input, which this library used to accept silently and which the
+     * reference semantics reject.
+     *
+     * @param operation name of the operation, used in the message
+     * @param stride    step between two consecutive windows
+     * @param padding   positions added on each side of every spatial axis
+     * @param dilation  spacing between two consecutive elements of the window
+     * @param kernel    window size per spatial axis
+     */
+    private static void validateWindow(String operation, int stride, int padding, int dilation, int... kernel) {
+        if (stride < 1) {
+            throw new IllegalArgumentException(String.format(
+                    "Stride must be strictly positive for operation %s, found %d.", operation, stride));
+        }
+        if (dilation < 1) {
+            throw new IllegalArgumentException(String.format(
+                    "Dilation must be strictly positive for operation %s, found %d.", operation, dilation));
+        }
+        if (padding < 0) {
+            throw new IllegalArgumentException(String.format(
+                    "Padding must not be negative for operation %s, found %d.", operation, padding));
+        }
+        for (int k : kernel) {
+            if (k < 1) {
+                throw new IllegalArgumentException(String.format(
+                        "Kernel size must be strictly positive for operation %s, found %d.", operation, k));
+            }
+        }
+    }
+
     public static DArray<Integer> conv1d(DArray<Integer> input, DArray<?> kernel, DArray<?> bias, int stride, int padding, int dilation,
             int groups) {
+        validateWindow("conv1d", stride, padding, dilation, kernel.dim(kernel.rank() - 1));
 
         // complete input shape
         if (input.rank() > 3) {
@@ -114,6 +151,7 @@ public final class BaseIntStrideDArrayConvolutions {
 
     public static DArray<Integer> convTranspose1d(DArray<Integer> input, DArray<?> weights, DArray<?> bias, int stride, int padding, int dilation,
             int groups, int outputPadding) {
+        validateWindow("convTranspose1d", stride, padding, dilation, weights.dim(weights.rank() - 1));
         if (input.rank() > 3) {
             throw new IllegalArgumentException("Input signal (this darray) must have at most 3 dimensions.");
         }
@@ -197,6 +235,7 @@ public final class BaseIntStrideDArrayConvolutions {
         if (in.rank() != 2 && in.rank() != 3) {
             throw new IllegalArgumentException("Input must be a 2D or 3D array.");
         }
+        validateWindow("unfold1d", stride, padding, dilation, kLen);
 
         boolean batched = in.rank() == 3;
         DArray<Integer> input = batched ? in : in.stretch(0);
@@ -228,6 +267,7 @@ public final class BaseIntStrideDArrayConvolutions {
     }
 
     public static DArray<Integer> conv2d(DArray<Integer> in, DArray<?> kernel, DArray<?> bias, int stride, int padding, int dilation, int groups) {
+        validateWindow("conv2d", stride, padding, dilation, kernel.dim(kernel.rank() - 2), kernel.dim(kernel.rank() - 1));
         if (in.rank() > 4) {
             throw new IllegalArgumentException(String.format(
                     "Input must have at most 4 dimensions, but it has %d.", in.rank()));
@@ -301,6 +341,7 @@ public final class BaseIntStrideDArrayConvolutions {
         if (in.rank() != 3 && in.rank() != 4) {
             throw new IllegalArgumentException("Input must be a 3D or 4D array.");
         }
+        validateWindow("unfold2d", stride, padding, dilation, kH, kW);
         DArray<Integer> input = batched ? in : in.stretch(0);
 
         int n = input.dim(0);
@@ -338,6 +379,7 @@ public final class BaseIntStrideDArrayConvolutions {
 
     public static DArray<Integer> convTranspose2d(DArray<Integer> input, DArray<?> w, DArray<?> bias, int stride, int padding, int dilation, int groups,
             int outputPadding) {
+        validateWindow("convTranspose2d", stride, padding, dilation, w.dim(w.rank() - 2), w.dim(w.rank() - 1));
         while (input.rank() < 4) {
             input = input.stretch(0);
         }
@@ -418,6 +460,7 @@ public final class BaseIntStrideDArrayConvolutions {
     }
 
     public static DArray<Integer> conv3d(DArray<Integer> input, DArray<?> kernel, DArray<?> bias, int stride, int padding, int dilation, int groups) {
+        validateWindow("conv3d", stride, padding, dilation, kernel.dim(kernel.rank() - 3), kernel.dim(kernel.rank() - 2), kernel.dim(kernel.rank() - 1));
         while (input.rank() < 5) {
             input = input.stretch(0);
         }
@@ -471,6 +514,7 @@ public final class BaseIntStrideDArrayConvolutions {
             }
             input = input.stretch(0);
         }
+        validateWindow("unfold3d", stride, padding, dilation, kD, kH, kW);
 
         int n = input.dim(0);
         int inCh = input.dim(1);
@@ -516,6 +560,7 @@ public final class BaseIntStrideDArrayConvolutions {
     public static DArray<Integer> convTranspose3d(DArray<Integer> input, DArray<?> weights, DArray<?> bias, int stride, int padding, int dilation,
             int groups,
             int outputPadding) {
+        validateWindow("convTranspose3d", stride, padding, dilation, weights.dim(weights.rank() - 3), weights.dim(weights.rank() - 2), weights.dim(weights.rank() - 1));
         while (input.rank() < 5) {
             input = input.stretch(0);
         }

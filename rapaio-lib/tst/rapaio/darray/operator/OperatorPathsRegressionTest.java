@@ -24,6 +24,7 @@ package rapaio.darray.operator;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
@@ -42,6 +43,7 @@ import rapaio.darray.Order;
 import rapaio.darray.Shape;
 import rapaio.darray.Simd;
 import rapaio.darray.storage.IntStorage;
+import rapaio.data.OperationNotAvailableException;
 import rapaio.data.VarDouble;
 import rapaio.data.VarFloat;
 
@@ -243,6 +245,89 @@ public class OperatorPathsRegressionTest {
      * Int storage over a plain array which declares no SIMD support, so that the {@code Default} reduce paths
      * and the {@code applyGeneric*} unary paths are exercised for integers.
      */
+    /**
+     * The package documentation states that a reduction which is only meaningful for floating point values throws
+     * {@code OperationNotAvailableException} on an integer array. Every path used to throw
+     * {@code IllegalArgumentException}, which that exception does not extend, so a caller following the documentation
+     * caught nothing; the one guard which did throw the documented type was unreachable, because the manager repeated
+     * the check three lines earlier.
+     */
+    @Test
+    void floatingPointOnlyOperationsThrowTheDocumentedException() {
+        for (DType<?> dt : new DType<?>[] {DType.INTEGER, DType.BYTE}) {
+            DArray<?> x = dm.seq(dt, Shape.of(4));
+            String name = dt.id().toString();
+
+            // reductions, guarded by DArrayReduceOp
+            assertThrows(OperationNotAvailableException.class, x::mean, name);
+            assertThrows(OperationNotAvailableException.class, x::nanMean, name);
+            assertThrows(OperationNotAvailableException.class, () -> x.var(0), name);
+            assertThrows(OperationNotAvailableException.class, () -> x.std(0), name);
+            assertThrows(OperationNotAvailableException.class, () -> x.mean1d(0), name);
+
+            // unary operations, guarded by DArrayUnaryOp
+            assertThrows(OperationNotAvailableException.class, () -> x.copy().exp_(), name);
+            assertThrows(OperationNotAvailableException.class, () -> x.copy().log_(), name);
+            assertThrows(OperationNotAvailableException.class, () -> x.copy().sqrt_(), name);
+            assertThrows(OperationNotAvailableException.class, () -> x.copy().tanh_(), name);
+
+            // the reductions which are defined for an integer array are unaffected
+            assertEquals(6, x.sum().intValue(), name);
+            assertEquals(3, x.amax().intValue(), name);
+        }
+
+        // and the same operations work on a floating point array
+        DArray<Double> d = dm.seq(DType.DOUBLE, Shape.of(4));
+        assertEquals(1.5, d.mean(), TOL);
+        assertEquals(1.0, d.copy().exp_().getDouble(0), TOL);
+    }
+
+    /**
+     * A nan-aware extremum starts from the lowest (highest) value of the type and a NaN never replaces it, so an array
+     * with no non-NaN value used to return that sentinel: an infinity which is not in the data. Both the vectorised and
+     * the scalar path are checked, and so is the per-axis variant, which reaches the same operator.
+     */
+    @Test
+    void nanExtremaOfAnAllNanArrayAreNaN() {
+        double n = Double.NaN;
+
+        // long enough to reach the SIMD path, and a non-SIMD storage for the scalar path
+        DArray<Double> simd = dm.full(DType.DOUBLE, Shape.of(4 * Simd.vsDouble.length()), n);
+        assertTrue(simd.storage().supportSimd());
+        DArray<Double> generic = VarFloat.fill(8, Float.NaN).darray_(DType.DOUBLE);
+        assertFalse(generic.storage().supportSimd());
+
+        for (DArray<Double> x : java.util.List.of(simd, generic)) {
+            String name = x.storage().supportSimd() ? "simd" : "generic";
+            assertTrue(Double.isNaN(x.nanMax()), name);
+            assertTrue(Double.isNaN(x.nanMin()), name);
+        }
+
+        // a float array as well, which has its own set of paths
+        DArray<Float> f = dm.full(DType.FLOAT, Shape.of(4 * Simd.vsFloat.length()), Float.NaN);
+        assertTrue(Float.isNaN(f.nanMax()));
+        assertTrue(Float.isNaN(f.nanMin()));
+
+        // the per-axis variant: the all-NaN row yields NaN, the others keep their extremum
+        DArray<Double> m = dm.stride(DType.DOUBLE, Shape.of(3, 2), Order.C, new double[] {n, n, 1, 5, n, 2});
+        DArray<Double> rowMax = m.nanMax1d(1);
+        assertTrue(Double.isNaN(rowMax.getDouble(0)));
+        assertEquals(5.0, rowMax.getDouble(1), TOL);
+        assertEquals(2.0, rowMax.getDouble(2), TOL);
+
+        // a sentinel which is genuinely in the data is still reported, and is not confused with the empty case
+        DArray<Double> withInfinity = dm.stride(DType.DOUBLE, Shape.of(3), Order.C,
+                new double[] {Double.NEGATIVE_INFINITY, n, Double.NEGATIVE_INFINITY});
+        assertEquals(Double.NEGATIVE_INFINITY, withInfinity.nanMax());
+        DArray<Double> withPositiveInfinity = dm.stride(DType.DOUBLE, Shape.of(3), Order.C,
+                new double[] {Double.POSITIVE_INFINITY, n, Double.POSITIVE_INFINITY});
+        assertEquals(Double.POSITIVE_INFINITY, withPositiveInfinity.nanMin());
+
+        // the partially-NaN case is unchanged, and nanSum of an all-NaN array stays zero as numpy has it
+        assertEquals(3.0, dm.stride(DType.DOUBLE, Shape.of(3), Order.C, new double[] {n, 3, n}).nanMax(), TOL);
+        assertEquals(0.0, simd.nanSum(), TOL);
+    }
+
     private static final class ScalarIntStorage extends IntStorage {
 
         private final int[] array;

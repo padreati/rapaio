@@ -59,6 +59,50 @@
 /// (`x.cast(DType.DOUBLE).sum()`) when the exact result may not fit in the element type. Reductions that are only
 /// meaningful for floating point values (`mean`, `var`, `std`, ...) throw `OperationNotAvailableException` on integer arrays.
 ///
+/// ### Conversion order
+///
+/// Where a value crosses into an array of a different data type, the conversion happens *before* the arithmetic, not
+/// after, and it is a plain Java cast with the same rule as [DType.cast][rapaio.darray.DType]: truncation towards zero,
+/// `NaN` to zero, and wrapping of a value too large for the type. Three consequences are worth stating, because each one
+/// silently produces a value the caller may not expect:
+///
+/// * A scalar operand is narrowed first. `x.div(2.5)` on an `INTEGER` array divides by 2, and `x.mul(0.5)` on an
+///   `INTEGER` array yields zeros, because `0.5` becomes `0`. Cast the array (`x.cast(DType.DOUBLE).mul(0.5)`) when the
+///   scalar is not exactly representable in the element type.
+/// * An increment narrows the increment, not the sum. `ptrIncDouble(p, 0.9)` on an `INTEGER` array adds `(int) 0.9`,
+///   that is nothing at all, so repeated fractional increments never accumulate.
+/// * A `Var` viewed as an array of a different type converts through the variable, which may round rather than truncate.
+///   `VarInt.darray_(DType.DOUBLE)` reports `DOUBLE` as its data type, but every write passes through
+///   `VarInt.setDouble` and is rounded half to even, so writing `3.5` stores `4`.
+///
+/// In-place operations additionally require their destination to address each element exactly once. A darray whose
+/// layout repeats an element — the result of `expand`, directly or through `strexp` or broadcasting — is rejected,
+/// because the writes to the repeats of one element collide and the surviving value would depend on the vector length
+/// of the data type. Test this with `Layout.hasAliasedElements()` when the destination may come from a broadcast, or
+/// copy it first; an axis of a single element with a zero stride, which is what `stretch` produces, is not affected.
+/// Broadcasting the *operand* of an in-place operation stays allowed, since that side is only read, and so does every
+/// out-of-place operation on a repeated layout, which allocates its own destination.
+///
+/// A copy also requires its source and its destination not to overlap. `copyTo` reads the source and writes the
+/// destination in a single pass with no intermediate buffer, so two views of the same storage whose element ranges
+/// overlap would make a position which has already been written the source of a later element. Such a pair is
+/// rejected rather than buffered; copy the source first when the ranges genuinely overlap. Two views of the same
+/// storage whose ranges are disjoint, such as the two halves of one array, copy normally.
+///
+/// ### Axis conventions
+///
+/// Two conventions are in use, and which one applies depends on what the operation does with the axis:
+///
+/// * Operations which act *along* an axis accept a negative axis, counted back from the last one, so `-1` names the
+///   innermost axis. This covers the `*1d` reduction family (`reduce1d`, `var1d`, `argmax1d`, `argmin1d`,
+///   `unary1d_`, and the `sum`, `mean`, `max` and similar methods built on them) together with `sort_`.
+/// * Operations which create or name a *view* of an axis require a non-negative axis: `narrow`, `narrowAll`, `sel`,
+///   `rem`, `squeeze`, and `split`, `splitAll`, `chunk`, `chunkAll` and `unbind`, which are built on `narrow`.
+///
+/// An axis out of range for the rank is rejected under either convention. The bounds of a `narrow` are validated as
+/// well: the range must be non-empty and inside the axis, since a view narrowed past its own end would otherwise
+/// still address storage belonging to its parent and read and write elements it does not own.
+///
 /// ## Storage
 ///
 /// A storage is a container for data which offers simple low-level API for data manipulation.

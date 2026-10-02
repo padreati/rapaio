@@ -473,6 +473,12 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
      * @return list of new DArrays with truncated data.
      */
     public final List<DArray<N>> chunk(int axis, boolean keepDim, int step) {
+        if (axis < 0 || axis >= layout().rank()) {
+            throw new IllegalArgumentException("Axis is out of bounds: " + axis + ".");
+        }
+        if (step < 1) {
+            throw new IllegalArgumentException("Chunk step must be strictly positive, found " + step + ".");
+        }
         int dim = layout().shape().dim(axis);
         int[] indexes = new int[Math.ceilDiv(dim, step)];
         indexes[0] = 0;
@@ -499,6 +505,12 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     public final List<DArray<N>> chunkAll(boolean keepDim, int[] steps) {
         if (layout().rank() != steps.length) {
             throw new IllegalArgumentException("Array of steps must have the length equals with rank.");
+        }
+        for (int i = 0; i < steps.length; i++) {
+            if (steps[i] < 1) {
+                throw new IllegalArgumentException(String.format(
+                        "Chunk step for axis %d must be strictly positive, found %d.", i, steps[i]));
+            }
         }
         int[][] indexes = new int[steps.length][];
         for (int i = 0; i < steps.length; i++) {
@@ -4309,6 +4321,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     }
 
     public final DArray<N> pad(int axis, int pad, int inflation, Order askOrder) {
+        validatePadding(axis, pad, inflation, "pad");
         int[] newDims = Arrays.copyOf(dims(), rank());
         newDims[axis] = 2 * pad + (dim(axis) - 1) * inflation + 1;
         DArray<N> copy = dm.zeros(dt, Shape.of(newDims), askOrder);
@@ -4327,6 +4340,9 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
         if (pad.length > rank()) {
             throw new IllegalArgumentException("Length of pad and inflation must be less than or equal with darray rank.");
         }
+        for (int i = 0; i < pad.length; i++) {
+            validatePadding(rank() - i - 1, pad[pad.length - i - 1], inflation[pad.length - i - 1], "pad");
+        }
         int[] newDims = Arrays.copyOf(dims(), rank());
         for (int i = 0; i < pad.length; i++) {
             newDims[newDims.length - i - 1] =
@@ -4338,12 +4354,46 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     }
 
     public final DArray<N> unpad(int axis, int pad, int inflation) {
+        validatePadding(axis, pad, inflation, "unpad");
+        if (dim(axis) - 2 * pad - 1 < 0) {
+            throw new IllegalArgumentException(String.format(
+                    "Padding of %d is too large to remove from axis %d of dimension %d.", pad, axis, dim(axis)));
+        }
         int[] newDims = Arrays.copyOf(dims(), rank());
-        newDims[axis] = Math.ceilDiv(dim(axis) - 2 * pad - 1, inflation) + 1;
+        // the positions this view addresses are pad + i * inflation, bounded by dim - 1 - pad, which is a floorDiv
+        // count. With ceilDiv the view claimed one element too many whenever inflation did not divide exactly, and
+        // that element addressed storage past the end of its own axis. pad() is unaffected either way, since it
+        // always produces a length of the form 2 * pad + (dim - 1) * inflation + 1, where the two agree
+        newDims[axis] = Math.floorDiv(dim(axis) - 2 * pad - 1, inflation) + 1;
         int newOffset = ((StrideLayout) layout()).offset() + pad * stride(axis);
         int[] newStrides = Arrays.copyOf(strides(), strides().length);
         newStrides[axis] *= inflation;
         return dm.stride(dt, StrideLayout.of(newDims, newOffset, newStrides), storage);
+    }
+
+    /**
+     * Validates the arguments shared by {@code pad} and {@code unpad}. A negative padding is rejected rather than
+     * treated as a crop: on a view the resulting negative offset still addresses the storage of the parent, so the
+     * out-of-range access is silent. An inflation below one would either collapse the axis or divide by zero.
+     *
+     * @param axis      axis being padded or unpadded
+     * @param pad       number of positions added on each side of the axis
+     * @param inflation spacing between two consecutive elements of the axis
+     * @param operation name of the operation, used in the message
+     */
+    private void validatePadding(int axis, int pad, int inflation, String operation) {
+        if (axis < 0 || axis >= rank()) {
+            throw new IllegalArgumentException(String.format(
+                    "Axis %d is out of bounds for operation %s on a darray of rank %d.", axis, operation, rank()));
+        }
+        if (pad < 0) {
+            throw new IllegalArgumentException(String.format(
+                    "Padding must not be negative for operation %s, found %d.", operation, pad));
+        }
+        if (inflation < 1) {
+            throw new IllegalArgumentException(String.format(
+                    "Inflation must be strictly positive for operation %s, found %d.", operation, inflation));
+        }
     }
 
     public final DArray<N> unpad(int[] pad, int[] inflation) {

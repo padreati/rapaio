@@ -39,7 +39,7 @@ public abstract class DArrayUnaryOp {
 
     public final void applyByte(StrideLoopDescriptor loop, Storage s) {
         if (floatingPointOnly()) {
-            throw new OperationNotAvailableException();
+            throw new OperationNotAvailableException("This operation is available only for floating point data types.");
         }
         if (s.supportSimd()) {
             if (loop.step == 1) {
@@ -54,7 +54,7 @@ public abstract class DArrayUnaryOp {
 
     public final void applyInt(StrideLoopDescriptor loop, Storage s) {
         if (floatingPointOnly()) {
-            throw new OperationNotAvailableException();
+            throw new OperationNotAvailableException("This operation is available only for floating point data types.");
         }
         if (s.supportSimd()) {
             if (loop.step == 1) {

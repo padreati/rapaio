@@ -23,6 +23,7 @@ package rapaio.darray.operator;
 
 import rapaio.darray.Storage;
 import rapaio.darray.iterators.StrideLoopDescriptor;
+import rapaio.data.OperationNotAvailableException;
 
 public abstract class DArrayReduceOp {
 
@@ -30,7 +31,7 @@ public abstract class DArrayReduceOp {
 
     public final byte reduceByte(StrideLoopDescriptor loop, Storage storage) {
         if (floatingPointOnly()) {
-            throw new IllegalArgumentException("This operation is available only for floating points data types.");
+            throw new OperationNotAvailableException("This operation is available only for floating point data types.");
         }
         if (storage.supportSimd()) {
             if (loop.step == 1) {
@@ -44,7 +45,7 @@ public abstract class DArrayReduceOp {
 
     public final int reduceInt(StrideLoopDescriptor loop, Storage storage) {
         if (floatingPointOnly()) {
-            throw new IllegalArgumentException("This operation is available only for floating points data types.");
+            throw new OperationNotAvailableException("This operation is available only for floating point data types.");
         }
         if (storage.supportSimd()) {
             if (loop.step == 1) {

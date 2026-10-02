@@ -101,6 +101,7 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
 
     @Override
     public BaseDoubleStrideDArray apply_(Order askOrder, IntIntBiFunction<Double> apply) {
+        validateWritableTarget(this, "apply_");
         var it = ptrIterator(askOrder);
         int i = 0;
         while (it.hasNext()) {
@@ -112,6 +113,7 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
 
     @Override
     public DArray<Double> apply_(Function<Double, Double> fun) {
+        validateWritableTarget(this, "apply_");
         var ptrIter = ptrIterator(Order.S);
         while (ptrIter.hasNext()) {
             int ptr = ptrIter.nextInt();
@@ -122,18 +124,16 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
 
     @Override
     public DArray<Double> unary_(DArrayUnaryOp op) {
-        if (op.floatingPointOnly() && !dt().floatingPoint()) {
-            throw new IllegalArgumentException("This operation is available only for floating point DArrays.");
-        }
+        validateWritableTarget(this, "unary_");
+        // the data type is checked by the operator itself, which throws OperationNotAvailableException for a
+        // floating point only operation applied to an integral array
         op.applyDouble(loop(), storage);
         return this;
     }
 
     @Override
     public DArray<Double> unary1d_(DArrayUnaryOp op, int axis) {
-        if (axis < 0) {
-            axis += shape().rank();
-        }
+        axis = StrideLayout.normalizeAxis(layout, axis, "unary1d_");
 
         int[] newDims = layout.shape().narrowDims(axis);
         int[] newStrides = layout.narrowStrides(axis);
@@ -161,6 +161,7 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
 
     @Override
     public DArray<Double> binary_(DArrayBinaryOp op, DArray<?> other) {
+        validateWritableTarget(this, "binary_");
         if (other.isScalar()) {
             return binary_(op, other.getDouble());
         }
@@ -239,7 +240,10 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
 
     @Override
     public <M extends Number> DArray<Double> binary_(DArrayBinaryOp op, M value) {
+        validateWritableTarget(this, "binary_");
         StrideLoopDescriptor loop = loop();
+        // the scalar is converted to this array's data type before the operation, as the package documentation
+        // describes, so a fractional value applied to an integral array is narrowed first
         double v = value.doubleValue();
         DoubleVector m = DoubleVector.broadcast(Simd.vsDouble, v);
         for (int p : loop.offsets) {
@@ -271,6 +275,7 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
 
     @Override
     public DArray<Double> fma_(Double a, DArray<?> t) {
+        validateWritableTarget(this, "fma_");
         if (t.isScalar()) {
             double tVal = t.getDouble();
             return add_((double) (a * tVal));
@@ -333,9 +338,7 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
 
     @Override
     public DArray<Double> reduce1d(DArrayReduceOp op, int axis, Order order) {
-        if (axis < 0) {
-            axis += shape().rank();
-        }
+        axis = StrideLayout.normalizeAxis(layout, axis, "reduce1d");
         int[] newDims = layout.shape().narrowDims(axis);
         int[] newStrides = layout.narrowStrides(axis);
         int selDim = layout.dim(axis);
@@ -512,9 +515,7 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
 
     @Override
     public DArray<Double> var1d(int axis, int ddof, DArray<?> mean, Order order) {
-        if (axis < 0) {
-            axis += shape().rank();
-        }
+        axis = StrideLayout.normalizeAxis(layout, axis, "var1d");
         int[] newDims = layout.shape().narrowDims(axis);
         int[] newStrides = layout.narrowStrides(axis);
         int selDim = layout.dim(axis);
@@ -629,9 +630,7 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
 
     @Override
     public DArray<Integer> argmax1d(int axis, boolean keepDim, Order order) {
-        if (axis < 0) {
-            axis += shape().rank();
-        }
+        axis = StrideLayout.normalizeAxis(layout, axis, "argmax1d");
         int[] newDims = keepDim ? layout.dims() : layout.shape().narrowDims(axis);
         int[] newStrides = keepDim ? layout.strides() : layout.narrowStrides(axis);
         if (keepDim) {
@@ -668,9 +667,7 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
 
     @Override
     public DArray<Integer> argmin1d(int axis, boolean keepDim, Order order) {
-        if (axis < 0) {
-            axis += shape().rank();
-        }
+        axis = StrideLayout.normalizeAxis(layout, axis, "argmin1d");
         int[] newDims = keepDim ? layout.dims() : layout.shape().narrowDims(axis);
         int[] newStrides = keepDim ? layout.strides() : layout.narrowStrides(axis);
         if (keepDim) {
@@ -1109,6 +1106,7 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
 
     @Override
     public DArray<Double> mm(DArray<?> other, DArray<?> to) {
+        validateWritableTarget(to, "mm");
         if (shape().rank() != 2 || other.shape().rank() != 2 || shape().dim(1) != other.shape().dim(0)) {
             throw new IllegalArgumentException(
                     String.format("Operands are not valid for matrix-matrix multiplication (m = %s, v = %s).", shape(), other.shape()));
@@ -1574,6 +1572,8 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
 
     @Override
     public DArray<Double> copyTo(DArray<Double> to) {
+        validateWritableTarget(to, "copyTo");
+        validateNonOverlapping(this, to, "copyTo");
         if (!shape().equals(to.shape())) {
             throw new IllegalArgumentException(
                     String.format("Destination shape %s does not match the source shape %s.", to.shape(), shape()));

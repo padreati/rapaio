@@ -200,6 +200,7 @@ public final class VectorStrideLayout extends AbstractStrideLayout {
         if (axis != 0) {
             throw new IllegalArgumentException("Invalid axis value: " + axis);
         }
+        StrideLayout.validateNarrowBounds(this, axis, start, end);
         // the dimension is dropped only when the narrowed result has unit length, as DArray.narrow documents
         return keepDim || end - start > 1 ?
                 StrideLayout.of(Shape.of(end - start), offset + stride * start, new int[] {stride}) :

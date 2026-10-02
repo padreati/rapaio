@@ -88,6 +88,27 @@ public interface StrideLayout extends Layout {
     int[] strides();
 
     /**
+     * Implements {@link rapaio.darray.Layout#hasAliasedElements()} for every stride layout: an index is repeated
+     * exactly when some axis is longer than one element and has a stride of zero, so that advancing along it does not
+     * move the storage position.
+     * <p>
+     * An axis of a single element with a zero stride is not aliasing: it addresses one position and repeats nothing.
+     * {@link #stretch(int...)} creates exactly such axes, and the batched matrix products and the neural network
+     * gradients rely on being able to write through a stretched layout.
+     *
+     * @return true if two distinct index tuples of this layout share a storage position
+     */
+    @Override
+    default boolean hasAliasedElements() {
+        for (int i = 0; i < rank(); i++) {
+            if (stride(i) == 0 && dim(i) > 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Structural equality for stride layouts: two layouts are equal when they describe the same view, which means the
      * same shape, the same offset and the same strides. Runtime classes are deliberately not compared, since the same
      * view is represented by a rank-specialised implementation when it is built by {@link #of} and by
@@ -183,6 +204,66 @@ public interface StrideLayout extends Layout {
      * @param ends   end index per axis, exclusive
      * @return the axes to squeeze, in increasing order, empty when the request narrows nothing down to a single element
      */
+    /**
+     * Normalizes an axis for the operations which act along an axis rather than creating a view of it, which are the
+     * {@code *1d} reduction family and {@code sort_}. Those accept a negative axis counted back from the last one,
+     * and this resolves it and rejects an axis which is out of range either way.
+     * <p>
+     * The operations which create a view of a named axis do not share this convention: {@code narrow}, {@code sel},
+     * {@code rem}, {@code squeeze} and the splitting operations built on them require a non-negative axis. See the
+     * axis conventions in {@code rapaio.darray} package documentation.
+     *
+     * @param layout    layout the operation is applied to
+     * @param axis      axis as the caller gave it, possibly negative
+     * @param operation name of the operation, used in the message
+     * @return the axis counted from the first one
+     */
+    static int normalizeAxis(StrideLayout layout, int axis, String operation) {
+        int resolved = axis < 0 ? axis + layout.rank() : axis;
+        if (resolved < 0 || resolved >= layout.rank()) {
+            throw new IllegalArgumentException(String.format(
+                    "Axis %d is out of bounds for operation %s on a darray of rank %d.", axis, operation, layout.rank()));
+        }
+        return resolved;
+    }
+
+    /**
+     * Rejects a narrow request whose bounds do not describe a non-empty range inside the axis, which means
+     * {@code 0 <= start < end <= dim(axis)}.
+     * <p>
+     * Validating here is what keeps a narrow of a narrow honest. Without it the resulting layout simply records
+     * {@code end - start} as the new dimension, and when the layout is a view the out-of-range positions still fall
+     * inside the storage of the parent, so both reading and writing silently reach elements the view does not own.
+     * Every path which truncates an axis goes through {@code narrow} or {@code narrowAll}, including {@code split},
+     * {@code splitAll}, {@code chunk}, {@code chunkAll}, {@code unbind} and the autograd narrow node.
+     *
+     * @param layout layout the request is applied to, before it is narrowed
+     * @param axis   axis being truncated, already validated to be in bounds
+     * @param start  start index, inclusive
+     * @param end    end index, exclusive
+     */
+    static void validateNarrowBounds(StrideLayout layout, int axis, int start, int end) {
+        if (start < 0 || end > layout.dim(axis) || start >= end) {
+            throw new IllegalArgumentException(String.format(
+                    "Narrow bounds [%d,%d) are out of range for axis %d of dimension %d.",
+                    start, end, axis, layout.dim(axis)));
+        }
+    }
+
+    /**
+     * Rejects a {@code narrowAll} request whose bounds do not describe a non-empty range inside each axis, as
+     * {@link #validateNarrowBounds} defines for a single axis.
+     *
+     * @param layout layout the request is applied to, before it is narrowed
+     * @param starts start index per axis, inclusive
+     * @param ends   end index per axis, exclusive
+     */
+    static void validateNarrowAllBounds(StrideLayout layout, int[] starts, int[] ends) {
+        for (int axis = 0; axis < layout.rank(); axis++) {
+            validateNarrowBounds(layout, axis, starts[axis], ends[axis]);
+        }
+    }
+
     static int[] narrowedUnitAxes(StrideLayout layout, int[] starts, int[] ends) {
         int[] axes = new int[layout.rank()];
         int len = 0;
