@@ -74,10 +74,12 @@ public class OnlineStat {
     }
 
     /**
-     * Adds an element with weight 1 to the sample. Non finite values are ignored,
-     * as {@link WeightedOnlineStat#update(double, double)} does and as the
-     * {@link rapaio.data.Var} based statistics do for missing values: a single
-     * {@code NaN} would otherwise turn every moment into {@code NaN}.
+     * Adds an element with weight 1 to the sample. Non finite values are ignored: {@code NaN} as a missing
+     * value, and also the infinities, since a single infinite value would turn every moment into {@code NaN}
+     * through {@code Inf - Inf}. This is a choice of this class, it is <em>not</em> what the {@link rapaio.data.Var}
+     * based statistics do: those treat an infinity as a value, so {@link Maximum} and {@link Mean} of
+     * {@code (1, Inf)} are {@code Inf}, while here the infinity is not even counted in {@link #n()}.
+     * {@link WeightedOnlineStat#update(double, double)} follows the same policy.
      *
      * @param x added sample value
      */
@@ -129,7 +131,8 @@ public class OnlineStat {
     }
 
     /**
-     * @return sum of the values seen so far, {@code NaN} if no value was seen
+     * @return sum of the values seen so far, {@code NaN} if no value was seen. Note that {@link Sum} of an
+     * empty variable is 0, the additive identity, as in R; the two differ on purpose only for the empty case
      */
     public double sum() {
         return n == 0 ? Double.NaN : sum;

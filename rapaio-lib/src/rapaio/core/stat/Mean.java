@@ -67,6 +67,10 @@ public final class Mean implements Printable {
             this.value = Double.NaN;
             return;
         }
+        if (!Double.isFinite(sum)) {
+            this.value = nonFiniteSumMean(sum, v, 0, completeCount, completeCount);
+            return;
+        }
         final double mean = sum / completeCount;
         double mean2 = 0.0;
         for (int i = 0; i < completeCount; i++) {
@@ -90,6 +94,10 @@ public final class Mean implements Printable {
             this.value = Double.NaN;
             return;
         }
+        if (!Double.isFinite(sum)) {
+            this.value = nonFiniteSumMean(sum, values, start, end, completeCount);
+            return;
+        }
 
         final double mean = sum / completeCount;
         double mean2 = 0.0;
@@ -100,6 +108,35 @@ public final class Mean implements Printable {
             mean2 += values[i] - mean;
         }
         this.value = mean + mean2 / completeCount;
+    }
+
+    /**
+     * Mean of a sample whose plain sum is not finite, where the residual correction cannot be used since it
+     * subtracts the infinite mean from infinite values and gives NaN.
+     * <ul>
+     *     <li>the sum is NaN when the sample contains both infinities, and so is the mean</li>
+     *     <li>when some value is infinite the mean is that infinity</li>
+     *     <li>otherwise the finite values only overflowed the sum, while their mean is finite: it is computed
+     *     from the values divided by the count, which cannot overflow</li>
+     * </ul>
+     * Missing values (NaN) in the given range are skipped.
+     */
+    private static double nonFiniteSumMean(double sum, double[] values, int start, int end, int count) {
+        if (Double.isNaN(sum)) {
+            return Double.NaN;
+        }
+        for (int i = start; i < end; i++) {
+            if (Double.isInfinite(values[i])) {
+                return sum / count;
+            }
+        }
+        double mean = 0.0;
+        for (int i = start; i < end; i++) {
+            if (!Double.isNaN(values[i])) {
+                mean += values[i] / count;
+            }
+        }
+        return mean;
     }
 
     /**

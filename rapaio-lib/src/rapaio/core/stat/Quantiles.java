@@ -113,15 +113,18 @@ public class Quantiles implements Printable {
                     } else if (p >= (N - 1. / 3.) / (N + 1. / 3.)) {
                         values[i] = x[N - 1];
                     } else {
-                        double h = (N + 1. / 3.) * p + 1. / 3.;
-                        int hfloor = (int) StrictMath.floor(h);
-                        values[i] = x[hfloor - 1] + (h - hfloor) * (x[hfloor] - x[hfloor - 1]);
+                        // h is recomputed here with different rounding than in the guards above, so it can land
+                        // one ulp outside [1, N]; clamping h itself keeps both the bracket inside the array
+                        // and the result inside the range of the data
+                        double h = Math.max(1, Math.min((N + 1. / 3.) * p + 1. / 3., N));
+                        int hfloor = (int) Math.min(StrictMath.floor(h), N - 1);
+                        values[i] = interpolate(x[hfloor - 1], x[hfloor], h - hfloor);
                     }
                 }
                 case R7 -> {
                     double h = (N - 1.0) * p + 1;
                     int hfloor = (int) Math.min(StrictMath.floor(h), N - 1);
-                    values[i] = x[hfloor - 1] + (h - hfloor) * (x[hfloor] - x[hfloor - 1]);
+                    values[i] = interpolate(x[hfloor - 1], x[hfloor], h - hfloor);
                 }
             }
         }
@@ -129,10 +132,34 @@ public class Quantiles implements Printable {
     }
 
     /**
+     * Interpolation between two consecutive order statistics {@code lo <= hi} with weight {@code w} of the
+     * upper one, where infinite values are legitimate observations.
+     * <p>
+     * The result is exact whenever no interpolation is needed, that is for a zero weight or equal neighbours;
+     * the general form {@code lo + w * (hi - lo)} would turn these into NaN when a neighbour is infinite, since
+     * it multiplies a zero by an infinite difference, or subtracts an infinity from itself. When the
+     * difference itself is not finite, either because of an infinite bound or because of overflow, the
+     * weighted sum of the bounds is used.
+     */
+    private static double interpolate(double lo, double hi, double w) {
+        if (w <= 0 || lo == hi) {
+            return lo;
+        }
+        if (w >= 1) {
+            return hi;
+        }
+        double delta = hi - lo;
+        if (Double.isFinite(delta)) {
+            return lo + w * delta;
+        }
+        return lo * (1 - w) + hi * w;
+    }
+
+    /**
      * @return one estimated quantile per requested probability, in the order they were given
      */
     public double[] values() {
-        return quantiles;
+        return Arrays.copyOf(quantiles, quantiles.length);
     }
 
     /**

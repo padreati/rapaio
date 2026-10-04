@@ -53,7 +53,10 @@ public class Covariance implements Printable {
 
     private double compute(final Var x, final Var y) {
 
-        int len = Math.min(x.size(), y.size());
+        if (x.size() != y.size()) {
+            throw new IllegalArgumentException("Variables do not have the same size: " + x.size() + " and " + y.size() + ".");
+        }
+        int len = x.size();
         double[] xx = new double[len];
         double[] yy = new double[len];
         for (int i = 0; i < len; i++) {

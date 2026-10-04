@@ -74,17 +74,23 @@ public class Sum implements Printable {
             completeCount++;
 
             double t = sum + var.getDouble(i);
-            if (Math.abs(sum) >= Math.abs(var.getDouble(i))) {
-                // If sum is bigger, low-order digits of input[i] are lost.
-                c += (sum - t) + var.getDouble(i);
-            } else {
-                // Else low-order digits of sum are lost
-                c += (var.getDouble(i) - t) + sum;
+            // the compensation recovers the low-order bits lost by a finite addition; when the result is
+            // not finite there is nothing to recover, and the difference of two infinities would turn the
+            // correct infinite sum into NaN (a sum which overflows is +-Infinity, as for the plain sum)
+            if (Double.isFinite(t)) {
+                if (Math.abs(sum) >= Math.abs(var.getDouble(i))) {
+                    // If sum is bigger, low-order digits of input[i] are lost.
+                    c += (sum - t) + var.getDouble(i);
+                } else {
+                    // Else low-order digits of sum are lost
+                    c += (var.getDouble(i) - t) + sum;
+                }
             }
             sum = t;
         }
-        // Correction only applied once in the very end
-        return sum + c;
+        // Correction only applied once in the very end, and only when the sum is finite: otherwise it is
+        // an accumulation of a previous phase and the infinite value must be returned as it is
+        return Double.isFinite(sum) ? sum + c : sum;
     }
 
     public double value() {

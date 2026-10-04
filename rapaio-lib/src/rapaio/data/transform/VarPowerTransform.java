@@ -58,6 +58,9 @@ public class VarPowerTransform extends AbstractVarTransform {
         GeometricMean mygm = GeometricMean.of(var);
         if (mygm.isDefined()) {
             gm = mygm.value();
+        } else if (var.stream().complete().count() == 0) {
+            throw new IllegalArgumentException(
+                    "The source variable " + var.name() + " has no values, geometric mean cannot be computed");
         } else {
             throw new IllegalArgumentException(
                     "The source variable " + var.name() + " contains negative values, geometric mean cannot be computed");

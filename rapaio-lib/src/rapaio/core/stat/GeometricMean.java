@@ -32,8 +32,8 @@ import rapaio.printer.opt.POpt;
  * Core tool which computes geometric mean for a given numerical variable.
  * Geometric mean is not defined for negative values, as such, when negative values
  * are encountered in vector the {@link Double#NaN} value is returned and
- * {@link #isDefined()} will return true. The geometric mean is also undefined
- * when all the available values are negative or missing.
+ * {@link #isDefined()} will return false. The geometric mean is also undefined
+ * when all the available values are missing.
  * <p>
  * The geometric mean is defined as the n-th square root of the product of
  * all the values from the variable. The algorithm implied below uses
@@ -88,7 +88,7 @@ public class GeometricMean implements Printable {
      * or all elements are missing
      */
     public boolean isDefined() {
-        return negativeCount == 0;
+        return negativeCount == 0 && completeCount > 0;
     }
 
     @Override

@@ -64,6 +64,16 @@ public class WeightedOnlineStat {
         return S / wsum;
     }
 
+    /**
+     * Adds a value with its weight, by the incremental algorithm of West (1979).
+     * <p>
+     * A pair is ignored when the value or the weight is not finite, as in {@link OnlineStat#update(double)}, and
+     * when the weight is zero, which contributes nothing. A <em>negative</em> weight is ignored as well, which is
+     * a restriction of the online algorithm: the running total of the weights could pass through 0, where the
+     * mean is a division by zero and every later update stays NaN. {@link WeightedMean} computes the sums in
+     * one pass and accepts negative weights, as R's {@code weighted.mean} does, so the two classes agree only
+     * for positive weights.
+     */
     public WeightedOnlineStat update(double x, double w) {
         if (w <= 0.0 || !Double.isFinite(x) || !Double.isFinite(w)) {
             return this;
