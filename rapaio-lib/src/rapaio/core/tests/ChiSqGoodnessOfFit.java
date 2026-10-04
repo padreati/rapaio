@@ -95,6 +95,7 @@ public class ChiSqGoodnessOfFit implements HTest {
 
     private ChiSqGoodnessOfFit(DensityVector<String> dv, Var p) {
 
+        validateProbabilities(p);
         VarDouble expected = VarDouble.from(p, pi -> pi * dv.sum());
 
         if (dv.rowCount() != expected.size()) {
@@ -104,27 +105,51 @@ public class ChiSqGoodnessOfFit implements HTest {
         this.dv = dv;
         this.p = p;
         this.expected = expected;
-        this.df = expected.size() - 1;
-        if (df <= 0) {
-            throw new IllegalArgumentException("should be over 0");
-        }
 
+        // a category which can not occur and did not occur has no information: it is left out of the sum and
+        // of the degrees of freedom. One which can not occur but did occur makes the statistic infinite
+        int usedCells = 0;
         double sum = 0;
         for (int i = 0; i < dv.rowCount(); i++) {
             double o = dv.get(i);
             double e = expected.getDouble(i);
 
             if (Math.abs(e) < 1e-50) {
-                sum += Double.POSITIVE_INFINITY;
-                break;
-            }
-            if (Math.abs(e) < 1e-50 && Math.abs(o - e) < 1e50) {
+                if (Math.abs(o) < 1e-50) {
+                    continue;
+                }
+                usedCells++;
+                sum = Double.POSITIVE_INFINITY;
                 continue;
             }
-            sum += Math.pow(o - e, 2) / expected.getDouble(i);
+            usedCells++;
+            sum += Math.pow(o - e, 2) / e;
+        }
+        this.df = usedCells - 1;
+        if (df <= 0) {
+            throw new IllegalArgumentException("should be over 0");
         }
         chiValue = sum;
         pValue = 1.0 - ChiSquare.of(df).cdf(chiValue);
+    }
+
+    /**
+     * The expected probabilities have to be a distribution: non negative, finite, and summing to 1 up to the
+     * tolerance of R ({@code sqrt(eps)}) and scipy. Otherwise the expected counts do not add up to the observed
+     * total, and the statistic measures nothing.
+     */
+    private static void validateProbabilities(Var p) {
+        double sum = 0;
+        for (int i = 0; i < p.size(); i++) {
+            double pi = p.getDouble(i);
+            if (!(pi >= 0) || Double.isInfinite(pi)) {
+                throw new IllegalArgumentException("Expected probabilities must be finite and not negative, found " + pi + " at " + i + ".");
+            }
+            sum += pi;
+        }
+        if (Math.abs(sum - 1) > 1.5e-8) {
+            throw new IllegalArgumentException("Expected probabilities must sum to 1, but their sum is " + sum + ".");
+        }
     }
 
     public int df() {

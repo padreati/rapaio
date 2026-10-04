@@ -39,6 +39,10 @@ public class ADTestGoodnessTest {
         VarDouble x = VarDouble.wrap(6.0747159, -8.9637424, -1.1363964, 1.5831864, -3.4660379, 2.6695147, 3.0571496, 0.8348192, -11.3294910, 13.8572907);
 
         ADTestGoodness test = ADTestGoodness.from(x, 1, 5);
-        assertEquals(0.5318083, test.pValue(), TOL);
+        // R: ADGofTest::ad.test(x, pnorm, 1, 5)$p.value, computed from the source of ad.test.pvalue with the
+        // correction term z = 0.01265 + 0.1757 / n. The value 0.5318083 pinned here before came from the
+        // code with the sign of 0.01265 reversed, and differs from R by 7e-5
+        assertEquals(0.531736923277633, test.pValue(), TOL);
+        assertEquals(0.531736923277633, test.pValue(), 1e-9);
     }
 }

@@ -54,6 +54,13 @@ public class KSTestTwoSamples implements HTest {
         this.v1 = VarSort.ascending().fapply(sample1.stream().complete().toMappedVar());
         this.v2 = VarSort.ascending().fapply(sample2.stream().complete().toMappedVar());
 
+        if (v1.size() == 0 || v2.size() == 0) {
+            // a sample without observations has no empirical distribution function to compare
+            D = Double.NaN;
+            pValue = Double.NaN;
+            return;
+        }
+
         D = 0;
         double fn1 = 0.0;
         double fn2 = 0.0;
@@ -62,10 +69,18 @@ public class KSTestTwoSamples implements HTest {
         double n1 = v1.size();
         double n2 = v2.size();
         while (i1 < n1 && i2 < n2) {
-            double d1 = v1.getDouble(i1);
-            double d2 = v2.getDouble(i2);
-            if (d1 <= d2) fn1 = ++i1 / n1;
-            if (d2 <= d1) fn2 = ++i2 / n2;
+            // both ECDFs must be compared after consuming every observation equal to the current value,
+            // from both samples; comparing in the middle of a run of ties measures a point which is not
+            // on either ECDF and inflates the distance
+            double current = Math.min(v1.getDouble(i1), v2.getDouble(i2));
+            while (i1 < n1 && v1.getDouble(i1) <= current) {
+                i1++;
+            }
+            while (i2 < n2 && v2.getDouble(i2) <= current) {
+                i2++;
+            }
+            fn1 = i1 / n1;
+            fn2 = i2 / n2;
             D = Math.max(D, Math.abs(fn1 - fn2));
         }
         double n = (n1 * n2) / (n1 + n2);
@@ -107,12 +122,13 @@ public class KSTestTwoSamples implements HTest {
 
     @Override
     public double ciHigh() {
-        return 0;
+        // the test has no interval, see HTest
+        return Double.NaN;
     }
 
     @Override
     public double ciLow() {
-        return 0;
+        return Double.NaN;
     }
 
     @Override

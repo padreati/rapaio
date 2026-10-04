@@ -318,6 +318,18 @@ public class TTestTwoSamples implements HTest {
         return ciHigh;
     }
 
+    /**
+     * The statistic is a ratio by the standard error of the difference, which is 0 when both samples are
+     * constant: the ratio is then infinite or 0/0, and the p value would be 0 or undefined, with a confidence
+     * interval of zero width. R refuses as well: "data are essentially constant".
+     */
+    private static void checkNonConstant(double standardError) {
+        if (standardError == 0) {
+            throw new IllegalArgumentException("Data are essentially constant: the standard error of the difference is 0, "
+                    + "thus the t statistic is not defined.");
+        }
+    }
+
     private void compute() {
 
         double pv;
@@ -327,10 +339,12 @@ public class TTestTwoSamples implements HTest {
             double xv = xSampleSd * xSampleSd * (xSampleSize - 1);
             double yv = ySampleSd * ySampleSd * (ySampleSize - 1);
             pv = Math.sqrt((xv + yv) / df) * Math.sqrt(1.0 / xSampleSize + 1.0 / ySampleSize);
+            checkNonConstant(pv);
             t = (xSampleMean - ySampleMean - mu) / pv;
         } else {
             double xv = xSampleSd * xSampleSd / xSampleSize;
             double yv = ySampleSd * ySampleSd / ySampleSize;
+            checkNonConstant(Math.sqrt(xv + yv));
             t = (xSampleMean - ySampleMean - mu) / Math.sqrt(xv + yv);
             df = Math.pow(xv + yv, 2) / (xv * xv / (xSampleSize - 1) + yv * yv / (ySampleSize - 1));
             pv = Math.sqrt(xv + yv);

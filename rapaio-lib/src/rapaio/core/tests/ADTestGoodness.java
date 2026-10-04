@@ -175,7 +175,7 @@ public class ADTestGoodness implements HTest {
             return (x + (-130.2137 + (745.2337 - (1705.091 - (1950.646 - (1116.360 - 255.7844 * x) * x) * x) * x) * x) / n);
         }
 
-        double z = -0.01265 + 0.1757 / n;
+        double z = 0.01265 + 0.1757 / n;
 
         if (x < z) {
             double v = x / z;

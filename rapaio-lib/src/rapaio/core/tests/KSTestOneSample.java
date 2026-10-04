@@ -65,6 +65,13 @@ public class KSTestOneSample implements HTest {
         this.v = VarSort.ascending().fapply(sample.stream().complete().toMappedVar());
         this.cdf = cdf;
 
+        if (v.size() == 0) {
+            // no observation, no statistic: as for every other test of the package
+            D = Double.NaN;
+            pValue = Double.NaN;
+            return;
+        }
+
         D = 0;
         double n = v.size();
         double fo = 0.0;

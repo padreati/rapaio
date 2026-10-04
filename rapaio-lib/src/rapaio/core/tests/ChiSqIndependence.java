@@ -96,7 +96,12 @@ public final class ChiSqIndependence implements HTest {
     private final double pValue;
 
     private ChiSqIndependence(DensityTable<String, String> observed, boolean yates) {
-        this.yates = yates;
+        if (observed.rows() < 2 || observed.cols() < 2) {
+            throw new IllegalArgumentException("The independence test needs a table with at least 2 rows and 2 columns, but it has "
+                    + observed.rows() + " rows and " + observed.cols() + " columns.");
+        }
+        // the continuity correction is defined for a 2x2 table only, as in R
+        this.yates = yates && observed.rows() == 2 && observed.cols() == 2;
         this.observed = observed;
         df = (observed.rows() - 1) * (observed.cols() - 1);
 
@@ -112,7 +117,7 @@ public final class ChiSqIndependence implements HTest {
                 double exp = rowTotals[i] * colTotals[j] / total;
                 expected.inc(i, j, exp);
                 double diff = Math.abs(observed.get(i, j) - exp);
-                if (yates) {
+                if (this.yates) {
                     diff -= Math.min(0.5, diff);
                 }
                 sum += diff * diff / exp;
