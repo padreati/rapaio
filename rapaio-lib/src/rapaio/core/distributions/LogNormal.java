@@ -26,13 +26,12 @@ import static java.lang.StrictMath.log;
 import static java.lang.StrictMath.sqrt;
 
 import static rapaio.math.MathTools.DOUBLE_PI;
-import static rapaio.math.MathTools.SQRT_2;
-import static rapaio.math.MathTools.erf;
-import static rapaio.math.MathTools.inverf;
 import static rapaio.printer.Format.floatFlex;
 
 import java.io.Serial;
 import java.util.Random;
+
+import rapaio.math.MathTools;
 
 /**
  * Log-normal distribution: {@code X = exp(Y)} with {@code Y ~ Normal(mu, sigma)}.
@@ -86,12 +85,12 @@ public class LogNormal implements Distribution {
         if (x <= 0) {
             return 0;
         }
-        return (1 + erf((log(x) - mu) / (sigma * SQRT_2))) / 2;
+        return MathTools.normalCdf(log(x), mu, sigma);
     }
 
     @Override
     public double quantile(double p) {
-        if (p < 0 || p > 1) {
+        if (!(p >= 0 && p <= 1)) {
             throw new IllegalArgumentException("Probability value should lie in [0,1] interval");
         }
         if (p == 0) {
@@ -100,7 +99,9 @@ public class LogNormal implements Distribution {
         if (p == 1) {
             return Double.POSITIVE_INFINITY;
         }
-        return exp(mu + SQRT_2 * sigma * inverf(2 * p - 1));
+        // going through the normal quantile directly: the form 2p-1 of the inverse error function rounds
+        // to -1 for every p below 1e-16, which answered 0 for any probability in that range
+        return exp(MathTools.normalQuantile(p, mu, sigma));
     }
 
     @Override

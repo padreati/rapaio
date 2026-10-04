@@ -144,7 +144,7 @@ public class MWKMeansTest {
         assertEquals("""
                 MWKMeans{k=3,nstart=3,p=3,seed=42,subspace clustering flag=true}
                 Model fitted=true
-                Inertia:13.439579060524519
+                Inertia:13.439579060524473
                 Iterations:10
                 Clusters:3
                 """, model.toSummary());
@@ -152,7 +152,7 @@ public class MWKMeansTest {
         assertEquals("""
                 MWKMeans{k=3,nstart=3,p=3,seed=42,subspace clustering flag=true}
                 Model fitted=true
-                Inertia:13.439579060524519
+                Inertia:13.439579060524473
                 Iterations:10
                 Clusters:3
                 """, model.toContent());
@@ -160,7 +160,7 @@ public class MWKMeansTest {
         assertEquals("""
                 MWKMeans{k=3,nstart=3,p=3,seed=42,subspace clustering flag=true}
                 Model fitted=true
-                Inertia:13.439579060524519
+                Inertia:13.439579060524473
                 Iterations:10
                 Clusters:3
                 Centroids:
@@ -168,9 +168,9 @@ public class MWKMeansTest {
                  [ 5.986777993511128 3.7180748362391958 5.235773581125203  1.6968020429242028  ] \s
                  [ 5.459718618661379 2.5561069767231737 3.7862023884050187 1.0367951120759455  ]]\s
                 Weights:
-                [[ 0.1769577085353604 0.1859042556649356  0.3325918758872587  0.3045461599124453  ] \s
-                 [ 0.1773231628415696 0.2709335147002507  0.18741222233232233 0.36433110012585734 ] \s
-                 [ 0.4256811053679402 0.25814780484782507 0.17781752968402195 0.13835356010021277 ]]\s
+                [[ 0.1769577085353591  0.18590425566494181 0.33259187588725586 0.30454615991244316 ] \s
+                 [ 0.17732316284156954 0.27093351470025084 0.18741222233232233 0.36433110012585734 ] \s
+                 [ 0.4256811053679401  0.25814780484782496 0.1778175296840219  0.13835356010021305 ]]\s
                 """, model.toFullContent());
     }
 }

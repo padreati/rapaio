@@ -81,7 +81,7 @@ public class CorrPearsonTest {
         VarDouble y = VarDouble.from(10_000, row -> norm.sampleNext(random)).name("y");
 
         CorrPearson cp = CorrPearson.of(x, y);
-        assertEquals(0.021769705986371783, cp.singleValue(), TOL);
+        assertEquals(0.02176970598637096, cp.singleValue(), TOL);
         assertEquals("pearson[x, y] = [[1,0.0217697],[0.0217697,1]]", cp.toString());
         assertEquals("""
                 > pearson[x, y] - Pearson product-moment correlation coefficient
@@ -96,7 +96,7 @@ public class CorrPearsonTest {
         VarDouble y = VarDouble.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext(random)).name("y");
 
         CorrPearson cp = CorrPearson.of(SolidFrame.byVars(x, y));
-        assertEquals(0.8356446312071465, cp.singleValue(), TOL);
+        assertEquals(0.835644631207147, cp.singleValue(), TOL);
     }
 
     @Test
@@ -108,9 +108,9 @@ public class CorrPearsonTest {
 
 
         DArray<Double> exp = DArrays.stride(Shape.of(3, 3),
-                1.0, 0.8356446312071465, 0.7997143292750087,
-                0.8356446312071465, 1.0, 0.9938073109055182,
-                0.7997143292750087, 0.9938073109055182, 1.0);
+                1.0, 0.835644631207147, 0.7997143292750091,
+                0.835644631207147, 1.0, 0.9938073109055182,
+                0.7997143292750091, 0.9938073109055182, 1.0);
 
         CorrPearson cp = CorrPearson.of(x, y, z);
         DistanceMatrix m = cp.matrix();

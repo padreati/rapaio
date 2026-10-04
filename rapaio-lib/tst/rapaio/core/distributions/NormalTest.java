@@ -100,7 +100,7 @@ public class NormalTest {
 
         assertEquals(Double.NaN, Normal.std().cdf(Double.NaN), TOL);
         assertEquals(0, Normal.std().cdf(Double.NEGATIVE_INFINITY), TOL);
-        assertEquals(0, Normal.std().cdf(Double.POSITIVE_INFINITY), TOL);
+        assertEquals(1, Normal.std().cdf(Double.POSITIVE_INFINITY), TOL);
 
         assertEquals(Double.NEGATIVE_INFINITY, normal.quantile(0), TOL);
         assertEquals(Double.POSITIVE_INFINITY, normal.quantile(1), TOL);

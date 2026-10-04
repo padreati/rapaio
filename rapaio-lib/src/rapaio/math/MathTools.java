@@ -446,15 +446,77 @@ public class MathTools {
         return normalQuantile(x / 2, 0, 1) / -SQRT_2;
     }
 
+    /**
+     * Cumulative distribution function of the normal distribution with mean {@code mu} and standard
+     * deviation {@code sd}.
+     * <p>
+     * The result is accurate in relative terms also deep in the lower tail, not only in absolute terms:
+     * the probability of {@code z = -10} is {@code 7.6e-24} and not a rounding residue. The argument
+     * {@code +Infinity} gives 1 and {@code -Infinity} gives 0.
+     */
     public static double normalCdf(double x, double mu, double sd) {
-        if (Double.isFinite(x)) {
-            return cdfMarsaglia((x - mu) / sd);
-        }
         if (Double.isNaN(x)) {
             return Double.NaN;
         }
-        // for infinity we return 0
-        return 0;
+        if (sd == 0) {
+            // degenerate distribution, a step at the mean; it is right continuous, the mass at mu is counted
+            return x < mu ? 0 : 1;
+        }
+        if (x == Double.POSITIVE_INFINITY) {
+            return 1;
+        }
+        if (x == Double.NEGATIVE_INFINITY) {
+            return 0;
+        }
+        return standardNormalCdf((x - mu) / sd);
+    }
+
+    /**
+     * Above this absolute z score the cdf is computed from the continued fraction of the tail, below it
+     * from the Taylor series, which loses relative accuracy in the tails because of the cancellation
+     * between the two terms of {@code 0.5 + s * density}.
+     */
+    private static final double NORMAL_TAIL_SWITCH = 2.0;
+
+    private static double standardNormalCdf(double z) {
+        if (Double.isNaN(z)) {
+            return Double.NaN;
+        }
+        if (z == Double.POSITIVE_INFINITY) {
+            return 1;
+        }
+        if (z == Double.NEGATIVE_INFINITY) {
+            return 0;
+        }
+        if (abs(z) <= NORMAL_TAIL_SWITCH) {
+            return cdfMarsaglia(z);
+        }
+        double tail = normalUpperTail(abs(z));
+        return z < 0 ? tail : 1 - tail;
+    }
+
+    /**
+     * Upper tail probability {@code P(Z > x)} of the standard normal distribution for {@code x >= 2},
+     * computed from the continued fraction
+     * {@code Q(x) = phi(x) / (x + 1/(x + 2/(x + 3/(x + ...))))}. It is accurate in relative terms down to
+     * the smallest representable probability.
+     * <p>
+     * The exponent {@code x^2 / 2} is evaluated as the sum of an exactly representable part on a grid of 1/16
+     * and a small remainder. Otherwise the rounding error of {@code x^2} is amplified by the exponential
+     * into a relative error of order {@code x^2 * 1e-16}.
+     */
+    private static double normalUpperTail(double x) {
+        if (x > 40) {
+            return 0;
+        }
+        int terms = x < 4 ? 120 : 40;
+        double f = x;
+        for (int k = terms; k > 0; k--) {
+            f = x + k / f;
+        }
+        double onGrid = floor(x * 16) / 16;
+        double remainder = (x - onGrid) * (x + onGrid);
+        return exp(-onGrid * onGrid * 0.5) * exp(-remainder * 0.5) / (sqrt(DOUBLE_PI) * f);
     }
 
     //http://home.online.no/~pjacklam/notes/invnorm/
@@ -481,7 +543,7 @@ public class MathTools {
     };
 
     public static double normalQuantile(double p, double mu, double std) {
-        if (p < 0 || p > 1) {
+        if (!(p >= 0 && p <= 1)) {
             throw new IllegalArgumentException("Inverse of a probability requires a probablity in the range [0,1], not " + p);
         }
         if (p == 0) {
@@ -513,9 +575,13 @@ public class MathTools {
 
         //Refining step
 
+        // the cdf is accurate in relative terms in the tails, so the residual is reliable there too; the step
+        // is skipped only when the correction cannot be represented, for probabilities near the smallest doubles
         double e = normalCdf(result, 0, 1) - p;
         double u = e * sqrt(2 * PI) * exp(result * result / 2);
-        result = result - u / (1 + result * u / 2);
+        if (Double.isFinite(u)) {
+            result = result - u / (1 + result * u / 2);
+        }
 
         return result * std + mu;
     }
@@ -688,19 +754,19 @@ public class MathTools {
         return f_n;
     }
 
-    private static double betaIncRegFunc(double p, double a, double b, double c) {
-        return betaIncReg(p, a, b) - c;
-    }
-
     /**
      * Computes the inverse of the incomplete beta function,
      * I<sub>p</sub><sup>-1</sup>(a,b), such that {@link #betaIncReg(double, double, double) I<sub>x</sub>(a, b)
      * } = <tt>p</tt>. The returned value, x, will always be in the range [0,1].
      * The input <tt>p</tt>, must also be in the range [0,1].
+     * <p>
+     * The solution is found in the scale of the log odds {@code log(x / (1 - x))}, see
+     * {@link #invBetaIncRegLogit(double, double, double)}, and converted to {@code x} at the end. Thus a solution
+     * which is very close to 0 or to 1 is found with full relative accuracy, as long as it is representable.
      *
      * @param p any value in the range [0,1]
-     * @param a any value >= 0
-     * @param b any value >= 0
+     * @param a any value > 0
+     * @param b any value > 0
      * @return the value x, such that {@link #betaIncReg(double, double, double) I<sub>x</sub>(a, b)
      * } will return p.
      */
@@ -708,50 +774,189 @@ public class MathTools {
         if (p < 0 || p > 1) {
             throw new ArithmeticException("The value p must be in the range [0,1], not" + p);
         }
+        double u = invBetaIncRegLogit(p, a, b);
+        if (Double.isNaN(u)) {
+            return Double.NaN;
+        }
+        return u >= 0 ? 1 / (1 + exp(-u)) : exp(u) / (1 + exp(u));
+    }
 
-        double eps = 1e-15;
-        int maxIterations = 1000;
-        double x1 = 0;
-        double x2 = 1;
-        double fx1 = betaIncRegFunc(x1, a, b, p);
-        double fx2 = betaIncRegFunc(x2, a, b, p);
-        double halfEps = eps * 0.5;
+    /**
+     * Computes the log odds {@code u = log(x / (1 - x))} of the solution {@code x} of
+     * {@code I_x(a, b) = p}, for the regularized incomplete beta function.
+     * <p>
+     * The solution itself is not returned since for extreme probabilities it is not representable or not
+     * distinguishable from its bounds: a solution of {@code 1e-320} is a subnormal number, and one of
+     * {@code 1 - 1e-20} is 1. The log odds are well conditioned in both tails, and the quantiles of the
+     * distributions built on the incomplete beta function are elementary functions of them:
+     * for the Student distribution {@code t^2 = df * exp(-u)} and for the Fisher distribution
+     * {@code F = (df2/df1) * exp(u)}.
+     * <p>
+     * The equation is solved in the tail of the smaller probability, in logarithmic scale, by Newton
+     * iterations safeguarded by a bracket. An upper tail probability {@code p > 1/2} is solved as the lower
+     * tail equation {@code I_{1-x}(b, a) = 1 - p}, where {@code 1 - p} is exact.
+     *
+     * @param p any value in the range [0,1]
+     * @param a any value > 0
+     * @param b any value > 0
+     * @return the log odds of the solution: {@code -Infinity} for {@code p = 0}, {@code +Infinity} for {@code p = 1}
+     * and {@code NaN} for a {@code NaN} probability
+     */
+    public static double invBetaIncRegLogit(double p, double a, double b) {
+        if (p < 0 || p > 1) {
+            throw new ArithmeticException("The value p must be in the range [0,1], not" + p);
+        }
+        if (!(a > 0) || !(b > 0)) {
+            throw new IllegalArgumentException("a and b must be strictly positive, got a=" + a + ", b=" + b);
+        }
+        if (Double.isNaN(p)) {
+            return Double.NaN;
+        }
+        if (p == 0) {
+            return Double.NEGATIVE_INFINITY;
+        }
+        if (p == 1) {
+            return Double.POSITIVE_INFINITY;
+        }
+        if (p <= 0.5) {
+            return solveLowerTailLogit(log(p), a, b);
+        }
+        // I_x(a,b) = p  <=>  I_{1-x}(b,a) = 1-p, and the log odds of 1-x are the opposite
+        return -solveLowerTailLogit(log(1 - p), b, a);
+    }
 
-        if (fx1 * fx2 >= 0) {
-            throw new ArithmeticException("The given interval does not appear to bracket the root");
+    /**
+     * Computes {@code log(I_x(a, b))}, the logarithm of the regularized incomplete beta function, for an
+     * {@code x} given by its log odds {@code u = log(x / (1 - x))}.
+     * <p>
+     * Neither {@code x} nor its logarithm is formed from a sum that can underflow, and the result keeps its
+     * relative accuracy when {@code x} is far below the smallest double, where
+     * {@link #betaIncReg(double, double, double)} can only answer 0. The caller passes the odds instead of
+     * {@code x}, which lets it avoid the intermediate quantities that overflow: for instance the tail of the
+     * Student distribution at {@code t} has {@code u = log(df) - 2 log|t|}, which is finite for every finite
+     * {@code t}, while {@code t^2} is not.
+     *
+     * @param u log odds of x, any finite value
+     * @param a any value > 0
+     * @param b any value > 0
+     * @return the logarithm of {@code I_x(a, b)}, a value not greater than 0
+     */
+    public static double lnBetaIncRegLogit(double u, double a, double b) {
+        if (!(a > 0) || !(b > 0)) {
+            throw new IllegalArgumentException("a and b must be strictly positive, got a=" + a + ", b=" + b);
+        }
+        if (Double.isNaN(u)) {
+            return Double.NaN;
+        }
+        if (u == Double.NEGATIVE_INFINITY) {
+            return Double.NEGATIVE_INFINITY;
+        }
+        if (u == Double.POSITIVE_INFINITY) {
+            return 0;
+        }
+        double[] out = new double[2];
+        lnBetaIncRegLower(u, a, b, lnBeta(a, b), out);
+        return out[0];
+    }
+
+    /**
+     * Logarithm of {@code I_x(a, b)} for {@code x = 1 / (1 + exp(-u))} which is given by its log odds
+     * {@code u}, and the derivative of this logarithm with respect to {@code u}.
+     * <p>
+     * In the direct region of the continued fraction, {@code x <= (a + 1) / (a + b + 2)}, the value is
+     * assembled from logarithms, so it does not underflow and keeps its relative accuracy. Above it the
+     * complement {@code 1 - I_{1-x}(b, a)} is used, as {@link #betaIncReg(double, double, double)} does.
+     */
+    private static void lnBetaIncRegLower(double u, double a, double b, double lnBeta, double[] out) {
+        double lnX = u >= 0 ? -log1p(exp(-u)) : u - log1p(exp(u));
+        double lnOneMinusX = u >= 0 ? -u - log1p(exp(-u)) : -log1p(exp(u));
+        double x = exp(lnX);
+        double lnI;
+        if (x <= (a + 1) / (a + b + 2)) {
+            lnI = lnBetaIncRegDirect(lnX, lnOneMinusX, x, a, b, lnBeta);
+        } else {
+            double lnComplement = lnBetaIncRegDirect(lnOneMinusX, lnX, exp(lnOneMinusX), b, a, lnBeta);
+            lnI = log1p(-exp(lnComplement));
+        }
+        out[0] = lnI;
+        // d ln(I) / du = x^a (1-x)^b / (B(a,b) I), since dx/du = x (1-x) and dI/dx = x^(a-1) (1-x)^(b-1) / B(a,b)
+        out[1] = exp(a * lnX + b * lnOneMinusX - lnBeta - lnI);
+    }
+
+    private static double lnBetaIncRegDirect(double lnX, double lnOneMinusX, double x, double a, double b, double lnBeta) {
+        return a * lnX + b * lnOneMinusX - (log(a) + lnBeta) - log(lentz(x, a, b));
+    }
+
+    /**
+     * Solves {@code ln I_x(a, b) = lnP} for the log odds of {@code x}, for {@code lnP <= log(1/2)}.
+     */
+    private static double solveLowerTailLogit(double lnP, double a, double b) {
+        double lnBeta = lnBeta(a, b);
+        double[] v = new double[2];
+
+        // for small x, I_x(a,b) ~ x^a / (a B(a,b)), and x ~ exp(u)
+        double u = (lnP + log(a) + lnBeta) / a;
+        if (!Double.isFinite(u)) {
+            u = 0;
         }
 
-        double dif;//Measure the change interface values
-        while (abs(x1 - x2) > eps && maxIterations-- > 0) {
-            double x3 = (x1 + x2) * 0.5;
-            double fx3 = betaIncRegFunc(x3, a, b, p);
-            double x4 = x3 + (x3 - x1) * Math.signum(fx1 - fx2) * fx3 / sqrt(fx3 * fx3 - fx1 * fx2);
-            double fx4 = betaIncRegFunc(x4, a, b, p);
-            if (fx3 * fx4 < 0) {
-                x1 = x3;
-                fx1 = fx3;
-                x2 = x4;
-                fx2 = fx4;
-            } else if (fx1 * fx4 < 0) {
-                dif = abs(x4 - x2);
-                if (dif <= halfEps)//WE are no longer updating, return the value
-                {
-                    return x4;
+        double lo;
+        double hi;
+        lnBetaIncRegLower(u, a, b, lnBeta, v);
+        double f = v[0] - lnP;
+        if (f < 0) {
+            // the function increases with u, and ln I tends to 0, above lnP
+            lo = u;
+            double step = 1;
+            hi = u + step;
+            while (hi < 1e4) {
+                lnBetaIncRegLower(hi, a, b, lnBeta, v);
+                if (v[0] - lnP >= 0) {
+                    break;
                 }
-                x2 = x4;
-                fx2 = fx4;
-            } else {
-                dif = abs(x4 - x1);
-                if (dif <= halfEps)//WE are no longer updating, return the value
-                {
-                    return x4;
-                }
-                x1 = x4;
-                fx1 = fx4;
+                lo = hi;
+                step *= 2;
+                hi += step;
             }
-
+        } else {
+            hi = u;
+            double step = 1;
+            lo = u - step;
+            while (lo > -1e7) {
+                lnBetaIncRegLower(lo, a, b, lnBeta, v);
+                if (v[0] - lnP <= 0) {
+                    break;
+                }
+                hi = lo;
+                step *= 2;
+                lo -= step;
+            }
         }
-        return x2;
+
+        u = Math.max(lo, Math.min(hi, u));
+        for (int iteration = 0; iteration < 200; iteration++) {
+            lnBetaIncRegLower(u, a, b, lnBeta, v);
+            f = v[0] - lnP;
+            if (f == 0) {
+                return u;
+            }
+            if (f > 0) {
+                hi = u;
+            } else {
+                lo = u;
+            }
+            double next = u - f / v[1];
+            if (!(next > lo && next < hi)) {
+                // Newton left the bracket or could not be computed, bisect
+                next = lo + (hi - lo) / 2;
+            }
+            double change = abs(next - u);
+            u = next;
+            if (change <= 1e-13 * max(1, abs(u)) || hi - lo <= 1e-15 * max(1, abs(u))) {
+                return u;
+            }
+        }
+        return u;
     }
 
     /**
