@@ -23,7 +23,6 @@ package rapaio.core.distributions.empirical;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Arrays;
 
 import rapaio.core.stat.Variance;
 import rapaio.data.Var;
@@ -89,18 +88,31 @@ public class KDE implements Serializable {
     private final double bandwidth;
 
     private KDE(Var values, KFunc kernel, double bandwidth) {
+        // NaN is not rejected: the Silverman bandwidth of an empty sample is NaN, and the estimator of such a
+        // sample has no density to give anyway
+        if (bandwidth <= 0) {
+            throw new IllegalArgumentException("Bandwidth of a kernel density estimator must be strictly positive, got: " + bandwidth + ".");
+        }
         this.values = VarSort.ascending().fapply(values).stream().filter(s -> !s.isMissing()).mapToDouble().toArray();
         this.kernel = kernel;
         this.bandwidth = bandwidth;
     }
 
+    /**
+     * Density estimated at a point as {@code 1/(n h) sum_i K((x - x_i)/h)}.
+     * <p>
+     * The kernel {@link KFuncGaussian Gaussian} is not zero beyond four bandwidths from the point, but it
+     * is not evaluated there: the sample values farther than {@code 4h} are ignored, which is a loss of about
+     * {@code 6e-5} of the total mass, and spares the evaluation of the kernel for the whole sample.
+     *
+     * @param x point where the density is estimated
+     * @return estimated density
+     */
     public double pdf(double x) {
-        // to optimize the computation, we find all sample values which have positive weights
-        int from = Arrays.binarySearch(values, kernel.minValue(x, bandwidth));
-        if (from < 0) from = -from - 1;
-
-        int to = Arrays.binarySearch(values, kernel.maxValue(x, bandwidth));
-        if (to < 0) to = -to - 1;
+        // to optimize the computation, we find all sample values which have positive weights, the range
+        // of values in [min, max], both ends included
+        int from = lowerBound(kernel.minValue(x, bandwidth));
+        int to = upperBound(kernel.maxValue(x, bandwidth));
 
         // compute the pdf kernel estimator as \frac{1}{nh} sum_{i=1}^{n} k(\frac{x-x_i}{h})
         double sum = 0;
@@ -108,6 +120,36 @@ public class KDE implements Serializable {
             sum += kernel.pdf(x, values[i], bandwidth);
         }
         return sum / (values.length * bandwidth);
+    }
+
+    /** @return the first position holding a value not smaller than the given one */
+    private int lowerBound(double value) {
+        int lo = 0;
+        int hi = values.length;
+        while (lo < hi) {
+            int mid = (lo + hi) >>> 1;
+            if (values[mid] < value) {
+                lo = mid + 1;
+            } else {
+                hi = mid;
+            }
+        }
+        return lo;
+    }
+
+    /** @return the first position holding a value greater than the given one */
+    private int upperBound(double value) {
+        int lo = 0;
+        int hi = values.length;
+        while (lo < hi) {
+            int mid = (lo + hi) >>> 1;
+            if (values[mid] <= value) {
+                lo = mid + 1;
+            } else {
+                hi = mid;
+            }
+        }
+        return lo;
     }
 
     public KFunc kernel() {
@@ -129,15 +171,21 @@ public class KDE implements Serializable {
      * http://en.wikipedia.org/wiki/Kernel_density_estimation
      *
      * @param vector sample of values
-     * @return teh value of the approximation for bandwidth
+     * @return the value of the approximation for bandwidth: for a sample of one value, or of equal values,
+     * which have no deviation, the deviation is taken as 1; for an empty sample it is {@code NaN}
      */
     public static double silvermanBandwidth(Var vector) {
+        double count = vector.stream().complete().count();
+        if (count == 0) {
+            return Double.NaN;
+        }
         Variance var = Variance.of(vector);
         double sd = Math.sqrt(var.value());
-        if (sd == 0) {
+        // the deviation is 0 for equal values and undefined (NaN) for a single one: both would give a bandwidth
+        // which is 0 or NaN, and so a density which is NaN everywhere
+        if (!(sd > 0)) {
             sd = 1;
         }
-        double count = vector.stream().complete().count();
         return 1.06 * sd * Math.pow(count, -1. / 5.);
     }
 }
