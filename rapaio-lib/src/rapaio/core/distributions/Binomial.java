@@ -164,7 +164,11 @@ public final class Binomial implements Distribution {
         } else {        /* search to the right */
             while (true) {
                 y = min(y + incr, n);
-                if (y == n || (z[0] = cdf(y)) >= probability)
+                // z must describe the point the search stops at, including when the step was clamped to n:
+                // a stale value would make the next, finer pass believe it is still left of the answer and
+                // never search back from n
+                z[0] = cdf(y);
+                if (y == n || z[0] >= probability)
                     return y;
             }
         }

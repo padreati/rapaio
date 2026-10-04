@@ -98,7 +98,18 @@ public interface Distribution extends Serializable {
      * @return new random value
      */
     default double sampleNext(Random random) {
-        return quantile(random.nextDouble());
+        return quantile(openUnit(random));
+    }
+
+    /**
+     * A uniform draw from the open interval {@code (0, 1)}: {@link Random#nextDouble()} returns values in
+     * {@code [0, 1)}, and the quantile at 0 is the boundary of the support, which is infinite for the
+     * distributions on the whole line. The draw which is exactly 0 is moved to the middle of the first step
+     * of the generator, {@code 2^-54}, instead of being repeated, so the result cannot loop.
+     */
+    private static double openUnit(Random random) {
+        double u = random.nextDouble();
+        return u == 0 ? 0x1.0p-54 : u;
     }
 
     /**
@@ -107,7 +118,7 @@ public interface Distribution extends Serializable {
      * @return new random value
      */
     default double sampleNext() {
-        return quantile(new Random().nextDouble());
+        return sampleNext(new Random());
     }
 
     /**

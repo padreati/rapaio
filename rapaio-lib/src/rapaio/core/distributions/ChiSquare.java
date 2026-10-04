@@ -54,7 +54,7 @@ public final class ChiSquare implements Distribution {
     private final double vd;
 
     private ChiSquare(double df) {
-        if (df < 1) {
+        if (!(df >= 1)) {
             throw new IllegalArgumentException("degrees of freedom parameter must have value greater than zero");
         }
         this.df = df;
@@ -76,8 +76,11 @@ public final class ChiSquare implements Distribution {
 
     @Override
     public double pdf(double x) {
-        if (x < 0.0) {
-            return 0;
+        if (Double.isNaN(x)) {
+            return Double.NaN;
+        }
+        if (x < 0.0 || x == Double.POSITIVE_INFINITY) {
+            return 0.0;
         }
         if (x == 0.0) {
             // limit of x^(df/2 - 1) at 0
@@ -91,8 +94,14 @@ public final class ChiSquare implements Distribution {
 
     @Override
     public double cdf(double x) {
+        if (Double.isNaN(x)) {
+            return Double.NaN;
+        }
         if (x < 0.0) {
             return 0.0;
+        }
+        if (x == Double.POSITIVE_INFINITY) {
+            return 1.0;
         }
         return incGamma(df / 2.0, x / 2.0);
     }

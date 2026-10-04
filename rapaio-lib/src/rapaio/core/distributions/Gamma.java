@@ -93,7 +93,7 @@ public record Gamma(double alpha, double beta) implements Distribution {
      * @throws IllegalArgumentException if <tt>alpha <= 0.0 || beta <= 0.0</tt>.
      */
     public Gamma {
-        if (alpha <= 0 || beta <= 0) {
+        if (!(alpha > 0 && beta > 0)) {
             throw new IllegalArgumentException("Value parameters alpha (" + floatFlex(alpha) +
                     ") and beta (" + floatFlex(beta) + ") parameters should be strictly positive.");
         }
@@ -113,7 +113,10 @@ public record Gamma(double alpha, double beta) implements Distribution {
      * Returns the probability distribution function.
      */
     public double pdf(double x) {
-        if (x < 0) {
+        if (Double.isNaN(x)) {
+            return Double.NaN;
+        }
+        if (x < 0.0 || x == Double.POSITIVE_INFINITY) {
             return 0.0;
         }
         if (x == 0) {
@@ -135,8 +138,14 @@ public record Gamma(double alpha, double beta) implements Distribution {
      * Returns the cumulative distribution function.
      */
     public double cdf(double x) {
+        if (Double.isNaN(x)) {
+            return Double.NaN;
+        }
         if (x < 0.0) {
             return 0.0;
+        }
+        if (x == Double.POSITIVE_INFINITY) {
+            return 1.0;
         }
         return incGamma(alpha, x / beta);
     }

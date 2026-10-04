@@ -23,12 +23,13 @@ package rapaio.core.distributions;
 
 import static java.lang.StrictMath.log;
 import static java.lang.StrictMath.pow;
+import static java.lang.StrictMath.exp;
 import static java.lang.StrictMath.sqrt;
 
 import static rapaio.math.MathTools.beta;
 import static rapaio.math.MathTools.betaIncReg;
 import static rapaio.math.MathTools.digamma;
-import static rapaio.math.MathTools.invBetaIncReg;
+import static rapaio.math.MathTools.invBetaIncRegLogit;
 import static rapaio.math.MathTools.lnBeta;
 
 import java.io.Serial;
@@ -48,6 +49,13 @@ public record Fisher(double df1, double df2) implements Distribution {
         return new Fisher(df1, df2);
     }
 
+    public Fisher {
+        if (!(df1 > 0 && df2 > 0)) {
+            throw new IllegalArgumentException("Degrees of freedom of the Fisher distribution must be strictly positive, got df1="
+                    + Format.floatFlex(df1) + ", df2=" + Format.floatFlex(df2) + ".");
+        }
+    }
+
     @Serial
     private static final long serialVersionUID = 2272786897584427248L;
 
@@ -63,7 +71,10 @@ public record Fisher(double df1, double df2) implements Distribution {
 
     @Override
     public double pdf(double x) {
-        if (x < 0) {
+        if (Double.isNaN(x)) {
+            return Double.NaN;
+        }
+        if (x < 0 || x == Double.POSITIVE_INFINITY) {
             return 0;
         }
         if (x == 0) {
@@ -74,14 +85,28 @@ public record Fisher(double df1, double df2) implements Distribution {
 
     @Override
     public double cdf(double x) {
+        if (Double.isNaN(x)) {
+            return Double.NaN;
+        }
         if (x <= 0.0) return 0.0;
+        if (x == Double.POSITIVE_INFINITY) return 1.0;
         return betaIncReg(df1 * x / (df1 * x + df2), df1 / 2, df2 / 2);
     }
 
     @Override
     public double quantile(double p) {
-        double a = invBetaIncReg(p, df1 / 2, df2 / 2);
-        return df2 * a / (df1 * (1 - a));
+        QuantileSearch.checkProbability(p);
+        // the support is [0, +Inf), and the root search below has no bracket for the boundary probabilities
+        if (p == 0) {
+            return 0;
+        }
+        if (p == 1) {
+            return Double.POSITIVE_INFINITY;
+        }
+        // with a the solution of I_a(df1/2, df2/2) = p, the quantile is (df2/df1) a / (1 - a). It is computed from
+        // the log odds u = log(a / (1 - a)), since a is tiny or not distinguishable from 1 for extreme tails
+        double u = invBetaIncRegLogit(p, df1 / 2, df2 / 2);
+        return df2 / df1 * exp(u);
     }
 
     @Override
@@ -103,9 +128,11 @@ public record Fisher(double df1, double df2) implements Distribution {
 
     @Override
     public double mode() {
-        if (df1 <= 2)
+        // the pdf is maximal at 0 for df1 = 2, and unbounded there for df1 < 2, so the mode is 0 (the supremum)
+        // only for df1 = 2; for df1 < 2 the density is infinite at 0 and there is no finite mode
+        if (df1 < 2)
             return Double.NaN;
-        return (df1 - 2) * df2 / (df1 * (df2 - 2));
+        return df2 * (df1 - 2) / (df1 * (df2 + 2));
     }
 
     @Override

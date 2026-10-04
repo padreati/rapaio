@@ -22,7 +22,9 @@
 package rapaio.core.distributions;
 
 import static java.lang.StrictMath.exp;
+import static java.lang.StrictMath.expm1;
 import static java.lang.StrictMath.log;
+import static java.lang.StrictMath.log1p;
 
 import static rapaio.math.MathTools.LN_2;
 
@@ -74,7 +76,7 @@ public record Exponential(double lambda) implements Distribution {
         if (x < 0) {
             return 0;
         }
-        return 1 - exp(-lambda * x);
+        return -expm1(-lambda * x);
     }
 
     /**
@@ -89,7 +91,8 @@ public record Exponential(double lambda) implements Distribution {
         if (p == 1) {
             return Double.POSITIVE_INFINITY;
         }
-        return -log(1 - p) / lambda;
+        // log1p and expm1 keep the relative accuracy for small p, where 1 - p rounds to 1
+        return -log1p(-p) / lambda;
     }
 
     @Override

@@ -74,6 +74,11 @@ public class Normal implements Distribution {
 
     @Override
     public double pdf(double x) {
+        if (sd == 0) {
+            // degenerate distribution, all the mass sits on the mean: the density is infinite there, and 0 elsewhere.
+            // The general formula gives NaN at every point, 1/0 * exp(-infinity) and 0/0 at the mean
+            return Double.isNaN(x) ? Double.NaN : (x == mu ? Double.POSITIVE_INFINITY : 0.0);
+        }
         return 1 / sqrt(2 * PI * var) * exp(-pow(x - mu, 2) / (2 * var));
     }
 

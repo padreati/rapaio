@@ -43,7 +43,7 @@ public final class Bernoulli implements Distribution {
     private final double prob;
 
     private Bernoulli(double p) {
-        if (p < 0 || p > 1) {
+        if (!(p >= 0 && p <= 1)) {
             throw new IllegalArgumentException("Probability parameter must be in closed interval [0,1]");
         }
         this.prob = p;
@@ -83,6 +83,11 @@ public final class Bernoulli implements Distribution {
 
     @Override
     public double quantile(double p) {
+        // only NaN is rejected: the quantile of a finite probability outside the unit interval is the nearest
+        // boundary of the support, which is the documented and tested behaviour of this distribution
+        if (Double.isNaN(p)) {
+            throw new IllegalArgumentException("Probability value should lie in [0,1] interval, not " + p);
+        }
         return (p <= 1 - this.prob) ? 0 : 1;
     }
 
@@ -129,11 +134,13 @@ public final class Bernoulli implements Distribution {
 
     @Override
     public double sampleNext() {
-        return new Random().nextDouble() <= prob ? 1 : 0;
+        return sampleNext(new Random());
     }
 
     @Override
     public double sampleNext(final Random random) {
-        return random.nextDouble() <= prob ? 1 : 0;
+        // nextDouble is in [0, 1), the event has probability prob only for the strict inequality:
+        // with the non strict one a probability of 0 still gives 1 when the draw is exactly 0
+        return random.nextDouble() < prob ? 1 : 0;
     }
 }

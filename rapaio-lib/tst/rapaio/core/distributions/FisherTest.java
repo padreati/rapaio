@@ -24,6 +24,7 @@ package rapaio.core.distributions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -44,7 +45,16 @@ public class FisherTest {
         assertEquals(0, f.minValue(), TOL);
         assertEquals(Double.POSITIVE_INFINITY, f.maxValue(), TOL);
         assertEquals(1.4, f.mean(), TOL);
-        assertEquals(.7, f.mode(), TOL);
+        // mode = d2 (d1 - 2) / (d1 (d2 + 2)) = 7 * 2 / (4 * 9); the value 0.7 pinned here before was the result of
+        // (d1 - 2) d2 / (d1 (d2 - 2)), which is not the mode: the pdf of F(4,7) peaks at 0.3889, as a numeric
+        // maximization of the density shows
+        assertEquals(7.0 / 18, f.mode(), TOL);
+        // and it is a maximum of the density: higher than at every point around it
+        for (double delta : new double[] {1e-3, 1e-2, 0.1, 0.3}) {
+            assertTrue(f.pdf(f.mode()) > f.pdf(f.mode() - delta * f.mode()), "left " + delta);
+            assertTrue(f.pdf(f.mode()) > f.pdf(f.mode() + delta), "right " + delta);
+        }
+        assertTrue(f.pdf(7.0 / 18) > f.pdf(0.7));
         assertEquals(2.94, f.var(), TOL);
         assertEquals(10.614455552060438, f.skewness(), TOL);
 

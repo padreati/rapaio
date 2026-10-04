@@ -240,7 +240,7 @@ public class Hypergeometric implements Distribution {
 
     @Override
     public double quantile(double p) {
-        if (p < 0 || p > 1) {
+        if (!(p >= 0 && p <= 1)) {
             throw new IllegalArgumentException("Probability value should lie in [0,1] interval");
         }
         int upper = (int) maxValue();

@@ -21,17 +21,19 @@
 
 package rapaio.core.distributions;
 
+import static java.lang.StrictMath.abs;
 import static java.lang.StrictMath.exp;
 import static java.lang.StrictMath.log;
+import static java.lang.StrictMath.log1p;
 import static java.lang.StrictMath.min;
-import static java.lang.StrictMath.pow;
 import static java.lang.StrictMath.sqrt;
 
 import static rapaio.math.MathTools.PI;
 import static rapaio.math.MathTools.betaIncReg;
 import static rapaio.math.MathTools.digamma;
-import static rapaio.math.MathTools.invBetaIncReg;
+import static rapaio.math.MathTools.invBetaIncRegLogit;
 import static rapaio.math.MathTools.lnBeta;
+import static rapaio.math.MathTools.lnBetaIncRegLogit;
 import static rapaio.math.MathTools.lnGamma;
 
 import java.io.Serial;
@@ -66,6 +68,12 @@ public final class StudentT implements Distribution {
         if (!(df > 0)) {
             throw new IllegalArgumentException("degrees of freedom in student t distribution must have a value greater than 0.");
         }
+        // a zero scale is the degenerate distribution, with all the mass on mu (a test of a constant sample
+        // builds it); a negative scale has no meaning. NaN is not rejected, the tests derive the scale from
+        // sample statistics which are NaN for a sample too small to have one
+        if (sigma < 0) {
+            throw new IllegalArgumentException("scale of the student t distribution must not be negative, got: " + Format.floatFlex(sigma) + ".");
+        }
         this.df = df;
         this.mu = mu;
         this.sigma = sigma;
@@ -85,31 +93,72 @@ public final class StudentT implements Distribution {
 
     @Override
     public double pdf(double t) {
+        if (sigma == 0) {
+            // degenerate distribution, see Normal
+            return Double.isNaN(t) ? Double.NaN : (t == mu ? Double.POSITIVE_INFINITY : 0.0);
+        }
+        double z = (t - mu) / sigma;
+        double w = abs(z);
+        // log(1 + z^2 / df); the square of a large z overflows long before the density does
+        double logOnePlusSquare = w > 1e150 ? 2 * log(w) - log(df) : log1p(w * w / df);
         return exp(lnGamma((df + 1) / 2) - lnGamma(df / 2) - log(df * PI) / 2 - log(sigma)
-                - (df + 1) / 2 * log(1 + pow((t - mu) / sigma, 2) / df));
+                - (df + 1) / 2 * logOnePlusSquare);
     }
 
     @Override
     public double cdf(double t) {
-        double x = df / (df + pow((t - mu) / sigma, 2));
-        double p = betaIncReg(x, df / 2, 0.5) / 2;
-        if (t > mu) {
-            return 1 - p;
+        if (sigma == 0) {
+            // degenerate distribution, a right continuous step at mu
+            return Double.isNaN(t) ? Double.NaN : (t < mu ? 0.0 : 1.0);
+        }
+        double z = (t - mu) / sigma;
+        if (Double.isNaN(z)) {
+            return Double.NaN;
+        }
+        double w = abs(z);
+        // the probability of the tail beyond |z|, in both directions, is half of I_x(df/2, 1/2) with
+        // x = df / (df + z^2)
+        double tail;
+        if (Double.isInfinite(w)) {
+            tail = 0;
         } else {
-            return p;
+            double x = df / (df + w * w);
+            if (x > 1e-250) {
+                tail = betaIncReg(x, df / 2, 0.5) / 2;
+            } else {
+                // z^2 overflows or x is too small to be a usable double; the log odds of x are exactly
+                // log(df) - 2 log|z|, which has neither problem
+                tail = exp(lnBetaIncRegLogit(log(df) - 2 * log(w), df / 2, 0.5)) / 2;
+            }
+        }
+        if (t > mu) {
+            return 1 - tail;
+        } else {
+            return tail;
         }
     }
 
     @Override
     public double quantile(double p) {
-        if (p < 0 || p > 1) {
+        if (!(p >= 0 && p <= 1)) {
             throw new IllegalArgumentException("Probability must be in the range [0,1]");
+        }
+        // the support is unbounded, so the boundary probabilities map to the infinities; the root search
+        // below has no bracket for them
+        if (p == 0) {
+            return Double.NEGATIVE_INFINITY;
+        }
+        if (p == 1) {
+            return Double.POSITIVE_INFINITY;
         }
         if (p + 1e-20 >= 0.5 && p - 1e-20 <= 0.5) {
             return mu;
         }
-        double x = invBetaIncReg(2 * min(p, 1 - p), df / 2, 0.5);
-        x = sigma * sqrt(df * (1 - x) / x);
+        // the tail probability of |t| is I_x(df/2, 1/2) with x = df / (df + t^2), hence t^2 = df * (1 - x) / x.
+        // Computing x loses the precision of extreme tails, since x is then tiny or not distinguishable from 1,
+        // while the log odds u = log(x / (1 - x)) keep it: t^2 = df * exp(-u)
+        double u = invBetaIncRegLogit(2 * min(p, 1 - p), df / 2, 0.5);
+        double x = sigma * sqrt(df) * exp(-u / 2);
         if (p >= 0.5) {
             return mu + x;
         } else {
