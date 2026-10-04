@@ -84,13 +84,18 @@ public class ListParam<T, S extends ParamSet<S>> implements Param<List<T>, S> {
      * Replaces the current values. The validator sees an empty list of existing values, since
      * a replacement discards them; it is applied before anything is changed, so a rejected
      * value leaves the parameter as it was.
+     * <p>
+     * The new values are copied before the current ones are discarded: the argument can be the live view
+     * returned by {@link #get()}, and clearing the list first would empty it, so that assigning a parameter
+     * its own value would lose that value.
      */
     private S replace(List<T> newValues) {
-        if (!validator.apply(List.of(), newValues)) {
+        List<T> copy = new ArrayList<>(newValues);
+        if (!validator.apply(List.of(), copy)) {
             throw new IllegalArgumentException("Parameter values are invalid.");
         }
         this.values.clear();
-        this.values.addAll(newValues);
+        this.values.addAll(copy);
         return params;
     }
 
@@ -120,6 +125,12 @@ public class ListParam<T, S extends ParamSet<S>> implements Param<List<T>, S> {
         return true;
     }
 
+    /**
+     * Removes all the values: the list becomes empty, it does <em>not</em> return to its default values.
+     * This differs from the other parameters, where {@code clear()} restores the default, and it is what the
+     * callers rely on to replace a non empty default list with their own values, as in
+     * {@code providers.clear().providers.add(...)}. To restore the default use {@code set(defaultValue())}.
+     */
     @Override
     public S clear() {
         values.clear();

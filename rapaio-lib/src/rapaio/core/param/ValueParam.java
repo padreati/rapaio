@@ -87,6 +87,18 @@ public class ValueParam<T, S extends ParamSet<S>> implements Param<T, S> {
         return params;
     }
 
+    /**
+     * Takes the value of another parameter without validating it again. It was validated when it was set, or it
+     * is the default value, which is not validated at construction: a parameter which is unset holds {@code null},
+     * and the default validator rejects {@code null}, so going through {@link #set(Object)} made it impossible
+     * to copy a parameter set which still had an unset parameter.
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public void copyFrom(Param<?, ?> param) {
+        this.value = (T) param.get();
+    }
+
     @Override
     public T defaultValue() {
         return defaultValue;

@@ -69,9 +69,11 @@ public class MultiParam<K, T, S extends ParamSet<S>> implements Param<Map<K, T>,
 
     @Override
     public S set(Map<K, T> value) {
-        checkValid(value);
+        // copied first: the argument can be the live view of this parameter, which clearing would empty
+        TreeMap<K, T> copy = new TreeMap<>(value);
+        checkValid(copy);
         this.valueMap.clear();
-        this.valueMap.putAll(value);
+        this.valueMap.putAll(copy);
         return params;
     }
 

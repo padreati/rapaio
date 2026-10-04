@@ -54,8 +54,17 @@ public abstract class ParamSet<T extends ParamSet<T>> implements Serializable {
     public ParamSet() {
     }
 
+    /**
+     * Copy constructor, which <em>does not copy the values</em>: it runs before the fields of the subclass are
+     * initialized, so the parameters of the subclass are not yet registered, and there is nothing to copy into.
+     * Use {@link #copyParameterValues(ParamSet)} once the subclass is constructed, as the {@code newInstance}
+     * methods of the models do.
+     *
+     * @deprecated it has no effect, see above
+     */
+    @Deprecated
     public ParamSet(T source) {
-        this.copyParameterValues(source);
+        this();
     }
 
     public TreeMap<String, Param<?, T>> getParameterMap() {

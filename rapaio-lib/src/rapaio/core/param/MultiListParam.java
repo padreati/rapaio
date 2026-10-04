@@ -22,6 +22,7 @@
 package rapaio.core.param;
 
 import java.io.Serial;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -67,32 +68,46 @@ public class MultiListParam<K, T, S extends ParamSet<S>> implements Param<Map<K,
     }
 
     public List<T> get(K key) {
-        return valueMap.get(key);
+        List<T> list = valueMap.get(key);
+        return list == null ? null : Collections.unmodifiableList(list);
     }
 
     @Override
     public S set(Map<K, List<T>> value) {
-        checkValid(value);
+        // a defensive copy of the map and of every list, taken before anything is discarded: the argument can be the
+        // live view of this parameter, which clearing would empty, and the lists must not be shared with the
+        // caller, who could change them afterwards without the validator being applied
+        TreeMap<K, List<T>> copy = copyOf(value);
+        checkValid(copy);
         this.valueMap.clear();
-        this.valueMap.putAll(value);
+        this.valueMap.putAll(copy);
         return params;
     }
 
     public S add(Map<K, List<T>> value) {
+        TreeMap<K, List<T>> copy = copyOf(value);
         TreeMap<K, List<T>> merged = new TreeMap<>(valueMap);
-        merged.putAll(value);
+        merged.putAll(copy);
         checkValid(merged);
-        this.valueMap.putAll(value);
+        this.valueMap.putAll(copy);
         return params;
     }
 
     @SafeVarargs
     public final S add(K key, T... values) {
         TreeMap<K, List<T>> merged = new TreeMap<>(valueMap);
-        merged.put(key, Arrays.asList(values));
+        merged.put(key, new ArrayList<>(Arrays.asList(values)));
         checkValid(merged);
-        this.valueMap.put(key, Arrays.asList(values));
+        this.valueMap.put(key, new ArrayList<>(Arrays.asList(values)));
         return params;
+    }
+
+    private static <K, T> TreeMap<K, List<T>> copyOf(Map<K, List<T>> value) {
+        TreeMap<K, List<T>> copy = new TreeMap<>();
+        for (var entry : value.entrySet()) {
+            copy.put(entry.getKey(), new ArrayList<>(entry.getValue()));
+        }
+        return copy;
     }
 
     /**
