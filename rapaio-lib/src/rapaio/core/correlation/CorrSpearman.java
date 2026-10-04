@@ -25,7 +25,6 @@ import java.io.Serial;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
-import rapaio.core.tools.DistanceMatrix;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.RowComparators;
@@ -58,38 +57,28 @@ public class CorrSpearman extends AbstractCorrelation {
 
     private CorrSpearman(Var[] vars, String[] names) {
         super(vars, names);
-        Mapping map = Mapping.wrap(IntStream.range(0, rowCount)
-                .filter(row -> {
-                    for (Var var : vars) {
-                        if (var.isMissing(row))
-                            return false;
-                    }
-                    return true;
-                })
-                .toArray());
-
-        Var[] variables = new Var[vars.length];
         for (int i = 0; i < vars.length; i++) {
-            variables[i] = vars[i].mapRows(map);
-        }
-        compute(variables);
-    }
-
-    private void compute(Var[] vars) {
-
-        Var[] ranks;
-
-        // compute ranks
-        ranks = computeRanks(vars);
-
-        // compute Pearson on ranks
-        DistanceMatrix dp = CorrPearson.of(ranks).matrix();
-
-        for (int i = 0; i < dp.length(); i++) {
-            for (int j = 0; j < dp.length(); j++) {
-                distanceMatrix.set(i, j, dp.get(i, j));
+            distanceMatrix.set(i, i, 1);
+            for (int j = i + 1; j < vars.length; j++) {
+                distanceMatrix.set(i, j, computeCorrelationCoefficient(vars[i], vars[j]));
             }
         }
+    }
+
+    /**
+     * Rank correlation of a pair of variables, computed on the rows where both values are present.
+     * <p>
+     * The policy for missing values is the pairwise one, the same as for {@link CorrPearson}: the coefficient of
+     * two variables does not depend on which other variables are correlated with them, nor on the rows where only
+     * one of them is missing. The ranks are taken after the incomplete rows are removed, since a rank is relative
+     * to the values that are compared.
+     */
+    private double computeCorrelationCoefficient(Var x, Var y) {
+        Mapping map = Mapping.wrap(IntStream.range(0, rowCount)
+                .filter(row -> !(x.isMissing(row) || y.isMissing(row)))
+                .toArray());
+        Var[] ranks = computeRanks(new Var[] {x.mapRows(map), y.mapRows(map)});
+        return CorrPearson.of(ranks).singleValue();
     }
 
     /**

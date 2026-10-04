@@ -95,7 +95,12 @@ public class CorrPearson extends AbstractCorrelation {
             int pos = map.get(i);
             sum += ((x.getDouble(pos) - xMean) * (y.getDouble(pos) - yMean));
         }
-        return stateDependentParameter == 0 ? Double.NaN : sum / (stateDependentParameter * (map.size() - 1));
+        if (stateDependentParameter == 0) {
+            return Double.NaN;
+        }
+        double r = sum / (stateDependentParameter * (map.size() - 1));
+        // rounding can take the ratio one ulp outside the range of a correlation
+        return Double.isNaN(r) ? r : Math.max(-1, Math.min(1, r));
     }
 
     @Override
