@@ -631,8 +631,10 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
     @Override
     public DArray<Integer> argmax1d(int axis, boolean keepDim, Order order) {
         axis = StrideLayout.normalizeAxis(layout, axis, "argmax1d");
-        int[] newDims = keepDim ? layout.dims() : layout.shape().narrowDims(axis);
-        int[] newStrides = keepDim ? layout.strides() : layout.narrowStrides(axis);
+        // the keepDim branch rewrites the axis entry below, and dims()/strides() lend out the layout's own
+        // arrays, so that branch copies; narrowDims and narrowStrides already build a fresh array
+        int[] newDims = keepDim ? Ints.copy(layout.dims()) : layout.shape().narrowDims(axis);
+        int[] newStrides = keepDim ? Ints.copy(layout.strides()) : layout.narrowStrides(axis);
         if (keepDim) {
             newDims[axis] = 1;
             newStrides[axis] = 0;
@@ -668,8 +670,10 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
     @Override
     public DArray<Integer> argmin1d(int axis, boolean keepDim, Order order) {
         axis = StrideLayout.normalizeAxis(layout, axis, "argmin1d");
-        int[] newDims = keepDim ? layout.dims() : layout.shape().narrowDims(axis);
-        int[] newStrides = keepDim ? layout.strides() : layout.narrowStrides(axis);
+        // the keepDim branch rewrites the axis entry below, and dims()/strides() lend out the layout's own
+        // arrays, so that branch copies; narrowDims and narrowStrides already build a fresh array
+        int[] newDims = keepDim ? Ints.copy(layout.dims()) : layout.shape().narrowDims(axis);
+        int[] newStrides = keepDim ? Ints.copy(layout.strides()) : layout.narrowStrides(axis);
         if (keepDim) {
             newDims[axis] = 1;
             newStrides[axis] = 0;
@@ -1587,7 +1591,7 @@ public final class BaseDoubleStrideDArray extends AbstractStrideDArray<Double> {
 
             if (layout.size() > limit) {
 
-                int[] slices = Arrays.copyOf(layout.dims(), layout.rank());
+                int[] slices = Ints.copy(layout.dims());
                 int size = Ints.prod(slices, 0, slices.length);
                 while (size > limit) {
                     int axis = Ints.argmax(slices, 0, slices.length);

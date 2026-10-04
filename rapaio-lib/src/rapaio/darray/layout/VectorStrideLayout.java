@@ -167,11 +167,10 @@ public final class VectorStrideLayout extends AbstractStrideLayout {
         if (axis != 0) {
             throw new IllegalArgumentException("Dimension of the new axis " + axis + " must be zero.");
         }
-        int[] newDims = Arrays.copyOf(dims(), dims().length);
-        int[] newStrides = Arrays.copyOf(strides(), strides().length);
-        newDims[axis] = size;
-        newStrides[axis] = 0;
-        return StrideLayout.of(Shape.of(newDims), offset, newStrides);
+        // the only axis is unitary, as checked above, so the expanded layout is fully determined: that single
+        // element repeated size times, which is a zero stride. Built directly rather than by rewriting the arrays
+        // dims() and strides() lend out, which belong to this layout
+        return StrideLayout.of(Shape.of(size), offset, new int[] {0});
     }
 
     @Override

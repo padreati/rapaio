@@ -41,6 +41,7 @@ import rapaio.darray.DType;
 import rapaio.darray.Order;
 import rapaio.darray.Shape;
 import rapaio.darray.layout.StrideLayout;
+import rapaio.util.collection.Ints;
 
 /**
  * Behaviour of the strided darray implementation which the existing tests do not reach: reductions over every
@@ -723,5 +724,52 @@ public class StrideDArrayContractTest {
         assertArrayEquals(new int[] {1, 3, 1}, in1.unfold1d(3, 1, 0, 2).shape().dims());
         assertArrayEquals(new int[] {1, 4, 9}, in2.unfold2d(2, 2, 1, 0, 1).shape().dims());
         assertArrayEquals(new int[] {1, 8, 8}, in3.unfold3d(2, 2, 2, 1, 0, 1).shape().dims());
+    }
+
+    @Test
+    void derivingAViewLeavesTheSourceShapeUnchanged() {
+        // Shape.dims() and StrideLayout.strides() lend out their own arrays rather than copying them, so every
+        // operation which needs one as a working buffer has to copy it first. Where that copy is missing the
+        // operation rewrites the shape or the strides of the darray it derives from, which is silent: no later
+        // validation compares a layout against its storage, so the damage only shows up as wrong values or as an
+        // index error much further on. This walks the operations which build a layout from a buffer.
+        DArray<Double> source = DArrays.seq(Shape.of(2, 3, 4));
+        int[] dims = Ints.copy(source.shape().dims());
+        int[] strides = Ints.copy(source.strides());
+
+        source.sel(Order.C, 0, 1);
+        source.sel(Order.C, 0, 0, 1);
+        source.rem(Order.C, 0, 1);
+        source.narrow(0, true, 0, 1);
+        source.narrowAll(true, new int[] {0, 0, 0}, new int[] {1, 2, 3});
+        source.t();
+        source.permute(2, 1, 0);
+        source.moveAxis(0, 2);
+        source.swapAxis(0, 2);
+        source.reshape(Shape.of(24));
+        source.squeeze();
+        source.stretch(0);
+        source.pad(0, 1, 1);
+        source.pad(new int[] {1}, new int[] {1});
+        source.unpad(0, 0, 1);
+        source.copy();
+        source.sum1d(0);
+        source.argmax1d(0, true, Order.C);
+        source.argmin1d(0, true, Order.C);
+        source.argmax1d(0, false, Order.C);
+        source.sumOn(Shape.of(4), true);
+        source.varOn(Shape.of(4), 0, true, DArrays.seq(Shape.of(2, 3)));
+        source.add(DArrays.full(Shape.of(2, 3, 4), 1d));
+        // in place operations go through the tandem descriptor, which is one of the buffer users; run them on a
+        // copy so that the value assertion below still means "nothing was written through a corrupted layout"
+        source.copy().add_(1d);
+        source.copy().add_(DArrays.full(Shape.of(2, 3, 4), 1d));
+        DArrayManager.base().cat(DType.DOUBLE, Order.C, 0, List.of(source, source));
+        DArrayManager.base().stack(DType.DOUBLE, 0, List.of(source, source));
+
+        assertArrayEquals(dims, source.shape().dims());
+        assertArrayEquals(strides, source.strides());
+        // and the values are still the original sequence, so nothing was written through a corrupted layout
+        assertEquals(276.0, source.sum(), 1e-12);
     }
 }

@@ -23,6 +23,7 @@ package rapaio.darray;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.HashSet;
@@ -42,16 +43,19 @@ public class ShapeTest {
     }
 
     @Test
-    void dimsAreNotSharedWithCaller() {
+    void dimsAreLentNotCopied() {
         int[] dims = new int[] {2, 3, 4};
         Shape shape = Shape.of(dims);
+        // the constructor still copies on the way in, so a later write through the caller's own array cannot reach
+        // the shape; only the getter was changed to stop copying on the way out
         dims[0] = 99;
         assertArrayEquals(new int[] {2, 3, 4}, shape.dims());
         assertEquals(24, shape.size());
 
-        shape.dims()[1] = 99;
+        // the getter lends the shape's own array, so reading a shape allocates nothing and two calls answer with
+        // the same instance. The caller must not modify it, as dims() documents
+        assertSame(shape.dims(), shape.dims());
         assertArrayEquals(new int[] {2, 3, 4}, shape.dims());
-        assertEquals(3, shape.dim(1));
     }
 
     @Test

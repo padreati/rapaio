@@ -47,6 +47,7 @@ import rapaio.data.VarDouble;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POpt;
+import rapaio.util.collection.Ints;
 
 public abstract sealed class AbstractStrideDArray<N extends Number> extends DArray<N>
         permits BaseDoubleStrideDArray, BaseFloatStrideDArray, BaseIntStrideDArray, BaseByteStrideDArray {
@@ -451,8 +452,10 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
 
         // a single element
         if (indices.length == 1) {
-            int[] newDims = Arrays.copyOf(layout.dims(), layout.dims().length);
-            int[] newStrides = Arrays.copyOf(layout.strides(), layout.strides().length);
+            // dims() and strides() lend out the layout's own arrays and the axis entry is rewritten below,
+            // so both are copied: without it the selection would redimension the array it selects from
+            int[] newDims = Ints.copy(layout.dims());
+            int[] newStrides = Ints.copy(layout.strides());
             newDims[axis] = 1;
             // the axis holds one element, so its stride is never used for addressing, but it is used to describe the
             // view: substituting 1 makes a C-ordered selection look F-ordered, which costs reshape and copyTo their
@@ -473,8 +476,9 @@ public abstract sealed class AbstractStrideDArray<N extends Number> extends DArr
                 }
             }
             if (validSequence) {
-                int[] newDims = Arrays.copyOf(layout.dims(), layout.dims().length);
-                int[] newStrides = Arrays.copyOf(layout.strides(), layout.strides().length);
+                // see above: the lent arrays are copied before the axis entry is rewritten
+                int[] newDims = Ints.copy(layout.dims());
+                int[] newStrides = Ints.copy(layout.strides());
                 newDims[axis] = indices.length;
                 newStrides[axis] = layout.stride(axis) * step;
                 int newOffset = layout.offset() + indices[0] * layout.stride(axis);

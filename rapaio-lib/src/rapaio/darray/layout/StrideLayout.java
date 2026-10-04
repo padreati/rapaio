@@ -83,7 +83,19 @@ public interface StrideLayout extends Layout {
     int offset();
 
     /**
-     * @return a copy of the stride array, owned by the caller; mutating it does not affect the layout
+     * Strides of this layout, handed out as the array the layout itself holds. It is <b>not</b> copied, so reading a
+     * layout allocates nothing, and in exchange the caller must treat the result as read only.
+     * <p>
+     * Modifying it corrupts this layout, and also any other layout built from it: a stride array is shared rather
+     * than copied when one layout is derived from another, so a single write can move the elements of several
+     * darrays at once, with no error raised anywhere. Copy it first when it is needed as a working buffer, with
+     * {@code Ints.copy(layout.strides())}.
+     * <p>
+     * An implementation is free to return a fresh array where it has none to lend, as the rank specialised layouts
+     * of rank 0 and 1 do, so the identity of the result is not part of the contract. Only the prohibition on
+     * modifying it is.
+     *
+     * @return the stride array of this layout, which the caller must not modify
      */
     int[] strides();
 

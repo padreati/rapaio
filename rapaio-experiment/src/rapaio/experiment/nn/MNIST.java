@@ -115,11 +115,11 @@ public class MNIST {
 
     public static Network createNet3(TensorManager tm) {
         return new Sequential(tm,
-                new Conv2D(tm, 1, 12, 5, 5, 2, 1, 1, 1, true),
+                new Conv2D(tm, 1, 4, 5, 5, 2, 1, 1, 1, true),
                 new Sigmoid(tm),
-                new Conv2D(tm, 12, 4, 3, 3, 2, 0, 2, 1, true),
+                new Conv2D(tm, 4, 2, 3, 3, 2, 0, 2, 1, true),
                 new Sigmoid(tm),
-                new Conv2D(tm, 4, 1, 3, 3, 1, 1, 1, 1, true),
+                new Conv2D(tm, 2, 1, 3, 3, 1, 1, 1, 1, true),
                 new Sigmoid(tm),
                 new Flatten(tm),
                 new Linear(tm, 25, 10, true),

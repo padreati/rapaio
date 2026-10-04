@@ -103,6 +103,29 @@
 /// well: the range must be non-empty and inside the axis, since a view narrowed past its own end would otherwise
 /// still address storage belonging to its parent and read and write elements it does not own.
 ///
+/// ### Dimension and stride arrays are lent, not copied
+///
+/// `Shape.dims()`, `StrideLayout.strides()` and the `dims()` and `strides()` of `Layout` and `DArray` hand back the
+/// array the shape or layout actually holds. Nothing is copied, so reading the geometry of an array allocates
+/// nothing, and in exchange **the caller must not modify the result**.
+///
+/// Modifying it is not reported anywhere. A layout is validated when it is built and never again, so a rewritten
+/// dimension or stride simply makes the geometry disagree with the storage it addresses, and the consequence
+/// surfaces later as wrong values or as an index error in unrelated code. It also reaches further than the one
+/// object: a stride array is shared, not copied, when one layout is derived from another, so a single write can
+/// move the elements of several arrays at once.
+///
+/// Copy before use when the array is wanted as a working buffer:
+///
+///     int[] dims = Ints.copy(x.dims());
+///     dims[0] = 1;
+///
+/// Whether the result is literally the internal array is deliberately unspecified: the rank 0 and rank 1 layouts
+/// keep no stride array to lend and build one on demand. Only the prohibition on modifying it is part of the
+/// contract, and code inside this package follows the same rule, copying explicitly at each site which needs a
+/// buffer. The operations which derive one array from another are covered by a regression test asserting that the
+/// source geometry is unchanged afterwards.
+///
 /// ## Storage
 ///
 /// A storage is a container for data which offers simple low-level API for data manipulation.

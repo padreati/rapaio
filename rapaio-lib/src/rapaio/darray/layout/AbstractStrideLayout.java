@@ -23,6 +23,7 @@ package rapaio.darray.layout;
 
 import rapaio.darray.Order;
 import rapaio.darray.Shape;
+import rapaio.util.collection.Ints;
 
 public abstract class AbstractStrideLayout implements StrideLayout {
 
@@ -51,8 +52,10 @@ public abstract class AbstractStrideLayout implements StrideLayout {
         int[] newstrides = new int[newRank];
 
         // dims() and strides() already hand out caller owned arrays, so they are used directly as working buffers
-        int[] olddims = dims();
-        int[] oldstrides = strides();
+        // dims() and strides() lend out the layout's own arrays, and the loop below rewrites these two in
+        // place, compacting the non-unit axes to the front, so both must be copied before being used as buffers
+        int[] olddims = Ints.copy(dims());
+        int[] oldstrides = Ints.copy(strides());
         int last_stride;
 
         int oldRank = 0;

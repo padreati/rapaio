@@ -78,7 +78,7 @@ public class ArrayStrideLayout extends AbstractStrideLayout {
 
     @Override
     public int[] strides() {
-        return Arrays.copyOf(strides, strides.length);
+        return strides;
     }
 
     @Override
@@ -214,11 +214,11 @@ public class ArrayStrideLayout extends AbstractStrideLayout {
         int[] newStrides;
         switch (askOrder) {
             case F -> {
-                newDims = Arrays.copyOf(shape.dims(), shape.rank());
+                newDims = Ints.copy(shape.dims());
                 newStrides = Arrays.copyOf(strides, shape.rank());
             }
             case C -> {
-                newDims = Arrays.copyOf(shape.dims(), shape.rank());
+                newDims = Ints.copy(shape.dims());
                 newStrides = Arrays.copyOf(strides, shape.rank());
                 Ints.reverse(newDims);
                 Ints.reverse(newStrides);
@@ -377,7 +377,8 @@ public class ArrayStrideLayout extends AbstractStrideLayout {
         if (axis < 0) {
             throw new IllegalArgumentException("Dimension of the new axis " + axis + " must be positive.");
         }
-        int[] newDims = Arrays.copyOf(dims(), dims().length);
+        // dims() and strides() lend out the array the shape or layout holds, so a working buffer needs a copy
+        int[] newDims = Ints.copy(dims());
         int[] newStrides = Arrays.copyOf(strides, strides.length);
         newDims[axis] = size;
         newStrides[axis] = 0;
@@ -386,7 +387,7 @@ public class ArrayStrideLayout extends AbstractStrideLayout {
 
     @Override
     public StrideLayout revert() {
-        int[] reversedDims = Ints.reverse(Arrays.copyOf(shape.dims(), shape.rank()));
+        int[] reversedDims = Ints.reverse(Ints.copy(shape.dims()));
         int[] reversedStride = Ints.reverse(Arrays.copyOf(strides, shape.rank()));
         return StrideLayout.of(Shape.of(reversedDims), offset, reversedStride);
     }
@@ -453,7 +454,7 @@ public class ArrayStrideLayout extends AbstractStrideLayout {
             StrideLayout result = StrideLayout.of(Shape.of(end - start), offset + stride(axis) * start, strides);
             return keepdim ? result : result.squeeze(axis);
         }
-        int[] newDims = Arrays.copyOf(shape.dims(), strides.length);
+        int[] newDims = Ints.copy(shape.dims());
         newDims[axis] = end - start;
         int newOffset = offset + start * stride(axis);
         var result = StrideLayout.of(Shape.of(newDims), newOffset, strides);
@@ -469,7 +470,7 @@ public class ArrayStrideLayout extends AbstractStrideLayout {
             throw new IllegalArgumentException("Starts and ends does not have the same length.");
         }
         StrideLayout.validateNarrowAllBounds(this, starts, ends);
-        int[] newDims = Arrays.copyOf(dims(), strides.length);
+        int[] newDims = Ints.copy(dims());
         int newOffset = offset;
         for (int i = 0; i < newDims.length; i++) {
             newDims[i] = ends[i] - starts[i];

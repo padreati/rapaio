@@ -77,7 +77,8 @@ public record ScalarStrideLayout(int offset) implements StrideLayout {
 
     @Override
     public int[] strides() {
-        return new int[0];
+        // rank 0 has no strides, and an empty array has nothing a caller could modify, so one instance serves all
+        return Ints.EMPTY_ARRAY;
     }
 
     @Override

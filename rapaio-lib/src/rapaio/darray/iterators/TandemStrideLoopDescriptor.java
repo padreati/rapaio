@@ -95,9 +95,11 @@ public final class TandemStrideLoopDescriptor {
         this.simdLen = vs.length();
 
         int rank = first.rank();
-        int[] dims = first.shape().dims();
-        int[] strides1 = Arrays.copyOf(first.strides(), rank);
-        int[] strides2 = Arrays.copyOf(second.strides(), rank);
+        // all three are lent out by their getter and all three are used as working buffers below, reversed and
+        // then compacted in place, so each one has to be copied first
+        int[] dims = Ints.copy(first.shape().dims());
+        int[] strides1 = Ints.copy(first.strides());
+        int[] strides2 = Ints.copy(second.strides());
 
         Order order = (askOrder == Order.C || askOrder == Order.F) ? askOrder : Order.defaultOrder();
         if (order == Order.C) {

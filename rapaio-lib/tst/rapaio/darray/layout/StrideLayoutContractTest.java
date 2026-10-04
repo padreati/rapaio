@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -39,6 +40,7 @@ import rapaio.darray.DType;
 import rapaio.darray.Order;
 import rapaio.darray.Shape;
 import rapaio.darray.iterators.IndexIterator;
+import rapaio.util.collection.Ints;
 
 /**
  * Layout and view behaviour which depends on how a layout was built: {@link StrideLayout#ofDense} always produces
@@ -236,11 +238,69 @@ public class StrideLayoutContractTest {
     }
 
     @Test
-    void stridesAreNotExposedToCallers() {
+    void stridesAreLentNotCopied() {
         for (StrideLayout layout : bothFactories(Shape.of(2, 3), Order.C)) {
-            int[] strides = layout.strides();
-            strides[0] = -99;
-            assertArrayEquals(new int[] {3, 1}, layout.strides(), layout.getClass().getSimpleName());
+            String name = layout.getClass().getSimpleName();
+            // the getter lends the layout's own array instead of copying it, so reading a layout allocates nothing
+            // and two calls answer with the same instance. The caller must not modify it, as strides() documents
+            assertSame(layout.strides(), layout.strides(), name);
+            assertArrayEquals(new int[] {3, 1}, layout.strides(), name);
+        }
+        // rank 0 and rank 1 keep no stride array to lend, so they are free to build one: an empty array has nothing
+        // a caller could modify, and a vector layout holds its single stride as a field
+        assertArrayEquals(new int[0], StrideLayout.of(Shape.of(), 0, new int[0]).strides());
+        assertArrayEquals(new int[] {2}, StrideLayout.of(Shape.of(5), 0, new int[] {2}).strides());
+    }
+
+    @Test
+    void derivingALayoutLeavesItsSourceUnchanged() {
+        // Every operation below needs a working buffer of dims or strides, and under the lending contract that
+        // buffer has to be a copy: taking the lent array directly would redimension the very layout being derived
+        // from, silently, since nothing validates a layout after construction. This is the regression test for
+        // dims() and strides() no longer copying, and it is why each such site copies explicitly.
+        for (int factory = 0; factory < 2; factory++) {
+            // rebuilt per iteration: the two factories are handed the same stride array, so a corruption in one
+            // round would otherwise become the next round's baseline and go unnoticed
+            StrideLayout source = bothFactories(Shape.of(2, 3), Order.C).get(factory);
+            String name = source.getClass().getSimpleName();
+            int[] dims = Ints.copy(source.dims());
+            int[] strides = Ints.copy(source.strides());
+
+            for (Order order : new Order[] {Order.C, Order.F, Order.S}) {
+                source.computeFortranLayout(order, true);
+                source.computeFortranLayout(order, false);
+            }
+            source.revert();
+            source.moveAxis(0, 1);
+            source.swapAxis(0, 1);
+            source.narrow(0, true, 0, 1);
+            source.narrow(1, false, 1, 2);
+            source.narrowAll(true, new int[] {0, 0}, new int[] {1, 2});
+            source.permute(1, 0);
+            source.squeeze();
+            source.squeeze(0);
+            source.stretch(0);
+            source.attemptReshape(Shape.of(6), Order.C);
+            source.attemptReshape(Shape.of(3, 2), Order.F);
+            source.ptrIterator(Order.C);
+            source.ptrIterator(Order.F);
+
+            assertArrayEquals(dims, source.dims(), name);
+            assertArrayEquals(strides, source.strides(), name);
+        }
+
+        // expand needs a unit axis, so it gets its own round, at every rank which has a specialised layout
+        for (Shape shape : new Shape[] {Shape.of(1), Shape.of(1, 3), Shape.of(1, 3, 4)}) {
+            for (StrideLayout source : bothFactories(shape, Order.C)) {
+                String name = source.getClass().getSimpleName() + " " + shape;
+                int[] dims = Ints.copy(source.dims());
+                int[] strides = Ints.copy(source.strides());
+
+                source.expand(0, 4);
+
+                assertArrayEquals(dims, source.dims(), name);
+                assertArrayEquals(strides, source.strides(), name);
+            }
         }
     }
 

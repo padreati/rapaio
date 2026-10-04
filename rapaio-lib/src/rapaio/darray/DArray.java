@@ -50,6 +50,7 @@ import rapaio.data.OperationNotAvailableException;
 import rapaio.data.VarDouble;
 import rapaio.printer.Printable;
 import rapaio.util.Pair;
+import rapaio.util.collection.Ints;
 import rapaio.util.function.IntIntBiFunction;
 
 /**
@@ -132,7 +133,11 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     }
 
     /**
-     * @return array of semi-positive dimension sizes
+     * Dimension sizes of this darray. The array is <b>lent, not copied</b>: it is the one the shape holds, so the
+     * caller must not modify it. Copy it with {@code Ints.copy(x.dims())} when a working buffer is needed. See
+     * {@link Shape#dims()} for why, and the {@code rapaio.darray} package documentation for the policy.
+     *
+     * @return the array of semi-positive dimension sizes, which the caller must not modify
      */
     public final int[] dims() {
         return shape().dims();
@@ -149,9 +154,15 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
     }
 
     /**
-     * Returns the stride array for the underlying storage. If the layout is not a stride layout, an exception is thrown.
+     * Returns the stride array for the underlying storage. If the layout is not a stride layout, an exception is
+     * thrown.
+     * <p>
+     * The array is <b>lent, not copied</b>: it is the one the layout holds, so the caller must not modify it. Copy
+     * it with {@code Ints.copy(x.strides())} when a working buffer is needed. See
+     * {@link rapaio.darray.layout.StrideLayout#strides()} for why, and the {@code rapaio.darray} package
+     * documentation for the policy.
      *
-     * @return an integer vector which contains the strides
+     * @return an integer vector which contains the strides, which the caller must not modify
      */
     public final int[] strides() {
         if (layout() instanceof StrideLayout l) {
@@ -4322,7 +4333,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
 
     public final DArray<N> pad(int axis, int pad, int inflation, Order askOrder) {
         validatePadding(axis, pad, inflation, "pad");
-        int[] newDims = Arrays.copyOf(dims(), rank());
+        int[] newDims = Ints.copy(dims());
         newDims[axis] = 2 * pad + (dim(axis) - 1) * inflation + 1;
         DArray<N> copy = dm.zeros(dt, Shape.of(newDims), askOrder);
         copyTo(copy.unpad(axis, pad, inflation));
@@ -4343,7 +4354,7 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
         for (int i = 0; i < pad.length; i++) {
             validatePadding(rank() - i - 1, pad[pad.length - i - 1], inflation[pad.length - i - 1], "pad");
         }
-        int[] newDims = Arrays.copyOf(dims(), rank());
+        int[] newDims = Ints.copy(dims());
         for (int i = 0; i < pad.length; i++) {
             newDims[newDims.length - i - 1] =
                     2 * pad[pad.length - i - 1] + (dim(newDims.length - i - 1) - 1) * inflation[pad.length - i - 1] + 1;
@@ -4359,14 +4370,14 @@ public abstract sealed class DArray<N extends Number> implements Printable, Iter
             throw new IllegalArgumentException(String.format(
                     "Padding of %d is too large to remove from axis %d of dimension %d.", pad, axis, dim(axis)));
         }
-        int[] newDims = Arrays.copyOf(dims(), rank());
+        int[] newDims = Ints.copy(dims());
         // the positions this view addresses are pad + i * inflation, bounded by dim - 1 - pad, which is a floorDiv
         // count. With ceilDiv the view claimed one element too many whenever inflation did not divide exactly, and
         // that element addressed storage past the end of its own axis. pad() is unaffected either way, since it
         // always produces a length of the form 2 * pad + (dim - 1) * inflation + 1, where the two agree
         newDims[axis] = Math.floorDiv(dim(axis) - 2 * pad - 1, inflation) + 1;
         int newOffset = ((StrideLayout) layout()).offset() + pad * stride(axis);
-        int[] newStrides = Arrays.copyOf(strides(), strides().length);
+        int[] newStrides = Ints.copy(strides());
         newStrides[axis] *= inflation;
         return dm.stride(dt, StrideLayout.of(newDims, newOffset, newStrides), storage);
     }

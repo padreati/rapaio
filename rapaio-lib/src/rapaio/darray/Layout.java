@@ -38,6 +38,12 @@ public interface Layout {
      */
     Shape shape();
 
+    /**
+     * Dimension sizes of this layout, delegated to {@link Shape#dims()} and therefore <b>lent, not copied</b>: the
+     * caller must not modify the result. See {@link Shape#dims()} for the full contract.
+     *
+     * @return the dimension array of this layout, which the caller must not modify
+     */
     default int[] dims() {
         return shape().dims();
     }

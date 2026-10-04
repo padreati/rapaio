@@ -90,10 +90,20 @@ public final class Shape {
     }
 
     /**
-     * @return a copy of the array with dimension sizes; mutating it does not affect the shape
+     * Dimension sizes of this shape, handed out as the array the shape itself holds. It is <b>not</b> copied, so
+     * reading a shape allocates nothing, and in exchange the caller must treat the result as read only.
+     * <p>
+     * Modifying it corrupts this shape and every layout and darray built on it, with no error raised anywhere: the
+     * dimensions would no longer describe the storage the strides address. Copy it first when it is needed as a
+     * working buffer, with {@code Ints.copy(shape.dims())}.
+     * <p>
+     * An implementation is free to return a fresh array where it has none to lend, so the identity of the result is
+     * not part of the contract. Only the prohibition on modifying it is.
+     *
+     * @return the dimension array of this shape, which the caller must not modify
      */
     public int[] dims() {
-        return Arrays.copyOf(dims, dims.length);
+        return dims;
     }
 
     /**

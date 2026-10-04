@@ -36,6 +36,7 @@ import rapaio.core.distributions.Distribution;
 import rapaio.darray.layout.StrideLayout;
 import rapaio.darray.manager.base.BaseDArrayManager;
 import rapaio.util.Hardware;
+import rapaio.util.collection.Ints;
 
 public abstract class DArrayManager {
 
@@ -398,7 +399,7 @@ public abstract class DArrayManager {
 
         int newDim = nArrayList.stream().mapToInt(nArray -> nArray.layout().shape().dim(axis)).sum();
         DArray<?> first = nArrayList.getFirst();
-        int[] newDims = Arrays.copyOf(first.shape().dims(), first.rank());
+        int[] newDims = Ints.copy(first.shape().dims());
         newDims[axis] = newDim;
         var result = zeros(dt, Shape.of(newDims), order);
 

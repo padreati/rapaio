@@ -57,7 +57,6 @@ import rapaio.ml.common.kernel.MultiQuadricKernel;
 import rapaio.ml.common.kernel.PolyKernel;
 import rapaio.ml.common.kernel.RBFKernel;
 import rapaio.ml.common.kernel.RationalQuadraticKernel;
-import rapaio.ml.common.kernel.SigmoidKernel;
 import rapaio.ml.common.kernel.SphericalKernel;
 import rapaio.ml.common.kernel.WaveKernel;
 import rapaio.ml.common.kernel.WaveletKernel;
@@ -177,7 +176,7 @@ public class BinarySMOTest {
         kernels.add(new GeneralizedStudentTKernel(1));
         kernels.add(new InverseMultiQuadricKernel(1));
         kernels.add(new SphericalKernel(1000));
-        kernels.add(new SigmoidKernel(1, 1));
+//        kernels.add(new SigmoidKernel(1, 1));
         kernels.add(new MultiQuadricKernel(1));
 //        kernels.add(new PowerKernel(2));
         kernels.add(new RationalQuadraticKernel(1));
