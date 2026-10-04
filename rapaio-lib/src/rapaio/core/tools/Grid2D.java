@@ -25,6 +25,7 @@ import static java.lang.StrictMath.abs;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.function.BiFunction;
 
 import rapaio.core.stat.Maximum;
@@ -69,8 +70,8 @@ public class Grid2D implements Serializable {
             yMax += margin * yDelta;
         }
 
-        VarDouble x = VarDouble.seq(xMin, xMax, (xMax - xMin) / bins).name(xName);
-        VarDouble y = VarDouble.seq(yMin, yMax, (yMax - yMin) / bins).name(yName);
+        VarDouble x = axis(xMin, xMax, bins).name(xName);
+        VarDouble y = axis(yMin, yMax, bins).name(yName);
 
         Grid2D mg = new Grid2D(x, y);
 
@@ -97,8 +98,8 @@ public class Grid2D implements Serializable {
     public static Grid2D fromFunction(BiFunction<Double, Double, Double> f, double xMin, double xMax, double yMin, double yMax,
             int bins) {
 
-        VarDouble x = VarDouble.seq(xMin, xMax, (xMax - xMin) / bins);
-        VarDouble y = VarDouble.seq(yMin, yMax, (yMax - yMin) / bins);
+        VarDouble x = axis(xMin, xMax, bins);
+        VarDouble y = axis(yMin, yMax, bins);
 
         Grid2D mg = new Grid2D(x, y);
         for (int i = 0; i < x.size(); i++) {
@@ -201,8 +202,10 @@ public class Grid2D implements Serializable {
 
     /**
      * Generates an array of equally distanced values which form intervals. The starting and ending values are
-     * enlarged with given extension. Thus, the start value is {@code start*(1-ext)} and end value is {@code end*(1+ext}.
-     * The intervals have the same size.
+     * enlarged with given extension. Thus, the start value is {@code start - |start|*ext} and end value is
+     * {@code end + |end|*ext}, which enlarges the range also when a bound is negative.
+     * The intervals have the same size, and the result has exactly {@code intervals + 1} values, or a single
+     * value when the range is a single point.
      * <p>
      * An usual extension is a small positive factor like {@code 0.01}, which is equivalent with one percent extension
      * of the whole interval.
@@ -212,6 +215,37 @@ public class Grid2D implements Serializable {
      * @return array of double values with extended increasing values in sequence
      */
     public double[] seq(int intervals, double ext) {
-        return VarDouble.seq(minValue() * (1 - ext), maxValue() * (1 + ext), (maxValue() - minValue()) / intervals).elements();
+        // the extension moves each end away from the center by a share of its own magnitude; for a negative
+        // bound a signed product would move it inwards instead
+        double start = minValue();
+        double end = maxValue();
+        start -= abs(start) * ext;
+        end += abs(end) * ext;
+        VarDouble axis = axis(start, end, intervals);
+        return Arrays.copyOf(axis.elements(), axis.size());
+    }
+
+    /**
+     * Builds the equally spaced points of one axis, {@code bins + 1} of them from {@code start} to {@code end}.
+     * A range which is a single point gives that single point, since any step would repeat it forever.
+     *
+     * @throws IllegalArgumentException if the number of bins is not positive, or the range is not a finite
+     *                                  increasing or constant one
+     */
+    private static VarDouble axis(double start, double end, int bins) {
+        if (bins < 1) {
+            throw new IllegalArgumentException("Number of bins/intervals must be at least 1, but was " + bins + ".");
+        }
+        if (!Double.isFinite(start) || !Double.isFinite(end) || start > end) {
+            throw new IllegalArgumentException("Invalid range [" + start + ", " + end + "], expected finite values with start <= end.");
+        }
+        if (start == end) {
+            return VarDouble.wrap(start);
+        }
+        double step = (end - start) / bins;
+        if (!(step > 0)) {
+            throw new IllegalArgumentException("Range [" + start + ", " + end + "] is too small to be split into " + bins + " bins.");
+        }
+        return VarDouble.seq(start, end, step);
     }
 }

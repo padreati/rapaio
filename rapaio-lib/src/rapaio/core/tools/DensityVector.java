@@ -245,6 +245,12 @@ public class DensityVector<T> implements Printable, Serializable {
     public DensityVector<T> normalize(double pow) {
         if(DArrays.stride(values).norm(pow) != 0) {
             DArrays.stride(values).normalize_(pow);
+            // the cells were rescaled in place, the cached sum must follow them
+            double sum = 0;
+            for (double value : values) {
+                sum += value;
+            }
+            total = sum;
         }
         return this;
     }

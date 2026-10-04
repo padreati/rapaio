@@ -164,7 +164,12 @@ public final class DensityTable<U, V> implements Printable, Serializable {
                     continue;
                 }
             }
-            dt.inc(rowId, colIndex.getIndex(colVar, i), weights != null ? weights.getDouble(i) : 1);
+            // a column value which is not in the index (missing value when missing is not counted) has no cell
+            int colId = colIndex.getIndex(colVar, i);
+            if (colId < 0) {
+                continue;
+            }
+            dt.inc(rowId, colId, weights != null ? weights.getDouble(i) : 1);
         }
         return dt;
     }

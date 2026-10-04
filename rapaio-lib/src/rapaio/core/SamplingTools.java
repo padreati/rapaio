@@ -558,6 +558,9 @@ public final class SamplingTools {
 
     public static TrainTestSplit trainTestSplit(final Random random, Frame df, Var w, double p, boolean shuffle, String strata) {
 
+        if (!(p >= 0 && p <= 1)) {
+            throw new IllegalArgumentException("The proportion of the training rows must be in [0, 1], not " + p + ".");
+        }
         int trainSize = (int) (df.rowCount() * p);
         int testSize = df.rowCount() - trainSize;
 

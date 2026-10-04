@@ -81,6 +81,10 @@ public final class HistogramTable implements Printable {
         }
         double[] q = Quantiles.of(v, 0, 0.25, 0.75, 1).values();
         double range = q[3] - q[0];
+        if (range == 0) {
+            // constant data: every value falls in the first bin, any other bin could never be filled
+            return 1;
+        }
         double iqr = q[2] - q[1];
         double width = 2 * iqr * Math.pow(v.size(), -1.0 / 3.0);
         double count = width > 0 ? range / width

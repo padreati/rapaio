@@ -83,6 +83,7 @@ public class DistanceMatrix implements Serializable {
     }
 
     public void set(int i, int j, double value) {
+        checkIndexes(i, j);
         if (j > i) {
             set(j, i, value);
             return;
@@ -92,11 +93,24 @@ public class DistanceMatrix implements Serializable {
     }
 
     public double get(int i, int j) {
+        checkIndexes(i, j);
         if (j > i) {
             return get(j, i);
         }
         int pos = i * (i + 1) / 2 + j;
         return values[pos];
+    }
+
+    /**
+     * The storage is the packed lower triangle, where an index outside the matrix can still land inside the
+     * array: {@code (2, -1)} addresses the cell of {@code (1, 1)}. Without this check such a call would read or
+     * overwrite another cell silently.
+     */
+    private void checkIndexes(int i, int j) {
+        if (i < 0 || i >= names.length || j < 0 || j >= names.length) {
+            throw new IndexOutOfBoundsException("Index (" + i + ", " + j + ") is out of bounds for a distance matrix of length "
+                    + names.length + ".");
+        }
     }
 
     public DistanceMatrix fill(IntInt2DoubleBiFunction fillFunction) {
