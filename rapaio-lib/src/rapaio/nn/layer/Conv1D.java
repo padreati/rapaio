@@ -32,8 +32,6 @@ import rapaio.nn.TensorManager;
 
 public class Conv1D extends AbstractNetwork {
 
-    private static final double range = 0.5;
-
     private final int inChannels;
     private final int outChannels;
 
@@ -61,11 +59,15 @@ public class Conv1D extends AbstractNetwork {
         this.groups = groups;
         this.bias = bias;
 
+        // U(-1/sqrt(fanIn), 1/sqrt(fanIn)) for weight and bias, with fanIn = C_in/groups * k, the default
+        // initialization of PyTorch's Conv1d, also used by Conv2D and Conv3D
+        double range = 1. / Math.sqrt((double) (inChannels / groups) * k);
+
         w = tm.var().requiresGrad(true).name("weight");
         w.setValue(tm.randomArray(Shape.of(outChannels, inChannels / groups, k), Uniform.of(-range, range), Order.F));
         if (bias) {
             b = tm.var().requiresGrad(true).name("bias");
-            b.setValue(tm.fullArray(Shape.of(outChannels), 1));
+            b.setValue(tm.randomArray(Shape.of(outChannels), Uniform.of(-range, range)));
         } else {
             b = null;
         }

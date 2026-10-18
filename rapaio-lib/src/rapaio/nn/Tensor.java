@@ -36,6 +36,7 @@ import rapaio.nn.tensors.CompareFalseNode;
 import rapaio.nn.tensors.CompareTrueNode;
 import rapaio.nn.tensors.Conv1dNode;
 import rapaio.nn.tensors.Conv2dNode;
+import rapaio.nn.tensors.Conv3dNode;
 import rapaio.nn.tensors.DropoutNode;
 import rapaio.nn.tensors.GatherNode;
 import rapaio.nn.tensors.IdentityNode;
@@ -475,5 +476,20 @@ public abstract class Tensor {
 
     public final Conv2dNode conv2d(Tensor weight, Tensor bias, int stride, int padding, int dilation, int groups) {
         return new Conv2dNode(this, weight, bias, stride, padding, dilation, groups);
+    }
+
+    /**
+     * 3D convolution of this tensor, with shape {@code (N, C_in, D, H, W)}.
+     *
+     * @param weight   kernel of shape {@code (C_out, C_in/groups, kD, kH, kW)}
+     * @param bias     optional bias of shape {@code (C_out)}, or {@code null}
+     * @param stride   step between kernel applications, the same on every spatial dimension
+     * @param padding  zero padding added to all spatial sides
+     * @param dilation spacing between kernel elements
+     * @param groups   number of blocked connections from input channels to output channels
+     * @return output tensor of shape {@code (N, C_out, D_out, H_out, W_out)}
+     */
+    public final Conv3dNode conv3d(Tensor weight, Tensor bias, int stride, int padding, int dilation, int groups) {
+        return new Conv3dNode(this, weight, bias, stride, padding, dilation, groups);
     }
 }

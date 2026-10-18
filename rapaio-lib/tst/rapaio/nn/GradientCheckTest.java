@@ -327,6 +327,26 @@ public class GradientCheckTest {
                 v -> v.get(0).conv2d(v.get(1), v.get(2), 2, 1, 1, 1));
     }
 
+    @Test
+    void conv3d() {
+        // x: (batch, in channels, d, h, w); w: (out channels, in channels / groups, kd, kh, kw); b: (out channels)
+        check("conv3d", List.of(signedInput(Shape.of(2, 2, 3, 3, 3)), signedInput(Shape.of(3, 2, 2, 2, 2)), signedInput(Shape.of(3))),
+                v -> v.get(0).conv3d(v.get(1), v.get(2), 1, 0, 1, 1));
+        check("conv3d no bias", List.of(signedInput(Shape.of(1, 2, 3, 3, 3)), signedInput(Shape.of(2, 2, 2, 2, 2))),
+                v -> v.get(0).conv3d(v.get(1), null, 1, 0, 1, 1));
+        check("conv3d stride 2 pad 1", List.of(signedInput(Shape.of(1, 2, 4, 4, 4)), signedInput(Shape.of(2, 2, 3, 3, 3)), signedInput(Shape.of(2))),
+                v -> v.get(0).conv3d(v.get(1), v.get(2), 2, 1, 1, 1));
+        check("conv3d dilation 2", List.of(signedInput(Shape.of(1, 1, 5, 5, 5)), signedInput(Shape.of(2, 1, 2, 2, 2)), signedInput(Shape.of(2))),
+                v -> v.get(0).conv3d(v.get(1), v.get(2), 1, 0, 2, 1));
+        check("conv3d groups 2", List.of(signedInput(Shape.of(1, 4, 3, 3, 3)), signedInput(Shape.of(4, 2, 2, 2, 2)), signedInput(Shape.of(4))),
+                v -> v.get(0).conv3d(v.get(1), v.get(2), 1, 0, 1, 2));
+        // non cubic input with stride 2: each spatial dimension needs a different output padding
+        check("conv3d 5x4x3 stride 2", List.of(signedInput(Shape.of(1, 1, 5, 4, 3)), signedInput(Shape.of(2, 1, 2, 2, 2)), signedInput(Shape.of(2))),
+                v -> v.get(0).conv3d(v.get(1), v.get(2), 2, 0, 1, 1));
+        check("conv3d 3x6x5 stride 2 pad 1", List.of(signedInput(Shape.of(2, 1, 3, 6, 5)), signedInput(Shape.of(1, 1, 3, 3, 3)), signedInput(Shape.of(1))),
+                v -> v.get(0).conv3d(v.get(1), v.get(2), 2, 1, 1, 1));
+    }
+
     // masks and dropout
 
     @Test

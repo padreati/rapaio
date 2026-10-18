@@ -61,13 +61,15 @@ public class Conv2D extends AbstractNetwork {
         this.groups = groups;
         this.bias = bias;
 
-        double range = Math.sqrt((1. * groups) / (inChannels * (kH + kW) / 2.));
+        // U(-1/sqrt(fanIn), 1/sqrt(fanIn)) for weight and bias, with fanIn = C_in/groups * kH * kW, the default
+        // initialization of PyTorch's Conv2d, also used by Conv3D
+        double range = 1. / Math.sqrt((double) (inChannels / groups) * kH * kW);
 
         w = tm.var().requiresGrad(true).name("weight");
         w.setValue(tm.randomArray(Shape.of(outChannels, inChannels / groups, kH, kW), Uniform.of(-range, range), Order.F));
         if (bias) {
             b = tm.var().requiresGrad(true).name("bias");
-            b.setValue(tm.fullArray(Shape.of(outChannels), 1));
+            b.setValue(tm.randomArray(Shape.of(outChannels), Uniform.of(-range, range)));
         } else {
             b = null;
         }
