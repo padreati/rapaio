@@ -57,22 +57,6 @@ public class Sequential extends AbstractNetwork {
     }
 
     @Override
-    public void train() {
-        super.train();
-        for (Network network : networks) {
-            network.train();
-        }
-    }
-
-    @Override
-    public void eval() {
-        super.eval();
-        for (Network network : networks) {
-            network.eval();
-        }
-    }
-
-    @Override
     public Tensor[] forward(Tensor... inputs) {
         if (networks == null || networks.isEmpty()) {
             return null;

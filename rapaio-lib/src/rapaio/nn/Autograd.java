@@ -21,6 +21,7 @@
 
 package rapaio.nn;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -160,13 +161,21 @@ public final class Autograd {
             counters.clear();
         }
 
-        private void coverage(Set<Tensor> visited, Tensor tensor) {
-            if (visited.contains(tensor)) {
-                return;
-            }
-            visited.add(tensor);
-            for (var edge : tensor.backFunctions()) {
-                coverage(visited, edge.ref());
+        private void coverage(Set<Tensor> visited, Tensor root) {
+            // an explicit stack instead of recursion: a long chain of operations (an unrolled loop, the sum of many
+            // batch losses) would otherwise overflow the thread stack
+            ArrayDeque<Tensor> stack = new ArrayDeque<>();
+            stack.push(root);
+            while (!stack.isEmpty()) {
+                Tensor tensor = stack.pop();
+                if (!visited.add(tensor)) {
+                    continue;
+                }
+                for (var edge : tensor.backFunctions()) {
+                    if (!visited.contains(edge.ref())) {
+                        stack.push(edge.ref());
+                    }
+                }
             }
         }
     }

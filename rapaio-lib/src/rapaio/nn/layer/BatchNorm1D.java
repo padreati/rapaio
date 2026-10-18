@@ -67,7 +67,7 @@ public class BatchNorm1D extends AbstractNetwork {
     }
 
     @Override
-    public NetworkState state() {
+    public synchronized NetworkState state() {
         NetworkState state = new NetworkState();
         state.addTensors(List.of(sampleMean, sampleStd, gamma, beta));
         return state;
@@ -81,19 +81,29 @@ public class BatchNorm1D extends AbstractNetwork {
         if (train) {
             Standardize1dNode s = x.standardize1d(0, 0, epsValue);
 
-            if (sampleMean == null || sampleStd == null) {
-                sampleMean = s.outputMean();
-                sampleStd = s.outputStd();
-            } else {
-                sampleMean = tm.var(sampleMean.value().mul(1 - momentum).add_(s.outputMean().value().mul(momentum)));
-                sampleStd = tm.var(sampleStd.value().mul(1 - momentum).add_(s.outputStd().value().mul(momentum)));
+            // batchForward runs forward for several batches at the same time; the update reads and replaces both
+            // fields, so without the lock two batches can read the same old statistics and one update is lost
+            synchronized (this) {
+                if (sampleMean == null || sampleStd == null) {
+                    sampleMean = s.outputMean();
+                    sampleStd = s.outputStd();
+                } else {
+                    sampleMean = tm.var(sampleMean.value().mul(1 - momentum).add_(s.outputMean().value().mul(momentum)));
+                    sampleStd = tm.var(sampleStd.value().mul(1 - momentum).add_(s.outputStd().value().mul(momentum)));
+                }
             }
             return s.mul(gamma).add(beta);
         } else {
-            if (sampleMean == null || sampleStd == null) {
+            Tensor mean;
+            Tensor std;
+            synchronized (this) {
+                mean = sampleMean;
+                std = sampleStd;
+            }
+            if (mean == null || std == null) {
                 throw new IllegalArgumentException("BatchNorm1D requires at least one optimization step.");
             }
-            var s = x.sub(sampleMean).div(sampleStd);
+            var s = x.sub(mean).div(std);
             return s.mul(gamma).add(beta);
         }
     }

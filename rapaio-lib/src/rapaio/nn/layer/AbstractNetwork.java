@@ -26,11 +26,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
@@ -64,47 +66,35 @@ public abstract class AbstractNetwork implements Network {
     }
 
     /**
-     * Default implementation which uses reflection to search recursively in class hierarchy
-     * for finding field members which are layers and collects their parameters.
+     * Default implementation which uses reflection to search the whole class hierarchy
+     * for field members which are layers and collects their parameters.
+     * <p>
+     * A layer is found if a non-static field holds a {@link Network}, an array of networks or an
+     * {@link Iterable} of networks. Parameters are reported once, even if a layer is reachable from more than one
+     * field or is shared between layers.
      * <p>
      * This default implementation might not be what you actually want, a custom implementation
      * might be needed.
      *
      * @return a collection of all parameters from all layers defined as fields in class hierarchy
      */
-    @SuppressWarnings("unchecked")
     @Override
     public List<Tensor> parameters() {
         Set<Tensor> set = new HashSet<>();
         ArrayList<Tensor> params = new ArrayList<>();
-        Class<?> clazz = getClass();
-        while (clazz != null) {
-            Field[] fields = this.getClass().getDeclaredFields();
-            for (Field field : fields) {
-                if (Network.class.isAssignableFrom(field.getType())) {
-                    try {
-                        Method method = field.getType().getMethod("parameters");
-                        field.setAccessible(true);
-                        List<Tensor> ps = (List<Tensor>) method.invoke(field.get(this));
-                        for (Tensor p : ps) {
-                            if (!set.contains(p)) {
-                                set.add(p);
-                                params.add(p);
-                            }
-                        }
-                    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
+        for (Network child : children()) {
+            for (Tensor p : child.parameters()) {
+                if (set.add(p)) {
+                    params.add(p);
                 }
             }
-            clazz = clazz.getSuperclass();
         }
-        return new ArrayList<>(params);
+        return params;
     }
 
     /**
      * Default implementation for network state which uses reflection to search through the hierarchy of classes
-     * for layer declared fields and collects their state.
+     * for layer declared fields and collects their state. Each tensor is reported once.
      * <p>
      * This implementation might not cover your case, a custom implementation might be needed.
      *
@@ -112,35 +102,95 @@ public abstract class AbstractNetwork implements Network {
      */
     @Override
     public NetworkState state() {
+        Set<Tensor> set = new HashSet<>();
         NetworkState state = new NetworkState();
-        Class<?> clazz = getClass();
-        while (clazz != null) {
-            Field[] fields = this.getClass().getDeclaredFields();
-            for (Field field : fields) {
-                if (Network.class.isAssignableFrom(field.getType())) {
-                    try {
-                        Method method = field.getType().getMethod("state");
-                        field.setAccessible(true);
-                        state.merge((NetworkState) method.invoke(field.get(this)));
-                    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
+        for (Network child : children()) {
+            for (Tensor t : child.state().tensors()) {
+                if (set.add(t)) {
+                    state.add(t);
                 }
             }
-            clazz = clazz.getSuperclass();
         }
-
         return state;
     }
 
+    /**
+     * Collects the layers held by this network in its fields, from the whole class hierarchy, in declaration
+     * order, starting with the most derived class. Each layer is reported once.
+     *
+     * @return the list of direct child layers
+     */
+    protected List<Network> children() {
+        Set<Network> seen = Collections.newSetFromMap(new IdentityHashMap<>());
+        List<Network> children = new ArrayList<>();
+        Class<?> clazz = getClass();
+        while (clazz != null && clazz != Object.class) {
+            for (Field field : clazz.getDeclaredFields()) {
+                if (Modifier.isStatic(field.getModifiers()) || field.isSynthetic()) {
+                    continue;
+                }
+                Class<?> type = field.getType();
+                if (!Network.class.isAssignableFrom(type) && !Iterable.class.isAssignableFrom(type) && !type.isArray()) {
+                    continue;
+                }
+                Object value;
+                try {
+                    field.setAccessible(true);
+                    value = field.get(this);
+                } catch (IllegalAccessException | RuntimeException e) {
+                    throw new IllegalStateException("Cannot read layer field " + field + ".", e);
+                }
+                collectChildren(value, seen, children);
+            }
+            clazz = clazz.getSuperclass();
+        }
+        return children;
+    }
+
+    private void collectChildren(Object value, Set<Network> seen, List<Network> children) {
+        switch (value) {
+            case null -> {
+            }
+            case Network network -> {
+                if (network != this && seen.add(network)) {
+                    children.add(network);
+                }
+            }
+            case Iterable<?> iterable -> {
+                for (Object item : iterable) {
+                    collectChildren(item, seen, children);
+                }
+            }
+            case Object[] array -> {
+                for (Object item : array) {
+                    collectChildren(item, seen, children);
+                }
+            }
+            default -> {
+            }
+        }
+    }
+
+    /**
+     * Switches this network and all its child layers to training mode.
+     */
     @Override
     public void train() {
         train = true;
+        for (Network child : children()) {
+            child.train();
+        }
     }
 
+    /**
+     * Switches this network and all its child layers to evaluation mode.
+     */
     @Override
     public void eval() {
         train = false;
+        for (Network child : children()) {
+            child.eval();
+        }
     }
 
     @Override
@@ -152,11 +202,16 @@ public abstract class AbstractNetwork implements Network {
 
         while (batchIt.hasNext()) {
             var batch = batchIt.next();
-            futures.add(CompletableFuture.supplyAsync(() -> {
+            // each batch gets its own generator, seeded here in batch order from the manager's random source. The
+            // random numbers a batch receives (dropout masks, for example) then depend only on the seed and on the
+            // batch position, not on which thread runs it or when; a shared generator would hand them out in
+            // whatever order the threads happened to ask
+            Random batchRandom = new Random(tm.random().nextLong());
+            futures.add(CompletableFuture.supplyAsync(() -> tm.withRandom(batchRandom, () -> {
                 Tensor[] outputs = forward(batch.tensors());
                 batch.withOutputs(outputs);
                 return batch;
-            }, tm.outerExecutor()));
+            }), tm.outerExecutor()));
         }
         try {
             return futures.stream()
@@ -244,6 +299,16 @@ public abstract class AbstractNetwork implements Network {
         for (DArray<?> value : values) {
             DType dt = DType.fromId(in.readString());
             Shape shape = in.loadAtom(Shape.class);
+            // the stored arrays are written in place into the current ones; a different type or shape means the
+            // state belongs to another network, and copying it would leave values on the wrong positions
+            if (dt.id() != value.dt().id()) {
+                throw new IOException(String.format(
+                        "Stored state has type %s, but the network tensor has type %s.", dt.id(), value.dt().id()));
+            }
+            if (!shape.equals(value.shape())) {
+                throw new IOException(String.format(
+                        "Stored state has shape %s, but the network tensor has shape %s.", shape, value.shape()));
+            }
             switch (dt.id()) {
                 case DOUBLE -> readeDoubleArray(in, value);
                 case FLOAT -> readeFloatArray(in, value);

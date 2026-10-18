@@ -42,9 +42,9 @@ public class NegativeLikelihoodLoss extends AbstractLoss<NegativeLikelihoodLoss>
 
     @Override
     public Output forward(Tensor pred, Tensor y) {
-        // TODO: treat extra dimension with more care
+        // the class indices are aligned as a column on a new tensor, so the caller's tensor keeps its shape
         if (pred.value().isMatrix() && y.value().isVector()) {
-            y.setValue(y.value().stretch(1));
+            y = tm.var(y.value().stretch(1));
         }
 
         Tensor last = (reduce.get().equals(Reduce.MEAN)) ? pred.gather(1, y).neg().sum().div(pred.dim(0)) : pred.gather(1, y).neg().sum();

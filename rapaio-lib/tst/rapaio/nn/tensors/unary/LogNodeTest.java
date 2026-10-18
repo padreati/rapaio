@@ -57,7 +57,7 @@ public class LogNodeTest extends AbstractTensorTest {
         s1.setGrad(tm.scalarArray(1));
 
         var graph = Autograd.backward(s1);
-        assertTrue(a.grad().deepEquals(tm.fullArray(Shape.of(4), 1).div(a.value()).nanToNum_(-1)));
+        assertTrue(a.grad().deepEquals(tm.fullArray(Shape.of(4), 1).div(a.value())));
         graph.resetGrad();
     }
 
@@ -70,7 +70,7 @@ public class LogNodeTest extends AbstractTensorTest {
         s1.setGrad(tm.fullArray(s1.shape(), 1));
 
         Autograd.ComputeGraph graph = Autograd.backward(s1);
-        assertTrue(a.grad().deepEquals(tm.fullArray(a.shape(), 1).div_(a.value()).nanToNum_(-1)));
+        assertTrue(a.grad().deepEquals(tm.fullArray(a.shape(), 1).div_(a.value())));
         graph.resetGrad();
     }
 
@@ -83,7 +83,7 @@ public class LogNodeTest extends AbstractTensorTest {
         s1.setGrad(tm.fullArray(s1.shape(), 1));
 
         Autograd.ComputeGraph graph = Autograd.backward(s1);
-        assertTrue(a.grad().deepEquals(tm.fullArray(a.shape(), 1).div_(a.value()).nanToNum_(-1)));
+        assertTrue(a.grad().deepEquals(tm.fullArray(a.shape(), 1).div_(a.value())));
         graph.resetGrad();
     }
 }

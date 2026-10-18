@@ -43,7 +43,12 @@ public class DropoutNode extends Tensor {
                 mask.ptrSetByte(next, (byte) 1);
             }
         }
-        if (inplace) {
+        // Writing into the child's value is only safe when no gradient can depend on it. The backward of the node which
+        // produced the child often reads its own output (sigmoid, tanh, exp) and the backward of a product reads the
+        // value of the other factor, so overwriting an inner node, or a leaf which takes part in differentiation,
+        // would hand them the dropped and rescaled values. In those cases the in place request falls back to a copy.
+        boolean writeInPlace = inplace && child.backFunctions().isEmpty() && !child.requiresGrad();
+        if (writeInPlace) {
             this.setValue(child.value().mul_(mask).div_(1 - p));
         } else {
             this.setValue(child.value().mul(mask).div_(1 - p));

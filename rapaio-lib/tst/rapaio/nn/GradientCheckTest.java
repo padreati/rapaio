@@ -320,6 +320,11 @@ public class GradientCheckTest {
                 v -> v.get(0).conv2d(v.get(1), v.get(2), 1, 0, 2, 1));
         check("conv2d groups 2", List.of(signedInput(Shape.of(1, 4, 4, 4)), signedInput(Shape.of(4, 2, 2, 2)), signedInput(Shape.of(4))),
                 v -> v.get(0).conv2d(v.get(1), v.get(2), 1, 0, 1, 2));
+        // non square inputs where the transposed convolution needs a different output padding for height and width
+        check("conv2d 5x4 stride 2", List.of(signedInput(Shape.of(1, 2, 5, 4)), signedInput(Shape.of(2, 2, 2, 2)), signedInput(Shape.of(2))),
+                v -> v.get(0).conv2d(v.get(1), v.get(2), 2, 0, 1, 1));
+        check("conv2d 4x7 stride 2 pad 1", List.of(signedInput(Shape.of(2, 1, 4, 7)), signedInput(Shape.of(2, 1, 3, 3)), signedInput(Shape.of(2))),
+                v -> v.get(0).conv2d(v.get(1), v.get(2), 2, 1, 1, 1));
     }
 
     // masks and dropout
@@ -336,6 +341,36 @@ public class GradientCheckTest {
         // dropout is random, so the forward is rebuilt from the same seed every time it is evaluated
         Shape s = Shape.of(4, 5);
         check("dropout(0.4)", List.of(signedInput(s)), v -> v.getFirst().dropout(0.4, new Random(7)));
+        // in place on an inner node must not overwrite the value the sigmoid backward reads
+        check("sigmoid dropout(0.4, inplace)", List.of(signedInput(s)),
+                v -> v.getFirst().sigmoid().dropout(0.4, new Random(7), true));
+        check("tanh dropout(0.4, inplace)", List.of(signedInput(s)),
+                v -> v.getFirst().tanh().dropout(0.4, new Random(7), true));
+    }
+
+    @Test
+    void logAtZeroAndClamped() {
+        Tensor x = tm.strideTensor(Shape.of(3), 0., 0.5, 4.).requiresGrad(true);
+        Tensor s = x.log().sum();
+        s.setGrad(tm.scalarArray(1));
+        Autograd.backward(s);
+        assertEquals(Double.POSITIVE_INFINITY, x.grad().getDouble(0));
+        assertEquals(2.0, x.grad().getDouble(1), 1e-12);
+        assertEquals(0.25, x.grad().getDouble(2), 1e-12);
+
+        // clamped variant: log(max(x, eps)), finite in both directions, no gradient where the clamp is active
+        Tensor y = tm.strideTensor(Shape.of(3), 0., 0.5, 4.).requiresGrad(true);
+        Tensor ly = y.log(1e-3);
+        assertEquals(Math.log(1e-3), ly.value().getDouble(0), 1e-12);
+        Tensor sy = ly.sum();
+        sy.setGrad(tm.scalarArray(1));
+        Autograd.backward(sy);
+        assertEquals(0.0, y.grad().getDouble(0));
+        assertEquals(2.0, y.grad().getDouble(1), 1e-12);
+        assertEquals(0.25, y.grad().getDouble(2), 1e-12);
+
+        check("log(eps) clamped region", List.of(tm.randomArray(Shape.of(3, 4), Uniform.of(0.01, 2.0))),
+                v -> v.getFirst().log(0.05));
     }
 
     // losses

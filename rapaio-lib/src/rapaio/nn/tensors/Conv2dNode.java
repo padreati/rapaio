@@ -54,11 +54,21 @@ public final class Conv2dNode extends Tensor {
         int outW = this.value().dim(3);
         int outputPaddingH = inH - ((outH - 1) * stride - 2 * padding + dilation * (kH - 1) + 1);
         int outputPaddingW = inW - ((outW - 1) * stride - 2 * padding + dilation * (kW - 1) + 1);
-        // convTranspose2d uses a single outputPadding; use max to be safe (typically both are equal)
+        // convTranspose2d takes a single outputPadding, which only appends rows or columns at the end of the output.
+        // The positions before them do not depend on it, so the larger padding is used and the dimension which came
+        // out too long is cut back to the input size. Without the cut a non square input whose two paddings differ,
+        // like 5x4 with stride 2, would receive a 5x5 gradient
         int outputPadding = Math.max(outputPaddingH, outputPaddingW);
-        backEdge(x, () ->
-                this.grad().convTranspose2d(w.value(), null, stride, padding, dilation, groups, outputPadding)
-        );
+        backEdge(x, () -> {
+            DArray<?> gx = this.grad().convTranspose2d(w.value(), null, stride, padding, dilation, groups, outputPadding);
+            if (gx.dim(2) != inH) {
+                gx = gx.narrow(2, true, 0, inH);
+            }
+            if (gx.dim(3) != inW) {
+                gx = gx.narrow(3, true, 0, inW);
+            }
+            return gx;
+        });
 
         // grad w.r.t. weight via im2col
         backEdge(w, () -> {

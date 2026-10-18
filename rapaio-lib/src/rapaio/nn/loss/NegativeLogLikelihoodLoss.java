@@ -42,9 +42,9 @@ public class NegativeLogLikelihoodLoss extends AbstractLoss<NegativeLogLikelihoo
 
     @Override
     public Output forward(Tensor pred, Tensor y) {
-        // TODO: treat extra dimension with more care
+        // the class indices are aligned as a column on a new tensor, so the caller's tensor keeps its shape
         if (pred.value().isMatrix() && y.value().isVector()) {
-            y.setValue(y.value().stretch(1));
+            y = tm.var(y.value().stretch(1));
         }
         var sum = pred.log().neg().gather(1, y).sum();
         // MEAN averages over the samples (rows), as NegativeLikelihoodLoss does; the class dimension is gathered away

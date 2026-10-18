@@ -22,6 +22,7 @@
 package rapaio.nn;
 
 import java.util.Random;
+import java.util.function.Supplier;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -56,6 +57,8 @@ public final class TensorManager implements AutoCloseable {
 
     private final DType<?> dt;
     private final Random random;
+    // a random source bound to the current thread for the duration of withRandom, see random()
+    private final ThreadLocal<Random> scopedRandom = new ThreadLocal<>();
 
     private final DArrayManager arrayManager;
     private final int outerThreads;
@@ -73,13 +76,54 @@ public final class TensorManager implements AutoCloseable {
         this.outerExecutor = Executors.newFixedThreadPool(outerThreads);
     }
 
+    /**
+     * Sets the seed of the shared random source.
+     *
+     * @param seed seed value
+     * @return tensor manager instance
+     */
     public TensorManager seed(long seed) {
         random.setSeed(seed);
         return this;
     }
 
+    /**
+     * The random source used by layers and by the random tensor and array factories.
+     * <p>
+     * This is the shared random source of the manager, unless the calling thread runs inside
+     * {@link #withRandom(Random, Supplier)}, in which case it is the random source given there.
+     * Parallel work, like the batches of {@link Network#batchForward(int, boolean, boolean, Tensor...)},
+     * uses this to give each unit of work its own generator, so the random numbers each one receives do not
+     * depend on how the threads are scheduled.
+     *
+     * @return random source for the calling thread
+     */
     public Random random() {
-        return random;
+        Random scoped = scopedRandom.get();
+        return scoped != null ? scoped : random;
+    }
+
+    /**
+     * Runs an action with {@link #random()} bound to the given random source on the calling thread.
+     * The previous binding is restored afterward, so calls can be nested.
+     *
+     * @param random random source to be used by the action
+     * @param action action to run
+     * @param <T>    type of the action's result
+     * @return result of the action
+     */
+    public <T> T withRandom(Random random, Supplier<T> action) {
+        Random previous = scopedRandom.get();
+        scopedRandom.set(random);
+        try {
+            return action.get();
+        } finally {
+            if (previous == null) {
+                scopedRandom.remove();
+            } else {
+                scopedRandom.set(previous);
+            }
+        }
     }
 
     public DType<?> dt() {
@@ -145,15 +189,15 @@ public final class TensorManager implements AutoCloseable {
     }
 
     public Variable randomTensor(Shape shape) {
-        return new Variable(this, arrayManager.random(dt, shape, random));
+        return new Variable(this, arrayManager.random(dt, shape, random()));
     }
 
     public Variable randomTensor(Shape shape, Distribution distribution) {
-        return new Variable(this, arrayManager.random(dt, shape, distribution, random, Order.defaultOrder()));
+        return new Variable(this, arrayManager.random(dt, shape, distribution, random(), Order.defaultOrder()));
     }
 
     public Variable randomTensor(Shape shape, Distribution distribution, Order askOrder) {
-        return new Variable(this, arrayManager.random(dt, shape, distribution, random, askOrder));
+        return new Variable(this, arrayManager.random(dt, shape, distribution, random(), askOrder));
     }
 
     public Variable seqTensor(Shape shape) {
@@ -198,15 +242,15 @@ public final class TensorManager implements AutoCloseable {
     }
 
     public DArray<?> randomArray(Shape shape) {
-        return arrayManager.random(dt, shape, random);
+        return arrayManager.random(dt, shape, random());
     }
 
     public DArray<?> randomArray(Shape shape, Distribution distribution) {
-        return arrayManager.random(dt, shape, distribution, random, Order.defaultOrder());
+        return arrayManager.random(dt, shape, distribution, random(), Order.defaultOrder());
     }
 
     public DArray<?> randomArray(Shape shape, Distribution distribution, Order askOrder) {
-        return arrayManager.random(dt, shape, distribution, random, askOrder);
+        return arrayManager.random(dt, shape, distribution, random(), askOrder);
     }
 
     public DArray<?> seqArray(Shape shape) {

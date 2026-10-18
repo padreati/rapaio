@@ -42,9 +42,15 @@ public class MSELoss extends AbstractLoss<MSELoss> {
 
     @Override
     public Output forward(Tensor pred, Tensor y) {
-        // TODO: treat extra dimension with more care
-        if (pred.value().isMatrix()) {
-            y.setValue(y.value().stretch(1));
+        // a vector of targets for a single output column is aligned as a column; this is done on a new node, so the
+        // caller's tensor keeps its shape and a second call with the same target sees the same input
+        if (pred.rank() == 2 && pred.dim(1) == 1 && y.rank() == 1) {
+            y = y.stretch(1);
+        }
+        // any other shape difference would be silently broadcast into a loss over the wrong pairs
+        if (!pred.shape().equals(y.shape())) {
+            throw new IllegalArgumentException(String.format(
+                    "Prediction shape %s does not match target shape %s.", pred.shape(), y.shape()));
         }
         Tensor last = (reduce.get().equals(Reduce.MEAN)) ? pred.sub(y).sqr().sum().div(pred.value().size()) : pred.sub(y).sqr().sum();
         last.setGrad(tm.scalarArray(1));

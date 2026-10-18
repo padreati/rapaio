@@ -45,18 +45,26 @@ public abstract class AbstractLoss<L extends AbstractLoss<L>> extends ParamSet<L
 
     @Override
     public Loss.Output batchForward(List<Batch> batches, Tensor trueValues) {
+        if (batches.isEmpty()) {
+            throw new IllegalArgumentException("Cannot compute a loss over an empty list of batches.");
+        }
         Tensor lossTensor = null;
-        double lossValue = 0;
 
         for (Batch batch : batches) {
-            Loss loss = this.newInstance();
             Tensor batchPredValues = batch.outputs()[0];
             Tensor batchTrueValues = tm.var(trueValues.value().sel(0, batch.indices()));
-            Loss.Output lossOut = loss.forward(batchPredValues, batchTrueValues);
+            // forward keeps no state, and calling it on this instance keeps the configured parameters (reduce),
+            // which a fresh instance from newInstance() would reset to their defaults
+            Loss.Output lossOut = forward(batchPredValues, batchTrueValues);
+            // forward seeds its own root gradient with 1, so it can be back propagated on its own; here the batch loss
+            // is an inner node, and a seed left in place would be added to the gradient flowing from the total
+            lossOut.tensor().zeroGrad();
             lossTensor = lossTensor == null ? lossOut.tensor() : lossTensor.add(lossOut.tensor());
-            lossValue += lossOut.lossValue();
         }
+        // the reported value is the average of the batch losses, so the tensor which is back propagated is the same
+        // average; a plain sum would scale the gradient by the number of batches
+        lossTensor = lossTensor.div(batches.size());
         lossTensor.setGrad(tm.scalarTensor(1).value());
-        return new Loss.Output(lossTensor, lossValue / batches.size());
+        return new Loss.Output(lossTensor, lossTensor.value().getDouble());
     }
 }
