@@ -347,6 +347,39 @@ public class GradientCheckTest {
                 v -> v.get(0).conv3d(v.get(1), v.get(2), 2, 1, 1, 1));
     }
 
+    // max pooling; random inputs have no ties, so the maximum of every window is unique and the finite difference
+    // stays on one side of the kink
+
+    @Test
+    void maxPool() {
+        // 1d: (N, C, L) or (C, L)
+        check("maxPool1d k2", List.of(signedInput(Shape.of(2, 3, 8))), v -> v.getFirst().maxPool1d(2));
+        check("maxPool1d k3 s1 overlap", List.of(signedInput(Shape.of(2, 2, 7))), v -> v.getFirst().maxPool1d(3, 1, 0, 1, false));
+        check("maxPool1d k3 s2 pad 1", List.of(signedInput(Shape.of(1, 2, 7))), v -> v.getFirst().maxPool1d(3, 2, 1, 1, false));
+        check("maxPool1d k2 dilation 2", List.of(signedInput(Shape.of(1, 2, 9))), v -> v.getFirst().maxPool1d(2, 1, 1, 2, false));
+        check("maxPool1d k2 s2 ceil", List.of(signedInput(Shape.of(1, 2, 7))), v -> v.getFirst().maxPool1d(2, 2, 0, 1, true));
+        check("maxPool1d unbatched", List.of(signedInput(Shape.of(3, 6))), v -> v.getFirst().maxPool1d(3, 1, 1, 1, false));
+
+        // 2d: (N, C, H, W) or (C, H, W)
+        check("maxPool2d k2", List.of(signedInput(Shape.of(2, 2, 4, 6))), v -> v.getFirst().maxPool2d(2));
+        check("maxPool2d k3 s1 pad 1 overlap", List.of(signedInput(Shape.of(1, 2, 5, 4))),
+                v -> v.getFirst().maxPool2d(3, 3, 1, 1, 1, false));
+        check("maxPool2d k2x3 s2 ceil", List.of(signedInput(Shape.of(1, 2, 5, 7))),
+                v -> v.getFirst().maxPool2d(2, 3, 2, 0, 1, true));
+        check("maxPool2d dilation 2", List.of(signedInput(Shape.of(1, 1, 6, 6))),
+                v -> v.getFirst().maxPool2d(2, 2, 1, 0, 2, false));
+        check("maxPool2d unbatched", List.of(signedInput(Shape.of(3, 4, 5))), v -> v.getFirst().maxPool2d(2, 2, 1, 1, 1, false));
+
+        // 3d: (N, C, D, H, W) or (C, D, H, W)
+        check("maxPool3d k2", List.of(signedInput(Shape.of(2, 2, 4, 4, 4))), v -> v.getFirst().maxPool3d(2));
+        check("maxPool3d k3 s2 pad 1", List.of(signedInput(Shape.of(1, 2, 5, 4, 3))),
+                v -> v.getFirst().maxPool3d(3, 3, 3, 2, 1, 1, false));
+        check("maxPool3d k1x2x3 s1 overlap", List.of(signedInput(Shape.of(1, 1, 2, 4, 5))),
+                v -> v.getFirst().maxPool3d(1, 2, 3, 1, 0, 1, false));
+        check("maxPool3d unbatched ceil", List.of(signedInput(Shape.of(2, 3, 5, 4))),
+                v -> v.getFirst().maxPool3d(2, 2, 2, 2, 0, 1, true));
+    }
+
     // masks and dropout
 
     @Test

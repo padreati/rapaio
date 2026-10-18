@@ -37,6 +37,9 @@ import rapaio.nn.tensors.CompareTrueNode;
 import rapaio.nn.tensors.Conv1dNode;
 import rapaio.nn.tensors.Conv2dNode;
 import rapaio.nn.tensors.Conv3dNode;
+import rapaio.nn.tensors.MaxPool1dNode;
+import rapaio.nn.tensors.MaxPool2dNode;
+import rapaio.nn.tensors.MaxPool3dNode;
 import rapaio.nn.tensors.DropoutNode;
 import rapaio.nn.tensors.GatherNode;
 import rapaio.nn.tensors.IdentityNode;
@@ -491,5 +494,83 @@ public abstract class Tensor {
      */
     public final Conv3dNode conv3d(Tensor weight, Tensor bias, int stride, int padding, int dilation, int groups) {
         return new Conv3dNode(this, weight, bias, stride, padding, dilation, groups);
+    }
+
+    /**
+     * 1D max pooling of this tensor, with shape {@code (N, C, L)} or {@code (C, L)}, with a window of size
+     * {@code k} moved by {@code k} positions and no padding.
+     *
+     * @param k window size
+     * @return pooled tensor
+     */
+    public final MaxPool1dNode maxPool1d(int k) {
+        return new MaxPool1dNode(this, k, k, 0, 1, false);
+    }
+
+    /**
+     * 1D max pooling of this tensor, with shape {@code (N, C, L)} or {@code (C, L)}.
+     *
+     * @param k        window size
+     * @param stride   step between windows
+     * @param padding  implicit padding with negative infinity on both sides, at most half of the effective window
+     * @param dilation spacing between window elements
+     * @param ceilMode if true the output length is rounded up, so a last partial window is also pooled
+     * @return pooled tensor
+     */
+    public final MaxPool1dNode maxPool1d(int k, int stride, int padding, int dilation, boolean ceilMode) {
+        return new MaxPool1dNode(this, k, stride, padding, dilation, ceilMode);
+    }
+
+    /**
+     * 2D max pooling of this tensor, with shape {@code (N, C, H, W)} or {@code (C, H, W)}, with a square
+     * {@code k x k} window moved by {@code k} positions and no padding.
+     *
+     * @param k window size on both spatial dimensions
+     * @return pooled tensor
+     */
+    public final MaxPool2dNode maxPool2d(int k) {
+        return new MaxPool2dNode(this, k, k, k, 0, 1, false);
+    }
+
+    /**
+     * 2D max pooling of this tensor, with shape {@code (N, C, H, W)} or {@code (C, H, W)}.
+     *
+     * @param kH       window height
+     * @param kW       window width
+     * @param stride   step between windows, the same on both spatial dimensions
+     * @param padding  implicit padding with negative infinity on all sides, at most half of the effective window
+     * @param dilation spacing between window elements
+     * @param ceilMode if true the output sizes are rounded up, so last partial windows are also pooled
+     * @return pooled tensor
+     */
+    public final MaxPool2dNode maxPool2d(int kH, int kW, int stride, int padding, int dilation, boolean ceilMode) {
+        return new MaxPool2dNode(this, kH, kW, stride, padding, dilation, ceilMode);
+    }
+
+    /**
+     * 3D max pooling of this tensor, with shape {@code (N, C, D, H, W)} or {@code (C, D, H, W)}, with a cubic
+     * {@code k x k x k} window moved by {@code k} positions and no padding.
+     *
+     * @param k window size on all spatial dimensions
+     * @return pooled tensor
+     */
+    public final MaxPool3dNode maxPool3d(int k) {
+        return new MaxPool3dNode(this, k, k, k, k, 0, 1, false);
+    }
+
+    /**
+     * 3D max pooling of this tensor, with shape {@code (N, C, D, H, W)} or {@code (C, D, H, W)}.
+     *
+     * @param kD       window depth
+     * @param kH       window height
+     * @param kW       window width
+     * @param stride   step between windows, the same on all spatial dimensions
+     * @param padding  implicit padding with negative infinity on all sides, at most half of the effective window
+     * @param dilation spacing between window elements
+     * @param ceilMode if true the output sizes are rounded up, so last partial windows are also pooled
+     * @return pooled tensor
+     */
+    public final MaxPool3dNode maxPool3d(int kD, int kH, int kW, int stride, int padding, int dilation, boolean ceilMode) {
+        return new MaxPool3dNode(this, kD, kH, kW, stride, padding, dilation, ceilMode);
     }
 }
